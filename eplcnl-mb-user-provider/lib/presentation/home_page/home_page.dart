@@ -2,6 +2,7 @@ import '../home_page/widgets/category_item_widget.dart';
 import '../home_page/widgets/columnsection_item_widget.dart';
 import '../home_page/widgets/offercomponent_item_widget.dart';
 import '../home_page/widgets/userprofile_item_widget.dart';
+import 'carousel/landing.dart';
 import 'models/category_item_model.dart';
 import 'models/columnsection_item_model.dart';
 import 'models/home_model.dart';
@@ -43,7 +44,7 @@ class HomePageState extends State<HomePage> {
                 decoration: AppDecoration.fillOnPrimaryContainer,
                 child: SingleChildScrollView(
                     child: SizedBox(
-                        height: 1126.v,
+                        height: 1150.v,
                         width: double.maxFinite,
                         child:
                             Stack(alignment: Alignment.bottomRight, children: [
@@ -67,6 +68,16 @@ class HomePageState extends State<HomePage> {
                                                 builder: (context,
                                                     searchController, child) {
                                                   return CustomSearchView(
+                                                      borderDecoration:
+                                                          OutlineInputBorder(
+                                                              borderSide:
+                                                                  BorderSide(
+                                                                      color: Colors
+                                                                          .grey),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15.0)),
                                                       controller:
                                                           searchController,
                                                       hintText:
@@ -120,60 +131,25 @@ class HomePageState extends State<HomePage> {
               child: CustomIconButton(
                   height: 40.adaptSize,
                   width: 40.adaptSize,
-                  padding: EdgeInsets.all(11.h),
+                  // padding: EdgeInsets.all(11.h),
                   decoration: IconButtonStyleHelper.outlineTeal,
                   onTap: () {
                     onTapBtnUser(context);
                   },
-                  child: CustomImageView(imagePath: ImageConstant.imgUser)))
+                child: Center(
+                  child: Icon(
+                    Icons.notifications,
+                    size: 18.0, // Adjust the size as needed
+                    color: Color(0xff167f71), // Adjust the color as needed
+                  ),
+                ),
+              ))
         ]));
   }
 
   /// Section Widget
   Widget _buildOvalSection(BuildContext context) {
-    return SizedBox(
-        height: 180.v,
-        width: 360.h,
-        child: Stack(alignment: Alignment.bottomLeft, children: [
-          Consumer<HomeProvider>(builder: (context, provider, child) {
-            return CarouselSlider.builder(
-                options: CarouselOptions(
-                    height: 180.v,
-                    initialPage: 0,
-                    autoPlay: true,
-                    viewportFraction: 1.0,
-                    enableInfiniteScroll: false,
-                    scrollDirection: Axis.horizontal,
-                    onPageChanged: (index, reason) {
-                      provider.sliderIndex = index;
-                    }),
-                itemCount: provider.homeModelObj.offercomponentItemList.length,
-                itemBuilder: (context, index, realIndex) {
-                  OffercomponentItemModel model =
-                      provider.homeModelObj.offercomponentItemList[index];
-                  return OffercomponentItemWidget(model);
-                });
-          }),
-          Align(
-              alignment: Alignment.bottomLeft,
-              child:
-                  Consumer<HomeProvider>(builder: (context, provider, child) {
-                return Container(
-                    height: 8.v,
-                    margin: EdgeInsets.only(left: 139.h, bottom: 16.v),
-                    child: AnimatedSmoothIndicator(
-                        activeIndex: provider.sliderIndex,
-                        count:
-                            provider.homeModelObj.offercomponentItemList.length,
-                        axisDirection: Axis.horizontal,
-                        effect: ScrollingDotsEffect(
-                            spacing: 8,
-                            activeDotColor: appTheme.amberA200,
-                            dotColor: theme.colorScheme.primary,
-                            dotHeight: 8.v,
-                            dotWidth: 8.h)));
-              }))
-        ]));
+    return Landing();
   }
 
   /// Section Widget

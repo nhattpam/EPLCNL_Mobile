@@ -254,49 +254,52 @@ class LoginScreenState extends State<LoginScreen> {
 
   /// Section Widget
   Widget _buildSignInButtonSection(BuildContext context) {
-    return Container(
-        height: 60.v,
-        width: 350.h,
-        margin: EdgeInsets.only(right: 5.h),
-        child: Stack(alignment: Alignment.centerRight, children: [
-          Align(
-              alignment: Alignment.center,
-              child: Container(
-                  height: 60.v,
-                  width: 350.h,
-                  decoration: BoxDecoration(
-                      color: theme.colorScheme.primary,
-                      borderRadius: BorderRadius.circular(30.h),
-                      boxShadow: [
-                        BoxShadow(
-                            color: appTheme.black900.withOpacity(0.3),
-                            spreadRadius: 2.h,
-                            blurRadius: 2.h,
-                            offset: Offset(1, 2))
-                      ]))),
-          Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                  padding: EdgeInsets.only(right: 9.h),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                            padding: EdgeInsets.only(top: 12.v, bottom: 8.v),
-                            child: Text("lbl_sign_in".tr,
-                                style: CustomTextStyles
-                                    .titleMediumOnPrimaryContainer)),
-                        Padding(
-                            padding: EdgeInsets.only(left: 89.h),
-                            child: CustomIconButton(
-                                height: 48.adaptSize,
-                                width: 48.adaptSize,
-                                padding: EdgeInsets.all(13.h),
-                                child: CustomImageView(
-                                    imagePath: ImageConstant.imgFill1Primary)))
-                      ])))
-        ]));
+    return GestureDetector(
+      onTap: () => onTapBtnSignin(context),
+      child: Container(
+          height: 60.v,
+          width: 350.h,
+          margin: EdgeInsets.only(right: 5.h),
+          child: Stack(alignment: Alignment.centerRight, children: [
+            Align(
+                alignment: Alignment.center,
+                child: Container(
+                    height: 60.v,
+                    width: 350.h,
+                    decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        borderRadius: BorderRadius.circular(30.h),
+                        boxShadow: [
+                          BoxShadow(
+                              color: appTheme.black900.withOpacity(0.3),
+                              spreadRadius: 2.h,
+                              blurRadius: 2.h,
+                              offset: Offset(1, 2))
+                        ]))),
+            Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                    padding: EdgeInsets.only(right: 9.h),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                              padding: EdgeInsets.only(top: 12.v, bottom: 8.v),
+                              child: Text("lbl_sign_in".tr,
+                                  style: CustomTextStyles
+                                      .titleMediumOnPrimaryContainer)),
+                          Padding(
+                              padding: EdgeInsets.only(left: 89.h),
+                              child: CustomIconButton(
+                                  height: 48.adaptSize,
+                                  width: 48.adaptSize,
+                                  padding: EdgeInsets.all(13.h),
+                                  child: CustomImageView(
+                                      imagePath: ImageConstant.imgFill1Primary)))
+                        ])))
+          ])),
+    );
   }
 
   /// Navigates to the forgotPasswordScreen when the action is triggered.
@@ -310,6 +313,12 @@ class LoginScreenState extends State<LoginScreen> {
   onTapTxtDonthaveanaccount(BuildContext context) {
     NavigatorService.pushNamed(
       AppRoutes.registerNowScreen,
+    );
+  }
+  /// Navigates to the registerNowScreen when the action is triggered.
+  onTapBtnSignin(BuildContext context) {
+    NavigatorService.pushNamed(
+      AppRoutes.homeContainerScreen,
     );
   }
 }

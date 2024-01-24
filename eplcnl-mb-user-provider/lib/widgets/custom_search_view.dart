@@ -95,7 +95,8 @@ class CustomSearchView extends StatelessWidget {
           decoration: decoration,
           validator: validator,
           onChanged: (String value) {
-            onChanged!.call(value);
+            // onChanged!.call(value);
+            print(value);
           },
         ),
       );
@@ -105,10 +106,10 @@ class CustomSearchView extends StatelessWidget {
         prefixIcon: prefix ??
             Container(
               margin: EdgeInsets.fromLTRB(13.h, 22.v, 9.h, 22.v),
-              child: CustomImageView(
-                imagePath: ImageConstant.imgQrcode,
-                height: 20.adaptSize,
-                width: 20.adaptSize,
+              child: Icon(
+                Icons.search,
+                size: 18.0, // Adjust the size as needed
+                color: Colors.black, // Adjust the color as needed
               ),
             ),
         prefixIconConstraints: prefixConstraints ??
@@ -126,10 +127,10 @@ class CustomSearchView extends StatelessWidget {
                 color: theme.colorScheme.primary,
                 borderRadius: BorderRadius.circular(10.h),
               ),
-              child: CustomImageView(
-                imagePath: ImageConstant.imgFilter,
-                height: 18.v,
-                width: 19.h,
+              child: Icon(
+                Icons.filter_list,
+                size: 18.0, // Adjust the size as needed
+                color: Colors.black, // Adjust the color as needed
               ),
             ),
         suffixIconConstraints: suffixConstraints ??

@@ -349,4 +349,9 @@ class HomePageState extends State<HomePage> {
       AppRoutes.popularCoursesScreen,
     );
   }
+  onTapCourDetail(BuildContext context) {
+    NavigatorService.pushNamed(
+      AppRoutes.popularCoursesScreen,
+    );
+  }
 }

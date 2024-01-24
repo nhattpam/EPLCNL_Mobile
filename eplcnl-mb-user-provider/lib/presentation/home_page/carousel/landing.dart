@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:eplcnl/core/app_export.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -12,9 +13,9 @@ class _LandingState extends State<Landing>{
   int itemCount = 0;
 
   final List<String> images = [
-    "assets/screens/images/banner1.png",
-    "assets/screens/images/banner2.png",
-    "assets/screens/images/banner4.jpg",
+    ImageConstant.banner1,
+    ImageConstant.banner2,
+    ImageConstant.banner3,
   ];
 
   List<Widget> generateImagesTiles(){

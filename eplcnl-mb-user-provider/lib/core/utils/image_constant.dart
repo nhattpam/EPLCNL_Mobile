@@ -304,4 +304,13 @@ class ImageConstant {
   static String imgTelevisionPrimary = '$imagePath/img_television_primary.svg';
 
   static String imageNotFound = 'assets/images/image_not_found.png';
+
+  //Banner image
+  static String banner1 = 'assets/images/banner1.png';
+
+  static String banner2 = 'assets/images/banner2.png';
+
+  static String banner3 = 'assets/images/banner3.png';
+
+
 }

@@ -30,6 +30,22 @@ class HomeModel {
         separatorText: "|",
         fortyTwoText: "4.2",
         separatorText2: "|",
+        stdText: "7830 Std"),
+    UserprofileItemModel(
+        graphicDesignText: "Graphic Design",
+        graphicDesignAdvancedText: "Graphic Design Advanced",
+        twentyEightText: "28",
+        separatorText: "|",
+        fortyTwoText: "4.2",
+        separatorText2: "|",
+        stdText: "7830 Std"),
+    UserprofileItemModel(
+        graphicDesignText: "Graphic Design",
+        graphicDesignAdvancedText: "Graphic Design Advanced",
+        twentyEightText: "28",
+        separatorText: "|",
+        fortyTwoText: "4.2",
+        separatorText2: "|",
         stdText: "7830 Std")
   ];
 }

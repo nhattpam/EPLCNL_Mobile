@@ -53,139 +53,176 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                                   selector: (context, provider) =>
                                   provider.emailController,
                                   builder: (context, emailController, child) {
-                                    return CustomTextFormField(
-                                        controller: emailController,
-                                        hintText: "lbl_email".tr,
-                                        hintStyle: CustomTextStyles
-                                            .titleSmallGray80001,
-                                        textInputType:
-                                        TextInputType.emailAddress,
-                                        prefix: Container(
-                                            margin: EdgeInsets.fromLTRB(
-                                                20.h, 22.v, 7.h, 23.v),
-                                            child: CustomImageView(
-                                                imagePath:
-                                                ImageConstant.imgLock,
-                                                height: 14.v,
-                                                width: 18.h)),
-                                        prefixConstraints:
-                                        BoxConstraints(maxHeight: 60.v),
-                                        validator: (value) {
-                                          if (value == null ||
-                                              (!isValidEmail(value,
-                                                  isRequired: true))) {
-                                            return "err_msg_please_enter_valid_email"
-                                                .tr;
-                                          }
-                                          return null;
-                                        },
-                                        contentPadding: EdgeInsets.only(
-                                            top: 21.v,
-                                            right: 30.h,
-                                            bottom: 21.v),
-                                        borderDecoration:
-                                        TextFormFieldStyleHelper
-                                            .outlineBlack);
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                                            spreadRadius: 2,
+                                            blurRadius: 5,
+                                            offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+                                          ),
+                                        ],
+                                      ),
+                                      child: CustomTextFormField(
+                                          controller: emailController,
+                                          hintText: "lbl_email".tr,
+                                          hintStyle: CustomTextStyles
+                                              .titleSmallGray80001,
+                                          textInputType:
+                                          TextInputType.emailAddress,
+                                          prefix: Container(
+                                              margin: EdgeInsets.fromLTRB(
+                                                  20.h, 22.v, 7.h, 23.v),
+                                              child: CustomImageView(
+                                                  imagePath:
+                                                  ImageConstant.imgLock,
+                                                  height: 14.v,
+                                                  width: 18.h)),
+                                          prefixConstraints:
+                                          BoxConstraints(maxHeight: 60.v),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                (!isValidEmail(value,
+                                                    isRequired: true))) {
+                                              return "err_msg_please_enter_valid_email"
+                                                  .tr;
+                                            }
+                                            return null;
+
+                                          },
+                                          contentPadding: EdgeInsets.only(
+                                              top: 21.v,
+                                              right: 30.h,
+                                              bottom: 21.v),
+                                          borderDecoration:
+                                          TextFormFieldStyleHelper
+                                              .outlineBlack),
+                                    );
                                   }),
                               SizedBox(height: 20.v),
                               Consumer<RegisterNowProvider>(
                                   builder: (context, provider, child) {
-                                    return CustomTextFormField(
-                                        controller: provider.passwordController,
-                                        hintText: "lbl_password".tr,
-                                        hintStyle:
-                                        CustomTextStyles.titleSmallGray80001,
-                                        textInputType:
-                                        TextInputType.visiblePassword,
-                                        prefix: Container(
-                                            margin: EdgeInsets.fromLTRB(
-                                                22.h, 20.v, 9.h, 20.v),
-                                            child: CustomImageView(
-                                                imagePath:
-                                                ImageConstant.imgLocation,
-                                                height: 19.v,
-                                                width: 14.h)),
-                                        prefixConstraints:
-                                        BoxConstraints(maxHeight: 60.v),
-                                        suffix: InkWell(
-                                            onTap: () {
-                                              provider.changePasswordVisibility();
-                                            },
-                                            child: Container(
-                                                margin: EdgeInsets.fromLTRB(
-                                                    30.h, 21.v, 24.h, 21.v),
-                                                child: CustomImageView(
-                                                    imagePath:
-                                                    ImageConstant.imgThumbsup,
-                                                    height: 15.adaptSize,
-                                                    width: 15.adaptSize))),
-                                        suffixConstraints:
-                                        BoxConstraints(maxHeight: 60.v),
-                                        validator: (value) {
-                                          if (value == null ||
-                                              (!isValidPassword(value,
-                                                  isRequired: true))) {
-                                            return "err_msg_please_enter_valid_password"
-                                                .tr;
-                                          }
-                                          return null;
-                                        },
-                                        obscureText: provider.isShowPassword,
-                                        contentPadding:
-                                        EdgeInsets.symmetric(vertical: 21.v),
-                                        borderDecoration:
-                                        TextFormFieldStyleHelper.outlineBlack);
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                                            spreadRadius: 2,
+                                            blurRadius: 5,
+                                            offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+                                          ),
+                                        ],
+                                      ),
+                                      child: CustomTextFormField(
+                                          controller: provider.passwordController,
+                                          hintText: "lbl_password".tr,
+                                          hintStyle:
+                                          CustomTextStyles.titleSmallGray80001,
+                                          textInputType:
+                                          TextInputType.visiblePassword,
+                                          prefix: Container(
+                                              margin: EdgeInsets.fromLTRB(
+                                                  22.h, 20.v, 9.h, 20.v),
+                                              child: CustomImageView(
+                                                  imagePath:
+                                                  ImageConstant.imgLocation,
+                                                  height: 19.v,
+                                                  width: 14.h)),
+                                          prefixConstraints:
+                                          BoxConstraints(maxHeight: 60.v),
+                                          suffix: InkWell(
+                                              onTap: () {
+                                                provider.changePasswordVisibility();
+                                              },
+                                              child: Container(
+                                                  margin: EdgeInsets.fromLTRB(
+                                                      30.h, 21.v, 24.h, 21.v),
+                                                  child: CustomImageView(
+                                                      imagePath:
+                                                      ImageConstant.imgThumbsup,
+                                                      height: 15.adaptSize,
+                                                      width: 15.adaptSize))),
+                                          suffixConstraints:
+                                          BoxConstraints(maxHeight: 60.v),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                (!isValidPassword(value,
+                                                    isRequired: true))) {
+                                              return "err_msg_please_enter_valid_password"
+                                                  .tr;
+                                            }
+                                            return null;
+                                          },
+                                          obscureText: provider.isShowPassword,
+                                          contentPadding:
+                                          EdgeInsets.symmetric(vertical: 21.v),
+                                          borderDecoration:
+                                          TextFormFieldStyleHelper.outlineBlack),
+                                    );
                                   }),
                               SizedBox(height: 10.v),
                               Consumer<RegisterNowProvider>(
                                   builder: (context, provider, child) {
-                                    return CustomTextFormField(
-                                        controller:
-                                        provider.confirmpasswordController,
-                                        hintText: "msg_confirm_password".tr,
-                                        hintStyle:
-                                        CustomTextStyles.titleSmallGray80001,
-                                        textInputAction: TextInputAction.done,
-                                        textInputType:
-                                        TextInputType.visiblePassword,
-                                        prefix: Container(
-                                            margin: EdgeInsets.fromLTRB(
-                                                22.h, 20.v, 9.h, 20.v),
-                                            child: CustomImageView(
-                                                imagePath:
-                                                ImageConstant.imgLocation,
-                                                height: 19.v,
-                                                width: 14.h)),
-                                        prefixConstraints:
-                                        BoxConstraints(maxHeight: 60.v),
-                                        suffix: InkWell(
-                                            onTap: () {
-                                              provider.changePasswordVisibility1();
-                                            },
-                                            child: Container(
-                                                margin: EdgeInsets.fromLTRB(
-                                                    30.h, 21.v, 24.h, 21.v),
-                                                child: CustomImageView(
-                                                    imagePath:
-                                                    ImageConstant.imgThumbsup,
-                                                    height: 15.adaptSize,
-                                                    width: 15.adaptSize))),
-                                        suffixConstraints:
-                                        BoxConstraints(maxHeight: 60.v),
-                                        validator: (value) {
-                                          if (value == null ||
-                                              (!isValidPassword(value,
-                                                  isRequired: true))) {
-                                            return "err_msg_please_enter_valid_password"
-                                                .tr;
-                                          }
-                                          return null;
-                                        },
-                                        obscureText: provider.isShowPassword1,
-                                        contentPadding:
-                                        EdgeInsets.symmetric(vertical: 21.v),
-                                        borderDecoration:
-                                        TextFormFieldStyleHelper.outlineBlack);
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                                            spreadRadius: 2,
+                                            blurRadius: 5,
+                                            offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+                                          ),
+                                        ],
+                                      ),
+                                      child: CustomTextFormField(
+                                          controller:
+                                          provider.confirmpasswordController,
+                                          hintText: "msg_confirm_password".tr,
+                                          hintStyle:
+                                          CustomTextStyles.titleSmallGray80001,
+                                          textInputAction: TextInputAction.done,
+                                          textInputType:
+                                          TextInputType.visiblePassword,
+                                          prefix: Container(
+                                              margin: EdgeInsets.fromLTRB(
+                                                  22.h, 20.v, 9.h, 20.v),
+                                              child: CustomImageView(
+                                                  imagePath:
+                                                  ImageConstant.imgLocation,
+                                                  height: 19.v,
+                                                  width: 14.h)),
+                                          prefixConstraints:
+                                          BoxConstraints(maxHeight: 60.v),
+                                          suffix: InkWell(
+                                              onTap: () {
+                                                provider.changePasswordVisibility1();
+                                              },
+                                              child: Container(
+                                                  margin: EdgeInsets.fromLTRB(
+                                                      30.h, 21.v, 24.h, 21.v),
+                                                  child: CustomImageView(
+                                                      imagePath:
+                                                      ImageConstant.imgThumbsup,
+                                                      height: 15.adaptSize,
+                                                      width: 15.adaptSize))),
+                                          suffixConstraints:
+                                          BoxConstraints(maxHeight: 60.v),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                (!isValidPassword(value,
+                                                    isRequired: true))) {
+                                              return "err_msg_please_enter_valid_password"
+                                                  .tr;
+                                            }
+                                            return null;
+                                          },
+                                          obscureText: provider.isShowPassword1,
+                                          contentPadding:
+                                          EdgeInsets.symmetric(vertical: 21.v),
+                                          borderDecoration:
+                                          TextFormFieldStyleHelper.outlineBlack),
+                                    );
                                   }),
                               SizedBox(height: 24.v),
                               _buildCheckmark(context),

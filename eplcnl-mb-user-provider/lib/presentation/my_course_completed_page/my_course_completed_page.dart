@@ -1,3 +1,4 @@
+import '../../widgets/custom_search_view.dart';
 import '../my_course_completed_page/widgets/userprofile3_item_widget.dart';
 import 'models/my_course_completed_model.dart';
 import 'models/userprofile3_item_model.dart';
@@ -31,67 +32,50 @@ class MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
     return SafeArea(
         child: Scaffold(
             resizeToAvoidBottomInset: false,
-            body: Container(
-                width: double.maxFinite,
-                decoration: AppDecoration.fillOnPrimaryContainer,
-                child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 34.h),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 70.v),
-                          Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomImageView(
-                                    imagePath:
-                                        ImageConstant.imgArrowDownBlueGray900,
-                                    height: 20.v,
-                                    width: 26.h,
-                                    margin:
-                                        EdgeInsets.only(top: 3.v, bottom: 5.v)),
-                                Padding(
-                                    padding: EdgeInsets.only(left: 11.h),
-                                    child: Text("lbl_my_courses".tr,
-                                        style: theme.textTheme.titleLarge))
-                              ]),
-                          SizedBox(height: 16.v),
-                          Selector<MyCourseCompletedProvider,
-                                  TextEditingController?>(
-                              selector: (context, provider) =>
-                                  provider.searchController,
-                              builder: (context, searchController, child) {
-                                return CustomTextFormField(
-                                    controller: searchController,
-                                    hintText: "lbl_search_for2".tr,
-                                    hintStyle: CustomTextStyles
-                                        .titleMediumMulishBluegray200,
-                                    textInputAction: TextInputAction.done,
-                                    suffix: Container(
-                                        padding: EdgeInsets.all(9.h),
-                                        margin: EdgeInsets.fromLTRB(
-                                            30.h, 13.v, 10.h, 13.v),
-                                        decoration: BoxDecoration(
-                                            color: theme.colorScheme.primary,
-                                            borderRadius:
-                                                BorderRadius.circular(10.h)),
-                                        child: CustomImageView(
-                                            imagePath:
-                                                ImageConstant.imgContrast,
-                                            height: 20.adaptSize,
-                                            width: 20.adaptSize)),
-                                    suffixConstraints:
-                                        BoxConstraints(maxHeight: 64.v),
-                                    contentPadding: EdgeInsets.only(
-                                        left: 15.h, top: 21.v, bottom: 21.v),
-                                    borderDecoration: TextFormFieldStyleHelper
-                                        .outlineBlackTL15);
-                              }),
-                          SizedBox(height: 20.v),
-                          _buildCategory(context),
-                          SizedBox(height: 16.v),
-                          _buildUserProfile(context)
-                        ])))));
+            body: SingleChildScrollView(
+              child: Container(
+                  width: double.maxFinite,
+                  decoration: AppDecoration.fillOnPrimaryContainer,
+                  child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 34.h),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 70.v),
+                            Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomImageView(
+                                      imagePath:
+                                          ImageConstant.imgArrowDownBlueGray900,
+                                      height: 20.v,
+                                      width: 26.h,
+                                      margin:
+                                          EdgeInsets.only(top: 3.v, bottom: 5.v)),
+                                  Padding(
+                                      padding: EdgeInsets.only(left: 11.h),
+                                      child: Text("lbl_my_courses".tr,
+                                          style: theme.textTheme.titleLarge))
+                                ]),
+                            SizedBox(height: 16.v),
+                            Selector<MyCourseCompletedProvider,
+                                    TextEditingController?>(
+                                selector: (context, provider) =>
+                                    provider.searchController,
+                                builder: (context, searchController, child) {
+                                  return CustomSearchView(
+                                      controller: searchController,
+                                      hintText: "lbl_search_for2".tr,
+                                      contentPadding: EdgeInsets.only(
+                                          left: 15.h, top: 21.v, bottom: 21.v));
+                                }),
+                            SizedBox(height: 20.v),
+                            _buildCategory(context),
+                            SizedBox(height: 16.v),
+                            _buildUserProfile(context),
+                            SizedBox(height: 16.v),
+                          ]))),
+            )));
   }
 
   /// Section Widget
@@ -123,7 +107,7 @@ class MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
     return Consumer<MyCourseCompletedProvider>(
         builder: (context, provider, child) {
       return ListView.separated(
-          physics: NeverScrollableScrollPhysics(),
+        physics: PageScrollPhysics(),
           shrinkWrap: true,
           separatorBuilder: (context, index) {
             return SizedBox(height: 20.v);

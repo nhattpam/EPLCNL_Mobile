@@ -44,7 +44,7 @@ class HomePageState extends State<HomePage> {
                 decoration: AppDecoration.fillOnPrimaryContainer,
                 child: SingleChildScrollView(
                     child: SizedBox(
-                        height: 1150.v,
+                        height: 1183.v,
                         width: double.maxFinite,
                         child:
                             Stack(alignment: Alignment.bottomRight, children: [
@@ -89,10 +89,9 @@ class HomePageState extends State<HomePage> {
                                         _buildHeadingSection(context),
                                         SizedBox(height: 12.v),
                                         _buildDDesignSection(context),
-                                        SizedBox(height: 395.v),
+                                        SizedBox(height: 350.v),
                                         Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 14.h),
+                                            padding: EdgeInsets.fromLTRB(14.h, 14.h, 14.h, 14.h),
                                             child: _buildPoluparCoursesSection(
                                                 context,
                                                 title: "lbl_top_mentor".tr,
@@ -103,7 +102,6 @@ class HomePageState extends State<HomePage> {
                                             })),
                                         SizedBox(height: 13.v),
                                         _buildColumnSection(context),
-                                        SizedBox(height: 6.v)
                                       ]))),
                           _buildPOPULARCOURSE(context)
                         ]))))));
@@ -182,21 +180,34 @@ class HomePageState extends State<HomePage> {
 
   /// Section Widget
   Widget _buildDDesignSection(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.only(left: 14.h, right: 9.h),
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Padding(
-              padding: EdgeInsets.only(top: 1.v),
-              child: Text("lbl_3d_design".tr,
-                  style: CustomTextStyles.titleSmallGray5000115)),
-          Text("msg_arts_humanities".tr,
-              style: CustomTextStyles.titleSmallPrimary15),
-          Padding(
-              padding: EdgeInsets.only(top: 1.v),
-              child: Text("lbl_graphic_design".tr,
-                  style: CustomTextStyles.titleSmallGray5000115))
-        ]));
+    // return Padding(
+    //     padding: EdgeInsets.only(left: 14.h, right: 9.h),
+    //     child:
+    //         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+    //       Padding(
+    //           padding: EdgeInsets.only(top: 1.v),
+    //           child: Text("lbl_3d_design".tr,
+    //               style: CustomTextStyles.titleSmallGray5000115)),
+    //       Text("msg_arts_humanities".tr,
+    //           style: CustomTextStyles.titleSmallPrimary15),
+    //       Padding(
+    //           padding: EdgeInsets.only(top: 1.v),
+    //           child: Text("lbl_graphic_design".tr,
+    //               style: CustomTextStyles.titleSmallGray5000115))
+    //     ]));
+    return SizedBox(
+      height: 40,
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: 4,
+          itemBuilder: (context,index){
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: Chip(label: Text('3D Design')
+              ),
+            );
+          }),
+    );
   }
 
   /// Section Widget
@@ -224,7 +235,7 @@ class HomePageState extends State<HomePage> {
     return Align(
         alignment: Alignment.bottomRight,
         child: Padding(
-            padding: EdgeInsets.only(left: 34.h, bottom: 228.v),
+            padding: EdgeInsets.only(left: 34.h, bottom: 270.v),
             child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,23 +249,23 @@ class HomePageState extends State<HomePage> {
                         onTapPoluparCoursesSection1(context);
                       })),
                   SizedBox(height: 8.v),
-                  SizedBox(
-                      height: 30.v,
-                      child: Consumer<HomeProvider>(
-                          builder: (context, provider, child) {
-                        return ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            separatorBuilder: (context, index) {
-                              return SizedBox(width: 12.h);
-                            },
-                            itemCount:
-                                provider.homeModelObj.categoryItemList.length,
-                            itemBuilder: (context, index) {
-                              CategoryItemModel model =
-                                  provider.homeModelObj.categoryItemList[index];
-                              return CategoryItemWidget(model);
-                            });
-                      })),
+                  // SizedBox(
+                  //     height: 30.v,
+                  //     child: Consumer<HomeProvider>(
+                  //         builder: (context, provider, child) {
+                  //       return ListView.separated(
+                  //           scrollDirection: Axis.horizontal,
+                  //           separatorBuilder: (context, index) {
+                  //             return SizedBox(width: 12.h);
+                  //           },
+                  //           itemCount:
+                  //               provider.homeModelObj.categoryItemList.length,
+                  //           itemBuilder: (context, index) {
+                  //             CategoryItemModel model =
+                  //                 provider.homeModelObj.categoryItemList[index];
+                  //             return CategoryItemWidget(model);
+                  //           });
+                  //     })),
                   SizedBox(height: 20.v),
                   SizedBox(
                       height: 240.v,

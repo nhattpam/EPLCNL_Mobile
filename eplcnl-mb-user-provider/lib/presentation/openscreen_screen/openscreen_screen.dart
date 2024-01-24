@@ -39,6 +39,16 @@ class OpenscreenScreenState extends State<OpenscreenScreen> {
                       buttonStyle: CustomButtonStyles.fillPrimary,
                       buttonTextStyle:
                           CustomTextStyles.titleLargeJuaOnPrimaryContainer,
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+                          ),
+                        ],
+                      ),
                       onPressed: () {
                         onTapGETSTARTED(context);
                       }),
@@ -48,6 +58,16 @@ class OpenscreenScreenState extends State<OpenscreenScreen> {
                       margin: EdgeInsets.symmetric(horizontal: 32.h),
                       buttonStyle: CustomButtonStyles.fillOnPrimaryContainer,
                       buttonTextStyle: CustomTextStyles.titleLargeJuaPrimary,
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+                          ),
+                        ],
+                      ),
                       onPressed: () {
                         onTapALREADYHAVEANACCOUNT(context);
                       }),

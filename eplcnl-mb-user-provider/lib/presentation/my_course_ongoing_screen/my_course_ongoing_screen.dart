@@ -40,43 +40,46 @@ class MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
     return SafeArea(
         child: Scaffold(
             resizeToAvoidBottomInset: false,
-            body: Container(
-                width: double.maxFinite,
-                padding: EdgeInsets.symmetric(horizontal: 34.h),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 70.v),
-                      Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomImageView(
-                                imagePath:
-                                    ImageConstant.imgArrowDownBlueGray900,
-                                height: 20.v,
-                                width: 26.h,
-                                margin: EdgeInsets.only(top: 3.v, bottom: 5.v)),
-                            Padding(
-                                padding: EdgeInsets.only(left: 11.h),
-                                child: Text("lbl_my_courses".tr,
-                                    style: theme.textTheme.titleLarge))
-                          ]),
-                      SizedBox(height: 16.v),
-                      Selector<MyCourseOngoingProvider, TextEditingController?>(
-                          selector: (context, provider) =>
-                              provider.searchController,
-                          builder: (context, searchController, child) {
-                            return CustomSearchView(
-                                controller: searchController,
-                                hintText: "lbl_search_for2".tr,
-                                contentPadding: EdgeInsets.only(
-                                    left: 15.h, top: 21.v, bottom: 21.v));
-                          }),
-                      SizedBox(height: 20.v),
-                      _buildCategory(context),
-                      SizedBox(height: 20.v),
-                      _buildUserProfile(context)
-                    ])),
+            body: SingleChildScrollView(
+              child: Container(
+                  width: double.maxFinite,
+                  padding: EdgeInsets.symmetric(horizontal: 34.h),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 70.v),
+                        Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomImageView(
+                                  imagePath:
+                                      ImageConstant.imgArrowDownBlueGray900,
+                                  height: 20.v,
+                                  width: 26.h,
+                                  margin: EdgeInsets.only(top: 3.v, bottom: 5.v)),
+                              Padding(
+                                  padding: EdgeInsets.only(left: 11.h),
+                                  child: Text("lbl_my_courses".tr,
+                                      style: theme.textTheme.titleLarge))
+                            ]),
+                        SizedBox(height: 16.v),
+                        Selector<MyCourseOngoingProvider, TextEditingController?>(
+                            selector: (context, provider) =>
+                                provider.searchController,
+                            builder: (context, searchController, child) {
+                              return CustomSearchView(
+                                  controller: searchController,
+                                  hintText: "lbl_search_for2".tr,
+                                  contentPadding: EdgeInsets.only(
+                                      left: 15.h, top: 21.v, bottom: 21.v));
+                            }),
+                        SizedBox(height: 20.v),
+                        _buildCategory(context),
+                        SizedBox(height: 20.v),
+                        _buildUserProfile(context),
+                        SizedBox(height: 20.v),
+                      ])),
+            ),
             bottomNavigationBar: _buildBottomBar(context)));
   }
 
@@ -90,7 +93,10 @@ class MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
               margin: EdgeInsets.only(right: 10.h),
               buttonStyle: CustomButtonStyles.fillOnPrimaryContainerTL24,
               buttonTextStyle:
-                  CustomTextStyles.titleSmallBluegray900ExtraBold15)),
+                  CustomTextStyles.titleSmallBluegray900ExtraBold15,
+              onPressed: () {
+                onTapCompleted(context);
+    })),
       Expanded(
           child: CustomElevatedButton(
               height: 48.v,
@@ -106,7 +112,7 @@ class MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
     return Consumer<MyCourseOngoingProvider>(
         builder: (context, provider, child) {
       return ListView.separated(
-          physics: NeverScrollableScrollPhysics(),
+          physics: PageScrollPhysics(),
           shrinkWrap: true,
           separatorBuilder: (context, index) {
             return SizedBox(height: 20.v);
@@ -173,6 +179,11 @@ class MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
   onTapUserProfile(BuildContext context) {
     NavigatorService.pushNamed(
       AppRoutes.myCourseOngoingLessonsScreen,
+    );
+  }
+  onTapCompleted(BuildContext context) {
+    NavigatorService.pushNamed(
+      AppRoutes.myCourseCompletedPage,
     );
   }
 }

@@ -252,7 +252,7 @@ class OTPScreenState extends State<OTPScreen> {
                   style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Colors.deepOrange),
+                      color: Color(0xFFFF9300)),
                 ),
                 SizedBox(
                   height: 10,
@@ -308,7 +308,7 @@ class OTPScreenState extends State<OTPScreen> {
                             foregroundColor:
                             MaterialStateProperty.all<Color>(Colors.white),
                             backgroundColor: MaterialStateProperty.all<Color>(
-                                Colors.deepOrange),
+                                Color(0xFFFF9300)),
                             shape: MaterialStateProperty.all<
                                 RoundedRectangleBorder>(
                               RoundedRectangleBorder(

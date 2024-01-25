@@ -5,16 +5,12 @@ class FillYourProfileModel {
   List<SelectionPopupModel> dropdownItemList = [
     SelectionPopupModel(
       id: 1,
-      title: "Item One",
+      title: "Male",
       isSelected: true,
     ),
     SelectionPopupModel(
       id: 2,
-      title: "Item Two",
+      title: "Female",
     ),
-    SelectionPopupModel(
-      id: 3,
-      title: "Item Three",
-    )
   ];
 }

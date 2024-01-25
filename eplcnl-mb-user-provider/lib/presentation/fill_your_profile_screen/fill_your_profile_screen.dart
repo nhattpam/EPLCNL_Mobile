@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:image_picker/image_picker.dart';
+
 import 'models/fill_your_profile_model.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
@@ -29,17 +33,76 @@ class FillYourProfileScreen extends StatefulWidget {
 
 class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  DateTime? selectedDate;
+  String _imagePath = "";
+  final picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imagePath = pickedFile.path; // Update the image path
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          toolbarHeight: 65,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              width: 300,
+              height: 30, // Add margin
+              // decoration: BoxDecoration(
+              //   color: Colors.orange,
+              //   border: Border.all(
+              //     color: Colors.black, // Set border color
+              //     width: 0.0, // Set border width
+              //   ),
+              //   borderRadius: BorderRadius.circular(20.0), // Set border radius
+              // ),
+              // Set the background color for the text
+              child: Text(
+                'Fill Your Profile',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
         body: Center(
           child: SingleChildScrollView(
             padding: EdgeInsets.only(
@@ -53,65 +116,56 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        children: [
-                          CustomImageView(
-                            imagePath: ImageConstant.imgArrowDownBlueGray900,
-                            height: 20.v,
-                            width: 26.h,
-                            margin: EdgeInsets.only(
-                              top: 5.v,
-                              bottom: 4.v,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 12.h),
-                            child: Text(
-                              "msg_fill_your_profile".tr,
-                              style: theme.textTheme.titleLarge,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 42.v),
                     SizedBox(
                       height: 100.adaptSize,
                       width: 100.adaptSize,
-                      child: Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Container(
-                              height: 100.adaptSize,
-                              width: 100.adaptSize,
-                              decoration: BoxDecoration(
-                                color: appTheme.blue50,
-                                borderRadius: BorderRadius.circular(
-                                  50.h,
+                      child: GestureDetector(
+                        onTap: _pickImage,
+                        child: Container(
+                          width: 131.48,
+                          height: 119.63,
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                left: 0,
+                                top: 0,
+                                child: Container(
+                                  width: 131.48,
+                                  height: 119.63,
+                                  decoration: ShapeDecoration(
+                                    color: Color(0xFFF6F6F6),
+                                    shape: RoundedRectangleBorder(
+                                      side: BorderSide(
+                                          width: 1, color: Color(0xFFE7E7E7)),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              if (_imagePath != null)
+                                Container(
+                                  width: 131.48,
+                                  height: 119.63,
+                                  decoration: ShapeDecoration(
+                                    image: DecorationImage(
+                                      image: FileImage(File(_imagePath!)),
+                                      fit: BoxFit.fill,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                )
+                              else
+                                Center(
+                                  child: Icon(
+                                    Icons.add_a_photo,
+                                    size: 40,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                            ],
                           ),
-                          CustomImageView(
-                            imagePath: ImageConstant.imgFill1Gray5001,
-                            height: 76.v,
-                            width: 70.h,
-                            alignment: Alignment.bottomCenter,
-                          ),
-                          CustomIconButton(
-                            height: 30.adaptSize,
-                            width: 30.adaptSize,
-                            padding: EdgeInsets.all(7.h),
-                            alignment: Alignment.bottomRight,
-                            child: CustomImageView(
-                              imagePath: ImageConstant.imgGroup106,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                     SizedBox(height: 30.v),
@@ -132,15 +186,27 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
                       ) =>
                           provider.fillYourProfileModelObj,
                       builder: (context, fillYourProfileModelObj, child) {
-                        return CustomDropDown(
-                          hintText: "lbl_gender".tr,
-                          items:
-                              fillYourProfileModelObj?.dropdownItemList ?? [],
-                          onChanged: (value) {
-                            context
-                                .read<FillYourProfileProvider>()
-                                .onSelected(value);
-                          },
+                        return Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+                              ),
+                            ],
+                          ),
+                          child: CustomDropDown(
+                            hintText: "lbl_gender".tr,
+                            items:
+                                fillYourProfileModelObj?.dropdownItemList ?? [],
+                            onChanged: (value) {
+                              context
+                                  .read<FillYourProfileProvider>()
+                                  .onSelected(value);
+                            },
+                          ),
                         );
                       },
                     ),
@@ -166,21 +232,33 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
       ) =>
           provider.fullNameController,
       builder: (context, fullNameController, child) {
-        return CustomTextFormField(
-          controller: fullNameController,
-          hintText: "lbl_full_name".tr,
-          hintStyle: CustomTextStyles.titleSmallGray80001,
-          validator: (value) {
-            if (!isText(value)) {
-              return "err_msg_please_enter_valid_text".tr;
-            }
-            return null;
-          },
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 20.h,
-            vertical: 21.v,
+        return Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+              ),
+            ],
           ),
-          borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+          child: CustomTextFormField(
+            controller: fullNameController,
+            hintText: "lbl_full_name".tr,
+            hintStyle: CustomTextStyles.titleSmallGray80001,
+            validator: (value) {
+              if (!isText(value)) {
+                return "err_msg_please_enter_valid_text".tr;
+              }
+              return null;
+            },
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 20.h,
+              vertical: 21.v,
+            ),
+            borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+          ),
         );
       },
     );
@@ -195,21 +273,33 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
       ) =>
           provider.nameController,
       builder: (context, nameController, child) {
-        return CustomTextFormField(
-          controller: nameController,
-          hintText: "lbl_nick_name".tr,
-          hintStyle: CustomTextStyles.titleSmallGray80001,
-          validator: (value) {
-            if (!isText(value)) {
-              return "err_msg_please_enter_valid_text".tr;
-            }
-            return null;
-          },
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 22.h,
-            vertical: 21.v,
+        return Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+              ),
+            ],
           ),
-          borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+          child: CustomTextFormField(
+            controller: nameController,
+            hintText: "lbl_nick_name".tr,
+            hintStyle: CustomTextStyles.titleSmallGray80001,
+            validator: (value) {
+              if (!isText(value)) {
+                return "err_msg_please_enter_valid_text".tr;
+              }
+              return null;
+            },
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 22.h,
+              vertical: 21.v,
+            ),
+            borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+          ),
         );
       },
     );
@@ -217,36 +307,93 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
 
   /// Section Widget
   Widget _buildDateOfBirth(BuildContext context) {
-    return Selector<FillYourProfileProvider, TextEditingController?>(
-      selector: (
-        context,
-        provider,
-      ) =>
-          provider.dateOfBirthController,
-      builder: (context, dateOfBirthController, child) {
-        return CustomTextFormField(
-          controller: dateOfBirthController,
-          hintText: "lbl_date_of_birth".tr,
-          hintStyle: CustomTextStyles.titleSmallGray80001,
-          prefix: Container(
-            margin: EdgeInsets.fromLTRB(21.h, 20.v, 8.h, 20.v),
-            child: CustomImageView(
-              imagePath: ImageConstant.imgCalendar,
-              height: 20.v,
-              width: 18.h,
+    // return Selector<FillYourProfileProvider, TextEditingController?>(
+    //   selector: (
+    //     context,
+    //     provider,
+    //   ) =>
+    //       provider.dateOfBirthController,
+    //   builder: (context, dateOfBirthController, child) {
+    //     return Container(
+    //       decoration: BoxDecoration(
+    //         boxShadow: [
+    //           BoxShadow(
+    //             color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+    //             spreadRadius: 2,
+    //             blurRadius: 5,
+    //             offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+    //           ),
+    //         ],
+    //       ),
+    //       child: CustomTextFormField(
+    //         controller: dateOfBirthController,
+    //         hintText: "lbl_date_of_birth".tr,
+    //         hintStyle: CustomTextStyles.titleSmallGray80001,
+    //         prefix: Container(
+    //           margin: EdgeInsets.fromLTRB(21.h, 20.v, 8.h, 20.v),
+    //           child: CustomImageView(
+    //             imagePath: ImageConstant.imgCalendar,
+    //             height: 20.v,
+    //             width: 18.h,
+    //           ),
+    //         ),
+    //         prefixConstraints: BoxConstraints(
+    //           maxHeight: 60.v,
+    //         ),
+    //         contentPadding: EdgeInsets.only(
+    //           top: 21.v,
+    //           right: 30.h,
+    //           bottom: 21.v,
+    //         ),
+    //         borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+    //       ),
+    //     );
+    //   },
+    // );
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Date of Birth',
+                filled: true,
+                fillColor: Colors.white,
+                labelStyle: CustomTextStyles.titleSmallGray80001,
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey, width: 2.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                ),
+                prefixIcon: IconButton(
+                  icon: Icon(Icons.calendar_today,size: 20.v,),
+                  onPressed: () {
+                    _selectDate(context);
+                  },
+                ),
+              ),
+              readOnly: true,
+              controller: TextEditingController(
+                text: selectedDate != null
+                    ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
+                    : "",
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'DOB is required';
+                }
+                return null;
+              },
+              onTap: () {
+                _selectDate(context);
+              },
             ),
           ),
-          prefixConstraints: BoxConstraints(
-            maxHeight: 60.v,
-          ),
-          contentPadding: EdgeInsets.only(
-            top: 21.v,
-            right: 30.h,
-            bottom: 21.v,
-          ),
-          borderDecoration: TextFormFieldStyleHelper.outlineBlack,
-        );
-      },
+        ],
+      ),
+
     );
   }
 
@@ -259,34 +406,46 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
       ) =>
           provider.emailController,
       builder: (context, emailController, child) {
-        return CustomTextFormField(
-          controller: emailController,
-          hintText: "lbl_email".tr,
-          hintStyle: CustomTextStyles.titleSmallGray80001,
-          textInputType: TextInputType.emailAddress,
-          prefix: Container(
-            margin: EdgeInsets.fromLTRB(20.h, 23.v, 7.h, 22.v),
-            child: CustomImageView(
-              imagePath: ImageConstant.imgLock,
-              height: 14.v,
-              width: 18.h,
+        return Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+              ),
+            ],
+          ),
+          child: CustomTextFormField(
+            controller: emailController,
+            hintText: "lbl_email".tr,
+            hintStyle: CustomTextStyles.titleSmallGray80001,
+            textInputType: TextInputType.emailAddress,
+            prefix: Container(
+              margin: EdgeInsets.fromLTRB(20.h, 20.v, 7.h, 22.v),
+              child: Icon(
+                Icons.email,
+                size: 20.v, // Specify the size as needed
+              )
             ),
+            prefixConstraints: BoxConstraints(
+              maxHeight: 60.v,
+            ),
+            validator: (value) {
+              if (value == null || (!isValidEmail(value, isRequired: true))) {
+                return "err_msg_please_enter_valid_email".tr;
+              }
+              return null;
+            },
+            contentPadding: EdgeInsets.only(
+              top: 21.v,
+              right: 30.h,
+              bottom: 21.v,
+            ),
+            borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+
           ),
-          prefixConstraints: BoxConstraints(
-            maxHeight: 60.v,
-          ),
-          validator: (value) {
-            if (value == null || (!isValidEmail(value, isRequired: true))) {
-              return "err_msg_please_enter_valid_email".tr;
-            }
-            return null;
-          },
-          contentPadding: EdgeInsets.only(
-            top: 21.v,
-            right: 30.h,
-            bottom: 21.v,
-          ),
-          borderDecoration: TextFormFieldStyleHelper.outlineBlack,
         );
       },
     );

@@ -77,7 +77,7 @@ final Map<String, String> enUs = {
   "msg_login_to_your_account": "Login to Your Account to Continue your Courses",
 
   // 08_FILL YOUR PROFILE Screen
-  "lbl_090_xxx_xxx_xxx": "090-XXX-XXX-XXX",
+  "lbl_090_xxx_xxx_xxx": "Phone Number",
   "msg_fill_your_profile": "Fill Your Profile",
 
   // 12_FORGOT PASSWORD Screen

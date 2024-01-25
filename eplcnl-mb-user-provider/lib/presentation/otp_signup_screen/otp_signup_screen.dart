@@ -471,7 +471,7 @@ class OTPScreenState extends State<OTPScreen> {
   // }
   onTapTxtVerify(BuildContext context) {
     NavigatorService.pushNamed(
-      AppRoutes.loginScreen,
+      AppRoutes.fillYourProfileScreen,
     );
   }
 }

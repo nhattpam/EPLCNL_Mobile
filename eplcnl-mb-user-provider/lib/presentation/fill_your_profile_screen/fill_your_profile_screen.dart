@@ -469,62 +469,72 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
 
   /// Section Widget
   Widget _buildBUTTON(BuildContext context) {
-    return SizedBox(
-      height: 60.v,
-      width: 350.h,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Card(
-              clipBehavior: Clip.antiAlias,
-              elevation: 0,
-              margin: EdgeInsets.all(0),
-              color: theme.colorScheme.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusStyle.circleBorder30,
-              ),
-              child: Container(
-                height: 60.v,
-                width: 350.h,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 9.h,
-                  vertical: 6.v,
-                ),
-                decoration: AppDecoration.outlineBlack900.copyWith(
+    return GestureDetector(
+        onTap: () {
+          onTapTxtVerify(context);
+    },
+      child: SizedBox(
+        height: 60.v,
+        width: 350.h,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                elevation: 0,
+                margin: EdgeInsets.all(0),
+                color: theme.colorScheme.primary,
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadiusStyle.circleBorder30,
                 ),
-                child: Stack(
-                  alignment: Alignment.centerRight,
-                  children: [
-                    CustomIconButton(
-                      height: 48.adaptSize,
-                      width: 48.adaptSize,
-                      alignment: Alignment.centerRight,
-                      child: CustomImageView(),
-                    ),
-                    CustomImageView(
-                      imagePath: ImageConstant.imgFill1Primary,
-                      height: 17.v,
-                      width: 21.h,
-                      alignment: Alignment.centerRight,
-                      margin: EdgeInsets.only(right: 13.h),
-                    ),
-                  ],
+                child: Container(
+                  height: 60.v,
+                  width: 350.h,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 9.h,
+                    vertical: 6.v,
+                  ),
+                  decoration: AppDecoration.outlineBlack900.copyWith(
+                    borderRadius: BorderRadiusStyle.circleBorder30,
+                  ),
+                  child: Stack(
+                    alignment: Alignment.centerRight,
+                    children: [
+                      CustomIconButton(
+                        height: 48.adaptSize,
+                        width: 48.adaptSize,
+                        alignment: Alignment.centerRight,
+                        child: CustomImageView(),
+                      ),
+                      CustomImageView(
+                        imagePath: ImageConstant.imgFill1Primary,
+                        height: 17.v,
+                        width: 21.h,
+                        alignment: Alignment.centerRight,
+                        margin: EdgeInsets.only(right: 13.h),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              "lbl_continue".tr,
-              style: CustomTextStyles.titleMediumOnPrimaryContainer,
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                "lbl_continue".tr,
+                style: CustomTextStyles.titleMediumOnPrimaryContainer,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+  onTapTxtVerify(BuildContext context) {
+    NavigatorService.pushNamed(
+      AppRoutes.homeContainerScreen,
     );
   }
 }

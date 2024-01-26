@@ -40,7 +40,38 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: _buildAppBar(context),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          toolbarHeight: 65,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              width: 300,
+              height: 100, // Add margin
+              margin: EdgeInsets.fromLTRB(0, 17, 0, 0),
+              // decoration: BoxDecoration(
+              //   color: Colors.orange,
+              //   border: Border.all(
+              //     color: Colors.black, // Set border color
+              //     width: 0.0, // Set border width
+              //   ),
+              //   borderRadius: BorderRadius.circular(20.0), // Set border radius
+              // ),
+              // Set the background color for the text
+              child: Text(
+                'Forgot Password',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
         body: Container(
           width: double.maxFinite,
           padding: EdgeInsets.symmetric(vertical: 55.v),
@@ -56,358 +87,66 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSubCategories(context),
-                        SizedBox(height: 30.v),
+                        Text(
+                          "Sub Categories:".tr,
+                          style: CustomTextStyles.titleMedium18,
+                        ),
+                        SizedBox(height: 15.v),
+                        _buildHoursCheckbox1(context),
+                        SizedBox(height: 18.v),
+                        _buildHoursCheckbox2(context),
+                        SizedBox(height: 18.v),
+                        _buildHoursCheckbox3(context),
+                        SizedBox(height: 18.v),
+                        _buildHoursCheckbox4(context),
+                        Text(
+                          "Levels:".tr,
+                          style: CustomTextStyles.titleMedium18,
+                        ),
+                        SizedBox(height: 15.v),
+                        _buildHoursCheckbox1(context),
+                        SizedBox(height: 18.v),
+                        _buildHoursCheckbox2(context),
+                        SizedBox(height: 18.v),
+                        _buildHoursCheckbox3(context),
+                        SizedBox(height: 18.v),
+                        _buildHoursCheckbox4(context),
                         Text(
                           "lbl_price".tr,
                           style: CustomTextStyles.titleMedium18,
                         ),
                         SizedBox(height: 15.v),
-                        Padding(
-                          padding: EdgeInsets.only(left: 31.h),
-                          child: Row(
-                            children: [
-                              CustomIconButton(
-                                height: 28.adaptSize,
-                                width: 28.adaptSize,
-                                padding: EdgeInsets.all(7.h),
-                                child: CustomImageView(
-                                  imagePath: ImageConstant
-                                      .imgCheckmarkOnprimarycontainer,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 11.h,
-                                  top: 5.v,
-                                  bottom: 4.v,
-                                ),
-                                child: Text(
-                                  "lbl_paid".tr,
-                                  style:
-                                      CustomTextStyles.titleSmallBluegray900_1,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        _buildHoursCheckbox1(context),
                         SizedBox(height: 18.v),
-                        Padding(
-                          padding: EdgeInsets.only(left: 31.h),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 28.adaptSize,
-                                width: 28.adaptSize,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                  borderRadius: BorderRadius.circular(
-                                    8.h,
-                                  ),
-                                  border: Border.all(
-                                    color: appTheme.blueGray200,
-                                    width: 2.h,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 11.h,
-                                  top: 6.v,
-                                  bottom: 3.v,
-                                ),
-                                child: Text(
-                                  "lbl_free".tr,
-                                  style:
-                                      CustomTextStyles.titleSmallBluegray900_1,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 30.v),
+                        _buildHoursCheckbox2(context),
+                        SizedBox(height: 18.v),
+                        _buildHoursCheckbox3(context),
+                        SizedBox(height: 18.v),
+                        _buildHoursCheckbox4(context),
                         Text(
                           "lbl_features".tr,
                           style: CustomTextStyles.titleMedium18,
                         ),
                         SizedBox(height: 15.v),
-                        Padding(
-                          padding: EdgeInsets.only(left: 31.h),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 28.adaptSize,
-                                width: 28.adaptSize,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                  borderRadius: BorderRadius.circular(
-                                    8.h,
-                                  ),
-                                  border: Border.all(
-                                    color: appTheme.blueGray200,
-                                    width: 2.h,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 11.h,
-                                  top: 7.v,
-                                  bottom: 2.v,
-                                ),
-                                child: Text(
-                                  "lbl_all_captian".tr,
-                                  style:
-                                      CustomTextStyles.titleSmallBluegray900_1,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        _buildHoursCheckbox1(context),
                         SizedBox(height: 18.v),
-                        Padding(
-                          padding: EdgeInsets.only(left: 31.h),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 28.adaptSize,
-                                width: 28.adaptSize,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                  borderRadius: BorderRadius.circular(
-                                    8.h,
-                                  ),
-                                  border: Border.all(
-                                    color: appTheme.blueGray200,
-                                    width: 2.h,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 11.h,
-                                  top: 7.v,
-                                  bottom: 2.v,
-                                ),
-                                child: Text(
-                                  "lbl_quizzes".tr,
-                                  style:
-                                      CustomTextStyles.titleSmallBluegray900_1,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        _buildHoursCheckbox2(context),
                         SizedBox(height: 18.v),
-                        Padding(
-                          padding: EdgeInsets.only(left: 31.h),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 28.adaptSize,
-                                width: 28.adaptSize,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                  borderRadius: BorderRadius.circular(
-                                    8.h,
-                                  ),
-                                  border: Border.all(
-                                    color: appTheme.blueGray200,
-                                    width: 2.h,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 11.h,
-                                  top: 7.v,
-                                  bottom: 2.v,
-                                ),
-                                child: Text(
-                                  "lbl_coding_exercise".tr,
-                                  style:
-                                      CustomTextStyles.titleSmallBluegray900_1,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        _buildHoursCheckbox3(context),
                         SizedBox(height: 18.v),
-                        Padding(
-                          padding: EdgeInsets.only(left: 31.h),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 28.adaptSize,
-                                width: 28.adaptSize,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                  borderRadius: BorderRadius.circular(
-                                    8.h,
-                                  ),
-                                  border: Border.all(
-                                    color: appTheme.blueGray200,
-                                    width: 2.h,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 11.h,
-                                  top: 5.v,
-                                  bottom: 4.v,
-                                ),
-                                child: Text(
-                                  "lbl_practice_tests".tr,
-                                  style:
-                                      CustomTextStyles.titleSmallBluegray900_1,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 31.v),
+                        _buildHoursCheckbox4(context),
                         Text(
                           "lbl_rating".tr,
                           style: CustomTextStyles.titleMedium18,
                         ),
                         SizedBox(height: 15.v),
-                        Padding(
-                          padding: EdgeInsets.only(left: 31.h),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 28.adaptSize,
-                                width: 28.adaptSize,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                  borderRadius: BorderRadius.circular(
-                                    8.h,
-                                  ),
-                                  border: Border.all(
-                                    color: appTheme.blueGray200,
-                                    width: 2.h,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 11.h,
-                                  top: 7.v,
-                                  bottom: 2.v,
-                                ),
-                                child: Text(
-                                  "lbl_4_5_up_above".tr,
-                                  style:
-                                      CustomTextStyles.titleSmallBluegray900_1,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        _buildHoursCheckbox1(context),
                         SizedBox(height: 18.v),
-                        Padding(
-                          padding: EdgeInsets.only(left: 31.h),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 28.adaptSize,
-                                width: 28.adaptSize,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                  borderRadius: BorderRadius.circular(
-                                    8.h,
-                                  ),
-                                  border: Border.all(
-                                    color: appTheme.blueGray200,
-                                    width: 2.h,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 11.h,
-                                  top: 7.v,
-                                  bottom: 2.v,
-                                ),
-                                child: Text(
-                                  "lbl_4_0_up_above".tr,
-                                  style:
-                                      CustomTextStyles.titleSmallBluegray900_1,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        _buildHoursCheckbox2(context),
                         SizedBox(height: 18.v),
-                        Padding(
-                          padding: EdgeInsets.only(left: 31.h),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 28.adaptSize,
-                                width: 28.adaptSize,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                  borderRadius: BorderRadius.circular(
-                                    8.h,
-                                  ),
-                                  border: Border.all(
-                                    color: appTheme.blueGray200,
-                                    width: 2.h,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 11.h,
-                                  top: 7.v,
-                                  bottom: 2.v,
-                                ),
-                                child: Text(
-                                  "lbl_3_5_up_above".tr,
-                                  style:
-                                      CustomTextStyles.titleSmallBluegray900_1,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        _buildHoursCheckbox3(context),
                         SizedBox(height: 18.v),
-                        Padding(
-                          padding: EdgeInsets.only(left: 31.h),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 28.adaptSize,
-                                width: 28.adaptSize,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                  borderRadius: BorderRadius.circular(
-                                    8.h,
-                                  ),
-                                  border: Border.all(
-                                    color: appTheme.blueGray200,
-                                    width: 2.h,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 11.h,
-                                  top: 7.v,
-                                  bottom: 2.v,
-                                ),
-                                child: Text(
-                                  "lbl_3_0_up_above".tr,
-                                  style:
-                                      CustomTextStyles.titleSmallBluegray900_1,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 30.v),
+                        _buildHoursCheckbox4(context),
                         Text(
                           "msg_video_durations".tr,
                           style: CustomTextStyles.titleMedium18,
@@ -429,72 +168,6 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
           ),
         ),
         bottomNavigationBar: _buildApplyButton(context),
-      ),
-    );
-  }
-
-  /// Section Widget
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return CustomAppBar(
-      leadingWidth: 61.h,
-      leading: AppbarLeadingImage(
-        imagePath: ImageConstant.imgArrowDownBlueGray900,
-        margin: EdgeInsets.only(
-          left: 35.h,
-          top: 18.v,
-          bottom: 17.v,
-        ),
-      ),
-      title: AppbarTitle(
-        text: "lbl_filter".tr,
-        margin: EdgeInsets.only(left: 12.h),
-      ),
-      actions: [
-        AppbarSubtitle(
-          text: "lbl_clear".tr,
-          margin: EdgeInsets.fromLTRB(34.h, 16.v, 34.h, 15.v),
-        ),
-      ],
-    );
-  }
-
-  /// Section Widget
-  Widget _buildSubCategories(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(right: 164.h),
-      child: Consumer<CoursesListFilterProvider>(
-        builder: (context, provider, child) {
-          return GroupedListView<SubcategoriesItemModel, String>(
-            shrinkWrap: true,
-            stickyHeaderBackgroundColor: Colors.transparent,
-            elements:
-                provider.coursesListFilterModelObj.subcategoriesItemList ?? [],
-            groupBy: (element) => element.groupBy!,
-            sort: false,
-            groupSeparatorBuilder: (String value) {
-              return Padding(
-                padding: EdgeInsets.only(
-                  top: 30.v,
-                  bottom: 15.v,
-                ),
-                child: Text(
-                  value,
-                  style: CustomTextStyles.titleMedium18.copyWith(
-                    color: appTheme.blueGray900,
-                  ),
-                ),
-              );
-            },
-            itemBuilder: (context, model) {
-              return SubcategoriesItemWidget(
-                model,
-              );
-            },
-            separator: SizedBox(
-              height: 18.v,
-            ),
-          );
-        },
       ),
     );
   }
@@ -603,21 +276,6 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
         left: 39.h,
         right: 39.h,
         bottom: 60.v,
-      ),
-      rightIcon: Container(
-        padding: EdgeInsets.fromLTRB(14.h, 16.v, 12.h, 14.v),
-        margin: EdgeInsets.only(left: 30.h),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.onPrimaryContainer,
-          borderRadius: BorderRadius.circular(
-            24.h,
-          ),
-        ),
-        child: CustomImageView(
-          imagePath: ImageConstant.imgFill1Primary,
-          height: 17.v,
-          width: 21.h,
-        ),
       ),
     );
   }

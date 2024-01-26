@@ -115,23 +115,17 @@ class CustomSearchView extends StatelessWidget {
             BoxConstraints(
               maxHeight: 64.v,
             ),
-        suffixIcon: suffix ??
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 9.h,
-                vertical: 10.v,
-              ),
-              margin: EdgeInsets.fromLTRB(30.h, 13.v, 10.h, 13.v),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary,
-                borderRadius: BorderRadius.circular(10.h),
-              ),
-              child: Icon(
-                Icons.filter_list,
-                size: 18.0, // Adjust the size as needed
-                color: Colors.black, // Adjust the color as needed
-              ),
-            ),
+        suffixIcon: IconButton(
+          onPressed: (){
+            NavigatorService.pushNamed(
+                AppRoutes.coursesListFilterScreen);
+          },
+          icon: Icon(
+            Icons.filter_list,
+            size: 18.0, // Adjust the size as needed
+            color: Colors.black, // Adjust the color as needed
+          ),
+        ),
         suffixIconConstraints: suffixConstraints ??
             BoxConstraints(
               maxHeight: 64.v,

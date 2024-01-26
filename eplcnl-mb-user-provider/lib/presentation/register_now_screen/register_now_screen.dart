@@ -377,7 +377,7 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
   }
   onTapTxtSignup(BuildContext context) {
     NavigatorService.pushNamed(
-      AppRoutes.otpScreen,
+      AppRoutes.fillYourProfileScreen,
     );
   }
 }

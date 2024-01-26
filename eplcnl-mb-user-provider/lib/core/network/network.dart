@@ -69,4 +69,55 @@ class Network {
     // Return false to indicate a failed login
     return false;
   }
+
+  static Future<void> registerUser({
+    // required String email,
+    // required String password,
+    required String fullName,
+    required String address,
+    // required bool gender,
+    required String dateOfBirth,
+    required String phone,
+  }) async {
+    final userData = {
+      // "email": email,
+      // "password": password,
+      "fullName": fullName,
+      "address": address,
+      // "gender": gender,
+      "dateOfBirth": dateOfBirth,
+      "phone": phone
+    };
+
+    final jsonData = jsonEncode(userData);
+
+    // Print the JSON data before making the API call
+    print('JSON Data: $jsonData');
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/accounts'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      print('Registration successful');
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+
+      // Extract the authCode
+      final authCode = jsonResponse['authCode'];
+      final userId = jsonResponse['userId'];
+
+      // Set the userId in session
+      SessionManager().setUserId(userId);
+    } else {
+      print('Registration failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
+    }
+  }
+
 }

@@ -15,21 +15,20 @@ class FillYourProfileProvider extends ChangeNotifier {
 
   TextEditingController dateOfBirthController = TextEditingController();
 
-  TextEditingController emailController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
 
   TextEditingController phoneNumberController = TextEditingController();
 
   FillYourProfileModel fillYourProfileModelObj = FillYourProfileModel();
 
   Country? selectedCountry;
-
   @override
   void dispose() {
     super.dispose();
     fullNameController.dispose();
     nameController.dispose();
     dateOfBirthController.dispose();
-    emailController.dispose();
+    addressController.dispose();
     phoneNumberController.dispose();
   }
 

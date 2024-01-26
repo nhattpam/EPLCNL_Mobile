@@ -175,7 +175,6 @@ class AppRoutes {
         registerNowScreen: RegisterNowScreen.builder,
         loginScreen: LoginScreen.builder,
         otpScreen: OTPScreen.builder,
-        fillYourProfileScreen: FillYourProfileScreen.builder,
         forgotPasswordScreen: ForgotPasswordScreen.builder,
         verifyForgotPasswordScreen: VerifyForgotPasswordScreen.builder,
         createNewPasswordScreen: CreateNewPasswordScreen.builder,

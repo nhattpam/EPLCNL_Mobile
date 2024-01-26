@@ -15,8 +15,8 @@ class SessionManager {
   }
 
   // Get the user ID from the session
-  int? getUserId() {
-    return _preferences?.getInt('userId');
+  String? getUserId() {
+    return _preferences?.getString('userId');
   }
 
   // Initialize the session manager

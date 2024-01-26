@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:eplcnl/core/network/network.dart';
+import 'package:eplcnl/presentation/register_now_screen/provider/register_now_provider.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'models/fill_your_profile_model.dart';
@@ -33,13 +35,16 @@ class FillYourProfileScreen extends StatefulWidget {
 
 class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool isLoading = false; // Add isLoading state variable
   DateTime? selectedDate;
   String _imagePath = "";
   final picker = ImagePicker();
+  late FillYourProfileProvider fillYourProfileScreenProvider;
 
   @override
   void initState() {
     super.initState();
+    fillYourProfileScreenProvider = Provider.of<FillYourProfileProvider>(context, listen: false);
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -67,6 +72,31 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
       });
     }
   }
+  Future<void> _registerUser() async {
+    final fullName = fillYourProfileScreenProvider.fullNameController.text;
+    final address = fillYourProfileScreenProvider.addressController.text;
+    final phone = fillYourProfileScreenProvider.phoneNumberController.text;
+    final gender = fillYourProfileScreenProvider.selectedCountry;
+    // Map gender to 1 for Male and 0 for Female
+    final dateOfBirth =
+    selectedDate != null ? selectedDate!.toIso8601String() : "";
+
+    setState(() {
+      isLoading = true;
+    });
+
+    // Call the registerUser function from the API class
+    await Network.registerUser(
+      // email: email,
+      // password: password,
+      fullName: fullName,
+      address: address,
+      // gender: genderValue,
+      dateOfBirth: dateOfBirth,
+      phone: phone,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -175,7 +205,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
                     SizedBox(height: 20.v),
                     _buildDateOfBirth(context),
                     SizedBox(height: 20.v),
-                    _buildEmail(context),
+                    _buildAddres(context),
                     SizedBox(height: 20.v),
                     _buildPhoneNumber(context),
                     SizedBox(height: 20.v),
@@ -398,13 +428,13 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   }
 
   /// Section Widget
-  Widget _buildEmail(BuildContext context) {
+  Widget _buildAddres(BuildContext context) {
     return Selector<FillYourProfileProvider, TextEditingController?>(
       selector: (
         context,
         provider,
       ) =>
-          provider.emailController,
+          provider.addressController,
       builder: (context, emailController, child) {
         return Container(
           decoration: BoxDecoration(
@@ -419,25 +449,8 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
           ),
           child: CustomTextFormField(
             controller: emailController,
-            hintText: "lbl_email".tr,
+            hintText: "Address".tr,
             hintStyle: CustomTextStyles.titleSmallGray80001,
-            textInputType: TextInputType.emailAddress,
-            prefix: Container(
-              margin: EdgeInsets.fromLTRB(20.h, 20.v, 7.h, 22.v),
-              child: Icon(
-                Icons.email,
-                size: 20.v, // Specify the size as needed
-              )
-            ),
-            prefixConstraints: BoxConstraints(
-              maxHeight: 60.v,
-            ),
-            validator: (value) {
-              if (value == null || (!isValidEmail(value, isRequired: true))) {
-                return "err_msg_please_enter_valid_email".tr;
-              }
-              return null;
-            },
             contentPadding: EdgeInsets.only(
               top: 21.v,
               right: 30.h,
@@ -471,6 +484,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   Widget _buildBUTTON(BuildContext context) {
     return GestureDetector(
         onTap: () {
+          _registerUser();
           onTapTxtVerify(context);
     },
       child: SizedBox(
@@ -534,7 +548,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   }
   onTapTxtVerify(BuildContext context) {
     NavigatorService.pushNamed(
-      AppRoutes.homeContainerScreen,
+      AppRoutes.otpScreen,
     );
   }
 }

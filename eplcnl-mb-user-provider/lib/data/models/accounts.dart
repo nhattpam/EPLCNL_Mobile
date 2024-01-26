@@ -3,18 +3,18 @@ class Account {
   String? email;
   String? password;
   String? fullName;
-  Null? phoneNumber;
-  Null? imageUrl;
-  Null? dateOfBirth;
-  Null? gender;
-  Null? address;
+  String? phoneNumber;
+  String? imageUrl;
+  String? dateOfBirth;
+  String? gender;
+  String? address;
   bool? isActive;
   bool? isDeleted;
   String? roleId;
   String? createdDate;
-  Null? createdBy;
-  Null? updatedDate;
-  Null? updatedBy;
+  String? createdBy;
+  String? updatedDate;
+  String? updatedBy;
   Role? role;
   List<Centers>? centers;
 

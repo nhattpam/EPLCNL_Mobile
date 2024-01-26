@@ -41,7 +41,7 @@ class MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(height: 70.v),
+                            SizedBox(height: 20.v),
                             Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

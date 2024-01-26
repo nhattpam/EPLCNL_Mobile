@@ -1,3 +1,4 @@
+import 'package:eplcnl/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:flutter/material.dart';
 import 'package:eplcnl/presentation/home_container_screen/home_container_screen.dart';
 import 'package:eplcnl/presentation/launching_screen/launching_screen.dart';
@@ -199,6 +200,7 @@ class AppRoutes {
         myCourseCertificateScreen: MyCourseCertificateScreen.builder,
         myCourseOngoingScreen: MyCourseOngoingScreen.builder,
         myCourseOngoingLessonsScreen: MyCourseOngoingLessonsScreen.builder,
+        myCourseCompletedPage: MyCourseCompletedPage.builder,
         myCourseOngoingVideoScreen: MyCourseOngoingVideoScreen.builder,
         myCourseCourseCompletedScreen: MyCourseCourseCompletedScreen.builder,
         indoxChatsTabContainerScreen: IndoxChatsTabContainerScreen.builder,

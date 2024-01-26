@@ -88,7 +88,6 @@ class CustomSearchView extends StatelessWidget {
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           controller: controller,
           focusNode: focusNode ?? FocusNode(),
-          autofocus: autofocus!,
           style: textStyle ?? CustomTextStyles.titleMediumMulishBluegray200,
           keyboardType: textInputType,
           maxLines: maxLines ?? 1,

@@ -47,7 +47,7 @@ class MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 70.v),
+                        SizedBox(height: 20.v),
                         Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -122,7 +122,8 @@ class MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
           itemBuilder: (context, index) {
             Userprofile4ItemModel model =
                 provider.myCourseOngoingModelObj.userprofile4ItemList[index];
-            return Userprofile4ItemWidget(model, onTapUserProfile: () {
+            return Userprofile4ItemWidget(model,
+                onTapUserProfile: () {
               onTapUserProfile(context);
             });
           });

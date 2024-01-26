@@ -1,4 +1,4 @@
-import 'models/login_model.dart';
+import 'package:eplcnl/core/network/network.dart';
 import 'package:eplcnl/core/app_export.dart';
 import 'package:eplcnl/core/utils/validation_functions.dart';
 import 'package:eplcnl/widgets/custom_checkbox_button.dart';
@@ -22,12 +22,38 @@ class LoginScreen extends StatefulWidget {
 // ignore_for_file: must_be_immutable
 class LoginScreenState extends State<LoginScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool isLoading = false; // Add isLoading state variable
+  late LoginProvider loginProvider;
 
   @override
   void initState() {
     super.initState();
+    loginProvider = Provider.of<LoginProvider>(context, listen: false);
   }
+  void loginPressed() async {
+    final email = loginProvider.emailController.text;
+    final password = loginProvider.passwordController.text;
 
+    setState(() {
+      isLoading = true;
+    });
+
+    final loginSuccessful = await Network.loginUser(email, password);
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (loginSuccessful) {
+      onTapBtnSignin(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login failed. Please check your credentials.'),
+        ),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -279,7 +305,7 @@ class LoginScreenState extends State<LoginScreen> {
   /// Section Widget
   Widget _buildSignInButtonSection(BuildContext context) {
     return GestureDetector(
-      onTap: () => onTapBtnSignin(context),
+      onTap: () => loginPressed(),
       child: Container(
           height: 60.v,
           width: 350.h,

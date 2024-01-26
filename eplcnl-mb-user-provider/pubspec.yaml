@@ -26,6 +26,7 @@ dependencies:
   easy_date_timeline: ^1.0.2
   intl: ^0.18.0
   image_picker: ^0.8.4+4
+  jwt_decode: ^0.3.1
 dev_dependencies: 
   flutter_test: 
     sdk: flutter

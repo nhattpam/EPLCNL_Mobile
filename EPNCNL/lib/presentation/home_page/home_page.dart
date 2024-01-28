@@ -3,6 +3,7 @@ import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/carousel/landing.dart';
 import 'package:meowlish/presentation/notifications_screen/notifications_screen.dart';
+import 'package:meowlish/presentation/popular_courses_screen/popular_courses_screen.dart';
 import 'package:meowlish/session/session.dart';
 
 import '../../data/models/accounts.dart';
@@ -27,6 +28,8 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  int current = 0;
+
   late List<Category> listCategory = [];
   late List<Course> listCourse = [];
   late List<Tutor> listTutor = [];
@@ -218,9 +221,20 @@ class HomePageState extends State<HomePage> {
             itemCount: listCategory.length,
             itemBuilder: (context, index) {
               final categories = listCategory[index];
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: Chip(label: Text(categories.description.toString())),
+              return GestureDetector(
+                onTap: (){
+                  setState(() {
+                    current = index;
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: Chip(
+                    label: Text(categories.description.toString()),
+                    backgroundColor:
+                    current == index ? Color(0xFFFF9300) : Color(0xFFFFF1DE),
+                  ),
+                ),
               );
             }));
   }
@@ -380,7 +394,8 @@ class HomePageState extends State<HomePage> {
                                                   padding: EdgeInsets.only(
                                                       left: 3.h),
                                                   child: Text(
-                                                    '2.0',
+                                                    // course.rating.toString(),
+                                                    "2.0",
                                                     style: theme
                                                         .textTheme.labelMedium,
                                                   ),
@@ -455,13 +470,6 @@ class HomePageState extends State<HomePage> {
         ]));
   }
 
-  /// Navigates to the notificationsScreen when the action is triggered.
-  onTapBtnUser(BuildContext context) {
-    Navigator.pushNamed(context,
-      AppRoutes.notificationsScreen,
-    );
-  }
-
   /// Navigates to the categoryScreen when the action is triggered.
   onTapHeadingSection(BuildContext context) {
     Navigator.pushNamed(context, AppRoutes.categoryScreen);
@@ -474,6 +482,9 @@ class HomePageState extends State<HomePage> {
 
   /// Navigates to the popularCoursesScreen when the action is triggered.
   onTapHeadingSection2(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.popularCoursesScreen);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PopularCoursesScreen()),
+    );
   }
 }

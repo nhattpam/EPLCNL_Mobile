@@ -78,7 +78,8 @@ class Network {
     return false;
   }
 
-  static Future<void> registerUser({
+  static Future<void> registerUser(
+      {
     required String email,
     required String password,
     required String fullName,

@@ -9,6 +9,11 @@ class SessionManager {
 
   String? userId;
 
+  // Initialize the session manager
+  Future<void> init() async {
+    _preferences = await SharedPreferences.getInstance();
+  }
+
   // Save the user ID to the session
   void setUserId(String id) {
     _preferences?.setString('userId', id);
@@ -19,13 +24,6 @@ class SessionManager {
     return _preferences?.getString('userId');
   }
 
-  // Initialize the session manager
-  Future<void> init() async {
-    _preferences = await SharedPreferences.getInstance();
-  }
-
-
-  //logout
   // Clear user session data (logout)
   void clearSession() {
     _preferences?.clear();

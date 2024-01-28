@@ -1,3 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:meowlish/data/models/modules.dart';
+
+import 'categories.dart';
+import 'enrollments.dart';
 class Course {
   String? id;
   String? name;
@@ -30,7 +35,8 @@ class Course {
         this.tags,
         this.createdDate,
         this.updatedDate,
-        this.category});
+        this.category,
+        });
 
   Course.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -75,24 +81,9 @@ class Course {
   }
 }
 
-class Category {
-  String? id;
-  String? name;
-  String? description;
 
-  Category({this.id, this.name, this.description});
 
-  Category.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    description = json['description'];
-  }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['description'] = this.description;
-    return data;
-  }
-}
+
+
+

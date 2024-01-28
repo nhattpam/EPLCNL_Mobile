@@ -1,13 +1,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:meowlish/data/models/accounts.dart';
+import 'package:meowlish/data/models/categories.dart';
+import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/tutors.dart';
 
 import '../session/session.dart';
 
 typedef AuthCodeCallback = void Function(String authCode);
 
 class Network {
-  static Future<bool> loginUser(String email, String password) async {
+ static  Future<bool> loginUser(String email, String password) async {
+    // Initialize the session manager
+
+
     final loginData = {
       "email": email,
       "password": password,
@@ -51,6 +58,7 @@ class Network {
         SessionManager().setUserId(userId);
 
         print('User ID: $userId');
+        print('day la session id: ' + SessionManager().getUserId().toString());
 
         // Return true to indicate a successful login
         return true;
@@ -158,4 +166,125 @@ class Network {
       print('JSON Data: $jsonData');
     }
   }
+
+  static Future<List<Category>> getCategories() async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/categories';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final List<dynamic> categoryListJson = jsonDecode(response.body);
+
+        // Map each JSON object to a Pet object and return a list of pets
+        return categoryListJson.map((json) => Category.fromJson(json)).toList();
+      } else {
+        // If the request fails, throw an exception or return an empty list
+        throw Exception(
+            'Failed to fetch categories. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+  static Future<List<Course>> getCourse() async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/courses';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final List<dynamic> courseListJson = jsonDecode(response.body);
+        // Map each JSON object to a Pet object and return a list of pets
+        final List<Course> courseList = courseListJson
+            .map((json) => Course.fromJson(json as Map<String, dynamic>))
+            .toList();
+
+        return courseList;
+      } else {
+        // If the request fails, throw an exception or return an empty list
+        throw Exception(
+            'Failed to fetch course. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+  static Future<List<Tutor>> getTutor() async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/tutors';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final List<dynamic> tutorListJson = jsonDecode(response.body);
+        // Map each JSON object to a Pet object and return a list of pets
+        final List<Tutor> tutorList = tutorListJson.map((json) => Tutor.fromJson(json as Map<String, dynamic>))
+            .toList();
+
+        return tutorList;
+      } else {
+        // If the request fails, throw an exception or return an empty list
+        throw Exception(
+            'Failed to fetch course. Status code: ${response.statusCode}');
+      }
+    }
+    catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+  static Future<Account> getAccount() async {
+    final accountId = SessionManager().getUserId() ?? 0;
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/accounts/$accountId'; // Replace with your API URL
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic petJson = jsonDecode(response.body);
+
+        // Map the JSON object to a User object and return it
+        return Account.fromJson(petJson);
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch account. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+
 }

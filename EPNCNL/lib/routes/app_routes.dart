@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/presentation/home_container_screen/home_container_screen.dart';
+import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/launching_screen/launching_screen.dart';
 import 'package:meowlish/presentation/openscreen_screen/openscreen_screen.dart';
 import 'package:meowlish/presentation/surveyscreen_one_screen/surveyscreen_one_screen.dart';
@@ -168,6 +169,7 @@ class AppRoutes {
 
   static Map<String, WidgetBuilder> routes = {
     homeContainerScreen: (context) => HomeContainerScreen(),
+    homePage: (context) => HomePage(),
     launchingScreen: (context) => LaunchingScreen(),
     openscreenScreen: (context) => OpenscreenScreen(),
     surveyscreenOneScreen: (context) => SurveyscreenOneScreen(),

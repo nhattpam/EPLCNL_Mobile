@@ -6,7 +6,7 @@ class Account {
   String? phoneNumber;
   String? imageUrl;
   String? dateOfBirth;
-  String? gender;
+  bool? gender;
   String? address;
   bool? isActive;
   bool? isDeleted;

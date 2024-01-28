@@ -3,16 +3,42 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({Key? key})
       : super(
-          key: key,
-        );
+    key: key,
+  );
 
+  @override
+  NotificationsScreenState createState() => NotificationsScreenState();
+}
+class NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          toolbarHeight: 65,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              width: 300,
+              height: 200, // Add margin
+              margin: EdgeInsets.fromLTRB(0, 17, 0, 0),
+              child: Text(
+                'Notifications',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
         body: Container(
           width: double.maxFinite,
           padding: EdgeInsets.symmetric(horizontal: 33.h),
@@ -20,27 +46,6 @@ class NotificationsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  CustomImageView(
-                    imagePath: ImageConstant.imgArrowDownBlueGray900,
-                    height: 20.v,
-                    width: 26.h,
-                    margin: EdgeInsets.only(
-                      top: 5.v,
-                      bottom: 4.v,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 12.h),
-                    child: Text(
-                      "Notifications",
-                      style: theme.textTheme.titleLarge,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 38.v),
               Text(
                 "Today",
                 style: CustomTextStyles.titleMediumBold,

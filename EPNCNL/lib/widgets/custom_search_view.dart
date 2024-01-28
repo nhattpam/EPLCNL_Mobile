@@ -127,11 +127,11 @@ class CustomSearchView extends StatelessWidget {
                 color: theme.colorScheme.primary,
                 borderRadius: BorderRadius.circular(10.h),
               ),
-              child: CustomImageView(
-                imagePath: ImageConstant.imgFilter,
-                height: 18.v,
-                width: 19.h,
-              ),
+              child: Icon(
+                  Icons.filter_list,  // Replace with the desired icon
+                  size: 18.v,
+                  color: Colors.white, // Specify the desired color,
+            ),
             ),
         suffixIconConstraints: suffixConstraints ??
             BoxConstraints(

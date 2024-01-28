@@ -1,10 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/accounts.dart';
+import 'package:meowlish/network/network.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ProfilesPage extends StatelessWidget {
-  const ProfilesPage({Key? key}) : super(key: key);
+class ProfilesPage extends StatefulWidget {
+  const ProfilesPage({Key? key})
+      : super(
+    key: key,
+  );
 
+  @override
+  ProfilesPageState createState() => ProfilesPageState();
+}
+class ProfilesPageState extends State<ProfilesPage> {
+  late Account? account = Account();
+  @override
+  void initState() {
+    super.initState();
+    fetchAccountData();
+  }
+  Future<void> fetchAccountData() async {
+    Account acc = await Network.getAccount();
+
+    setState(() {
+      // Set the list of pet containers in your state
+      account = acc;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -57,7 +82,7 @@ class ProfilesPage extends StatelessWidget {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   SizedBox(height: 64.v),
-                                                  Text("James S. Hernandez",
+                                                  Text('Hi, ${account!.fullName ?? ""}',
                                                       style: theme.textTheme
                                                           .headlineSmall),
                                                   SizedBox(height: 3.v),

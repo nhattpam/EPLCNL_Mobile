@@ -1,3 +1,12 @@
+import 'package:meowlish/data/models/categories.dart';
+import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/home_page/carousel/landing.dart';
+import 'package:meowlish/presentation/notifications_screen/notifications_screen.dart';
+import 'package:meowlish/session/session.dart';
+
+import '../../data/models/accounts.dart';
+import '../../data/models/tutors.dart';
 import '../home_page/widgets/category_item_widget.dart';
 import '../home_page/widgets/columnsection_item_widget.dart';
 import '../home_page/widgets/offercomponent_item_widget.dart';
@@ -18,14 +27,47 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  late List<Category> listCategory = [];
+  late List<Course> listCourse = [];
+  late List<Tutor> listTutor = [];
+  late Account? account = Account();
   @override
   void initState() {
     super.initState();
+    loadCategories();
+    loadCourse();
+    loadTutor();
+    fetchAccountData();
+  }
+  Future<void> fetchAccountData() async {
+    Account acc = await Network.getAccount();
+
+    setState(() {
+      // Set the list of pet containers in your state
+      account = acc;
+    });
+  }
+  void loadCategories() async {
+    List<Category> loadedCategories = await Network.getCategories();
+    setState(() {
+      listCategory = loadedCategories;
+    });
+  }
+
+  void loadCourse() async {
+    List<Course> loadedCourse = await Network.getCourse();
+    setState(() {
+      listCourse = loadedCourse;
+    });
+  }
+  void loadTutor() async {
+    List<Tutor> loadedTutor = await Network.getTutor();
+    setState(() {
+      listTutor = loadedTutor;
+    });
   }
 
   TextEditingController searchController = TextEditingController();
-
-  int sliderIndex = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +79,7 @@ class HomePageState extends State<HomePage> {
                 decoration: AppDecoration.fillOnPrimaryContainer,
                 child: SingleChildScrollView(
                     child: SizedBox(
-                        height: 1126.v,
+                        height: 1183.v,
                         width: double.maxFinite,
                         child:
                             Stack(alignment: Alignment.bottomRight, children: [
@@ -54,16 +96,31 @@ class HomePageState extends State<HomePage> {
                                         Padding(
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 14.h),
-                                            child: CustomSearchView(
-                                                controller: searchController,
-                                                hintText: "Search for..")),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.5),
+                                                    // Adjust the color and opacity as needed
+                                                    spreadRadius: 2,
+                                                    blurRadius: 5,
+                                                    offset: Offset(0,
+                                                        3), // Adjust the offset to control the shadow's position
+                                                  ),
+                                                ],
+                                              ),
+                                              child: CustomSearchView(
+                                                  controller: searchController,
+                                                  hintText: "Search for.."),
+                                            )),
                                         SizedBox(height: 30.v),
                                         _buildDiscountTextSection(context),
                                         SizedBox(height: 32.v),
                                         _buildHeadingSection1(context),
                                         SizedBox(height: 12.v),
                                         _buildDDesignSection(context),
-                                        SizedBox(height: 394.v),
+                                        SizedBox(height: 350.v),
                                         Padding(
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 14.h),
@@ -75,9 +132,9 @@ class HomePageState extends State<HomePage> {
                                             })),
                                         SizedBox(height: 13.v),
                                         _buildColumnSection(context),
-                                        SizedBox(height: 6.v)
                                       ]))),
-                          _buildPopularCourseSection(context)
+                          _buildPopularCourseSection(context),
+                          SizedBox(height: 12.v)
                         ]))))));
   }
 
@@ -88,7 +145,7 @@ class HomePageState extends State<HomePage> {
         child:
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Column(children: [
-            Text("Hi, Ronald A. Martin", style: theme.textTheme.headlineSmall),
+            Text('Hi, ${account!.fullName ?? ""}', style: theme.textTheme.headlineSmall),
             SizedBox(height: 3.v),
             SizedBox(
                 width: 229.h,
@@ -100,54 +157,29 @@ class HomePageState extends State<HomePage> {
           Padding(
               padding: EdgeInsets.only(top: 16.v, bottom: 14.v),
               child: CustomIconButton(
-                  height: 40.adaptSize,
-                  width: 40.adaptSize,
-                  padding: EdgeInsets.all(11.h),
-                  decoration: IconButtonStyleHelper.outlineTeal,
-                  onTap: () {
-                    onTapBtnUser(context);
-                  },
-                  child: CustomImageView(imagePath: ImageConstant.imgUser)))
+                height: 40.adaptSize,
+                width: 40.adaptSize,
+                // padding: EdgeInsets.all(11.h),
+                decoration: IconButtonStyleHelper.outlineTeal,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => NotificationsScreen()),
+                  );
+                },
+                child: Icon(
+                  Icons
+                      .notifications_none_outlined, // Replace with the desired icon
+                  size: 18.v,
+                  color: Color(0xFF168F71),
+                ),
+              ))
         ]));
   }
 
   /// Section Widget
   Widget _buildDiscountTextSection(BuildContext context) {
-    return SizedBox(
-        height: 180.v,
-        width: 360.h,
-        child: Stack(alignment: Alignment.bottomLeft, children: [
-          CarouselSlider.builder(
-              options: CarouselOptions(
-                  height: 180.v,
-                  initialPage: 0,
-                  autoPlay: true,
-                  viewportFraction: 1.0,
-                  enableInfiniteScroll: false,
-                  scrollDirection: Axis.horizontal,
-                  onPageChanged: (index, reason) {
-                    sliderIndex = index;
-                  }),
-              itemCount: 1,
-              itemBuilder: (context, index, realIndex) {
-                return OffercomponentItemWidget();
-              }),
-          Align(
-              alignment: Alignment.bottomLeft,
-              child: Container(
-                  height: 8.v,
-                  margin: EdgeInsets.only(left: 139.h, bottom: 16.v),
-                  child: AnimatedSmoothIndicator(
-                      activeIndex: sliderIndex,
-                      count: 1,
-                      axisDirection: Axis.horizontal,
-                      effect: ScrollingDotsEffect(
-                          spacing: 8,
-                          activeDotColor: appTheme.amberA200,
-                          dotColor: theme.colorScheme.primary,
-                          dotHeight: 8.v,
-                          dotWidth: 8.h))))
-        ]));
+    return Container(child: Landing());
   }
 
   /// Section Widget
@@ -179,21 +211,18 @@ class HomePageState extends State<HomePage> {
 
   /// Section Widget
   Widget _buildDDesignSection(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.only(left: 13.h, right: 10.h),
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Padding(
-              padding: EdgeInsets.only(top: 1.v),
-              child: Text("3D Design",
-                  style: CustomTextStyles.titleSmallGray5000115)),
-          Text("Arts & Humanities",
-              style: CustomTextStyles.titleSmallPrimary15),
-          Padding(
-              padding: EdgeInsets.only(top: 1.v),
-              child: Text("Graphic Design",
-                  style: CustomTextStyles.titleSmallGray5000115))
-        ]));
+    return SizedBox(
+        height: 40,
+        child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: listCategory.length,
+            itemBuilder: (context, index) {
+              final categories = listCategory[index];
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: Chip(label: Text(categories.description.toString())),
+              );
+            }));
   }
 
   /// Section Widget
@@ -206,9 +235,27 @@ class HomePageState extends State<HomePage> {
             separatorBuilder: (context, index) {
               return SizedBox(width: 18.h);
             },
-            itemCount: 4,
+            itemCount: listTutor.length,
             itemBuilder: (context, index) {
-              return ColumnsectionItemWidget();
+              final tutors = listTutor[index];
+              return SizedBox(
+                width: 80.h,
+                child: Column(
+                  children: [
+                    Image.network(
+                      tutors.account!.imageUrl ?? '', // Replace 'path_to_your_image' with the actual path to your image asset
+                      height: 70.v,
+                      width: 280.h,
+                      fit: BoxFit.cover, // Adjust the BoxFit property based on your image requirements
+                    ),
+                    SizedBox(height: 8.v),
+                    Text(
+                      tutors.account!.fullName ?? 'MC',
+                      style: CustomTextStyles.labelLargeJostBluegray900,
+                    ),
+                  ],
+                ),
+              );
             }));
   }
 
@@ -230,17 +277,6 @@ class HomePageState extends State<HomePage> {
                         onTapHeadingSection2(context);
                       })),
                   SizedBox(height: 8.v),
-                  SizedBox(
-                      height: 30.v,
-                      child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          separatorBuilder: (context, index) {
-                            return SizedBox(width: 12.h);
-                          },
-                          itemCount: 4,
-                          itemBuilder: (context, index) {
-                            return CategoryItemWidget();
-                          })),
                   SizedBox(height: 20.v),
                   SizedBox(
                       height: 240.v,
@@ -249,9 +285,137 @@ class HomePageState extends State<HomePage> {
                           separatorBuilder: (context, index) {
                             return SizedBox(width: 20.h);
                           },
-                          itemCount: 2,
+                          itemCount: listCourse.length,
                           itemBuilder: (context, index) {
-                            return UserprofileItemWidget();
+                            final course = listCourse[index];
+                            return SingleChildScrollView(
+                              physics: NeverScrollableScrollPhysics(),
+                              child: Container(
+                                decoration: AppDecoration.outlineBlack.copyWith(
+                                  borderRadius:
+                                      BorderRadiusStyle.roundedBorder22,
+                                ),
+                                width: 280.h,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.network(
+                                      course.imageUrl
+                                          .toString(), // Replace 'path_to_your_image' with the actual path to your image asset
+                                      height: 134.v,
+                                      width: 280.h,
+                                      fit: BoxFit
+                                          .cover, // Adjust the BoxFit property based on your image requirements
+                                    ),
+                                    SizedBox(height: 10.v),
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            course.category!.description
+                                                .toString(),
+                                            style: CustomTextStyles
+                                                .labelLargeOrangeA700,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 70.0),
+                                            child: Icon(
+                                              Icons
+                                                  .bookmark_add_outlined, // Replace with the desired icon
+                                              size: 30.v,
+                                              color: Color(
+                                                  0xFF168F71), // Specify the desired color,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 4.v),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 14.h),
+                                      child: Text(
+                                        course.name.toString(),
+                                        style: theme.textTheme.titleMedium,
+                                      ),
+                                    ),
+                                    SizedBox(height: 9.v),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 14.h),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            '\$${course.stockPrice.toString()}',
+                                            style: CustomTextStyles
+                                                .titleSmallPrimary,
+                                          ),
+                                          Padding(
+                                            padding:
+                                                EdgeInsets.only(left: 17.h),
+                                            child: Text(
+                                              "|",
+                                              style: CustomTextStyles
+                                                  .titleSmallBlack900,
+                                            ),
+                                          ),
+                                          Container(
+                                            width: 32.h,
+                                            margin: EdgeInsets.only(
+                                              left: 16.h,
+                                              top: 3.v,
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons
+                                                      .star, // Replace with the desired signal icon
+                                                  size: 14.v,
+                                                  color: Colors.yellow,
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.only(
+                                                      left: 3.h),
+                                                  child: Text(
+                                                    '2.0',
+                                                    style: theme
+                                                        .textTheme.labelMedium,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding:
+                                                EdgeInsets.only(left: 16.h),
+                                            child: Text(
+                                              "|",
+                                              style: CustomTextStyles
+                                                  .titleSmallBlack900,
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                              left: 16.h,
+                                              top: 3.v,
+                                            ),
+                                            child: Text(
+                                              "7830 Enroll",
+                                              style:
+                                                  theme.textTheme.labelMedium,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 21.v),
+                                  ],
+                                ),
+                              ),
+                            );
                           }))
                 ])));
   }
@@ -293,7 +457,9 @@ class HomePageState extends State<HomePage> {
 
   /// Navigates to the notificationsScreen when the action is triggered.
   onTapBtnUser(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.notificationsScreen);
+    Navigator.pushNamed(context,
+      AppRoutes.notificationsScreen,
+    );
   }
 
   /// Navigates to the categoryScreen when the action is triggered.

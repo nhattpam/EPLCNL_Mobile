@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
                 theme: theme,
                 title: 'MeowLish',
                 debugShowCheckedModeBanner: false,
-                home: SessionManager().getUserId() != null ? HomePage() : HomePage(),
+                // home: SessionManager().getUserId() != null ? HomePage() : HomePage(),
                 initialRoute: AppRoutes.openscreenScreen,
                 routes: AppRoutes.routes,
               );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/accounts.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/login_screen/login_screen.dart';
 import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,22 +46,36 @@ class ProfilesPageState extends State<ProfilesPage> {
                           SizedBox(height: 69.v),
                           Padding(
                               padding: EdgeInsets.only(left: 1.h),
-                              child: Row(children: [
-                                CustomImageView(
-                                    imagePath:
-                                        ImageConstant.imgArrowDownBlueGray900,
-                                    height: 20.v,
-                                    width: 26.h,
-                                    margin:
-                                        EdgeInsets.only(top: 5.v, bottom: 4.v)),
-                                Padding(
-                                    padding: EdgeInsets.only(left: 11.h),
-                                    child: Text("Profile",
-                                        style: theme.textTheme.titleLarge))
-                              ])),
+                              child: GestureDetector(
+                                onTap: (){
+                                  SessionManager().clearSession();
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => LoginScreen(),
+                                  ));
+                                },
+                                child: Row(children: [
+                                  // Padding(
+                                  //     padding: EdgeInsets.only(left: 30.h),
+                                  //     child: Text("Profile",
+                                  //         style: theme.textTheme.titleLarge)),
+                                  Padding(
+                                      padding: EdgeInsets.only(left: 220.h),
+                                      child: Row(
+                                        children: [
+                                          Text("Logout", style: theme.textTheme.titleLarge),
+                                          SizedBox(width: 8.h), // Adjust the spacing between text and icon
+                                          Icon(
+                                            Icons.exit_to_app, // Replace with the desired icon
+                                            size: 24.h, // Adjust the size of the icon as needed
+                                          ),
+                                        ],
+                                      ),
+                                  )
+                                ]),
+                              )),
                           SizedBox(height: 17.v),
                           SizedBox(
-                              height: 757.v,
+                              height: 700.v,
                               width: 360.h,
                               child: Stack(
                                   alignment: Alignment.topCenter,
@@ -75,9 +90,9 @@ class ProfilesPageState extends State<ProfilesPage> {
                                             decoration: AppDecoration
                                                 .outlineBlack
                                                 .copyWith(
-                                                    borderRadius:
-                                                        BorderRadiusStyle
-                                                            .circleBorder15),
+                                                borderRadius:
+                                                BorderRadiusStyle
+                                                    .circleBorder15),
                                             child: Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
@@ -87,7 +102,7 @@ class ProfilesPageState extends State<ProfilesPage> {
                                                           .headlineSmall),
                                                   SizedBox(height: 3.v),
                                                   Text(
-                                                      "hernandex.redial@gmail.ac.in",
+                                                      "${account!.email ?? ""}",
                                                       style: theme.textTheme
                                                           .labelLarge),
                                                   SizedBox(height: 23.v),
@@ -97,21 +112,17 @@ class ProfilesPageState extends State<ProfilesPage> {
                                                       },
                                                       child: Padding(
                                                           padding:
-                                                              EdgeInsets.only(
-                                                                  left: 1.h),
+                                                          EdgeInsets.only(
+                                                              left: 1.h),
                                                           child: Row(
                                                               mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
+                                                              MainAxisAlignment
+                                                                  .center,
                                                               children: [
-                                                                CustomImageView(
-                                                                    imagePath:
-                                                                        ImageConstant
-                                                                            .imgNavProfile,
-                                                                    height:
-                                                                        20.v,
-                                                                    width:
-                                                                        16.h),
+                                                                 Icon(
+                                                                  Icons.person,
+                                                                  size: 17.v, // Adjust the size according to your needs
+                                                                ),
                                                                 Padding(
                                                                     padding: EdgeInsets.only(
                                                                         left: 14
@@ -121,120 +132,130 @@ class ProfilesPageState extends State<ProfilesPage> {
                                                                         style: CustomTextStyles
                                                                             .titleSmallBluegray90015)),
                                                                 Spacer(),
-                                                                CustomImageView(
-                                                                    imagePath:
-                                                                        ImageConstant
-                                                                            .imgArrowRightOnprimary,
-                                                                    height:
-                                                                        17.v,
-                                                                    width: 10.h)
+                                                                 Icon(
+                                                                  Icons.arrow_forward,
+                                                                  size: 17.v, // Adjust the size according to your needs
+                                                                ),
                                                               ]))),
-                                                  SizedBox(height: 33.v),
-                                                  Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 1.h),
-                                                      child: _buildUserProfile(
-                                                          context,
-                                                          clockImage: ImageConstant
-                                                              .imgUserBlueGray90020x17,
-                                                          logoutText:
-                                                              "Notifications")),
                                                   SizedBox(height: 33.v),
                                                   Padding(
                                                       padding: EdgeInsets.only(
                                                           left: 1.h),
                                                       child: Row(
                                                           mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
+                                                          MainAxisAlignment
+                                                              .center,
                                                           children: [
-                                                            CustomImageView(
-                                                                imagePath:
-                                                                    ImageConstant
-                                                                        .imgUserBlueGray90018x16,
-                                                                height: 18.v,
-                                                                width: 16.h),
+                                                            Icon(
+                                                              Icons.notifications_none_outlined,
+                                                              size: 17.v, // Adjust the size according to your needs
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets.only(
+                                                                    left: 14
+                                                                        .h),
+                                                                child: Text(
+                                                                    "Notifications",
+                                                                    style: CustomTextStyles
+                                                                        .titleSmallBluegray90015)),
+                                                            Spacer(),
+                                                            Icon(
+                                                              Icons.arrow_forward,
+                                                              size: 17.v, // Adjust the size according to your needs
+                                                            ),
+                                                          ])),
+                                                  SizedBox(height: 33.v),
+                                                  Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 1.h),
+                                                      child: Row(
+                                                          mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                          children: [
+                                                            Icon(
+                                                              Icons.health_and_safety_outlined,
+                                                              size: 17.v, // Adjust the size according to your needs
+                                                            ),
                                                             Padding(
                                                                 padding: EdgeInsets
                                                                     .only(
-                                                                        left: 12
-                                                                            .h),
+                                                                    left: 12
+                                                                        .h),
                                                                 child: Text(
                                                                     "Terms & Conditions",
                                                                     style: CustomTextStyles
                                                                         .titleSmallBluegray90015)),
                                                             Spacer(),
-                                                            CustomImageView(
-                                                                imagePath:
-                                                                    ImageConstant
-                                                                        .imgArrowRightOnprimary,
-                                                                height: 17.v,
-                                                                width: 10.h)
+                                                             Icon(
+                                                              Icons.arrow_forward,
+                                                              size: 17.v, // Adjust the size according to your needs
+                                                            ),
                                                           ])),
                                                   Spacer(),
-                                                  Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 1.h),
-                                                      child: _buildUserProfile(
-                                                          context,
-                                                          clockImage:
-                                                              ImageConstant
-                                                                  .imgClock,
-                                                          logoutText: "Logout"))
                                                 ]))),
-                                    Align(
-                                        alignment: Alignment.topCenter,
-                                        child: Container(
-                                            height: 110.adaptSize,
-                                            width: 110.adaptSize,
-                                            decoration: BoxDecoration(
-                                                color: appTheme.blueGray10001,
-                                                borderRadius:
-                                                    BorderRadius.circular(55.h),
-                                                border: Border.all(
-                                                    color: theme
-                                                        .colorScheme.primary,
-                                                    width: 4.h,
-                                                    strokeAlign:
-                                                        strokeAlignOutside)))),
-                                    Padding(
-                                        padding: EdgeInsets.only(
-                                            top: 79.v, right: 129.h),
-                                        child: CustomIconButton(
-                                            height: 36.adaptSize,
-                                            width: 36.adaptSize,
-                                            padding: EdgeInsets.all(8.h),
-                                            decoration: IconButtonStyleHelper
-                                                .outlinePrimary,
-                                            alignment: Alignment.topRight,
-                                            child: CustomImageView(
-                                                imagePath: ImageConstant
-                                                    .imgTelevisionPrimary)))
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: Container(
+                                  height: 110.adaptSize,
+                                  width: 110.adaptSize,
+                                  decoration: BoxDecoration(
+                                    color: appTheme.blueGray10001,
+                                    borderRadius: BorderRadius.circular(55.h),
+                                    border: Border.all(
+                                      color: theme.colorScheme.primary,
+                                      width: 4.h,
+                                      strokeAlign: strokeAlignOutside,
+                                    ),
+                                  ),
+                                  child: ClipOval(
+                                    child: Image.network(
+                                      '${account!.imageUrl ?? ""}', // Replace with your image URL
+                                      height: 110.adaptSize,
+                                      width: 110.adaptSize,
+                                      fit: BoxFit.cover, // You can adjust the fit based on your needs
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // Padding(
+                              //           padding: EdgeInsets.only(
+                              //               top: 79.v, right: 129.h),
+                              //           child: CustomIconButton(
+                              //               height: 36.adaptSize,
+                              //               width: 36.adaptSize,
+                              //               padding: EdgeInsets.all(8.h),
+                              //               decoration: IconButtonStyleHelper
+                              //                   .outlinePrimary,
+                              //               alignment: Alignment.topRight,
+                              //               child: CustomImageView(
+                              //                   imagePath: ImageConstant
+                              //                       .imgTelevisionPrimary)))
                                   ]))
                         ])))));
   }
 
-  /// Common widget
-  Widget _buildUserProfile(
-    BuildContext context, {
-    required String clockImage,
-    required String logoutText,
-  }) {
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      CustomImageView(
-          imagePath: clockImage, height: 17.adaptSize, width: 17.adaptSize),
-      Padding(
-          padding: EdgeInsets.only(left: 12.h),
-          child: Text(logoutText,
-              style: CustomTextStyles.titleSmallBluegray90015
-                  .copyWith(color: appTheme.blueGray900))),
-      Spacer(),
-      CustomImageView(
-          imagePath: ImageConstant.imgArrowRightOnprimary,
-          height: 17.v,
-          width: 10.h)
-    ]);
-  }
+  // /// Common widget
+  // Widget _buildUserProfile(
+  //     BuildContext context, {
+  //       required String clockImage,
+  //       required String logoutText,
+  //     }) {
+  //   return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+  //     CustomImageView(
+  //         imagePath: clockImage, height: 17.adaptSize, width: 17.adaptSize),
+  //     Padding(
+  //         padding: EdgeInsets.only(left: 12.h),
+  //         child: Text(logoutText,
+  //             style: CustomTextStyles.titleSmallBluegray90015
+  //                 .copyWith(color: appTheme.blueGray900))),
+  //     Spacer(),
+  //     CustomImageView(
+  //         imagePath: ImageConstant.imgArrowRightOnprimary,
+  //         height: 17.v,
+  //         width: 10.h)
+  //   ]);
+  // }
 
   /// Navigates to the editProfilesScreen when the action is triggered.
   onTapOne(BuildContext context) {

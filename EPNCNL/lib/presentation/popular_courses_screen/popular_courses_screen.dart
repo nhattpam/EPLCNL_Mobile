@@ -21,6 +21,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
 
   late List<Category> listCategory = [];
   late List<Course> listCourse = [];
+  late List<Course> chosenCategory = [];
 
   @override
   void initState() {
@@ -41,6 +42,18 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
     setState(() {
       listCourse = loadedCourse;
     });
+  }
+
+  void loadCourseByCategory(String cate) async {
+    try {
+      final courses = await Network.getCourseByCategoryID(cate);
+      setState(() {
+        chosenCategory = courses;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
   }
 
   @override
@@ -94,9 +107,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
           height: 16.v,
         );
       },
-      itemCount: listCourse.length,
+      itemCount: chosenCategory.length,
       itemBuilder: (context, index) {
-        final courses = listCourse[index];
+        final courses = chosenCategory[index];
         switch (cateid) {
           case '5bc12c1a-f6e7-4de8-bb42-2cd727cffe69':
             return Container(
@@ -848,6 +861,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                           default:
                             cateid = '5bc12c1a-f6e7-4de8-bb42-2cd727cffe69';
                         }
+                        loadCourseByCategory(cateid);
                       });
                     },
                     child: Padding(

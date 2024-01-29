@@ -116,13 +116,10 @@ class Network {
     );
 
     if (response.statusCode == 201) {
-      print('Registration successful');
       // Parse the JSON response
       final jsonResponse = jsonDecode(response.body);
-      print(jsonResponse);
       // Extract the authCode
       final accountId = jsonResponse['id'];
-      print(accountId);
       //set accountId to create learner
       createLearner(accountId: accountId);
       // Set the userId in session
@@ -145,7 +142,6 @@ class Network {
     final jsonData = jsonEncode(learnerData);
 
     // Print the JSON data before making the API call
-    print('JSON Data: $jsonData');
 
     final response = await http.post(
       Uri.parse('https://nhatpmse.twentytwo.asia/api/learners'),
@@ -156,10 +152,8 @@ class Network {
     );
 
     if (response.statusCode == 201) {
-      print('Create learner successful');
       // Parse the JSON response
       final jsonResponse = jsonDecode(response.body);
-      print(jsonResponse);
     }
     else {
       print('Create learner failed');

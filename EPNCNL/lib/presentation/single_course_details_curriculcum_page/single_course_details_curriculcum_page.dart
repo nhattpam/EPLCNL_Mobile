@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
-import 'package:meowlish/presentation/login_screen/login_screen.dart';
-import 'package:meowlish/presentation/register_now_screen/register_now_screen.dart';
-import 'package:meowlish/widgets/custom_elevated_button.dart';
-import 'package:meowlish/widgets/custom_icon_button.dart';
+import 'package:meowlish/data/models/lessons.dart';
+import 'package:meowlish/data/models/modules.dart';
 
-// ignore_for_file: must_be_immutable
+import '../../network/network.dart';
+
 class SingleCourseDetailsCurriculumPage extends StatefulWidget {
-  const SingleCourseDetailsCurriculumPage({Key? key})
-      : super(
-          key: key,
-        );
+  const SingleCourseDetailsCurriculumPage({Key? key}) : super(key: key);
 
   @override
   SingleCourseDetailsCurriculumPageState createState() =>
@@ -18,62 +14,137 @@ class SingleCourseDetailsCurriculumPage extends StatefulWidget {
 }
 
 class SingleCourseDetailsCurriculumPageState
-    extends State<SingleCourseDetailsCurriculumPage>
-    with SingleTickerProviderStateMixin {
-  int current = 0;
-  List<String> items = ["About", "Curriculum"];
-  late TabController _tabController;
+    extends State<SingleCourseDetailsCurriculumPage> {
+  // Placeholder tutor data
 
+  late List<Module> listModule = [];
+  late List<Lesson> listLesson = [];
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(length: 2, vsync: this);
+    loadModule();
+    loadLesson();
+  }
+  void loadModule() async {
+    List<Module> loadedModule = await Network.getModule();
+    setState(() {
+      listModule = loadedModule;
+    });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return _buildScrollView(context);
+  void loadLesson() async {
+    List<Lesson> loadedLesson = await Network.getLesson();
+    setState(() {
+      listLesson = loadedLesson;
+    });
   }
-}
-
-/// Section Widget
-Widget _buildScrollView(BuildContext context) {
-  return Scaffold(
-    body: SingleChildScrollView(
-      ),
-  );
-}
-
-class ImageCourseContainer extends StatelessWidget {
-  const ImageCourseContainer({
-    super.key,
-  });
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black,
-      padding: EdgeInsets.all(0),
-      child: SizedBox(
-        height: 400,
-        child: Stack(
-          children: [
-            Positioned(
-                top: -150,
-                right: -250,
-                child: CircularContainer(
-                    backgroundColor: Colors.white.withOpacity(0.1))),
-            Positioned(
-              top: 100,
-              right: -300,
-              child: CircularContainer(
-                  backgroundColor: Colors.white.withOpacity(0.1)),
-            )
-          ],
+    return SafeArea(
+      child: Scaffold(
+        body: SizedBox(
+          width: SizeUtils.width,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 17.v),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 34.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Use ListView.builder to build the list of tutors
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: listModule.length,
+                        itemBuilder: (context, index) {
+                          final modules = listModule[index];
+                          return Column(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(left: 1.h),
+                                child: Row(
+                                  children: [
+                                    Text("Session $index - ", style: theme.textTheme.labelMedium),
+                                    Text(modules.name.toString(), style: CustomTextStyles.labelLargeOrangeA700),
+                                  ],
+                                ),
+                              ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: listLesson.length, // You may replace 3 with the actual number of details for each tutor
+                                itemBuilder: (context, Index) {
+                                  final lessons = listLesson[Index];
+                                  return Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      CircleWithNumber(number: Index),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(lessons.name.toString(), style: CustomTextStyles.titleMedium17),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 50.v),
+                                      Spacer(),
+                                      Icon(
+                                        Icons.play_arrow,
+                                        size: 17.0,
+                                        color: Colors.orange,
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                              SizedBox(height: 21.v),
+                              Divider(),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
+}
+class CircleWithNumber extends StatelessWidget {
+  final int number;
+
+  CircleWithNumber({required this.number});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(0xffe8f1ff), // Change the color as needed
+      ),
+      child: Center(
+        child: Text(
+          number.toString(),
+          style: TextStyle(
+            color: Colors.black, // Change the text color as needed
+            fontSize: 10.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
 }
 
 class CircularContainer extends StatelessWidget {

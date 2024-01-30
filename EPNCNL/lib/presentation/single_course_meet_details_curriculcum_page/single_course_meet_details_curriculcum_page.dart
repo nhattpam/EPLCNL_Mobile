@@ -48,23 +48,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
                     _buildRectangleList(context),
                     SizedBox(height: 75.v),
                     CustomElevatedButton(
-                      text: "Enroll Course - 55",
-                      margin: EdgeInsets.symmetric(horizontal: 39.h),
-                      rightIcon: Container(
-                        padding: EdgeInsets.fromLTRB(14.h, 16.v, 12.h, 14.v),
-                        margin: EdgeInsets.only(left: 30.h),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.onPrimaryContainer,
-                          borderRadius: BorderRadius.circular(
-                            24.h,
-                          ),
-                        ),
-                        child: CustomImageView(
-                          imagePath: ImageConstant.imgFill1Primary,
-                          height: 17.v,
-                          width: 21.h,
-                        ),
-                      ),
+                      text: "Enroll Course",
                     ),
                   ],
                 ),

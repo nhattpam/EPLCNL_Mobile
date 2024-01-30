@@ -4,6 +4,8 @@ import 'package:jwt_decode/jwt_decode.dart';
 import 'package:meowlish/data/models/accounts.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/lessons.dart';
+import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/data/models/tutors.dart';
 
 import '../session/session.dart';
@@ -366,6 +368,67 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+////// Put Api for Module here
+  static Future<List<Module>> getModule() async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/modules';
 
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final List<dynamic> moduleListJson = jsonDecode(response.body);
+        // Map each JSON object to a Pet object and return a list of pets
+        final List<Module> moduleList = moduleListJson.map((json) => Module.fromJson(json as Map<String, dynamic>))
+            .toList();
+
+        return moduleList;
+      } else {
+        // If the request fails, throw an exception or return an empty list
+        throw Exception(
+            'Failed to fetch course. Status code: ${response.statusCode}');
+      }
+    }
+    catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+////// Put Api for Lesson here
+  static Future<List<Lesson>> getLesson() async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/lessons';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final List<dynamic> lessonListJson = jsonDecode(response.body);
+        // Map each JSON object to a Pet object and return a list of pets
+        final List<Lesson> lessonList = lessonListJson.map((json) => Lesson.fromJson(json as Map<String, dynamic>))
+            .toList();
+
+        return lessonList;
+      } else {
+        // If the request fails, throw an exception or return an empty list
+        throw Exception(
+            'Failed to fetch course. Status code: ${response.statusCode}');
+      }
+    }
+    catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
 
 }

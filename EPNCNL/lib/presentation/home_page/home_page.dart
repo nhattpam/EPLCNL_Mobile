@@ -4,21 +4,12 @@ import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/carousel/landing.dart';
 import 'package:meowlish/presentation/notifications_screen/notifications_screen.dart';
 import 'package:meowlish/presentation/popular_courses_screen/popular_courses_screen.dart';
-import 'package:meowlish/session/session.dart';
-
 import '../../data/models/accounts.dart';
 import '../../data/models/tutors.dart';
-import '../home_page/widgets/category_item_widget.dart';
-import '../home_page/widgets/columnsection_item_widget.dart';
-import '../home_page/widgets/offercomponent_item_widget.dart';
-import '../home_page/widgets/userprofile_item_widget.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
 // ignore_for_file: must_be_immutable
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

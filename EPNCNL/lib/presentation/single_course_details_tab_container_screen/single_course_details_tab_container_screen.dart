@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/presentation/single_course_details_curriculcum_page/single_course_details_curriculcum_page.dart';
@@ -30,6 +32,14 @@ class SingleCourseDetailsTabContainerScreenState
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          flexibleSpace: ClipRRect(child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(color:  Colors.transparent),
+          ),),
+          backgroundColor: Colors.white.withAlpha(200),
+          elevation: 0.0,
+        ),
         body: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
@@ -41,8 +51,8 @@ class SingleCourseDetailsTabContainerScreenState
                   child: TabBarView(
                     controller: tabviewController,
                     children: [
-                      SingleCourseDetailsCurriculcumPage(),
                       SingleMeetCourseDetailsPage(),
+                      SingleCourseDetailsCurriculumPage(),
                     ],
                   ),
                 ),
@@ -62,18 +72,24 @@ class SingleCourseDetailsTabContainerScreenState
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          Align(
-            alignment: Alignment.topCenter,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 35.h,
-                vertical: 74.v,
-              ),
-              decoration: AppDecoration.fillBlack,
-              child: CustomImageView(
-                imagePath: ImageConstant.imgArrowDownBlueGray100,
-                height: 20.v,
-                width: 26.h,
+          Container(
+            color: Colors.blueAccent,
+            child: SizedBox(
+              height: 595.v,
+              child: Stack(
+                children: [
+                  Positioned(
+                      top: -150,
+                      right: -250,
+                      child: CircularContainer(
+                          backgroundColor: Colors.white.withOpacity(0.1))),
+                  Positioned(
+                    top: 100,
+                    right: -300,
+                    child: CircularContainer(
+                        backgroundColor: Colors.white.withOpacity(0.1)),
+                  )
+                ],
               ),
             ),
           ),
@@ -82,8 +98,9 @@ class SingleCourseDetailsTabContainerScreenState
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 34.h),
               decoration: AppDecoration.outlineBlack.copyWith(
-                borderRadius: BorderRadiusStyle.circleBorder15,
-              ),
+                  borderRadius: BorderRadius.circular(
+                15.h,
+              )),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -214,20 +231,20 @@ class SingleCourseDetailsTabContainerScreenState
                     child: TabBar(
                       controller: tabviewController,
                       labelPadding: EdgeInsets.zero,
-                      labelColor: appTheme.blueGray900,
+                      labelColor: Colors.black,
                       labelStyle: TextStyle(
                         fontSize: 15.fSize,
                         fontFamily: 'Jost',
                         fontWeight: FontWeight.w600,
                       ),
-                      unselectedLabelColor: appTheme.blueGray900,
+                      unselectedLabelColor: Colors.black,
                       unselectedLabelStyle: TextStyle(
                         fontSize: 15.fSize,
                         fontFamily: 'Jost',
                         fontWeight: FontWeight.w600,
                       ),
                       indicator: BoxDecoration(
-                        color: theme.colorScheme.onPrimaryContainer,
+                        color: Color(0xFFFFF0DC),
                         border: Border.all(
                           color: appTheme.orange50,
                           width: 2.h,

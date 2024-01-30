@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/network/network.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:readmore/readmore.dart';
 
+import '../../data/models/courses.dart';
+import '../../data/models/tutors.dart';
+
 class SingleMeetCourseDetailsPage extends StatefulWidget {
-  const SingleMeetCourseDetailsPage({Key? key}) : super(key: key);
+  final String courseID;
+  final String tutorID;
+
+  const SingleMeetCourseDetailsPage(
+      {required this.courseID, required this.tutorID, Key? key})
+      : super(key: key);
 
   @override
   SingleMeetCourseDetailsPageState createState() =>
@@ -12,10 +21,40 @@ class SingleMeetCourseDetailsPage extends StatefulWidget {
 }
 
 class SingleMeetCourseDetailsPageState
-    extends State<SingleMeetCourseDetailsPage>
-    with AutomaticKeepAliveClientMixin<SingleMeetCourseDetailsPage> {
+    extends State<SingleMeetCourseDetailsPage> {
+  late Tutor chosenTutor = Tutor();
+  late Course chosenCourse = Course();
+
   @override
-  bool get wantKeepAlive => true;
+  void initState() {
+    super.initState();
+    loadTutorByTutorID();
+    loadCourseByCourseID();
+  }
+
+  void loadCourseByCourseID() async {
+    try {
+      final course = await Network.getCourseByCourseID(widget.courseID);
+      setState(() {
+        chosenCourse = course;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+  void loadTutorByTutorID() async {
+    try {
+      final tutor = await Network.getTutorByTutorID(widget.tutorID);
+      setState(() {
+        chosenTutor = tutor;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +74,7 @@ class SingleMeetCourseDetailsPageState
                                 width: 307.h,
                                 margin:
                                     EdgeInsets.only(left: 21.h, right: 32.h),
-                                child: Text(
-                                    "Graphic Design now a popular profession graphic design by off your carrer about tantas regiones barbarorum pedibus obiit",
+                                child: Text("${chosenCourse.description}",
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,
                                     style: CustomTextStyles.labelLargeGray50001
@@ -47,7 +85,7 @@ class SingleMeetCourseDetailsPageState
                                 child: SizedBox(
                                     width: 313.h,
                                     child: ReadMoreText(
-                                        "Graphic Design n a popular profession l Cur tantas regiones barbarorum pedibus obiit, maria transmi Et ne nimium beatus est; Addidisti ad extremum etiam ",
+                                        "${chosenCourse.description}",
                                         trimLines: 4,
                                         colorClickableText:
                                             theme.colorScheme.primary,
@@ -196,7 +234,8 @@ class SingleMeetCourseDetailsPageState
   Widget _buildWilliamSCunningham(BuildContext context) {
     return Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
       CustomImageView(
-          imagePath: ImageConstant.imgImageBg,
+          imagePath: "${chosenTutor.account?.imageUrl ?? ""}",
+          fit: BoxFit.cover,
           height: 54.adaptSize,
           width: 54.adaptSize,
           radius: BorderRadius.circular(27.h)),
@@ -204,19 +243,17 @@ class SingleMeetCourseDetailsPageState
           padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text("William S. Cunningham",
+            Text("${chosenTutor.account?.fullName ?? ""}",
                 style: CustomTextStyles.titleMedium17),
-            Text("Graphic Design", style: theme.textTheme.labelLarge)
+            Text("${chosenCourse.category?.description ?? ""}",
+                style: theme.textTheme.labelLarge)
           ])),
       Spacer(),
-      CustomImageView(
-          imagePath: ImageConstant.imgNavIndox,
-          height: 20.adaptSize,
-          width: 20.adaptSize,
-          margin: EdgeInsets.only(top: 19.v, bottom: 15.v),
-          onTap: () {
-            onTapImgSettings(context);
-          })
+      Icon(
+        Icons.chat_outlined, // Replace with the desired icon
+        size: 17.0, // Adjust the size as needed
+        color: Colors.black, // Adjust the color as needed
+      ),
     ]);
   }
 

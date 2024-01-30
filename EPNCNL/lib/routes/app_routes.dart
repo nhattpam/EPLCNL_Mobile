@@ -189,8 +189,6 @@ class AppRoutes {
     coursesListScreen: (context) => CoursesListScreen(),
     coursesListFilterScreen: (context) => CoursesListFilterScreen(),
     mentorsListScreen: (context) => MentorsListScreen(),
-    singleCourseDetailsTabContainerScreen: (context) =>
-        SingleCourseDetailsTabContainerScreen(),
     notificationsScreen: (context) => NotificationsScreen(),
     singleMentorDetailsRatingTabContainerScreen: (context) =>
         SingleMentorDetailsRatingTabContainerScreen(),

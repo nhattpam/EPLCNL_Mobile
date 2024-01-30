@@ -2,12 +2,17 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/tutors.dart';
 import 'package:meowlish/presentation/single_course_details_curriculcum_page/single_course_details_curriculcum_page.dart';
 import 'package:meowlish/presentation/single_meet_course_details_page/single_meet_course_details_page.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 
+import '../../network/network.dart';
+
 class SingleCourseDetailsTabContainerScreen extends StatefulWidget {
-  const SingleCourseDetailsTabContainerScreen({Key? key})
+  final String courseID;
+  const SingleCourseDetailsTabContainerScreen({required this.courseID,Key? key})
       : super(
           key: key,
         );
@@ -21,12 +26,27 @@ class SingleCourseDetailsTabContainerScreenState
     extends State<SingleCourseDetailsTabContainerScreen>
     with TickerProviderStateMixin {
   late TabController tabviewController;
+  late Course chosenCourse = Course();
 
   @override
   void initState() {
     super.initState();
     tabviewController = TabController(length: 2, vsync: this);
+    loadCourseByCourseID();
   }
+
+  void loadCourseByCourseID() async {
+    try {
+      final course = await Network.getCourseByCourseID(widget.courseID);
+      setState(() {
+        chosenCourse = course;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +71,7 @@ class SingleCourseDetailsTabContainerScreenState
                   child: TabBarView(
                     controller: tabviewController,
                     children: [
-                      SingleMeetCourseDetailsPage(),
+                      SingleMeetCourseDetailsPage(courseID: chosenCourse.id.toString(),tutorID: chosenCourse.tutorId.toString()),
                       SingleCourseDetailsCurriculumPage(),
                     ],
                   ),
@@ -72,27 +92,34 @@ class SingleCourseDetailsTabContainerScreenState
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          Container(
-            color: Colors.blueAccent,
-            child: SizedBox(
-              height: 595.v,
-              child: Stack(
-                children: [
-                  Positioned(
-                      top: -150,
-                      right: -250,
-                      child: CircularContainer(
-                          backgroundColor: Colors.white.withOpacity(0.1))),
-                  Positioned(
-                    top: 100,
-                    right: -300,
-                    child: CircularContainer(
-                        backgroundColor: Colors.white.withOpacity(0.1)),
-                  )
-                ],
+          Stack(
+            children: [
+              Positioned(
+                top: -150,
+                right: -250,
+                child: CircularContainer(
+                  backgroundColor: Colors.white.withOpacity(0.1),
+                ),
               ),
-            ),
+              Positioned(
+                top: 100,
+                right: -300,
+                child: CircularContainer(
+                  backgroundColor: Colors.white.withOpacity(0.1),
+                ),
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Image.network(
+                  "${chosenCourse.imageUrl}", // Replace with the actual URL of your image
+                  height: 595.v,
+                  fit: BoxFit.cover, // Adjust the fit based on your needs
+                ),
+              ),
+            ],
           ),
+
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -113,22 +140,21 @@ class SingleCourseDetailsTabContainerScreenState
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Graphic Design",
+                          "${chosenCourse.category!.description}",
                           style: CustomTextStyles.labelLargeOrangeA700,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            CustomImageView(
-                              imagePath: ImageConstant.imgSignal,
-                              height: 11.v,
-                              width: 12.h,
-                              margin: EdgeInsets.only(bottom: 3.v),
+                            Icon(
+                              Icons.star,
+                              color: Colors.yellow,// Replace with the desired icon
+                              size: 12.0, // Adjust the size as needed
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 3.h),
                               child: Text(
-                                "4.2",
+                                "${chosenCourse.rating}",
                                 style: theme.textTheme.labelMedium,
                               ),
                             ),
@@ -143,7 +169,7 @@ class SingleCourseDetailsTabContainerScreenState
                     child: Padding(
                       padding: EdgeInsets.only(left: 20.h),
                       child: Text(
-                        "Design Principles: Organizing ..",
+                        "${chosenCourse.name}",
                         style: CustomTextStyles.titleLarge20,
                       ),
                     ),
@@ -158,14 +184,10 @@ class SingleCourseDetailsTabContainerScreenState
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        CustomImageView(
-                          imagePath: ImageConstant.imgUpload,
-                          height: 17.v,
-                          width: 18.h,
-                          margin: EdgeInsets.only(
-                            top: 4.v,
-                            bottom: 5.v,
-                          ),
+                        Icon(
+                          Icons.video_camera_front_outlined, // Replace with the desired icon
+                          size: 17.0, // Adjust the size as needed
+                          color: Colors.black, // Adjust the color as needed
                         ),
                         Padding(
                           padding: EdgeInsets.only(
@@ -197,13 +219,11 @@ class SingleCourseDetailsTabContainerScreenState
                             bottom: 4.v,
                           ),
                           padding: EdgeInsets.all(4.h),
-                          decoration: AppDecoration.fillGray900,
-                          child: CustomImageView(
-                            imagePath: ImageConstant.imgFill3,
-                            height: 7.v,
-                            width: 4.h,
-                            alignment: Alignment.topRight,
-                          ),
+                          child: Icon(
+                            Icons.hourglass_empty, // Replace with the desired icon
+                            size: 17.0, // Adjust the size as needed
+                            color: Colors.black, // Adjust the color as needed
+                          )
                         ),
                         Padding(
                           padding: EdgeInsets.only(
@@ -218,7 +238,7 @@ class SingleCourseDetailsTabContainerScreenState
                         ),
                         Spacer(),
                         Text(
-                          "28",
+                          "\$${chosenCourse.stockPrice.toString()}",
                           style: CustomTextStyles.titleLargeMulishPrimary,
                         ),
                       ],

@@ -262,10 +262,10 @@ class Network {
 
       if (response.statusCode == 200) {
         // If the request is successful, parse the JSON response
-        final dynamic orderJson = jsonDecode(response.body);
+        final dynamic courseJson = jsonDecode(response.body);
 
         // Map the JSON object to a User object and return it
-        return Course.fromJson(orderJson);
+        return Course.fromJson(courseJson);
       } else {
         // If the request fails, throw an exception or return null
         throw Exception(
@@ -304,6 +304,34 @@ class Network {
       }
     }
     catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<Tutor> getTutorByTutorID(String tutorId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/tutors/$tutorId'; // Replace with your API URL
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic tutorJson = jsonDecode(response.body);
+
+        // Map the JSON object to a User object and return it
+        return Tutor.fromJson(tutorJson);
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch course by order id. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
       // Handle any exceptions that may occur during the request
       throw Exception('An error occurred: $e');
     }

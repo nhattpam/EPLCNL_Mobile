@@ -4,6 +4,7 @@ import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
 
 import '../../network/network.dart';
+import '../../widgets/custom_elevated_button.dart';
 
 class SingleCourseDetailsCurriculumPage extends StatefulWidget {
   const SingleCourseDetailsCurriculumPage({Key? key}) : super(key: key);
@@ -25,14 +26,14 @@ class SingleCourseDetailsCurriculumPageState
     loadModule();
     loadLesson();
   }
-  void loadModule() async {
+  Future<void> loadModule() async {
     List<Module> loadedModule = await Network.getModule();
     setState(() {
       listModule = loadedModule;
     });
   }
 
-  void loadLesson() async {
+  Future<void> loadLesson() async {
     List<Lesson> loadedLesson = await Network.getLesson();
     setState(() {
       listLesson = loadedLesson;
@@ -44,6 +45,7 @@ class SingleCourseDetailsCurriculumPageState
       child: Scaffold(
         body: SizedBox(
           width: SizeUtils.width,
+          height: SizeUtils.height,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -60,13 +62,14 @@ class SingleCourseDetailsCurriculumPageState
                         itemCount: listModule.length,
                         itemBuilder: (context, index) {
                           final modules = listModule[index];
+                          final number = index + 1;
                           return Column(
                             children: [
                               Padding(
                                 padding: EdgeInsets.only(left: 1.h),
                                 child: Row(
                                   children: [
-                                    Text("Session $index - ", style: theme.textTheme.labelMedium),
+                                    Text("Session $number - ", style: theme.textTheme.labelMedium),
                                     Text(modules.name.toString(), style: CustomTextStyles.labelLargeOrangeA700),
                                   ],
                                 ),
@@ -80,7 +83,7 @@ class SingleCourseDetailsCurriculumPageState
                                   return Row(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      CircleWithNumber(number: Index),
+                                      CircleWithNumber(number: Index + 1),
                                       Padding(
                                         padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
                                         child: Column(
@@ -107,6 +110,10 @@ class SingleCourseDetailsCurriculumPageState
                           );
                         },
                       ),
+                      SizedBox(height: 21.v),
+                      CustomElevatedButton(
+                        text: "Enroll Course",
+                      )
                     ],
                   ),
                 ),

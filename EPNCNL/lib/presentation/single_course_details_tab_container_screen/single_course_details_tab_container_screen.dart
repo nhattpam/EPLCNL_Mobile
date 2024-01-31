@@ -35,7 +35,7 @@ class SingleCourseDetailsTabContainerScreenState
     loadCourseByCourseID();
   }
 
-  void loadCourseByCourseID() async {
+  Future<void> loadCourseByCourseID() async {
     try {
       final course = await Network.getCourseByCourseID(widget.courseID);
       setState(() {

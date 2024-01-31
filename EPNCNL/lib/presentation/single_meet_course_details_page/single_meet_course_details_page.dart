@@ -32,7 +32,7 @@ class SingleMeetCourseDetailsPageState
     loadCourseByCourseID();
   }
 
-  void loadCourseByCourseID() async {
+  Future<void> loadCourseByCourseID() async {
     try {
       final course = await Network.getCourseByCourseID(widget.courseID);
       setState(() {
@@ -44,7 +44,7 @@ class SingleMeetCourseDetailsPageState
     }
   }
 
-  void loadTutorByTutorID() async {
+  Future<void> loadTutorByTutorID() async {
     try {
       final tutor = await Network.getTutorByTutorID(widget.tutorID);
       setState(() {
@@ -210,22 +210,8 @@ class SingleMeetCourseDetailsPageState
                                 ])),
                             SizedBox(height: 56.v),
                             CustomElevatedButton(
-                                text: "Enroll Course - 55",
-                                margin: EdgeInsets.only(left: 4.h, right: 5.h),
-                                rightIcon: Container(
-                                    padding: EdgeInsets.fromLTRB(
-                                        14.h, 16.v, 12.h, 14.v),
-                                    margin: EdgeInsets.only(left: 30.h),
-                                    decoration: BoxDecoration(
-                                        color: theme
-                                            .colorScheme.onPrimaryContainer,
-                                        borderRadius:
-                                            BorderRadius.circular(24.h)),
-                                    child: CustomImageView(
-                                        imagePath:
-                                            ImageConstant.imgFill1Primary,
-                                        height: 17.v,
-                                        width: 21.h)))
+                                text: "Enroll Course",
+                                )
                           ]))
                 ])))));
   }

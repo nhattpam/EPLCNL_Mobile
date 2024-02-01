@@ -239,6 +239,8 @@ class PrimaryColors {
 
   Color get gray10002 => Color(0XFFF5F5F5);
 
+  Color get gray40001 => Color(0XFFC8C2B9);
+
   Color get gray200 => Color(0XFFEAEAEA);
 
   Color get gray400 => Color(0XFFBFBFBF);

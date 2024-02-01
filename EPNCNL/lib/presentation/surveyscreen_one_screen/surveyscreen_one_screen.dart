@@ -24,29 +24,27 @@ class SurveyscreenOneScreenState extends State<SurveyscreenOneScreen> {
               elevation: 0.0,
               flexibleSpace: FlexibleSpaceBar(
                 title: Container(
-                  width: 300,
-                  height: 30, // Add margin
-                  padding: EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: Colors.orange,
-                    border: Border.all(
-                      color: Colors.black, // Set border color
-                      width: 0.0, // Set border width
-                    ),
-                    borderRadius:
-                        BorderRadius.circular(20.0), // Set border radius
-                  ),
-                  // Set the background color for the text
-                  // child: Text(
-                  //   'Sign Up',
-                  //   style: TextStyle(
-                  //     color: Colors.black,
-                  //     fontSize: 25,
-                  //     fontFamily: 'Inter',
-                  //     fontWeight: FontWeight.w600,
-                  //   ),
-                  // ),
-                ),
+                    height: 24.v,
+                    width: 336.h,
+                    margin: EdgeInsets.only(left: 14.h),
+                    child: Stack(alignment: Alignment.centerLeft, children: [
+                      Align(
+                          alignment: Alignment.topCenter,
+                          child: Container(
+                              height: 23.v,
+                              width: 336.h,
+                              decoration: BoxDecoration(
+                                  color: appTheme.gray40001,
+                                  borderRadius: BorderRadius.circular(11.h)))),
+                      Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                              height: 23.v,
+                              width: 84.h,
+                              decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary,
+                                  borderRadius: BorderRadius.circular(11.h))))
+                    ])),
               ),
             ),
             backgroundColor: Colors.white,
@@ -94,6 +92,7 @@ class SurveyscreenOneScreenState extends State<SurveyscreenOneScreen> {
           ), // Set your button text
         ));
   }
+
   /// Section Widget
   Widget _buildNextButton(BuildContext context) {
     return CustomElevatedButton(

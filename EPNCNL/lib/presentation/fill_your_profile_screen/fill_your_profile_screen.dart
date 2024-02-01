@@ -79,7 +79,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
 
   Future<String> _uploadImage(File imageFile) async {
     try {
-      String url = "https://nhatpmse.twentytwo.asia/api/accounts/upload-images"; // Replace with your API endpoint
+      String url = "https://nhatpmse.twentytwo.asia/api/accounts/image"; // Replace with your API endpoint
       FormData formData = FormData.fromMap({
         "file": await MultipartFile.fromFile(imageFile.path),
       });

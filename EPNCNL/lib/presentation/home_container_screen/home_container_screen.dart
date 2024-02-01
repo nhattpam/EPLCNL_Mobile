@@ -47,7 +47,7 @@ class HomeContainerScreenState extends State<HomeContainerScreen> {
                       onPressed: () => Navigator.of(context).pop(false),
                       style: ElevatedButton.styleFrom(
                         // Customize the button's background color
-                        backgroundColor: Color(0xff00c7a0),
+                        backgroundColor: Color(0xffff9300),
                         minimumSize:
                         Size(100, 48), // Change to your desired color
                       ),
@@ -60,7 +60,7 @@ class HomeContainerScreenState extends State<HomeContainerScreen> {
                         onPressed: () => Navigator.of(context).pop(true),
                         style: ElevatedButton.styleFrom(
                           // Customize the button's background color
-                          backgroundColor: Color(0xff00c7a0),
+                          backgroundColor: Color(0xffff9300),
                           minimumSize:
                           Size(100, 48), // Change to your desired color
                         ),
@@ -99,8 +99,8 @@ class HomeContainerScreenState extends State<HomeContainerScreen> {
               label: 'Profile',
             ),
           ],
-          activeColor: Colors.black54,
-          inactiveColor: Color(0xff00c7a0),
+          activeColor: Color(0xbbff9300),
+          inactiveColor: Color(0xffff9300),
         ),
         tabBuilder: (context, index) {
           switch (index) {

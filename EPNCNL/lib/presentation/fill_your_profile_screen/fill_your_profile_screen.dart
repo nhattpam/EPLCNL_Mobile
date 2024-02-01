@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:dio/dio.dart';
+import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meowlish/core/app_export.dart';
@@ -12,6 +14,7 @@ import 'package:meowlish/widgets/custom_phone_number.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 
 import '../../network/network.dart';
+import '../otp_signup_screen/otp_signup_screen.dart';
 
 class FillYourProfileScreen extends StatefulWidget {
   final String email;
@@ -34,6 +37,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   DateTime? selectedDate;
 
   String _imagePath = "";
+  String _image = "";
 
   final picker = ImagePicker();
 
@@ -54,12 +58,15 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
     "Male",
     "Female",
   ];
+  EmailOTP myauth = EmailOTP();
+
   @override
   void initState() {
     super.initState();
   }
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -73,7 +80,6 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
       });
     }
   }
-
 
   Dio dio = Dio();
 
@@ -89,6 +95,9 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
       if (response.statusCode == 200) {
         // Image uploaded successfully, you can handle the response here
         print("Image uploaded successfully. Link: ${response.data}");
+        setState(() {
+          _image = response.data;
+        });
         return response.data;
       } else {
         // Handle error
@@ -115,32 +124,58 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
     }
   }
 
-  Future<void> _registerUser() async {
-    final email = widget.email;
-    final password = widget.password;
-    final fullName = fullNameController.text;
-    final address = addressController.text;
-    final phoneNumber = phoneNumberController.text;
-    final imageUrl = await _uploadImage(File(_imagePath)); // await the result
-    bool genderValue = selectedGender == 'Male' ? true : false;
-    final dateOfBirth =
-    selectedDate != null ? selectedDate!.toIso8601String() : "";
-
-    setState(() {
-      isLoading = true;
-    });
-
-    // Call the registerUser function from the API class
-    await Network.registerUser(
-      email: email,
-      password: password,
-      fullName: fullName,
-      address: address,
-      gender: genderValue,
-      dateOfBirth: dateOfBirth,
-      phoneNumber: phoneNumber,
-      imageUrl: imageUrl, // fix parameter name
-    );
+  Future<void> onContinue() async {
+    {
+      myauth.setSMTP(
+          host: "smtp.gmail.com",
+          auth: true,
+          username: "westory.system@gmail.com",
+          password: "srwt hych lidh tlpz",
+          secure: "TLS",
+          port: 587);
+      myauth.setConfig(
+          appEmail: "contact@westory.com",
+          appName: "Email OTP",
+          userEmail: widget.email,
+          otpLength: 4,
+          otpType: OTPType.digitsOnly);
+      if (await myauth.sendOTP() == true) {
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.scale,
+          dialogType: DialogType.success,
+          body: Center(
+            child: Text(
+              'Please check OTP in your email!!!',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+          // title: 'Warning',
+          // desc:   'This is also Ignored',
+          btnOkOnPress: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OTPScreen(
+                  email: widget.email,
+                  password: widget.password,
+                  fullName: fullNameController.text,
+                  address: addressController.text,
+                  phoneNumber: phoneNumberController.text,
+                  imageUrl: _image,
+                  genderValue: selectedGender == 'Male' ? true : false,
+                  dateOfBirth: selectedDate != null ? selectedDate!.toIso8601String() : "", myauth: myauth,
+                ),
+              ),
+            );
+          },
+        )..show();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Oops, OTP send failed"),
+        ));
+      }
+    }
   }
 
 
@@ -444,7 +479,8 @@ Widget _buildAddress(BuildContext context) {
   Widget _buildButton(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          _registerUser();
+          onContinue();
+          // _registerUser();
         },
       child: SizedBox(
         height: 60.v,

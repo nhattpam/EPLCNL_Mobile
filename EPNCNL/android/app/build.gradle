@@ -44,7 +44,14 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
+    android {
+        ndkVersion "25.1.8937393"
+        // ...
+        defaultConfig{
+            minSdkVersion 21
 
+        }
+    }
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

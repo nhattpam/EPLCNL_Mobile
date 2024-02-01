@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:email_otp/email_otp.dart';
 import 'package:flutter/services.dart';
 import 'package:meowlish/core/utils/size_utils.dart';
 import 'package:meowlish/presentation/login_screen/login_screen.dart';
@@ -6,8 +10,20 @@ import '../../core/utils/image_constant.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:flutter/material.dart';
 
+import '../../network/network.dart';
+
 class OTPScreen extends StatefulWidget {
-  const OTPScreen({Key? key})
+  final EmailOTP myauth;
+  final String email;
+  final String password;
+  final String fullName;
+  final String address;
+  final String phoneNumber;
+  final String imageUrl;
+  final bool genderValue;
+  final String dateOfBirth;
+
+  const OTPScreen({Key? key, required this.myauth, required this.email, required this.password, required this.fullName, required this.address, required this.phoneNumber, required this.imageUrl, required this.genderValue, required this.dateOfBirth})
       : super(
           key: key,
         );
@@ -21,10 +37,177 @@ class OTPScreenState extends State<OTPScreen> {
   TextEditingController otp2Controller = TextEditingController();
   TextEditingController otp3Controller = TextEditingController();
   TextEditingController otp4Controller = TextEditingController();
+  bool isResent = false;
+  bool isLoading = false;
+  EmailOTP resend = EmailOTP();
+
   @override
   void initState() {
     super.initState();
   }
+  Future<void> _registerUser() async {
+    final email = widget.email;
+    final password = widget.password;
+    final fullName = widget.fullName;
+    final address = widget.address;
+    final phoneNumber = widget.phoneNumber;
+    final imageUrl = widget.imageUrl; // await the result
+    bool genderValue = widget.genderValue;
+    final dateOfBirth = widget.dateOfBirth;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    // Call the registerUser function from the API class
+    await Network.registerUser(
+      email: email,
+      password: password,
+      fullName: fullName,
+      address: address,
+      gender: genderValue,
+      dateOfBirth: dateOfBirth,
+      phoneNumber: phoneNumber,
+      imageUrl: imageUrl.toString(), // fix parameter name
+    );
+  }
+
+  void _onResendCode() async {
+    // Send the OTP code to the user's email address
+    resend.setSMTP(
+        host: "smtp.gmail.com",
+        auth: true,
+        username: "westory.system@gmail.com",
+        password: "srwt hych lidh tlpz",
+        secure: "TLS",
+        port: 587);
+    resend.setConfig(
+        appEmail: "contact@westory.com",
+        appName: "Email OTP",
+        userEmail: widget.email,
+        otpLength: 4,
+        otpType: OTPType.digitsOnly);
+    if (await resend.sendOTP() == true) {
+      AwesomeDialog(
+        context: context,
+        animType: AnimType.scale,
+        dialogType: DialogType.success,
+        body: Center(
+          child: Text(
+            'Please check OTP in your email!!!',
+            style: TextStyle(fontStyle: FontStyle.italic),
+          ),
+        ),
+        // title: 'Warning',
+        // desc:   'This is also Ignored',
+        btnOkOnPress: () {},
+      )..show();
+      setState(() {
+        isResent = true;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Oops, OTP send failed"),
+      ));
+    }
+  }
+
+  Future verifyOTP() async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(child: CircularProgressIndicator());
+        });
+    if (!isResent) {
+      if (await widget.myauth.verifyOTP(
+          otp: otp1Controller.text +
+              otp2Controller.text +
+              otp3Controller.text +
+              otp4Controller.text) ==
+          true) {
+        _registerUser();
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.scale,
+          dialogType: DialogType.success,
+          body: Center(
+            child: Text(
+              'Register Success!!!',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+          // title: 'Warning',
+          // desc:   'This is also Ignored',
+          btnOkOnPress: () {
+            Navigator.of(context).pop();
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()));
+          },
+        )..show();
+      } else {
+        AwesomeDialog(
+            context: context,
+            animType: AnimType.scale,
+            dialogType: DialogType.error,
+            body: Center(
+              child: Text(
+                'Invalid OTP!!!',
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
+            ),
+            // title: 'Warning',
+            // desc:   'This is also Ignored',
+            btnOkOnPress: () {},
+            btnOkColor: Colors.red)
+          ..show();
+      }
+    }
+    if (isResent) {
+      if (resend.verifyOTP(
+          otp: otp1Controller.text +
+              otp2Controller.text +
+              otp3Controller.text +
+              otp4Controller.text) ==
+          true) {
+        _registerUser();
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.scale,
+          dialogType: DialogType.success,
+          body: Center(
+            child: Text(
+              'Register Success!!!',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+          // title: 'Warning',
+          // desc:   'This is also Ignored',
+          btnOkOnPress: () {
+            Navigator.of(context).pop();
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()));
+          },
+        )..show();
+      } else {
+        AwesomeDialog(
+            context: context,
+            animType: AnimType.scale,
+            dialogType: DialogType.error,
+            body: Center(
+              child: Text(
+                'Invalid OTP!!!',
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
+            ),
+            // title: 'Warning',
+            // desc:   'This is also Ignored',
+            btnOkOnPress: () {},
+            btnOkColor: Colors.red)
+          ..show();
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +224,7 @@ class OTPScreenState extends State<OTPScreen> {
             height: 100, // Add margin
             margin: EdgeInsets.fromLTRB(0, 45, 0, 0),
             child: Text(
-              'Forgot Password',
+              'Verify Email',
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 25,
@@ -49,7 +232,6 @@ class OTPScreenState extends State<OTPScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-
           ),
         ),
       ),
@@ -131,10 +313,7 @@ class OTPScreenState extends State<OTPScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => LoginScreen()),
-                            );
+                            verifyOTP();
                           },
                           style: ButtonStyle(
                             foregroundColor:
@@ -171,6 +350,10 @@ class OTPScreenState extends State<OTPScreen> {
                     color: Colors.black38,
                   ),
                   textAlign: TextAlign.center,
+                ),
+                ResendCodeButton(
+                  onResendCode: _onResendCode,
+                  cooldownTime: Duration(minutes: 5),
                 ),
               ],
             ),
@@ -214,6 +397,81 @@ class Otp extends StatelessWidget {
         ),
         onSaved: (value) {},
       ),
+    );
+  }
+}
+
+class ResendCodeButton extends StatefulWidget {
+  final VoidCallback onResendCode;
+  final Duration cooldownTime;
+
+  const ResendCodeButton({
+    Key? key,
+    required this.onResendCode,
+    required this.cooldownTime,
+  }) : super(key: key);
+
+  @override
+  State<ResendCodeButton> createState() => _ResendCodeButtonState();
+}
+
+class _ResendCodeButtonState extends State<ResendCodeButton> {
+  Timer? _timer;
+  int _remainingSeconds = 0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _onResendCodeClick() {
+    if (_timer != null && _timer!.isActive) {
+      // The cooldown is still active, do nothing
+      return;
+    }
+
+    setState(() {
+      // Set the initial remaining time when the button is clicked
+      _remainingSeconds = widget.cooldownTime.inSeconds;
+    });
+
+    // Start a timer for the cooldownTime
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _remainingSeconds -= 1;
+      });
+
+      if (_remainingSeconds <= 0) {
+        // The cooldown is over, cancel the timer
+        _timer?.cancel();
+        _timer = null;
+      }
+    });
+
+    // Call the onResendCode callback
+    widget.onResendCode();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: _onResendCodeClick,
+      style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.pressed)) {
+              return Color(0xff8e8e8e);
+            }
+            return Color(0xffff9300);
+          })),
+      child: _timer == null
+          ? Text('Resend Code')
+          : Text('$_remainingSeconds seconds'),
     );
   }
 }

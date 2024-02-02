@@ -163,6 +163,35 @@ class Network {
       print('JSON Data: $jsonData');
     }
   }
+ static Future<Course> getCourseByCourseID(String courseId) async {
+   final apiUrl =
+       'https://nhatpmse.twentytwo.asia/api/courses/$courseId'; // Replace with your API URL
+
+   try {
+     final response = await http.get(
+       Uri.parse(apiUrl),
+       headers: {
+         'Content-Type': 'application/json',
+       },
+     );
+
+     if (response.statusCode == 200) {
+       // If the request is successful, parse the JSON response
+       final dynamic courseJson = jsonDecode(response.body);
+
+       // Map the JSON object to a User object and return it
+       return Course.fromJson(courseJson);
+     } else {
+       // If the request fails, throw an exception or return null
+       throw Exception(
+           'Failed to fetch course by order id. Status code: ${response.statusCode}');
+     }
+   } catch (e) {
+     // Handle any exceptions that may occur during the request
+     throw Exception('An error occurred: $e');
+   }
+ }
+
 ////// Put Api for Category here
   static Future<List<Category>> getCategories() async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/categories';
@@ -253,33 +282,54 @@ class Network {
     }
   }
 
-  static Future<Course> getCourseByCourseID(String courseId) async {
-    final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/courses/$courseId'; // Replace with your API URL
+  static Future<String> activeAccount(String email) async {
 
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/authentications/$email/activation'; // Replace with your API URL
+    print("this is " + apiUrl);
     try {
-      final response = await http.get(
+      final response = await http.post(
         Uri.parse(apiUrl),
         headers: {
           'Content-Type': 'application/json',
         },
       );
+      return response.statusCode.toString();
 
-      if (response.statusCode == 200) {
-        // If the request is successful, parse the JSON response
-        final dynamic courseJson = jsonDecode(response.body);
-
-        // Map the JSON object to a User object and return it
-        return Course.fromJson(courseJson);
-      } else {
-        // If the request fails, throw an exception or return null
-        throw Exception(
-            'Failed to fetch course by order id. Status code: ${response.statusCode}');
-      }
     } catch (e) {
       // Handle any exceptions that may occur during the request
       throw Exception('An error occurred: $e');
     }
+  }
+////// Test Search
+  Future<List<Course>> getComicList({String? query}) async {
+    var data = [];
+    List<Course> results = [];
+    String urlList = 'http://ch5t.fptu.meu-solutions.com/api/comic';
+    var url = Uri.parse(urlList);
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        data = json.decode(response.body);
+        results = data.map((e) => Course.fromJson(e)).toList();
+        if (query != null) {
+          results = results.where((element) {
+            final courseNameMatches = element.name != null &&
+                element.name!.toLowerCase().contains(query.toLowerCase());
+
+            final descriptionMatches = element.description != null &&
+                element.description!.toLowerCase().contains(query.toLowerCase());
+
+            return courseNameMatches || descriptionMatches;
+          }).toList();
+        }
+      } else {
+        print("fetch error");
+      }
+    } on Exception catch (e) {
+      print('error: $e');
+    }
+    return results;
   }
 
 ////// Put Api for Tutor here

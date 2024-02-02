@@ -15,15 +15,7 @@ import '../../network/network.dart';
 class OTPScreen extends StatefulWidget {
   final EmailOTP myauth;
   final String email;
-  final String password;
-  final String fullName;
-  final String address;
-  final String phoneNumber;
-  final String imageUrl;
-  final bool genderValue;
-  final String dateOfBirth;
-
-  const OTPScreen({Key? key, required this.myauth, required this.email, required this.password, required this.fullName, required this.address, required this.phoneNumber, required this.imageUrl, required this.genderValue, required this.dateOfBirth})
+  const OTPScreen({Key? key, required this.myauth, required this.email})
       : super(
           key: key,
         );
@@ -44,32 +36,6 @@ class OTPScreenState extends State<OTPScreen> {
   @override
   void initState() {
     super.initState();
-  }
-  Future<void> _registerUser() async {
-    final email = widget.email;
-    final password = widget.password;
-    final fullName = widget.fullName;
-    final address = widget.address;
-    final phoneNumber = widget.phoneNumber;
-    final imageUrl = widget.imageUrl; // await the result
-    bool genderValue = widget.genderValue;
-    final dateOfBirth = widget.dateOfBirth;
-
-    setState(() {
-      isLoading = true;
-    });
-
-    // Call the registerUser function from the API class
-    await Network.registerUser(
-      email: email,
-      password: password,
-      fullName: fullName,
-      address: address,
-      gender: genderValue,
-      dateOfBirth: dateOfBirth,
-      phoneNumber: phoneNumber,
-      imageUrl: imageUrl.toString(), // fix parameter name
-    );
   }
 
   void _onResendCode() async {
@@ -125,7 +91,7 @@ class OTPScreenState extends State<OTPScreen> {
               otp3Controller.text +
               otp4Controller.text) ==
           true) {
-        _registerUser();
+        Network.activeAccount(widget.email);
         AwesomeDialog(
           context: context,
           animType: AnimType.scale,
@@ -169,7 +135,7 @@ class OTPScreenState extends State<OTPScreen> {
               otp3Controller.text +
               otp4Controller.text) ==
           true) {
-        _registerUser();
+        Network.activeAccount(widget.email);
         AwesomeDialog(
           context: context,
           animType: AnimType.scale,

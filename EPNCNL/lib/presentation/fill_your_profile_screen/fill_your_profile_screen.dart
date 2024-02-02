@@ -82,6 +82,33 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   }
 
   Dio dio = Dio();
+  Future<void> _registerUser() async {
+    final email = widget.email;
+    final password = widget.password;
+    final fullName = fullNameController.text;
+    final address = addressController.text;
+    final phoneNumber = phoneNumberController.text;
+    final imageUrl = _image; // await the result
+    bool genderValue = selectedGender == 'Male' ? true : false;
+    final dateOfBirth =
+    selectedDate != null ? selectedDate!.toIso8601String() : "";
+
+    setState(() {
+      isLoading = true;
+    });
+
+    // Call the registerUser function from the API class
+    await Network.registerUser(
+      email: email,
+      password: password,
+      fullName: fullName,
+      address: address,
+      gender: genderValue,
+      dateOfBirth: dateOfBirth,
+      phoneNumber: phoneNumber,
+      imageUrl: imageUrl, // fix parameter name
+    );
+  }
 
   Future<String> _uploadImage(File imageFile) async {
     try {
@@ -153,18 +180,13 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
           // title: 'Warning',
           // desc:   'This is also Ignored',
           btnOkOnPress: () {
+            _registerUser();
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => OTPScreen(
-                  email: widget.email,
-                  password: widget.password,
-                  fullName: fullNameController.text,
-                  address: addressController.text,
-                  phoneNumber: phoneNumberController.text,
-                  imageUrl: _image,
-                  genderValue: selectedGender == 'Male' ? true : false,
-                  dateOfBirth: selectedDate != null ? selectedDate!.toIso8601String() : "", myauth: myauth,
+                  email : widget.email,
+                  myauth: myauth,
                 ),
               ),
             );

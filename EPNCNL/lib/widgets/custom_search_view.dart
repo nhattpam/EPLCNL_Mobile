@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/presentation/home_page/search/search_cour.dart';
 
 class CustomSearchView extends StatelessWidget {
   CustomSearchView({
@@ -94,8 +95,9 @@ class CustomSearchView extends StatelessWidget {
           maxLines: maxLines ?? 1,
           decoration: decoration,
           validator: validator,
-          onChanged: (String value) {
-            onChanged!.call(value);
+          onTap: () {
+            controller?.clear();
+            showSearch(context: context, delegate: SearchCourse());
           },
         ),
       );
@@ -106,10 +108,9 @@ class CustomSearchView extends StatelessWidget {
         prefixIcon: prefix ??
             Container(
               margin: EdgeInsets.fromLTRB(13.h, 22.v, 9.h, 22.v),
-              child: CustomImageView(
-                imagePath: ImageConstant.imgQrcode,
-                height: 20.adaptSize,
-                width: 20.adaptSize,
+              child: Icon(
+                Icons.search,
+                size: 20.adaptSize,
               ),
             ),
         prefixIconConstraints: prefixConstraints ??

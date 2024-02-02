@@ -1,10 +1,10 @@
-class PaperWorkType {
+class PaymentMethod {
   String? id;
   String? name;
 
-  PaperWorkType({this.id, this.name});
+  PaymentMethod({this.id, this.name});
 
-  PaperWorkType.fromJson(Map<String, dynamic> json) {
+  PaymentMethod.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
   }

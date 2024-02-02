@@ -1,11 +1,11 @@
-class ClassPractices {
+class ClassPractice {
   String? id;
   String? name;
   String? classTopicId;
 
-  ClassPractices({this.id, this.name, this.classTopicId});
+  ClassPractice({this.id, this.name, this.classTopicId});
 
-  ClassPractices.fromJson(Map<String, dynamic> json) {
+  ClassPractice.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     classTopicId = json['classTopicId'];

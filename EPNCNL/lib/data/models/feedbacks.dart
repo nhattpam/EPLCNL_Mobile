@@ -1,4 +1,4 @@
-class Forum {
+class Feedback {
   String? id;
   String? feedbackContent;
   String? imageUrl;
@@ -6,7 +6,7 @@ class Forum {
   String? learnerId;
   String? courseId;
 
-  Forum(
+  Feedback(
       {this.id,
         this.feedbackContent,
         this.imageUrl,
@@ -14,7 +14,7 @@ class Forum {
         this.learnerId,
         this.courseId});
 
-  Forum.fromJson(Map<String, dynamic> json) {
+  Feedback.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     feedbackContent = json['feedbackContent'];
     imageUrl = json['imageUrl'];

@@ -1,4 +1,4 @@
-class ClassLession {
+class ClassLesson {
   String? id;
   String? classHours;
   String? classUrl;
@@ -6,7 +6,7 @@ class ClassLession {
   String? createdDate;
   String? updatedDate;
 
-  ClassLession(
+  ClassLesson(
       {this.id,
         this.classHours,
         this.classUrl,
@@ -14,7 +14,7 @@ class ClassLession {
         this.createdDate,
         this.updatedDate});
 
-  ClassLession.fromJson(Map<String, dynamic> json) {
+  ClassLesson.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     classHours = json['classHours'];
     classUrl = json['classUrl'];

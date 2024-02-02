@@ -942,6 +942,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             cateid = '7b0aa823-f310-4427-b604-a95c08e0f23a';
                             break;
                           case 4:
+                            cateid = '444925cf-4df0-4193-9158-bbdb9a28ed02';
+                            break;
+                            case 5:
                             cateid = 'b763589b-81c9-4341-aae5-cd9719084724';
                             break;
                           default:

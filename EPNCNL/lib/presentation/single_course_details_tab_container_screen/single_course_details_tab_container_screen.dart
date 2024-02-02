@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/tutors.dart';
 import 'package:meowlish/presentation/single_course_details_curriculcum_page/single_course_details_curriculcum_page.dart';
@@ -332,27 +333,36 @@ class SingleCourseDetailsCurriculumPageState
     extends State<SingleCourseDetailsCurriculumPage> {
   // Placeholder tutor data
 
-  late List<Module> listModule = [];
+  late List<Module> listModuleByCourseId = [];
+  late List<ClassModule> listClassModuleByCourseId = [];
   late List<Lesson> listLesson = [];
   @override
   void initState() {
     super.initState();
-    loadModule();
-    loadLesson();
+    loadModuleByCourseId();
+    loadClassModuleByCourseId();
   }
-  Future<void> loadModule() async {
-    List<Module> loadedModule = await Network.getModule();
+  Future<void> loadModuleByCourseId() async {
+    List<Module> loadedModule = await Network.getModulesByCourseId(widget.courseID);
     setState(() {
-      listModule = loadedModule;
+      listModuleByCourseId = loadedModule;
+      for(Module m in listModuleByCourseId){
+        print(m.name);
+      }
     });
   }
 
-  Future<void> loadLesson() async {
-    List<Lesson> loadedLesson = await Network.getLesson();
+  Future<void> loadClassModuleByCourseId() async {
+    List<ClassModule> loadedModule = await Network.getClassModulesByCourseId(widget.courseID);
     setState(() {
-      listLesson = loadedLesson;
+      listClassModuleByCourseId = loadedModule;
+      for(ClassModule m in listClassModuleByCourseId){
+        print(m.startDate);
+      }
     });
   }
+
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -373,9 +383,10 @@ class SingleCourseDetailsCurriculumPageState
                       ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: listModule.length,
+                        itemCount: listModuleByCourseId.length,
                         itemBuilder: (context, index) {
-                          final modules = listModule[index];
+                          final modules = listModuleByCourseId[index];
+                          final classModules = listClassModuleByCourseId[index];
                           final number = index + 1;
                           return Column(
                             children: [

@@ -1,27 +1,27 @@
 import 'package:meowlish/data/models/tutors.dart';
 
-import 'classlessions.dart';
+import 'classlessons.dart';
 import 'courses.dart';
 
-class ClassModules {
+class ClassModule{
   String? id;
   String? startDate;
   String? courseId;
   Course? course;
-  ClassLession? classLesson;
+  ClassLesson? classLesson;
   Tutor? tutor;
 
-  ClassModules(
+  ClassModule(
       {this.id, this.startDate, this.courseId, this.course, this.classLesson});
 
-  ClassModules.fromJson(Map<String, dynamic> json) {
+  ClassModule.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     startDate = json['startDate'];
     courseId = json['courseId'];
     course =
     json['course'] != null ? new Course.fromJson(json['course']) : null;
     classLesson = json['classLesson'] != null
-        ? new ClassLession.fromJson(json['classLesson'])
+        ? new ClassLesson.fromJson(json['classLesson'])
         : null;
     tutor = json['tutor'] != null
         ? new Tutor.fromJson(json['tutor'])

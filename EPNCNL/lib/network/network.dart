@@ -307,37 +307,6 @@ class Network {
   }
 
 
-////// Test Search
-  Future<List<Course>> getComicList({String? query}) async {
-    var data = [];
-    List<Course> results = [];
-    String urlList = 'http://ch5t.fptu.meu-solutions.com/api/comic';
-    var url = Uri.parse(urlList);
-    try {
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        data = json.decode(response.body);
-        results = data.map((e) => Course.fromJson(e)).toList();
-        if (query != null) {
-          results = results.where((element) {
-            final courseNameMatches = element.name != null &&
-                element.name!.toLowerCase().contains(query.toLowerCase());
-
-            final descriptionMatches = element.description != null &&
-                element.description!.toLowerCase().contains(query.toLowerCase());
-
-            return courseNameMatches || descriptionMatches;
-          }).toList();
-        }
-      } else {
-        print("fetch error");
-      }
-    } on Exception catch (e) {
-      print('error: $e');
-    }
-    return results;
-  }
-
 ////// Put Api for Tutor here
   static Future<List<Tutor>> getTutor() async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/tutors';
@@ -492,6 +461,7 @@ class Network {
   }
 
 
+  //class topic
   static Future<List<ClassTopic>> getClassTopicsByClassLessonId(String classLessonId) async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/class-lessons/$classLessonId/class-topics'; // Replace with your API URL
 
@@ -519,5 +489,35 @@ class Network {
     }
   }
 
+
+
+  //lesson
+  static Future<Lesson> getLessonByModule(String? moduleId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/lessons'; // Replace with your API URL
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic lesson = jsonDecode(response.body);
+
+        // Map each JSON object to a Pet object and return a list of pets
+        return lesson.map((json) => Lesson.fromJson(json));
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lessons. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
 
 }

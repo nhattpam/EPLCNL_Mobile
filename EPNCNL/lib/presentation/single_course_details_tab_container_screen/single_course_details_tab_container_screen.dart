@@ -335,7 +335,7 @@ class SingleCourseDetailsCurriculumPageState
 
   late List<Module> listModuleByCourseId = [];
   late List<ClassModule> listClassModuleByCourseId = [];
-  late List<Lesson> listLesson = [];
+  late Lesson lessonByModuleId;
   late Course chosenCourse = Course();
   @override
   void initState() {
@@ -343,14 +343,12 @@ class SingleCourseDetailsCurriculumPageState
     loadModuleByCourseId();
     loadClassModuleByCourseId();
     loadCourseByCourseID();
+    loadLessonByModuleId();
   }
   Future<void> loadModuleByCourseId() async {
     List<Module> loadedModule = await Network.getModulesByCourseId(widget.courseID);
     setState(() {
       listModuleByCourseId = loadedModule;
-      for(Module m in listModuleByCourseId){
-        print(m.name);
-      }
     });
   }
 
@@ -360,7 +358,6 @@ class SingleCourseDetailsCurriculumPageState
       setState(() {
         chosenCourse = course;
       });
-      print('dmcs' + chosenCourse.name.toString());
     } catch (e) {
       // Handle errors here
       print('Error: $e');
@@ -371,9 +368,18 @@ class SingleCourseDetailsCurriculumPageState
     List<ClassModule> loadedModule = await Network.getClassModulesByCourseId(widget.courseID);
     setState(() {
       listClassModuleByCourseId = loadedModule;
-      for(ClassModule m in listClassModuleByCourseId){
-        print(m.startDate);
-      }
+
+    });
+  }
+
+  Future<void> loadLessonByModuleId() async {
+  Lesson loadedLesson = new Lesson();
+    for(final module in listModuleByCourseId){
+      loadedLesson = await Network.getLessonByModule(module.id);
+      print("Lessi n: " + loadedLesson.name.toString() );
+    }
+    setState(() {
+      lessonByModuleId = loadedLesson;
     });
   }
 
@@ -433,6 +439,44 @@ class SingleCourseDetailsCurriculumPageState
                   Text(module.name.toString(), style: CustomTextStyles.labelLargeOrangeA700),
                 ],
               ),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, Index) {
+                return GestureDetector(
+                  onTap: () {
+                    // Navigate to AnotherScreen when tapped
+                    _navKey.currentState!.push(
+                      MaterialPageRoute(
+                        builder: (_) => SingleCourseMeetDetailsCurriculcumPage(courseID: widget.courseID),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      CircleWithNumber(number: Index + 1),
+                      Padding(
+                        padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(lessonByModuleId.name.toString(), style: CustomTextStyles.titleMedium17),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 50.v),
+                      Spacer(),
+                      Icon(
+                        Icons.play_arrow,
+                        size: 17.0,
+                        color: Colors.orange,
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
             SizedBox(height: 21.v),
             Divider(),

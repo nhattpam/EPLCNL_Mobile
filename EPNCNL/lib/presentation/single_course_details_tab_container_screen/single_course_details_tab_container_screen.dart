@@ -336,11 +336,13 @@ class SingleCourseDetailsCurriculumPageState
   late List<Module> listModuleByCourseId = [];
   late List<ClassModule> listClassModuleByCourseId = [];
   late List<Lesson> listLesson = [];
+  late Course chosenCourse = Course();
   @override
   void initState() {
     super.initState();
     loadModuleByCourseId();
     loadClassModuleByCourseId();
+    loadCourseByCourseID();
   }
   Future<void> loadModuleByCourseId() async {
     List<Module> loadedModule = await Network.getModulesByCourseId(widget.courseID);
@@ -350,6 +352,19 @@ class SingleCourseDetailsCurriculumPageState
         print(m.name);
       }
     });
+  }
+
+  Future<void> loadCourseByCourseID() async {
+    try {
+      var course = await Network.getCourseByCourseID(widget.courseID);
+      setState(() {
+        chosenCourse = course;
+      });
+      print('dmcs' + chosenCourse.name.toString());
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
   }
 
   Future<void> loadClassModuleByCourseId() async {
@@ -380,71 +395,11 @@ class SingleCourseDetailsCurriculumPageState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Use ListView.builder to build the list of tutors
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: listModuleByCourseId.length,
-                        itemBuilder: (context, index) {
-                          final modules = listModuleByCourseId[index];
-                          final classModules = listClassModuleByCourseId[index];
-                          final number = index + 1;
-                          return Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(left: 1.h),
-                                child: Row(
-                                  children: [
-                                    Text("Session $number - ", style: theme.textTheme.labelMedium),
-                                    Text(modules.name.toString(), style: CustomTextStyles.labelLargeOrangeA700),
-                                  ],
-                                ),
-                              ),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: listLesson.length, // You may replace 3 with the actual number of details for each tutor
-                                itemBuilder: (context, Index) {
-                                  final lessons = listLesson[Index];
-                                  return GestureDetector(
-                                    onTap: () {
-                                      // Navigate to AnotherScreen when tapped
-                                            _navKey.currentState!.push(
-                                              MaterialPageRoute(
-                                                builder: (_) => SingleCourseMeetDetailsCurriculcumPage(courseID: widget.courseID),
-                                              ),
-                                            );
-                                    },
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        CircleWithNumber(number: Index + 1),
-                                        Padding(
-                                          padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(lessons.name.toString(), style: CustomTextStyles.titleMedium17),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(height: 50.v),
-                                        Spacer(),
-                                        Icon(
-                                          Icons.play_arrow,
-                                          size: 17.0,
-                                          color: Colors.orange,
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                              SizedBox(height: 21.v),
-                              Divider(),
-                            ],
-                          );
-                        },
-                      ),
+                      if(chosenCourse.isOnlineClass == false)
+                        _buildVideoCourseListView(),
+                      if(chosenCourse.isOnlineClass == true)
+                      _buildClassCourseListView(),
+
                       SizedBox(height: 21.v),
                       CustomElevatedButton(
                         text: "Enroll Course",
@@ -459,7 +414,63 @@ class SingleCourseDetailsCurriculumPageState
       ),
     );
   }
+
+  Widget _buildVideoCourseListView() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: listModuleByCourseId.length,
+      itemBuilder: (context, index) {
+        final module = listModuleByCourseId[index];
+        final number = index + 1;
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 1.h),
+              child: Row(
+                children: [
+                  Text("Session $number - ", style: theme.textTheme.labelMedium),
+                  Text(module.name.toString(), style: CustomTextStyles.labelLargeOrangeA700),
+                ],
+              ),
+            ),
+            SizedBox(height: 21.v),
+            Divider(),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildClassCourseListView() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: listClassModuleByCourseId.length,
+      itemBuilder: (context, index) {
+        final module = listClassModuleByCourseId[index];
+        final number = index + 1;
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 1.h),
+              child: Row(
+                children: [
+                  Text("Session $number - ", style: theme.textTheme.labelMedium),
+                  Text(module.startDate.toString(), style: CustomTextStyles.labelLargeOrangeA700),
+                ],
+              ),
+            ),
+            SizedBox(height: 21.v),
+            Divider(),
+          ],
+        );
+      },
+    );
+  }
+
 }
+
 
 
 

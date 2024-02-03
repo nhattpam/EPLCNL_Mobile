@@ -342,7 +342,7 @@ class Network {
   static Future<Tutor> getTutorByTutorID(String tutorId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/tutors/$tutorId'; // Replace with your API URL
-
+    print(tutorId);
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -360,7 +360,7 @@ class Network {
       } else {
         // If the request fails, throw an exception or return null
         throw Exception(
-            'Failed to fetch course by order id. Status code: ${response.statusCode}');
+            'Failed to fetch tutor by course id. Status code: ${response.statusCode}');
       }
     } catch (e) {
       // Handle any exceptions that may occur during the request
@@ -506,7 +506,7 @@ class Network {
       if (response.statusCode == 200) {
         // If the request is successful, parse the JSON response
         final dynamic lesson = jsonDecode(response.body);
-
+        print("vcl" + lesson.name.toString());
         // Map each JSON object to a Pet object and return a list of pets
         return lesson.map((json) => Lesson.fromJson(json));
       } else {

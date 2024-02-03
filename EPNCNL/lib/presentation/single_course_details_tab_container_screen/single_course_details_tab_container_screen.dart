@@ -14,10 +14,14 @@ import '../../data/models/modules.dart';
 import '../../network/network.dart';
 import '../../widgets/custom_elevated_button.dart';
 import '../single_course_meet_details_curriculcum_page/single_course_meet_details_curriculcum_page.dart';
+
 final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
+
 class SingleCourseDetailsTabContainerScreen extends StatefulWidget {
   final String courseID;
-  const SingleCourseDetailsTabContainerScreen({required this.courseID,Key? key})
+  final String tutorID;
+  const SingleCourseDetailsTabContainerScreen(
+      {required this.courseID, Key? key, required this.tutorID})
       : super(
           key: key,
         );
@@ -39,6 +43,11 @@ class SingleCourseDetailsTabContainerScreenState
     loadCourseByCourseID();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> loadCourseByCourseID() async {
     try {
       final course = await Network.getCourseByCourseID(widget.courseID);
@@ -51,16 +60,17 @@ class SingleCourseDetailsTabContainerScreenState
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          flexibleSpace: ClipRRect(child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(color:  Colors.transparent),
-          ),),
+          flexibleSpace: ClipRRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(color: Colors.transparent),
+            ),
+          ),
           backgroundColor: Colors.white.withAlpha(200),
           elevation: 0.0,
         ),
@@ -76,16 +86,18 @@ class SingleCourseDetailsTabContainerScreenState
                     key: _navKey,
                     onGenerateRoute: (_) => MaterialPageRoute(
                       builder: (_) => TabBarView(
-                      controller: tabviewController,
-                      children: [
-                        SingleMeetCourseDetailsPage(courseID: chosenCourse.id.toString(),tutorID: chosenCourse.tutorId.toString()),
-                        SingleCourseDetailsCurriculumPage(courseID: chosenCourse.id.toString()),
-                      ],
+                        controller: tabviewController,
+                        children: [
+                          SingleMeetCourseDetailsPage(
+                              courseID: widget.courseID,
+                              tutorID: widget.tutorID),
+                          SingleCourseDetailsCurriculumPage(
+                              courseID: widget.courseID)
+                        ],
+                      ),
                     ),
                   ),
-                  ),
-                  ),
-
+                ),
               ],
             ),
           ),
@@ -129,7 +141,6 @@ class SingleCourseDetailsTabContainerScreenState
               ),
             ],
           ),
-
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -150,7 +161,7 @@ class SingleCourseDetailsTabContainerScreenState
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "${chosenCourse.category!.description}",
+                          "${chosenCourse.category?.description ?? ''}",
                           style: CustomTextStyles.labelLargeOrangeA700,
                         ),
                         Row(
@@ -158,7 +169,8 @@ class SingleCourseDetailsTabContainerScreenState
                           children: [
                             Icon(
                               Icons.star,
-                              color: Colors.yellow,// Replace with the desired icon
+                              color: Colors
+                                  .yellow, // Replace with the desired icon
                               size: 12.0, // Adjust the size as needed
                             ),
                             Padding(
@@ -195,7 +207,8 @@ class SingleCourseDetailsTabContainerScreenState
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Icon(
-                          Icons.video_camera_front_outlined, // Replace with the desired icon
+                          Icons
+                              .video_camera_front_outlined, // Replace with the desired icon
                           size: 17.0, // Adjust the size as needed
                           color: Colors.black, // Adjust the color as needed
                         ),
@@ -221,20 +234,20 @@ class SingleCourseDetailsTabContainerScreenState
                           ),
                         ),
                         Container(
-                          height: 16.adaptSize,
-                          width: 16.adaptSize,
-                          margin: EdgeInsets.only(
-                            left: 10.h,
-                            top: 6.v,
-                            bottom: 4.v,
-                          ),
-                          padding: EdgeInsets.all(4.h),
-                          child: Icon(
-                            Icons.hourglass_empty, // Replace with the desired icon
-                            size: 17.0, // Adjust the size as needed
-                            color: Colors.black, // Adjust the color as needed
-                          )
-                        ),
+                            height: 16.adaptSize,
+                            width: 16.adaptSize,
+                            margin: EdgeInsets.only(
+                              left: 10.h,
+                              top: 6.v,
+                              bottom: 4.v,
+                            ),
+                            padding: EdgeInsets.all(4.h),
+                            child: Icon(
+                              Icons
+                                  .hourglass_empty, // Replace with the desired icon
+                              size: 17.0, // Adjust the size as needed
+                              color: Colors.black, // Adjust the color as needed
+                            )),
                         Padding(
                           padding: EdgeInsets.only(
                             left: 8.h,
@@ -322,7 +335,8 @@ class SingleCourseDetailsTabContainerScreenState
 
 class SingleCourseDetailsCurriculumPage extends StatefulWidget {
   final String courseID;
-  const SingleCourseDetailsCurriculumPage({Key? key, required this.courseID}) : super(key: key);
+  const SingleCourseDetailsCurriculumPage({Key? key, required this.courseID})
+      : super(key: key);
 
   @override
   SingleCourseDetailsCurriculumPageState createState() =>
@@ -335,7 +349,7 @@ class SingleCourseDetailsCurriculumPageState
 
   late List<Module> listModuleByCourseId = [];
   late List<ClassModule> listClassModuleByCourseId = [];
-  late Lesson lessonByModuleId;
+  // late Lesson lessonByModuleId;
   late Course chosenCourse = Course();
   @override
   void initState() {
@@ -343,10 +357,17 @@ class SingleCourseDetailsCurriculumPageState
     loadModuleByCourseId();
     loadClassModuleByCourseId();
     loadCourseByCourseID();
-    loadLessonByModuleId();
+    // loadLessonByModuleId();
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> loadModuleByCourseId() async {
-    List<Module> loadedModule = await Network.getModulesByCourseId(widget.courseID);
+    List<Module> loadedModule =
+        await Network.getModulesByCourseId(widget.courseID);
     setState(() {
       listModuleByCourseId = loadedModule;
     });
@@ -365,24 +386,23 @@ class SingleCourseDetailsCurriculumPageState
   }
 
   Future<void> loadClassModuleByCourseId() async {
-    List<ClassModule> loadedModule = await Network.getClassModulesByCourseId(widget.courseID);
+    List<ClassModule> loadedModule =
+        await Network.getClassModulesByCourseId(widget.courseID);
     setState(() {
       listClassModuleByCourseId = loadedModule;
-
     });
   }
 
-  Future<void> loadLessonByModuleId() async {
-  Lesson loadedLesson = new Lesson();
-    for(final module in listModuleByCourseId){
-      loadedLesson = await Network.getLessonByModule(module.id);
-      print("Lessi n: " + loadedLesson.name.toString() );
-    }
-    setState(() {
-      lessonByModuleId = loadedLesson;
-    });
-  }
-
+  // Future<void> loadLessonByModuleId() async {
+  //   Lesson loadedLesson = Lesson(); // Initialize a single Lesson object
+  //   for (final module in listModuleByCourseId) {
+  //     loadedLesson = await Network.getLessonByModule(module.id);
+  //     print("Lesson: " + loadedLesson.name.toString());
+  //   }
+  //   setState(() {
+  //     lessonByModuleId = loadedLesson; // Store the last loaded lesson
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -401,10 +421,10 @@ class SingleCourseDetailsCurriculumPageState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Use ListView.builder to build the list of tutors
-                      if(chosenCourse.isOnlineClass == false)
+                      if (chosenCourse.isOnlineClass == false)
                         _buildVideoCourseListView(),
-                      if(chosenCourse.isOnlineClass == true)
-                      _buildClassCourseListView(),
+                      if (chosenCourse.isOnlineClass == true)
+                        _buildClassCourseListView(),
 
                       SizedBox(height: 21.v),
                       CustomElevatedButton(
@@ -435,49 +455,14 @@ class SingleCourseDetailsCurriculumPageState
               padding: EdgeInsets.only(left: 1.h),
               child: Row(
                 children: [
-                  Text("Session $number - ", style: theme.textTheme.labelMedium),
-                  Text(module.name.toString(), style: CustomTextStyles.labelLargeOrangeA700),
+                  Text("Session $number - ",
+                      style: theme.textTheme.labelMedium),
+                  Text(module.name.toString(),
+                      style: CustomTextStyles.labelLargeOrangeA700),
                 ],
               ),
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, Index) {
-                return GestureDetector(
-                  onTap: () {
-                    // Navigate to AnotherScreen when tapped
-                    _navKey.currentState!.push(
-                      MaterialPageRoute(
-                        builder: (_) => SingleCourseMeetDetailsCurriculcumPage(courseID: widget.courseID),
-                      ),
-                    );
-                  },
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      CircleWithNumber(number: Index + 1),
-                      Padding(
-                        padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(lessonByModuleId.name.toString(), style: CustomTextStyles.titleMedium17),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 50.v),
-                      Spacer(),
-                      Icon(
-                        Icons.play_arrow,
-                        size: 17.0,
-                        color: Colors.orange,
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+
             SizedBox(height: 21.v),
             Divider(),
           ],
@@ -500,8 +485,10 @@ class SingleCourseDetailsCurriculumPageState
               padding: EdgeInsets.only(left: 1.h),
               child: Row(
                 children: [
-                  Text("Session $number - ", style: theme.textTheme.labelMedium),
-                  Text(module.startDate.toString(), style: CustomTextStyles.labelLargeOrangeA700),
+                  Text("Session $number - ",
+                      style: theme.textTheme.labelMedium),
+                  Text(module.startDate.toString(),
+                      style: CustomTextStyles.labelLargeOrangeA700),
                 ],
               ),
             ),
@@ -512,12 +499,7 @@ class SingleCourseDetailsCurriculumPageState
       },
     );
   }
-
 }
-
-
-
-
 
 class CircleWithNumber extends StatelessWidget {
   final int number;
@@ -545,7 +527,6 @@ class CircleWithNumber extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class CircularContainer extends StatelessWidget {

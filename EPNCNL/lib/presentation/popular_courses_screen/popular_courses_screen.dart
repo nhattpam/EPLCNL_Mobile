@@ -121,6 +121,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
+                      tutorID: courses.tutorId.toString() ,
                     ),
                   ),
                 );
@@ -237,6 +238,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
+                      tutorID: courses.tutorId.toString(),
                     ),
                   ),
                 );
@@ -350,6 +352,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
+                      tutorID: courses.tutorId.toString(),
+
                     ),
                   ),
                 );
@@ -463,6 +467,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
+                      tutorID: courses.tutorId.toString(),
+
                     ),
                   ),
                 );
@@ -576,6 +582,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
+                      tutorID: courses.tutorId.toString(),
+
                     ),
                   ),
                 );
@@ -689,6 +697,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
+                      tutorID: courses.tutorId.toString(),
+
                     ),
                   ),
                 );
@@ -802,6 +812,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
+                      tutorID: courses.tutorId.toString(),
+
                     ),
                   ),
                 );

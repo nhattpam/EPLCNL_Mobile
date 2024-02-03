@@ -74,7 +74,7 @@ class SingleMeetCourseDetailsPageState
                                 width: 307.h,
                                 margin:
                                     EdgeInsets.only(left: 21.h, right: 32.h),
-                                child: Text("${chosenCourse.description}",
+                                child: Text("${chosenCourse.description ?? ''}",
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,
                                     style: CustomTextStyles.labelLargeGray50001
@@ -85,7 +85,7 @@ class SingleMeetCourseDetailsPageState
                                 child: SizedBox(
                                     width: 313.h,
                                     child: ReadMoreText(
-                                        "${chosenCourse.description}",
+                                        "${chosenCourse.description ?? ''}",
                                         trimLines: 4,
                                         colorClickableText:
                                             theme.colorScheme.primary,

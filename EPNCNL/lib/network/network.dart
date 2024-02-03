@@ -492,7 +492,7 @@ class Network {
 
 
   //lesson
-  static Future<Lesson> getLessonByModule(String? moduleId) async {
+  static Future<List<Lesson>> getLessonsByModuleId(String moduleId) async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/lessons'; // Replace with your API URL
 
     try {
@@ -504,20 +504,20 @@ class Network {
       );
 
       if (response.statusCode == 200) {
-        // If the request is successful, parse the JSON response
-        final dynamic lesson = jsonDecode(response.body);
-        print("vcl" + lesson.name.toString());
+        final List<dynamic> lessonListJson = jsonDecode(response.body);
+
         // Map each JSON object to a Pet object and return a list of pets
-        return lesson.map((json) => Lesson.fromJson(json));
+        return lessonListJson.map((json) => Lesson.fromJson(json)).toList();
       } else {
         // If the request fails, throw an exception or return null
         throw Exception(
-            'Failed to fetch lessons. Status code: ${response.statusCode}');
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
       }
     } catch (e) {
       // Handle any exceptions that may occur during the request
       throw Exception('An error occurred: $e');
     }
   }
+
 
 }

@@ -20,11 +20,12 @@ final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 class SingleCourseDetailsTabContainerScreen extends StatefulWidget {
   final String courseID;
   final String tutorID;
+
   const SingleCourseDetailsTabContainerScreen(
       {required this.courseID, Key? key, required this.tutorID})
       : super(
-          key: key,
-        );
+    key: key,
+  );
 
   @override
   SingleCourseDetailsTabContainerScreenState createState() =>
@@ -36,6 +37,7 @@ class SingleCourseDetailsTabContainerScreenState
     with TickerProviderStateMixin {
   late TabController tabviewController;
   late Course chosenCourse = Course();
+
   @override
   void initState() {
     super.initState();
@@ -134,7 +136,8 @@ class SingleCourseDetailsTabContainerScreenState
                 top: 0,
                 right: 0,
                 child: Image.network(
-                  "${chosenCourse.imageUrl}", // Replace with the actual URL of your image
+                  "${chosenCourse.imageUrl}",
+                  // Replace with the actual URL of your image
                   height: 595.v,
                   fit: BoxFit.cover, // Adjust the fit based on your needs
                 ),
@@ -147,8 +150,8 @@ class SingleCourseDetailsTabContainerScreenState
               margin: EdgeInsets.symmetric(horizontal: 34.h),
               decoration: AppDecoration.outlineBlack.copyWith(
                   borderRadius: BorderRadius.circular(
-                15.h,
-              )),
+                    15.h,
+                  )),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -207,8 +210,8 @@ class SingleCourseDetailsTabContainerScreenState
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Icon(
-                          Icons
-                              .video_camera_front_outlined, // Replace with the desired icon
+                          Icons.video_camera_front_outlined,
+                          // Replace with the desired icon
                           size: 17.0, // Adjust the size as needed
                           color: Colors.black, // Adjust the color as needed
                         ),
@@ -243,8 +246,8 @@ class SingleCourseDetailsTabContainerScreenState
                             ),
                             padding: EdgeInsets.all(4.h),
                             child: Icon(
-                              Icons
-                                  .hourglass_empty, // Replace with the desired icon
+                              Icons.hourglass_empty,
+                              // Replace with the desired icon
                               size: 17.0, // Adjust the size as needed
                               color: Colors.black, // Adjust the color as needed
                             )),
@@ -335,6 +338,7 @@ class SingleCourseDetailsTabContainerScreenState
 
 class SingleCourseDetailsCurriculumPage extends StatefulWidget {
   final String courseID;
+
   const SingleCourseDetailsCurriculumPage({Key? key, required this.courseID})
       : super(key: key);
 
@@ -349,15 +353,16 @@ class SingleCourseDetailsCurriculumPageState
 
   late List<Module> listModuleByCourseId = [];
   late List<ClassModule> listClassModuleByCourseId = [];
-  // late Lesson lessonByModuleId;
+  late List<Lesson> listLessonByModuleId = [];
   late Course chosenCourse = Course();
+  late String moduleIdForLesson = "";
   @override
   void initState() {
     super.initState();
     loadModuleByCourseId();
     loadClassModuleByCourseId();
     loadCourseByCourseID();
-    // loadLessonByModuleId();
+    loadAllLessons();
   }
 
   @override
@@ -367,7 +372,7 @@ class SingleCourseDetailsCurriculumPageState
 
   Future<void> loadModuleByCourseId() async {
     List<Module> loadedModule =
-        await Network.getModulesByCourseId(widget.courseID);
+    await Network.getModulesByCourseId(widget.courseID);
     setState(() {
       listModuleByCourseId = loadedModule;
     });
@@ -387,22 +392,27 @@ class SingleCourseDetailsCurriculumPageState
 
   Future<void> loadClassModuleByCourseId() async {
     List<ClassModule> loadedModule =
-        await Network.getClassModulesByCourseId(widget.courseID);
+    await Network.getClassModulesByCourseId(widget.courseID);
     setState(() {
       listClassModuleByCourseId = loadedModule;
     });
   }
 
-  // Future<void> loadLessonByModuleId() async {
-  //   Lesson loadedLesson = Lesson(); // Initialize a single Lesson object
-  //   for (final module in listModuleByCourseId) {
-  //     loadedLesson = await Network.getLessonByModule(module.id);
-  //     print("Lesson: " + loadedLesson.name.toString());
-  //   }
-  //   setState(() {
-  //     lessonByModuleId = loadedLesson; // Store the last loaded lesson
-  //   });
-  // }
+
+
+  Future<void> loadLessonByModuleId(String moduleId) async {
+    List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
+    setState(() {
+      listLessonByModuleId = loadedLesson;
+      print("this is length of list lesson: " + listLessonByModuleId.length.toString());
+    });
+  }
+
+  Future<void> loadAllLessons() async {
+    for (final module in listModuleByCourseId) {
+      await loadLessonByModuleId(module.id.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -449,27 +459,64 @@ class SingleCourseDetailsCurriculumPageState
       itemBuilder: (context, index) {
         final module = listModuleByCourseId[index];
         final number = index + 1;
-        return Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 1.h),
-              child: Row(
-                children: [
-                  Text("Session $number - ",
-                      style: theme.textTheme.labelMedium),
-                  Text(module.name.toString(),
-                      style: CustomTextStyles.labelLargeOrangeA700),
-                ],
-              ),
-            ),
 
-            SizedBox(height: 21.v),
-            Divider(),
-          ],
+        return FutureBuilder<void>(
+          future: loadLessonByModuleId(module.id.toString()),
+          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+            print("Number of lessons: ${listLessonByModuleId.length}");
+
+            return Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 1.h),
+                  child: Row(
+                    children: [
+                      Text("Session $number - ", style: theme.textTheme.labelMedium),
+                      Text(module.name.toString(), style: CustomTextStyles.labelLargeOrangeA700),
+                    ],
+                  ),
+                ),
+                for (final lessonIndex in listLessonByModuleId.asMap().keys)
+                  GestureDetector(
+                    onTap: () {
+                      // Handle the onTap action for each video session
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        CircleWithNumber(number: lessonIndex + 1),
+                        Padding(
+                          padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(listLessonByModuleId[lessonIndex].name.toString(), style: CustomTextStyles.titleMedium17),
+                              // Add other information about the video session here
+                            ],
+                          ),
+                        ),
+                        Spacer(),
+                        Icon(
+                          Icons.play_arrow,
+                          size: 17.0,
+                          color: Colors.orange,
+                        ),
+                      ],
+                    ),
+                  ),
+                SizedBox(height: 21.v),
+                Divider(),
+              ],
+            );
+          },
         );
       },
     );
   }
+
+
+
+
 
   Widget _buildClassCourseListView() {
     return ListView.builder(

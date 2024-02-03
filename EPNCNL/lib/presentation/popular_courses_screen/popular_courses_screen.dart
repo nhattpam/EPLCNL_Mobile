@@ -198,9 +198,11 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       color: Colors.yellow,
                                     ),
                                     Text(
-                                      courses.rating.toString(),
+                                      '${courses.rating?.toDouble() ?? "N/A"}',
                                       style: theme.textTheme.labelMedium,
-                                    ),
+                                    )
+
+                                    ,
                                   ],
                                 ),
                               ),

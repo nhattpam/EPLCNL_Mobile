@@ -13,7 +13,7 @@ class Course {
   int? stockPrice;
   bool? isActive;
   bool? isOnlineClass;
-  int? rating;
+  num? rating;
   String? categoryId;
   String? tags;
   String? createdDate;

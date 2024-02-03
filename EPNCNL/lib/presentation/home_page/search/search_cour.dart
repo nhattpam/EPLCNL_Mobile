@@ -162,11 +162,9 @@ class SearchCourse extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     double baseWidth = 428;
     double fem = MediaQuery.of(context).size.width / baseWidth;
-    double ffem = fem * 0.97;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
-        // successbSh (479:333)
         padding: EdgeInsets.fromLTRB(32 * fem, 0 * fem, 32 * fem, 0 * fem),
         width: double.infinity,
         decoration: BoxDecoration(
@@ -174,24 +172,15 @@ class SearchCourse extends SearchDelegate {
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Container(
-            // image36G33 (479:361)
             margin: EdgeInsets.fromLTRB(1 * fem, 120 * fem, 0 * fem, 42 * fem),
             width: 153 * fem,
             height: 153 * fem,
           ),
           Container(
-            // successxgZ (479:362)
             margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 24 * fem),
             child: Text(
-              'Listen what you love',
+              'Learn what you love',
               textAlign: TextAlign.center,
-              // style: SafeGoogleFont(
-              //   'Inder',
-              //   fontSize: 30 * ffem,
-              //   fontWeight: FontWeight.w400,
-              //   height: 1.25 * ffem / fem,
-              //   color: Color(0xffa8a7a7),
-              // ),
             ),
           ),
           Container(
@@ -201,13 +190,6 @@ class SearchCourse extends SearchDelegate {
               'Search for authors, stories, categories',
               maxLines: 1,
               textAlign: TextAlign.center,
-              // style: SafeGoogleFont(
-              //   'Inder',
-              //   fontSize: 20 * ffem,
-              //   fontWeight: FontWeight.w400,
-              //   height: 1.25 * ffem / fem,
-              //   color: Color(0xffa8a7a7),
-              // ),
             ),
           ),
         ]),

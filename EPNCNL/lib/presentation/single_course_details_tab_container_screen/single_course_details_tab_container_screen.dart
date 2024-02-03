@@ -355,7 +355,10 @@ class SingleCourseDetailsCurriculumPageState
   late List<ClassModule> listClassModuleByCourseId = [];
   late List<Lesson> listLessonByModuleId = [];
   late Course chosenCourse = Course();
+  late ClassModule classModuleByClassModuleId = ClassModule();
+
   late String moduleIdForLesson = "";
+
   @override
   void initState() {
     super.initState();
@@ -399,12 +402,11 @@ class SingleCourseDetailsCurriculumPageState
   }
 
 
-
   Future<void> loadLessonByModuleId(String moduleId) async {
     List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
     setState(() {
       listLessonByModuleId = loadedLesson;
-      print("this is length of list lesson: " + listLessonByModuleId.length.toString());
+      // print("this is length of list lesson: " + listLessonByModuleId.length.toString());
     });
   }
 
@@ -413,6 +415,18 @@ class SingleCourseDetailsCurriculumPageState
       await loadLessonByModuleId(module.id.toString());
     }
   }
+
+  Future<ClassModule> loadClassModule(String classModuleId) async {
+    try {
+      var classModule = await Network.getClassModule(classModuleId);
+      return classModule;  // Return the loaded ClassModule
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+      throw e;  // Re-throw the error to be caught by the FutureBuilder
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -463,7 +477,7 @@ class SingleCourseDetailsCurriculumPageState
         return FutureBuilder<void>(
           future: loadLessonByModuleId(module.id.toString()),
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-            print("Number of lessons: ${listLessonByModuleId.length}");
+            // print("Number of lessons: ${listLessonByModuleId.length}");
 
             return Column(
               children: [
@@ -471,12 +485,16 @@ class SingleCourseDetailsCurriculumPageState
                   padding: EdgeInsets.only(left: 1.h),
                   child: Row(
                     children: [
-                      Text("Session $number - ", style: theme.textTheme.labelMedium),
-                      Text(module.name.toString(), style: CustomTextStyles.labelLargeOrangeA700),
+                      Text("Session $number - ",
+                          style: theme.textTheme.labelMedium),
+                      Text(module.name.toString(),
+                          style: CustomTextStyles.labelLargeOrangeA700),
                     ],
                   ),
                 ),
-                for (final lessonIndex in listLessonByModuleId.asMap().keys)
+                for (final lessonIndex in listLessonByModuleId
+                    .asMap()
+                    .keys)
                   GestureDetector(
                     onTap: () {
                       // Handle the onTap action for each video session
@@ -486,11 +504,15 @@ class SingleCourseDetailsCurriculumPageState
                       children: [
                         CircleWithNumber(number: lessonIndex + 1),
                         Padding(
-                          padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                          padding: EdgeInsets.only(left: 12.h,
+                              top: 7.v,
+                              bottom: 5.v),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(listLessonByModuleId[lessonIndex].name.toString(), style: CustomTextStyles.titleMedium17),
+                              Text(listLessonByModuleId[lessonIndex].name
+                                  .toString(),
+                                  style: CustomTextStyles.titleMedium17),
                               // Add other information about the video session here
                             ],
                           ),
@@ -515,9 +537,6 @@ class SingleCourseDetailsCurriculumPageState
   }
 
 
-
-
-
   Widget _buildClassCourseListView() {
     return ListView.builder(
       shrinkWrap: true,
@@ -526,29 +545,86 @@ class SingleCourseDetailsCurriculumPageState
       itemBuilder: (context, index) {
         final module = listClassModuleByCourseId[index];
         final number = index + 1;
-        return Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 1.h),
-              child: Row(
+
+        // Load the class module asynchronously
+        return FutureBuilder<ClassModule>(
+          future: loadClassModule(module.id.toString()),
+          builder: (BuildContext context, AsyncSnapshot<ClassModule> snapshot) {
+            if (snapshot.hasData) {
+              final loadedClassModule = snapshot.data!;
+
+              // Use loadedClassModule for rendering
+              print(loadedClassModule.classLesson!.classHours.toString());
+
+              return Column(
                 children: [
-                  Text("Session $number - ",
-                      style: theme.textTheme.labelMedium),
-                  Text(module.startDate.toString(),
-                      style: CustomTextStyles.labelLargeOrangeA700),
+                  Padding(
+                    padding: EdgeInsets.only(left: 1.h),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Session $number - ",
+                          style: theme.textTheme.labelMedium,
+                        ),
+                        Text(
+                          module.startDate.toString(),
+                          style: CustomTextStyles.labelLargeOrangeA700,
+                        ),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // Handle the onTap action for each video session
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 12.h, top: 7.v, bottom: 5.v),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                loadedClassModule
+                                    .classLesson!.classHours
+                                    .toString(),
+                                style: CustomTextStyles.titleMedium17,
+                              ),
+                              // Add other information about the video session here
+                            ],
+                          ),
+                        ),
+                        Spacer(),
+                        Icon(
+                          Icons.play_arrow,
+                          size: 17.0,
+                          color: Colors.orange,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 21.v),
+                  Divider(),
                 ],
-              ),
-            ),
-            SizedBox(height: 21.v),
-            Divider(),
-          ],
+              );
+            } else if (snapshot.hasError) {
+              // Handle errors here
+              print('Error: ${snapshot.error}');
+              return Container(); // Placeholder widget or handle error UI
+            } else {
+              // Still loading, return a loading indicator if needed
+              return CircularProgressIndicator();
+            }
+          },
         );
       },
     );
   }
 }
 
-class CircleWithNumber extends StatelessWidget {
+  class CircleWithNumber extends StatelessWidget {
   final int number;
 
   CircleWithNumber({required this.number});

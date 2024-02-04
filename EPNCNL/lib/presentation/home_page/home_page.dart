@@ -4,6 +4,7 @@ import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/carousel/landing.dart';
 import 'package:meowlish/presentation/notifications_screen/notifications_screen.dart';
 import 'package:meowlish/presentation/popular_courses_screen/popular_courses_screen.dart';
+import 'package:meowlish/session/session.dart';
 import '../../data/models/accounts.dart';
 import '../../data/models/tutors.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,8 @@ class HomePageState extends State<HomePage> {
     loadCourse();
     loadTutor();
     fetchAccountData();
+
+    print("hello ne: " + SessionManager().getLearnerId().toString());
   }
   Future<void> fetchAccountData() async {
     Account acc = await Network.getAccount();

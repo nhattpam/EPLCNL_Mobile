@@ -18,10 +18,17 @@ class SessionManager {
   void setUserId(String id) {
     _preferences?.setString('userId', id);
   }
+  // Save the leaner ID to the session
+  void setLearnerId(String id) {
+    _preferences?.setString('learnerId', id);
+  }
 
   // Get the user ID from the session
   String? getUserId() {
     return _preferences?.getString('userId');
+  }
+  String? getLearnerId() {
+    return _preferences?.getString('learnerId');
   }
 
   // Clear user session data (logout)

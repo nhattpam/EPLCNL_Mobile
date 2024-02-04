@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/learners.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_checkbox_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
@@ -27,9 +29,11 @@ class LoginScreenState extends State<LoginScreen> {
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  late Leaner? _leaner = Leaner();
   @override
   void initState() {
     super.initState();
+
   }
   void loginPressed() async {
     final email = emailController.text;

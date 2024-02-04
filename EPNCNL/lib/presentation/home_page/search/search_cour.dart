@@ -81,80 +81,85 @@ class SearchCourse extends SearchDelegate {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(limitedText,
-                                style: CustomTextStyles.labelLargeOrangeA700),
-                            SizedBox(height: 10),
-                            Text(
-                              '${data?[index].description}',
-                              style: theme.textTheme.titleMedium,
-                            ),
-                          ]),
-                      SizedBox(width: 20),
-                      Row(
-                        children: [
-                          Text(
-                            '\$${data?[index].stockPrice.toString()}',
-                            style: CustomTextStyles.titleSmallPrimary,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 17.h),
-                            child: Text(
-                              "|",
-                              style: CustomTextStyles.titleSmallBlack900,
-                            ),
-                          ),
-                          Container(
-                            width: 32.h,
-                            margin: EdgeInsets.only(
-                              left: 16.h,
-                              top: 3.v,
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.star,
-                                  // Replace with the desired signal icon
-                                  size: 14.v,
-                                  color: Colors.yellow,
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 3.h),
-                                  child: Text(
-                                    // course.rating.toString(),
-                                    "2.0",
-                                    style: theme.textTheme.labelMedium,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(limitedText,
+                                  style: CustomTextStyles.labelLargeOrangeA700),
+                              SizedBox(height: 10),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '\$${data?[index].stockPrice.toString()}',
+                                    style: CustomTextStyles.titleSmallPrimary,
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 16.h),
-                            child: Text(
-                              "|",
-                              style: CustomTextStyles.titleSmallBlack900,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              left: 16.h,
-                              top: 3.v,
-                            ),
-                            child: Text(
-                              "7830 Enroll",
-                              style: theme.textTheme.labelMedium,
-                            ),
-                          ),
-                        ],
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 17.h),
+                                    child: Text(
+                                      "|",
+                                      style: CustomTextStyles.titleSmallBlack900,
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 32.h,
+                                    margin: EdgeInsets.only(
+                                      left: 16.h,
+                                      top: 3.v,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.star,
+                                          // Replace with the desired signal icon
+                                          size: 14.v,
+                                          color: Colors.yellow,
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 3.h),
+                                          child: Text(
+                                            // course.rating.toString(),
+                                            "${data?[index].rating.toString()}",
+                                            style: theme.textTheme.labelMedium,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 16.h),
+                                    child: Text(
+                                      "|",
+                                      style: CustomTextStyles.titleSmallBlack900,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: 16.h,
+                                      top: 3.v,
+                                    ),
+                                    child: Text(
+                                      "7830 Enroll",
+                                      style: theme.textTheme.labelMedium,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                '${data?[index].description}',
+                                style: theme.textTheme.titleMedium,
+                              ),
+
+                            ]),
                       ),
                     ],
                   ),
                 );
-              });
+              },
+          );
         });
   }
 
@@ -187,7 +192,7 @@ class SearchCourse extends SearchDelegate {
             // youraccounthavebeencreated2gR (479:363)
             margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 48 * fem),
             child: Text(
-              'Search for authors, stories, categories',
+              'Search for tutor, courses, categories',
               maxLines: 1,
               textAlign: TextAlign.center,
             ),

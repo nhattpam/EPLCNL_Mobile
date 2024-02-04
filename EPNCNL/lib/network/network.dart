@@ -7,6 +7,7 @@ import 'package:meowlish/data/models/classlessons.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/classtopics.dart';
 import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/learners.dart';
 import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/data/models/tutors.dart';
@@ -49,6 +50,7 @@ class Network {
         // Access the JWT token from the response
         final jwtToken = jsonResponse['data'];
 
+          // Check if the 'role' key exists in the JSON response
         print('this is JWT: ' + jwtToken);
 
         // To decode the token
@@ -64,6 +66,11 @@ class Network {
 
         print('User ID: $userId');
         print('day la session id: ' + SessionManager().getUserId().toString());
+
+        //get learnerId
+        Leaner leaner = await Network.getLeaner();
+
+        SessionManager().setLearnerId(leaner.id.toString());
 
         // Return true to indicate a successful login
         return true;
@@ -155,8 +162,37 @@ class Network {
      throw Exception('An error occurred: $e');
    }
  }
+ static Future<Leaner> getLeaner() async {
+   final accountId = SessionManager().getUserId() ?? 0;
+   final apiUrl = 'https://nhatpmse.twentytwo.asia/api/accounts/$accountId/learners'; // Replace with your API URL
+    print(apiUrl);
+   try {
+     final response = await http.get(
+       Uri.parse(apiUrl),
+       headers: {
+         'Content-Type': 'application/json',
+       },
+     );
 
-  static Future<void> createLearner({
+     if (response.statusCode == 200) {
+       // If the request is successful, parse the JSON response
+       final dynamic petJson = jsonDecode(response.body);
+
+       // Map the JSON object to a User object and return it
+       return Leaner.fromJson(petJson);
+     } else {
+       // If the request fails, throw an exception or return null
+       throw Exception(
+           'Failed to fetch account. Status code: ${response.statusCode}');
+     }
+   } catch (e) {
+     // Handle any exceptions that may occur during the request
+     throw Exception('An error occurred: $e');
+   }
+ }
+
+
+ static Future<void> createLearner({
     required String accountId,
   }) async {
     final learnerData = {

@@ -197,7 +197,6 @@ class AppRoutes {
     curriculcumScreen: (context) => CurriculcumScreen(),
     reviewsScreen: (context) => ReviewsScreen(),
     writeAReviewsScreen: (context) => WriteAReviewsScreen(),
-    paymentMethodsScreen: (context) => PaymentMethodsScreen(),
     paymentMethods1Screen: (context) => PaymentMethods1Screen(),
     myCourseLessonsScreen: (context) => MyCourseLessonsScreen(),
     myCourseCertificateScreen: (context) => MyCourseCertificateScreen(),

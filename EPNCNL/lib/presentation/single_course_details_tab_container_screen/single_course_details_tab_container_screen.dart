@@ -84,10 +84,7 @@ class SingleCourseDetailsTabContainerScreenState
                 _buildArrowDown(context),
                 SizedBox(
                   height: 881.v,
-                  child: Navigator(
-                    key: _navKey,
-                    onGenerateRoute: (_) => MaterialPageRoute(
-                      builder: (_) => TabBarView(
+                  child: TabBarView(
                         controller: tabviewController,
                         children: [
                           SingleMeetCourseDetailsPage(
@@ -98,8 +95,6 @@ class SingleCourseDetailsTabContainerScreenState
                         ],
                       ),
                     ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -452,7 +447,7 @@ class SingleCourseDetailsCurriculumPageState
 
                       SizedBox(height: 21.v),
                       CustomElevatedButton(
-                        text: "Enroll Course",
+                        text: "Enroll Course - \$${chosenCourse.stockPrice}",
                       )
                     ],
                   ),

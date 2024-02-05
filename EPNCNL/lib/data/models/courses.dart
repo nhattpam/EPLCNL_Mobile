@@ -10,7 +10,7 @@ class Course {
   String? code;
   String? imageUrl;
   String? tutorId;
-  int? stockPrice;
+  num? stockPrice;
   bool? isActive;
   bool? isOnlineClass;
   num? rating;

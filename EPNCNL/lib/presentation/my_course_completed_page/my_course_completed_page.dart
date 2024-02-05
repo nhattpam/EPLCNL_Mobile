@@ -1,3 +1,4 @@
+import '../../widgets/custom_search_view.dart';
 import '../my_course_completed_page/widgets/userprofile4_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
@@ -20,55 +21,56 @@ class MyCourseCompletedPage extends StatelessWidget {
                 decoration: AppDecoration.fillOnPrimaryContainer,
                 child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 34.h),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 70.v),
-                          Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomImageView(
-                                    imagePath:
-                                        ImageConstant.imgArrowDownBlueGray900,
-                                    height: 20.v,
-                                    width: 26.h,
-                                    margin:
-                                        EdgeInsets.only(top: 3.v, bottom: 5.v)),
-                                Padding(
-                                    padding: EdgeInsets.only(left: 11.h),
-                                    child: Text("My Courses",
-                                        style: theme.textTheme.titleLarge))
-                              ]),
-                          SizedBox(height: 16.v),
-                          CustomTextFormField(
-                              controller: searchController,
-                              hintText: "Search for …",
-                              hintStyle:
-                                  CustomTextStyles.titleMediumMulishBluegray200,
-                              textInputAction: TextInputAction.done,
-                              suffix: Container(
-                                  padding: EdgeInsets.all(9.h),
-                                  margin: EdgeInsets.fromLTRB(
-                                      30.h, 13.v, 10.h, 13.v),
+                    child: SingleChildScrollView(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 70.v),
+                            Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomImageView(
+                                      imagePath:
+                                          ImageConstant.imgArrowDownBlueGray900,
+                                      height: 20.v,
+                                      width: 26.h,
+                                      margin:
+                                          EdgeInsets.only(top: 3.v, bottom: 5.v)),
+                                  Padding(
+                                      padding: EdgeInsets.only(left: 11.h),
+                                      child: Text("My Courses",
+                                          style: theme.textTheme.titleLarge))
+                                ]),
+                            SizedBox(height: 16.v),
+                            Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 14.h),
+                                child: Container(
                                   decoration: BoxDecoration(
-                                      color: theme.colorScheme.primary,
-                                      borderRadius:
-                                          BorderRadius.circular(10.h)),
-                                  child: CustomImageView(
-                                      imagePath: ImageConstant.imgContrast,
-                                      height: 20.adaptSize,
-                                      width: 20.adaptSize)),
-                              suffixConstraints:
-                                  BoxConstraints(maxHeight: 64.v),
-                              contentPadding: EdgeInsets.only(
-                                  left: 15.h, top: 21.v, bottom: 21.v),
-                              borderDecoration:
-                                  TextFormFieldStyleHelper.outlineBlackTL15),
-                          SizedBox(height: 20.v),
-                          _buildCategory(context),
-                          SizedBox(height: 16.v),
-                          _buildUserProfile(context)
-                        ])))));
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey
+                                            .withOpacity(0.5),
+                                        // Adjust the color and opacity as needed
+                                        spreadRadius: 2,
+                                        blurRadius: 5,
+                                        offset: Offset(0,
+                                            3), // Adjust the offset to control the shadow's position
+                                      ),
+                                    ],
+                                  ),
+                                  child: CustomSearchView(
+                                      controller: searchController,
+                                      hintText: "Search for.."),
+                                )),
+                            SizedBox(height: 20.v),
+                            _buildCategory(context),
+                            SizedBox(height: 16.v),
+                            _buildUserProfile(context),
+                            SizedBox(height: 16.v),
+
+                          ]),
+                    )))));
   }
 
   /// Section Widget
@@ -98,7 +100,7 @@ class MyCourseCompletedPage extends StatelessWidget {
   /// Section Widget
   Widget _buildUserProfile(BuildContext context) {
     return ListView.separated(
-        physics: NeverScrollableScrollPhysics(),
+        physics: ScrollPhysics(),
         shrinkWrap: true,
         separatorBuilder: (context, index) {
           return SizedBox(height: 20.v);

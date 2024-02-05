@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
+
+import '../single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 // ignore_for_file: must_be_immutable
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -296,132 +298,145 @@ class HomePageState extends State<HomePage> {
                           itemCount: listCourse.length,
                           itemBuilder: (context, index) {
                             final course = listCourse[index];
-                            return SingleChildScrollView(
-                              physics: NeverScrollableScrollPhysics(),
-                              child: Container(
-                                decoration: AppDecoration.outlineBlack.copyWith(
-                                  borderRadius:
-                                      BorderRadiusStyle.roundedBorder22,
-                                ),
-                                width: 280.h,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Image.network(
-                                      course.imageUrl
-                                          .toString(), // Replace 'path_to_your_image' with the actual path to your image asset
-                                      height: 134.v,
-                                      width: 280.h,
-                                      fit: BoxFit
-                                          .cover, // Adjust the BoxFit property based on your image requirements
+                            return GestureDetector(
+                              onTap: (){
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SingleCourseDetailsTabContainerScreen(
+                                      courseID: course.id.toString(),
+                                      tutorID: course.tutorId.toString() ,
                                     ),
-                                    SizedBox(height: 10.v),
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            course.category!.description
-                                                .toString(),
-                                            style: CustomTextStyles
-                                                .labelLargeOrangeA700,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 70.0),
-                                            child: Icon(
-                                              Icons
-                                                  .bookmark_add_outlined, // Replace with the desired icon
-                                              size: 30.v,
-                                              color: Color(
-                                                  0xFF168F71), // Specify the desired color,
-                                            ),
-                                          ),
-                                        ],
+                                  ),
+                                );
+                              },
+                              child: SingleChildScrollView(
+                                physics: NeverScrollableScrollPhysics(),
+                                child: Container(
+                                  decoration: AppDecoration.outlineBlack.copyWith(
+                                    borderRadius:
+                                        BorderRadiusStyle.roundedBorder22,
+                                  ),
+                                  width: 280.h,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Image.network(
+                                        course.imageUrl
+                                            .toString(), // Replace 'path_to_your_image' with the actual path to your image asset
+                                        height: 134.v,
+                                        width: 280.h,
+                                        fit: BoxFit
+                                            .cover, // Adjust the BoxFit property based on your image requirements
                                       ),
-                                    ),
-                                    SizedBox(height: 4.v),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 14.h),
-                                      child: Text(
-                                        course.name.toString(),
-                                        style: theme.textTheme.titleMedium,
-                                      ),
-                                    ),
-                                    SizedBox(height: 9.v),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 14.h),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            '\$${course.stockPrice.toString()}',
-                                            style: CustomTextStyles
-                                                .titleSmallPrimary,
-                                          ),
-                                          Padding(
-                                            padding:
-                                                EdgeInsets.only(left: 17.h),
-                                            child: Text(
-                                              "|",
+                                      SizedBox(height: 10.v),
+                                      Align(
+                                        alignment: Alignment.center,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              course.category!.description
+                                                  .toString(),
                                               style: CustomTextStyles
-                                                  .titleSmallBlack900,
+                                                  .labelLargeOrangeA700,
                                             ),
-                                          ),
-                                          Container(
-                                            width: 32.h,
-                                            margin: EdgeInsets.only(
-                                              left: 16.h,
-                                              top: 3.v,
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 70.0),
+                                              child: Icon(
+                                                Icons
+                                                    .bookmark_add_outlined, // Replace with the desired icon
+                                                size: 30.v,
+                                                color: Color(
+                                                    0xFF168F71), // Specify the desired color,
+                                              ),
                                             ),
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons
-                                                      .star, // Replace with the desired signal icon
-                                                  size: 14.v,
-                                                  color: Colors.yellow,
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 3.h),
-                                                  child: Text(
-                                                    // course.rating.toString(),
-                                                    "2.0",
-                                                    style: theme
-                                                        .textTheme.labelMedium,
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 4.v),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 14.h),
+                                        child: Text(
+                                          course.name.toString(),
+                                          style: theme.textTheme.titleMedium,
+                                        ),
+                                      ),
+                                      SizedBox(height: 9.v),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 14.h),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              '\$${course.stockPrice.toString()}',
+                                              style: CustomTextStyles
+                                                  .titleSmallPrimary,
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 17.h),
+                                              child: Text(
+                                                "|",
+                                                style: CustomTextStyles
+                                                    .titleSmallBlack900,
+                                              ),
+                                            ),
+                                            Container(
+                                              width: 32.h,
+                                              margin: EdgeInsets.only(
+                                                left: 16.h,
+                                                top: 3.v,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons
+                                                        .star, // Replace with the desired signal icon
+                                                    size: 14.v,
+                                                    color: Colors.yellow,
                                                   ),
-                                                ),
-                                              ],
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 3.h),
+                                                    child: Text(
+                                                      // course.rating.toString(),
+                                                      "2.0",
+                                                      style: theme
+                                                          .textTheme.labelMedium,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          Padding(
-                                            padding:
-                                                EdgeInsets.only(left: 16.h),
-                                            child: Text(
-                                              "|",
-                                              style: CustomTextStyles
-                                                  .titleSmallBlack900,
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 16.h),
+                                              child: Text(
+                                                "|",
+                                                style: CustomTextStyles
+                                                    .titleSmallBlack900,
+                                              ),
                                             ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.only(
-                                              left: 16.h,
-                                              top: 3.v,
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                left: 16.h,
+                                                top: 3.v,
+                                              ),
+                                              child: Text(
+                                                "7830 Enroll",
+                                                style:
+                                                    theme.textTheme.labelMedium,
+                                              ),
                                             ),
-                                            child: Text(
-                                              "7830 Enroll",
-                                              style:
-                                                  theme.textTheme.labelMedium,
-                                            ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: 21.v),
-                                  ],
+                                      SizedBox(height: 21.v),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );

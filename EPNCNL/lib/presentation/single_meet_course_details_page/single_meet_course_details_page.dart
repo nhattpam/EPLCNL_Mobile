@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/paymentmethods.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/payment_methods_screen/payment_methods_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:readmore/readmore.dart';
 
@@ -210,7 +212,17 @@ class SingleMeetCourseDetailsPageState
                                 ])),
                             SizedBox(height: 56.v),
                             CustomElevatedButton(
-                                text: "Enroll Course",
+                                text: "Enroll Course - \$${chosenCourse.stockPrice}",
+                              onPressed: (){
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PaymentMethodsScreen(
+                                      courseID: widget.courseID,
+                                    ),
+                                  ),
+                                );
+                              },
                                 )
                           ]))
                 ])))));

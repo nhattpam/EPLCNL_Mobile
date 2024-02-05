@@ -2,55 +2,87 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class PaymentMethodsScreen extends StatelessWidget {
-  const PaymentMethodsScreen({Key? key})
+import '../../data/models/courses.dart';
+import '../../network/network.dart';
+
+class PaymentMethodsScreen extends StatefulWidget {
+  final String courseID;
+  const PaymentMethodsScreen({Key? key, required this.courseID})
       : super(
           key: key,
         );
 
   @override
+  PaymentMethodsScreenState createState() =>
+      PaymentMethodsScreenState();
+}
+
+class PaymentMethodsScreenState
+    extends State<PaymentMethodsScreen> {
+  late Course chosenCourse = Course();
+
+  late String? transactionId;
+
+  late String paymentUrl;
+  @override
+  void initState() {
+    super.initState();
+    loadCourseByCourseID();
+  }
+
+  Future<void> loadCourseByCourseID() async {
+    try {
+      final course = await Network.getCourseByCourseID(widget.courseID);
+      setState(() {
+        chosenCourse = course;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          toolbarHeight: 65,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              width: 300,
+              height: 100, // Add margin
+              child: Text(
+                'Payment Methods',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
         body: Container(
           width: double.maxFinite,
           padding: EdgeInsets.symmetric(
             horizontal: 31.h,
-            vertical: 30.v,
+            vertical: 5.v
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 39.v),
-              Padding(
-                padding: EdgeInsets.only(left: 4.h),
-                child: Row(
-                  children: [
-                    CustomImageView(
-                      imagePath: ImageConstant.imgArrowDownBlueGray900,
-                      height: 20.v,
-                      width: 26.h,
-                      margin: EdgeInsets.only(
-                        top: 4.v,
-                        bottom: 5.v,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 11.h),
-                      child: Text(
-                        "Payment Methods",
-                        style: theme.textTheme.titleLarge,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 25.v),
               _buildPaymentMethodsRow(context),
               SizedBox(height: 21.v),
               Padding(
-                padding: EdgeInsets.only(left: 4.h),
+                padding: EdgeInsets.only(left: 10.h),
                 child: Text(
                   "Select the Payment Methods you Want to Use",
                   style: theme.textTheme.titleSmall,
@@ -59,19 +91,6 @@ class PaymentMethodsScreen extends StatelessWidget {
               SizedBox(height: 35.v),
               _buildPaymentOptionsRow(context),
               Spacer(),
-              Padding(
-                padding: EdgeInsets.only(right: 16.h),
-                child: CustomIconButton(
-                  height: 62.adaptSize,
-                  width: 62.adaptSize,
-                  padding: EdgeInsets.all(18.h),
-                  decoration: IconButtonStyleHelper.outlineBlackTL31,
-                  alignment: Alignment.centerRight,
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgCloseOnprimarycontainer,
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -95,33 +114,28 @@ class PaymentMethodsScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Container(
+          Image.network(
+            chosenCourse?.imageUrl ?? '', // Replace with your actual image URL
             height: 100.adaptSize,
             width: 100.adaptSize,
-            margin: EdgeInsets.only(top: 6.v),
-            decoration: BoxDecoration(
-              color: appTheme.black900,
-              borderRadius: BorderRadius.circular(
-                16.h,
-              ),
-            ),
+            fit: BoxFit.cover,
           ),
           Padding(
             padding: EdgeInsets.only(
               top: 33.v,
-              right: 8.h,
+              right: 20.h,
               bottom: 25.v,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Graphic Design",
+                  chosenCourse.category?.description ?? '',
                   style: CustomTextStyles.labelLargeOrangeA700,
                 ),
                 SizedBox(height: 7.v),
                 Text(
-                  "Setup your Graphic Desig..",
+                  chosenCourse?.name ?? '',
                   style: theme.textTheme.titleMedium,
                 ),
               ],
@@ -180,29 +194,40 @@ class PaymentMethodsScreen extends StatelessWidget {
     );
   }
 
+  Future<String?> _createTransaction() async {
+    try {
+      transactionId = await Network.createTransaction(courseId: widget.courseID, amount: chosenCourse.stockPrice!.toDouble() * 24000);
+      // orderId now contains the order ID returned from the API
+      print('Transaction ID pro : $transactionId');
+      return transactionId;
+    } catch (e) {
+      print('Error creating transaction: $e');
+    }
+    return "not found transaction";
+  }
+
   /// Section Widget
   Widget _buildEnrollCourseButton(BuildContext context) {
     return CustomElevatedButton(
-      text: "Enroll Course - 55",
+      onPressed: () async {
+        await _createTransaction(); // Assuming _createTransaction is asynchronous
+
+        try {
+          paymentUrl = await Network.payTransaction(transactionId);
+          print("vcl: " + paymentUrl);
+          launch(paymentUrl);
+          // Do something with paymentUrl if needed
+        } catch (e) {
+          // Handle the error, e.g., show an error message
+          print('Error during payment transaction: $e');
+        }
+      },
+
+      text: "Pay",
       margin: EdgeInsets.only(
         left: 39.h,
         right: 39.h,
         bottom: 53.v,
-      ),
-      rightIcon: Container(
-        padding: EdgeInsets.fromLTRB(14.h, 16.v, 12.h, 14.v),
-        margin: EdgeInsets.only(left: 30.h),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.onPrimaryContainer,
-          borderRadius: BorderRadius.circular(
-            24.h,
-          ),
-        ),
-        child: CustomImageView(
-          imagePath: ImageConstant.imgFill1Primary,
-          height: 17.v,
-          width: 21.h,
-        ),
       ),
     );
   }

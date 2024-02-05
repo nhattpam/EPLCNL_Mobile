@@ -583,6 +583,76 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+//////////Transaction
+  static Future<String> createTransaction(
+      {
+        required String courseId,
+        required double amount,
+
+      }) async {
+    final userData = {
+      "paymentMethodId": "1dffb0d3-f5a5-4725-98fc-b4dea22f4b0e",
+      "amount": amount,
+      "learnerId": SessionManager().getLearnerId(),
+      "courseId": courseId,
+    };
+
+    final jsonData = jsonEncode(userData);
+
+    // Print the JSON data before making the API call
+    print('JSON Data: $jsonData');
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/transactions'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+      // Extract the authCode
+      final transactionId = jsonResponse['id'];
+      //set accountId to create learner
+      print("After create transaction:  " + transactionId.toString());
+      return transactionId;
+    }
+    else {
+      print('Create transaction failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
+      return "null transactionId";
+    }
+  }
+
+  static Future<String> payTransaction(String? transactionId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/transactions/$transactionId/pay'; // Replace with your API URL
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      print("this is link pay: " + apiUrl);
+
+      if (response.statusCode == 200) {
+        // Map the JSON object to a User object and return it
+        return json.decode(json.encode(response.body));
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to retrieve payment link. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
 
 
 }

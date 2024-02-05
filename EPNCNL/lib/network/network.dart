@@ -10,8 +10,10 @@ import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/learners.dart';
 import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
+import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/tutors.dart';
 
+import '../data/models/enrollments.dart';
 import '../session/session.dart';
 
 typedef AuthCodeCallback = void Function(String authCode);
@@ -555,6 +557,8 @@ class Network {
     }
   }
 
+
+  //class module
   static Future<ClassModule> getClassModule(String classModuleId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/class-modules/$classModuleId'; // Replace with your API URL
@@ -650,6 +654,105 @@ class Network {
       }
     } catch (e) {
       // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<Transaction> getTransactionByTransactionId(String? transactionId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/transactions/$transactionId'; // Replace with your API URL
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic transactionJson = jsonDecode(response.body);
+
+        // Map the JSON object to a User object and return it
+        return Transaction.fromJson(transactionJson);
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch transaction by id. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+  //enrollment
+  static Future<String> createEnrollment(Enrollment enrollment) async {
+    final userData = {
+      "status": enrollment.status,
+      "learnerId": SessionManager().getLearnerId(),
+      "courseId": enrollment.courseId,
+      "enrolledDate" : enrollment.enrolledDate
+    };
+
+    final jsonData = jsonEncode(userData);
+
+    // Print the JSON data before making the API call
+    print('JSON Data: $jsonData');
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/enrollments'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+      // Extract the authCode
+      final enrollmentId = jsonResponse['id'];
+      //set accountId to create learner
+      print("After create enrollment:  " + enrollmentId.toString());
+      return enrollmentId;
+    }
+    else {
+      print('Create enrollment failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
+      return "null transactionId";
+    }
+  }
+
+  static Future<Enrollment> getEnrollmentByLearnerAndCourseId(String learnerId, String courseId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/enrollments?learnerId=$learnerId&courseId=$courseId';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('API Response: ${response.body}'); // Add this line to print the response
+
+      if (response.statusCode == 200) {
+        final dynamic enrollmentJson = jsonDecode(response.body);
+        if (enrollmentJson is List) {
+          // If it's a list, extract the first element (assuming it's the desired object)
+          return Enrollment.fromJson(enrollmentJson.first);
+        } else if (enrollmentJson is Map<String, dynamic>) {
+          // If it's a map, decode directly
+          return Enrollment.fromJson(enrollmentJson);
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else {
+        throw Exception('Failed to fetch enrollment. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
       throw Exception('An error occurred: $e');
     }
   }

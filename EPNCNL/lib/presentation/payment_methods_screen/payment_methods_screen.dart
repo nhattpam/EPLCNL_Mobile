@@ -1,18 +1,23 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/models/courses.dart';
+import '../../data/models/transactions.dart';
 import '../../network/network.dart';
+import '../single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 
 class PaymentMethodsScreen extends StatefulWidget {
   final String courseID;
   const PaymentMethodsScreen({Key? key, required this.courseID})
       : super(
-          key: key,
-        );
+    key: key,
+  );
 
   @override
   PaymentMethodsScreenState createState() =>
@@ -23,13 +28,27 @@ class PaymentMethodsScreenState
     extends State<PaymentMethodsScreen> {
   late Course chosenCourse = Course();
 
-  late String? transactionId;
+  late String? transactionId = "";
 
   late String paymentUrl;
+
+  bool isLoading = false;
+
+  late Timer _timer;
+
+  late Enrollment enrollment = Enrollment();
+
   @override
   void initState() {
     super.initState();
     loadCourseByCourseID();
+  }
+
+  @override
+  void dispose() {
+    // Cancel the timer when the widget is disposed
+    _timer.cancel();
+    super.dispose();
   }
 
   Future<void> loadCourseByCourseID() async {
@@ -73,8 +92,8 @@ class PaymentMethodsScreenState
         body: Container(
           width: double.maxFinite,
           padding: EdgeInsets.symmetric(
-            horizontal: 31.h,
-            vertical: 5.v
+              horizontal: 31.h,
+              vertical: 5.v
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,27 +227,123 @@ class PaymentMethodsScreenState
 
   /// Section Widget
   Widget _buildEnrollCourseButton(BuildContext context) {
-    return CustomElevatedButton(
+    return ElevatedButton(
       onPressed: () async {
-        await _createTransaction(); // Assuming _createTransaction is asynchronous
+        String? transactionId = await _createTransaction();
 
-        try {
-          paymentUrl = await Network.payTransaction(transactionId);
-          print("vcl: " + paymentUrl);
-          launch(paymentUrl);
-          // Do something with paymentUrl if needed
-        } catch (e) {
-          // Handle the error, e.g., show an error message
-          print('Error during payment transaction: $e');
+        if (transactionId != null) {
+          // Set loading state when the transaction is being processed
+          setState(() {
+            isLoading = true;
+          });
+
+          try {
+            Transaction transaction = await Network.getTransactionByTransactionId(transactionId);
+
+            // Start the periodic timer to check transaction status every 5 seconds
+            _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+              if (!isLoading) {
+                _checkTransactionStatus();
+              }
+            });
+
+            // Status is "DONE", proceed with payment
+            if (transaction.status == "DONE") {
+              print("DONE ");
+              // Do something with paymentUrl if needed
+              // Change the button text to "Enroll Course" and show the button
+            } else {
+              print("NOT DONE YET");
+              // If status is not "DONE", show loading indicator or perform other actions
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    content: CircularProgressIndicator(),
+                  );
+                },
+              );
+
+              // Call payTransaction only if the status is not "DONE"
+              paymentUrl = await Network.payTransaction(transactionId);
+              print("vcl: " + paymentUrl);
+              launch(paymentUrl);
+            }
+          } catch (e) {
+            // Handle the error, e.g., show an error message
+            print('Error during payment transaction: $e');
+          } finally {
+            // Set loading state to false after the transaction processing is complete
+            setState(() {
+              isLoading = false;
+            });
+          }
         }
       },
-
-      text: "Pay",
-      margin: EdgeInsets.only(
-        left: 39.h,
-        right: 39.h,
-        bottom: 53.v,
+      child: Text(isLoading ? "Processing..." : "Pay"),
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(horizontal: 20),
       ),
     );
   }
+
+
+  Future<void> _checkTransactionStatus() async {
+    try {
+      Transaction transaction = await Network.getTransactionByTransactionId(transactionId);
+
+      // Status is "DONE", proceed with payment
+      if (transaction.status == "DONE") {
+        print("DONE ");
+        // Do something with paymentUrl if needed
+        // Change the button text to "Enroll Course" and show the button
+        // Cancel the timer as the status is now "DONE"
+        _timer.cancel();
+
+        enrollment = new Enrollment(
+            courseId: chosenCourse.id,
+            status: "0",
+            enrolledDate: transaction.transactionDate,
+            totalGrade: 0
+        );
+        await Network.createEnrollment(enrollment);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SingleCourseDetailsTabContainerScreen(
+              courseID: chosenCourse.id.toString(),
+              tutorID: chosenCourse.tutorId.toString(),
+            ),
+          ),
+        );
+
+
+
+      } else {
+        print("NOT DONE YET");
+        // If status is not "DONE", show loading indicator or perform other actions
+        setState(() {
+          isLoading = true;
+        });
+
+        // Call payTransaction only if the status is not "DONE"
+        paymentUrl = await Network.payTransaction(transactionId);
+        print("vcl: " + paymentUrl);
+        launch(paymentUrl);
+      }
+    } catch (e) {
+      // Handle the error, e.g., show an error message
+      print('Error during payment transaction: $e');
+    } finally {
+      // Set loading state to false after the transaction processing is complete
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+
+
+
+
 }

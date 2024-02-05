@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/paymentmethods.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/payment_methods_screen/payment_methods_screen.dart';
@@ -8,6 +9,7 @@ import 'package:readmore/readmore.dart';
 
 import '../../data/models/courses.dart';
 import '../../data/models/tutors.dart';
+import '../../session/session.dart';
 
 class SingleMeetCourseDetailsPage extends StatefulWidget {
   final String courseID;
@@ -27,11 +29,14 @@ class SingleMeetCourseDetailsPageState
   late Tutor chosenTutor = Tutor();
   late Course chosenCourse = Course();
 
+  late Enrollment enrollment = Enrollment();
+
   @override
   void initState() {
     super.initState();
     loadTutorByTutorID();
     loadCourseByCourseID();
+    loadEnrollmentByLearnerAndCourseId();
   }
 
   Future<void> loadCourseByCourseID() async {
@@ -58,8 +63,32 @@ class SingleMeetCourseDetailsPageState
     }
   }
 
+  Future<void> loadEnrollmentByLearnerAndCourseId() async {
+    try {
+      final enrollmentResponse = await Network.getEnrollmentByLearnerAndCourseId(
+        SessionManager().getLearnerId().toString(),
+        widget.courseID,
+      );
+
+      setState(() {
+        enrollment = enrollmentResponse;
+        print("Enrollment ID: ${enrollment.id}");
+        print("Enrollment Learner ID: ${enrollment.learnerId}");
+        print("Enrollment Course ID: ${enrollment.courseId}");
+        // Add more print statements for other properties if needed
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
+
+    bool isEnrolled = enrollment.id != null;
+
     return SafeArea(
         child: Scaffold(
             body: SizedBox(
@@ -211,19 +240,35 @@ class SingleMeetCourseDetailsPageState
                                           style: theme.textTheme.titleSmall))
                                 ])),
                             SizedBox(height: 56.v),
-                            CustomElevatedButton(
+                            if (!isEnrolled)
+                              CustomElevatedButton(
                                 text: "Enroll Course - \$${chosenCourse.stockPrice}",
-                              onPressed: (){
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PaymentMethodsScreen(
-                                      courseID: widget.courseID,
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PaymentMethodsScreen(
+                                        courseID: widget.courseID,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                                )
+                                  );
+                                },
+                              ),
+
+                            if (isEnrolled)
+                              CustomElevatedButton(
+                                text: "Study Now",
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PaymentMethodsScreen(
+                                        courseID: widget.courseID,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                           ]))
                 ])))));
   }

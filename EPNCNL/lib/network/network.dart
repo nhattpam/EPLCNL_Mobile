@@ -527,7 +527,7 @@ class Network {
   ////// Put Api for Module here
   static Future<List<ClassModule>> getClassModulesByCourseId(String courseId) async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/courses/$courseId/class-modules';
-
+    print(apiUrl);
     try {
       final response = await http.get(
         Uri.parse(apiUrl),

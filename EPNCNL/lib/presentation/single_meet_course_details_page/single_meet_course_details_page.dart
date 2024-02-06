@@ -9,6 +9,7 @@ import 'package:readmore/readmore.dart';
 import '../../data/models/courses.dart';
 import '../../data/models/tutors.dart';
 import '../../session/session.dart';
+import '../single_course_meet_details_curriculcum_page/single_course_meet_details_curriculcum_page.dart';
 
 class SingleMeetCourseDetailsPage extends StatefulWidget {
   final String courseID;
@@ -254,7 +255,21 @@ class SingleMeetCourseDetailsPageState
                                 },
                               ),
 
-                            if (isEnrolled)
+                            if (isEnrolled && chosenCourse.isOnlineClass == true)
+                              CustomElevatedButton(
+                                text: "Study Now",
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => SingleCourseMeetDetailsCurriculcumPage(
+                                        courseID: widget.courseID,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            if (isEnrolled && chosenCourse.isOnlineClass == false)
                               CustomElevatedButton(
                                 text: "Study Now",
                                 onPressed: () {

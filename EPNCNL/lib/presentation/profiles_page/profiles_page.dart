@@ -4,6 +4,7 @@ import 'package:meowlish/data/models/accounts.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/edit_profiles_screen/edit_profiles_screen.dart';
 import 'package:meowlish/presentation/login_screen/login_screen.dart';
+import 'package:meowlish/presentation/terms_conditions_screen/terms_conditions_screen.dart';
 import 'package:meowlish/session/session.dart';
 
 class ProfilesPage extends StatefulWidget {
@@ -167,30 +168,35 @@ class ProfilesPageState extends State<ProfilesPage> {
                                                   Padding(
                                                       padding: EdgeInsets.only(
                                                           left: 1.h),
-                                                      child: Row(
-                                                          mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                          children: [
-                                                            Icon(
-                                                              Icons.health_and_safety_outlined,
-                                                              size: 17.v, // Adjust the size according to your needs
-                                                            ),
-                                                            Padding(
-                                                                padding: EdgeInsets
-                                                                    .only(
-                                                                    left: 12
-                                                                        .h),
-                                                                child: Text(
-                                                                    "Terms & Conditions",
-                                                                    style: CustomTextStyles
-                                                                        .titleSmallBluegray90015)),
-                                                            Spacer(),
-                                                             Icon(
-                                                              Icons.arrow_forward,
-                                                              size: 17.v, // Adjust the size according to your needs
-                                                            ),
-                                                          ])),
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          onTapTermsCondition(context);
+                                                        },
+                                                        child: Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                            children: [
+                                                              Icon(
+                                                                Icons.health_and_safety_outlined,
+                                                                size: 17.v, // Adjust the size according to your needs
+                                                              ),
+                                                              Padding(
+                                                                  padding: EdgeInsets
+                                                                      .only(
+                                                                      left: 12
+                                                                          .h),
+                                                                  child: Text(
+                                                                      "Terms & Conditions",
+                                                                      style: CustomTextStyles
+                                                                          .titleSmallBluegray90015)),
+                                                              Spacer(),
+                                                               Icon(
+                                                                Icons.arrow_forward,
+                                                                size: 17.v, // Adjust the size according to your needs
+                                                              ),
+                                                            ]),
+                                                      )),
                                                   Spacer(),
                                                 ]))),
                               Align(
@@ -226,6 +232,13 @@ class ProfilesPageState extends State<ProfilesPage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => EditProfilesScreen()),
+    );
+  }
+
+  onTapTermsCondition(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => TermsConditionsScreen()),
     );
   }
 }

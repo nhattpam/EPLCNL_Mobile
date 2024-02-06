@@ -14,6 +14,7 @@ import '../../network/network.dart';
 import '../../session/session.dart';
 import '../../widgets/custom_elevated_button.dart';
 import '../payment_methods_screen/payment_methods_screen.dart';
+import '../single_course_meet_details_curriculcum_page/single_course_meet_details_curriculcum_page.dart';
 
 final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
@@ -465,7 +466,6 @@ class SingleCourseDetailsCurriculumPageState
                         _buildVideoCourseListView(),
                       if (chosenCourse.isOnlineClass == true)
                         _buildClassCourseListView(),
-
                       SizedBox(height: 21.v),
                       if (!isEnrolled)
                         CustomElevatedButton(
@@ -481,7 +481,6 @@ class SingleCourseDetailsCurriculumPageState
                             );
                           },
                         ),
-
                       if (isEnrolled)
                         CustomElevatedButton(
                           text: "Study Now",
@@ -489,7 +488,7 @@ class SingleCourseDetailsCurriculumPageState
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => PaymentMethodsScreen(
+                                builder: (context) => SingleCourseMeetDetailsCurriculcumPage(
                                   courseID: widget.courseID,
                                 ),
                               ),

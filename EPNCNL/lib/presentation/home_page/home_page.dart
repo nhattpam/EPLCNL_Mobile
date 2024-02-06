@@ -255,6 +255,7 @@ class HomePageState extends State<HomePage> {
                     Text(
                       tutors.account!.fullName ?? 'MC',
                       style: CustomTextStyles.labelLargeJostBluegray900,
+                      maxLines: 1,
                     ),
                   ],
                 ),

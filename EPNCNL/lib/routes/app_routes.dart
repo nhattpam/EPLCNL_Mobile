@@ -191,7 +191,6 @@ class AppRoutes {
         SingleMentorDetailsRatingTabContainerScreen(),
     doingAssignmentScreen: (context) => DoingAssignmentScreen(),
     doingQuizScreen: (context) => DoingQuizScreen(),
-    curriculcumScreen: (context) => CurriculcumScreen(),
     reviewsScreen: (context) => ReviewsScreen(),
     writeAReviewsScreen: (context) => WriteAReviewsScreen(),
     paymentMethods1Screen: (context) => PaymentMethods1Screen(),

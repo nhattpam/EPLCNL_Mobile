@@ -397,7 +397,6 @@ class SingleCourseDetailsCurriculumPageState
     });
   }
 
-
   Future<void> loadLessonByModuleId(String moduleId) async {
     List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
     setState(() {

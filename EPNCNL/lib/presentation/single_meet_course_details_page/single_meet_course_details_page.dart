@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/curriculcum_screen/curriculcum_screen.dart';
 import 'package:meowlish/presentation/payment_methods_screen/payment_methods_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:readmore/readmore.dart';
@@ -276,7 +277,7 @@ class SingleMeetCourseDetailsPageState
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => PaymentMethodsScreen(
+                                      builder: (context) => CurriculumScreen(
                                         courseID: widget.courseID,
                                       ),
                                     ),

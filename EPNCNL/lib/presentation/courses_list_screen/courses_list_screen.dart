@@ -1,58 +1,114 @@
-import '../courses_list_screen/widgets/productcard1_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
-import 'package:meowlish/presentation/home_page/home_page.dart';
-import 'package:meowlish/presentation/indox_calls_page/indox_calls_page.dart';
-import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
-import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
-import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
-import 'package:meowlish/widgets/custom_bottom_bar.dart';
+import 'package:meowlish/data/models/categories.dart';
+import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/network/network.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
 
+import '../courses_list_screen/widgets/productcard1_item_widget.dart';
+
 // ignore_for_file: must_be_immutable
-class CoursesListScreen extends StatelessWidget {
-  CoursesListScreen({Key? key}) : super(key: key);
+class CoursesListScreen extends StatefulWidget {
+  final categoryId;
 
+  CoursesListScreen({Key? key, this.categoryId}) : super(key: key);
+
+  @override
+  CoursesListScreenState createState() => CoursesListScreenState();
+}
+
+class CoursesListScreenState extends State<CoursesListScreen> {
   TextEditingController searchController = TextEditingController();
+  late List<Course> listCourse = [];
+  late List<Course> chosenCategory = [];
+  late Category? _category = Category();
 
-  GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+  @override
+  void initState() {
+    super.initState();
+    loadCategoryByCategoryId();
+    loadCourse();
+    loadCourseByCategory();
+  }
+
+  void loadCategoryByCategoryId() async {
+    try {
+      final category = await Network.getCategoryByCategoryId(widget.categoryId);
+      setState(() {
+        _category = category;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+  void loadCourse() async {
+    List<Course> loadedCourse = await Network.getCourse();
+    setState(() {
+      listCourse = loadedCourse;
+    });
+  }
+
+  void loadCourseByCategory() async {
+    try {
+      final courses = await Network.getCourseByCategoryID(widget.categoryId);
+      setState(() {
+        chosenCategory = courses;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: Container(
-                width: double.maxFinite,
-                padding: EdgeInsets.symmetric(horizontal: 34.h),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 69.v),
-                      Row(children: [
-                        CustomImageView(
-                            imagePath: ImageConstant.imgArrowDownBlueGray900,
-                            height: 20.v,
-                            width: 26.h,
-                            margin: EdgeInsets.only(top: 5.v, bottom: 4.v)),
-                        Padding(
-                            padding: EdgeInsets.only(left: 11.h),
-                            child: Text("Online Courses",
-                                style: theme.textTheme.titleLarge))
-                      ]),
-                      SizedBox(height: 16.v),
-                      CustomSearchView(
-                          controller: searchController,
-                          hintText: "Graphic Design"),
-                      SizedBox(height: 25.v),
-                      _buildCategory(context),
-                      SizedBox(height: 15.v),
-                      _buildHeading(context),
-                      SizedBox(height: 19.v),
-                      _buildProductCard(context)
-                    ])),
-            bottomNavigationBar: _buildBottomBar(context)));
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0.0,
+        toolbarHeight: 65,
+        flexibleSpace: FlexibleSpaceBar(
+          title: Container(
+            margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+            width: 300,
+            height: 100, // Add margin
+            child: Text(
+              'Online Courses',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 25,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Container(
+            width: double.maxFinite,
+            padding: EdgeInsets.symmetric(horizontal: 34.h),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              SizedBox(height: 16.v),
+              CustomSearchView(
+                  controller: searchController, hintText: "Search for...."),
+              SizedBox(height: 25.v),
+              _buildCategory(context),
+              SizedBox(height: 15.v),
+              _buildHeading(context),
+              SizedBox(height: 19.v),
+              _buildProductCard(context),
+              SizedBox(height: 16.v),
+            ])),
+      ),
+    ));
   }
 
   /// Section Widget
@@ -91,26 +147,22 @@ class CoursesListScreen extends StatelessWidget {
                     text: "Result for “",
                     style: CustomTextStyles.titleSmallJostff202244),
                 TextSpan(
-                    text: "Graphic Design",
+                    text: _category?.description ?? '',
                     style: CustomTextStyles.titleSmallJostffff9300),
                 TextSpan(
                     text: "”", style: CustomTextStyles.titleSmallJostff202244)
               ]),
               textAlign: TextAlign.left),
           Padding(
-              padding: EdgeInsets.only(bottom: 4.v),
+              padding: EdgeInsets.only(top: 7.v),
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("2480 Founds".toUpperCase(),
+                    Text(
+                        chosenCategory.length.toString() +
+                            " Founds".toUpperCase(),
                         style: CustomTextStyles.labelLargePrimary),
-                    CustomImageView(
-                        imagePath: ImageConstant.imgArrowRightPrimary,
-                        height: 10.v,
-                        width: 5.h,
-                        margin:
-                            EdgeInsets.only(left: 10.h, top: 2.v, bottom: 3.v))
                   ]))
         ]);
   }
@@ -123,55 +175,120 @@ class CoursesListScreen extends StatelessWidget {
         separatorBuilder: (context, index) {
           return SizedBox(height: 16.v);
         },
-        itemCount: 4,
+        itemCount: chosenCategory.length,
         itemBuilder: (context, index) {
-          return Productcard1ItemWidget(onTapProductCard: () {
-            onTapProductCard(context);
-          });
+          final course = chosenCategory[index];
+          return Container(
+            decoration: AppDecoration.outlineBlack.copyWith(
+              borderRadius: BorderRadiusStyle.circleBorder15,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.horizontal(
+                      left: Radius.circular(16.h),
+                    ),
+                  ),
+                  child: Image.network(
+                    course.imageUrl.toString(),
+                    // Replace 'path_to_your_image' with the actual path to your image asset
+                    height: 130.adaptSize,
+                    width: 130.adaptSize,
+                    fit: BoxFit
+                        .cover, // Adjust the BoxFit property based on your image requirements
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 14.h,
+                    top: 15.v,
+                    bottom: 18.v,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 195.h,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _category?.description ?? '',
+                              style: CustomTextStyles.labelLargeOrangeA700,
+                            ),
+                            Icon(
+                              Icons.bookmark_add_outlined,
+                              // Replace with the desired icon
+                              size: 30.v,
+                              color: Color(
+                                  0xFF168F71), // Specify the desired color,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 9.v),
+                      Text(
+                        course.name.toString(),
+                        style: theme.textTheme.titleMedium,
+                      ),
+                      SizedBox(height: 2.v),
+                      Row(
+                        children: [
+                          Text(
+                            '\$${course.stockPrice.toString()}',
+                            style: CustomTextStyles.titleMediumMulishPrimary,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 5.v),
+                      Row(
+                        children: [
+                          Container(
+                            width: 32.h,
+                            margin: EdgeInsets.only(top: 3.v),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Icon(
+                                  Icons.star,
+                                  // Replace with the desired signal icon
+                                  size: 14.v,
+                                  color: Colors.yellow,
+                                ),
+                                Text(
+                                  course.rating.toString(),
+                                  style: theme.textTheme.labelMedium,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 16.h),
+                            child: Text(
+                              "|",
+                              style: CustomTextStyles.titleSmallBlack900,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              left: 16.h,
+                              top: 3.v,
+                            ),
+                            child: Text(
+                              "7830 Enroll",
+                              style: theme.textTheme.labelMedium,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
         });
-  }
-
-  /// Section Widget
-  Widget _buildBottomBar(BuildContext context) {
-    return CustomBottomBar(onChanged: (BottomBarEnum type) {
-      Navigator.pushNamed(navigatorKey.currentContext!, getCurrentRoute(type));
-    });
-  }
-
-  ///Handling route based on bottom click actions
-  String getCurrentRoute(BottomBarEnum type) {
-    switch (type) {
-      case BottomBarEnum.Home:
-        return AppRoutes.homePage;
-      case BottomBarEnum.Mycourses:
-        return AppRoutes.myCourseCompletedPage;
-      case BottomBarEnum.Indox:
-        return AppRoutes.indoxCallsPage;
-      case BottomBarEnum.Transaction:
-        return AppRoutes.transactionsPage;
-      case BottomBarEnum.Profile:
-        return AppRoutes.profilesPage;
-      default:
-        return "/";
-    }
-  }
-
-  ///Handling page based on route
-  Widget getCurrentPage(String currentRoute) {
-    switch (currentRoute) {
-      case AppRoutes.homePage:
-        return HomePage();
-      case AppRoutes.myCourseCompletedPage:
-        return MyCourseCompletedPage();
-      case AppRoutes.indoxCallsPage:
-        return IndoxCallsPage();
-      case AppRoutes.transactionsPage:
-        return TransactionsPage();
-      case AppRoutes.profilesPage:
-        return ProfilesPage();
-      default:
-        return DefaultWidget();
-    }
   }
 
   /// Navigates to the singleCourseDetailsTabContainerScreen when the action is triggered.

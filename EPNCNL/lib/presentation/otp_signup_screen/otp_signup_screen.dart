@@ -2,13 +2,10 @@ import 'dart:async';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:email_otp/email_otp.dart';
-import 'package:flutter/services.dart';
-import 'package:meowlish/core/utils/size_utils.dart';
-import 'package:meowlish/presentation/login_screen/login_screen.dart';
-import 'package:meowlish/widgets/custom_image_view.dart';
-import '../../core/utils/image_constant.dart';
-import 'package:meowlish/core/app_export.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/presentation/login_screen/login_screen.dart';
 
 import '../../network/network.dart';
 

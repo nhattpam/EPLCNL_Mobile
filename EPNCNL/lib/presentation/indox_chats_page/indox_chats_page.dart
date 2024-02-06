@@ -1,6 +1,7 @@
-import '../indox_chats_page/widgets/userprofile6_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+
+import '../indox_chats_page/widgets/userprofile6_item_widget.dart';
 
 // ignore_for_file: must_be_immutable
 class IndoxChatsPage extends StatefulWidget {

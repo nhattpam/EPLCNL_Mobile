@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
-import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/models/courses.dart';
@@ -227,7 +226,7 @@ class PaymentMethodsScreenState
 
   /// Section Widget
   Widget _buildEnrollCourseButton(BuildContext context) {
-    return ElevatedButton(
+    return CustomElevatedButton(
       onPressed: () async {
         String? transactionId = await _createTransaction();
 
@@ -280,10 +279,11 @@ class PaymentMethodsScreenState
           }
         }
       },
-      child: Text(isLoading ? "Processing..." : "Pay"),
-      style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-      ),
+      margin: EdgeInsets.only(
+        left: 39.h,
+        right: 39.h,
+        bottom: 53.v,
+      ), text: isLoading ? "Processing..." : "Pay",
     );
   }
 

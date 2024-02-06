@@ -1,8 +1,9 @@
-import '../reviews_screen/widgets/categorylist_item_widget.dart';
-import '../reviews_screen/widgets/coursereviewlist_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/widgets/custom_rating_bar.dart';
+
+import '../reviews_screen/widgets/categorylist_item_widget.dart';
+import '../reviews_screen/widgets/coursereviewlist_item_widget.dart';
 
 class ReviewsScreen extends StatelessWidget {
   const ReviewsScreen({Key? key})

@@ -1,6 +1,7 @@
-import '../transactions_page/widgets/userprofile8_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+
+import '../transactions_page/widgets/userprofile8_item_widget.dart';
 
 // ignore_for_file: must_be_immutable
 class TransactionsPage extends StatelessWidget {

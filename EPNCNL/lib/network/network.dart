@@ -1,9 +1,9 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:meowlish/data/models/accounts.dart';
 import 'package:meowlish/data/models/categories.dart';
-import 'package:meowlish/data/models/classlessons.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/classtopics.dart';
 import 'package:meowlish/data/models/courses.dart';
@@ -247,6 +247,34 @@ class Network {
         // If the request fails, throw an exception or return an empty list
         throw Exception(
             'Failed to fetch categories. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<Category> getCategoryByCategoryId(String courseId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/categories/$courseId'; // Replace with your API URL
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic categoryJson = jsonDecode(response.body);
+
+        // Map the JSON object to a User object and return it
+        return Category.fromJson(categoryJson);
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch course by order id. Status code: ${response.statusCode}');
       }
     } catch (e) {
       // Handle any exceptions that may occur during the request

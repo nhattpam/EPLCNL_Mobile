@@ -3,9 +3,6 @@ import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
 
-import '../../../theme/custom_text_style.dart';
-import '../../../theme/theme_helper.dart';
-
 class SearchCourse extends SearchDelegate {
   FetchCourseList _userList = FetchCourseList();
 

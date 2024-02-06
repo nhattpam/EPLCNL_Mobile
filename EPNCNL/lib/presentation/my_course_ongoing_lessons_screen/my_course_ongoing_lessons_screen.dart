@@ -1,9 +1,10 @@
-import '../my_course_ongoing_lessons_screen/widgets/sectionintrodu_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
+
+import '../my_course_ongoing_lessons_screen/widgets/sectionintrodu_item_widget.dart';
 
 class MyCourseOngoingLessonsScreen extends StatelessWidget {
   MyCourseOngoingLessonsScreen({Key? key})

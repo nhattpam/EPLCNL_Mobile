@@ -1,4 +1,3 @@
-import '../my_course_ongoing_screen/widgets/userprofile5_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
@@ -9,6 +8,8 @@ import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/widgets/custom_bottom_bar.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
+
+import '../my_course_ongoing_screen/widgets/userprofile5_item_widget.dart';
 
 // ignore_for_file: must_be_immutable
 class MyCourseOngoingScreen extends StatelessWidget {

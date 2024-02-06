@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
-import 'package:meowlish/data/models/tutors.dart';
-import 'package:meowlish/presentation/single_course_details_curriculcum_page/single_course_details_curriculcum_page.dart';
 import 'package:meowlish/presentation/single_meet_course_details_page/single_meet_course_details_page.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 
+import '../../data/models/enrollments.dart';
 import '../../data/models/lessons.dart';
 import '../../data/models/modules.dart';
 import '../../network/network.dart';
+import '../../session/session.dart';
 import '../../widgets/custom_elevated_button.dart';
-import '../single_course_meet_details_curriculcum_page/single_course_meet_details_curriculcum_page.dart';
+import '../payment_methods_screen/payment_methods_screen.dart';
 
 final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
@@ -350,9 +350,8 @@ class SingleCourseDetailsCurriculumPageState
   late List<ClassModule> listClassModuleByCourseId = [];
   late List<Lesson> listLessonByModuleId = [];
   late Course chosenCourse = Course();
-  late ClassModule classModuleByClassModuleId = ClassModule();
+  late Enrollment enrollment = Enrollment();
 
-  late String moduleIdForLesson = "";
 
   @override
   void initState() {
@@ -361,6 +360,7 @@ class SingleCourseDetailsCurriculumPageState
     loadClassModuleByCourseId();
     loadCourseByCourseID();
     loadAllLessons();
+    loadEnrollmentByLearnerAndCourseId();
   }
 
   @override
@@ -422,9 +422,30 @@ class SingleCourseDetailsCurriculumPageState
     }
   }
 
+  Future<void> loadEnrollmentByLearnerAndCourseId() async {
+    try {
+      final enrollmentResponse = await Network.getEnrollmentByLearnerAndCourseId(
+        SessionManager().getLearnerId().toString(),
+        widget.courseID,
+      );
+
+      setState(() {
+        enrollment = enrollmentResponse;
+        print("Enrollment ID: ${enrollment.id}");
+        print("Enrollment Learner ID: ${enrollment.learnerId}");
+        print("Enrollment Course ID: ${enrollment.courseId}");
+        // Add more print statements for other properties if needed
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    bool isEnrolled = enrollment.id != null;
     return SafeArea(
       child: Scaffold(
         body: SizedBox(
@@ -446,9 +467,35 @@ class SingleCourseDetailsCurriculumPageState
                         _buildClassCourseListView(),
 
                       SizedBox(height: 21.v),
-                      CustomElevatedButton(
-                        text: "Enroll Course - \$${chosenCourse.stockPrice}",
-                      )
+                      if (!isEnrolled)
+                        CustomElevatedButton(
+                          text: "Enroll Course - \$${chosenCourse.stockPrice}",
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PaymentMethodsScreen(
+                                  courseID: widget.courseID,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+
+                      if (isEnrolled)
+                        CustomElevatedButton(
+                          text: "Study Now",
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PaymentMethodsScreen(
+                                  courseID: widget.courseID,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                     ],
                   ),
                 ),
@@ -610,7 +657,7 @@ class SingleCourseDetailsCurriculumPageState
               return Container(); // Placeholder widget or handle error UI
             } else {
               // Still loading, return a loading indicator if needed
-              return CircularProgressIndicator();
+              return Container();
             }
           },
         );

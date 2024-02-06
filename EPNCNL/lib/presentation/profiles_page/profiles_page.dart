@@ -4,8 +4,6 @@ import 'package:meowlish/data/models/accounts.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/login_screen/login_screen.dart';
 import 'package:meowlish/session/session.dart';
-import 'package:meowlish/widgets/custom_icon_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilesPage extends StatefulWidget {
   const ProfilesPage({Key? key})

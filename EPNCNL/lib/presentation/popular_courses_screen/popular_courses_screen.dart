@@ -1,9 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/network/network.dart';
-import 'package:flutter/material.dart';
-import 'package:meowlish/core/app_export.dart';
-import 'package:meowlish/presentation/single_course_details_curriculcum_page/single_course_details_curriculcum_page.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 class PopularCoursesScreen extends StatefulWidget {
   const PopularCoursesScreen({Key? key})

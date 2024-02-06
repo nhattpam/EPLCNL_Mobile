@@ -1,8 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:meowlish/data/models/modules.dart';
-
 import 'categories.dart';
-import 'enrollments.dart';
 class Course {
   String? id;
   String? name;

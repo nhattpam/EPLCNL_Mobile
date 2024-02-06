@@ -1,17 +1,17 @@
+import 'package:flutter/material.dart';
+import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/category_screen/category_screen.dart';
 import 'package:meowlish/presentation/home_page/carousel/landing.dart';
 import 'package:meowlish/presentation/notifications_screen/notifications_screen.dart';
 import 'package:meowlish/presentation/popular_courses_screen/popular_courses_screen.dart';
-import 'package:meowlish/session/session.dart';
-import '../../data/models/accounts.dart';
-import '../../data/models/tutors.dart';
-import 'package:flutter/material.dart';
-import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
 
+import '../../data/models/accounts.dart';
+import '../../data/models/tutors.dart';
 import '../single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 // ignore_for_file: must_be_immutable
 class HomePage extends StatefulWidget {
@@ -35,8 +35,6 @@ class HomePageState extends State<HomePage> {
     loadCourse();
     loadTutor();
     fetchAccountData();
-
-    print("hello ne: " + SessionManager().getLearnerId().toString());
   }
   Future<void> fetchAccountData() async {
     Account acc = await Network.getAccount();
@@ -481,7 +479,10 @@ class HomePageState extends State<HomePage> {
 
   /// Navigates to the categoryScreen when the action is triggered.
   onTapHeadingSection(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.categoryScreen);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CategoryScreen()),
+    );
   }
 
   /// Navigates to the topMentorsScreen when the action is triggered.

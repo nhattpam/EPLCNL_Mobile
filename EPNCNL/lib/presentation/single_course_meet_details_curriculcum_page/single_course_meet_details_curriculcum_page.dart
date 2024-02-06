@@ -1,12 +1,12 @@
-import 'package:url_launcher/url_launcher.dart';
-import '../../data/models/classtopics.dart';
-import '../../network/network.dart';
-import '../single_course_meet_details_curriculcum_page/widgets/rectanglelist_item_widget.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
-import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/data/models/classmodules.dart';
+import 'package:meowlish/widgets/custom_elevated_button.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../data/models/classtopics.dart';
+import '../../network/network.dart';
 
 
 // ignore_for_file: must_be_immutable

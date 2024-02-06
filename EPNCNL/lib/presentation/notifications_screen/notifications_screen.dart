@@ -1,7 +1,8 @@
-import '../notifications_screen/widgets/playlist_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
+
+import '../notifications_screen/widgets/playlist_item_widget.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({Key? key})

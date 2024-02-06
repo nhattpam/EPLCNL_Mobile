@@ -1,4 +1,3 @@
-import '../courses_list_filter_screen/widgets/subcategories_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:meowlish/core/app_export.dart';
@@ -9,6 +8,8 @@ import 'package:meowlish/widgets/app_bar/custom_app_bar.dart';
 import 'package:meowlish/widgets/custom_checkbox_button.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
+
+import '../courses_list_filter_screen/widgets/subcategories_item_widget.dart';
 
 class CoursesListFilterScreen extends StatelessWidget {
   CoursesListFilterScreen({Key? key})

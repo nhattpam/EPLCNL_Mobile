@@ -1,7 +1,8 @@
-import '../curriculcum_screen/widgets/viewhierarchylist_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
+
+import '../curriculcum_screen/widgets/viewhierarchylist_item_widget.dart';
 
 class CurriculcumScreen extends StatelessWidget {
   const CurriculcumScreen({Key? key})

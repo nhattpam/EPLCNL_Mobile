@@ -1,7 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meowlish/core/app_export.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 class Landing extends StatefulWidget{
   const Landing({super.key});

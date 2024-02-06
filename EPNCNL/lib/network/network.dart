@@ -463,6 +463,36 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
+  static Future<Account> getAccountByAccountId() async {
+   String accountId = SessionManager().getUserId().toString();
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/accounts/$accountId'; // Replace with your API URL
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic tutorJson = jsonDecode(response.body);
+
+        // Map the JSON object to a User object and return it
+        return Account.fromJson(tutorJson);
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch tutor by course id. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
 ////// Put Api for Module here
   static Future<List<Module>> getModulesByCourseId(String courseId) async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/courses/$courseId/modules';

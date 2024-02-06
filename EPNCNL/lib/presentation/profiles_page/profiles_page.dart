@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/accounts.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/edit_profiles_screen/edit_profiles_screen.dart';
 import 'package:meowlish/presentation/login_screen/login_screen.dart';
 import 'package:meowlish/session/session.dart';
 
@@ -216,47 +217,15 @@ class ProfilesPageState extends State<ProfilesPage> {
                                   ),
                                 ),
                               ),
-                              // Padding(
-                              //           padding: EdgeInsets.only(
-                              //               top: 79.v, right: 129.h),
-                              //           child: CustomIconButton(
-                              //               height: 36.adaptSize,
-                              //               width: 36.adaptSize,
-                              //               padding: EdgeInsets.all(8.h),
-                              //               decoration: IconButtonStyleHelper
-                              //                   .outlinePrimary,
-                              //               alignment: Alignment.topRight,
-                              //               child: CustomImageView(
-                              //                   imagePath: ImageConstant
-                              //                       .imgTelevisionPrimary)))
                                   ]))
                         ])))));
   }
 
-  // /// Common widget
-  // Widget _buildUserProfile(
-  //     BuildContext context, {
-  //       required String clockImage,
-  //       required String logoutText,
-  //     }) {
-  //   return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-  //     CustomImageView(
-  //         imagePath: clockImage, height: 17.adaptSize, width: 17.adaptSize),
-  //     Padding(
-  //         padding: EdgeInsets.only(left: 12.h),
-  //         child: Text(logoutText,
-  //             style: CustomTextStyles.titleSmallBluegray90015
-  //                 .copyWith(color: appTheme.blueGray900))),
-  //     Spacer(),
-  //     CustomImageView(
-  //         imagePath: ImageConstant.imgArrowRightOnprimary,
-  //         height: 17.v,
-  //         width: 10.h)
-  //   ]);
-  // }
-
   /// Navigates to the editProfilesScreen when the action is triggered.
   onTapOne(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.editProfilesScreen);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditProfilesScreen()),
+    );
   }
 }

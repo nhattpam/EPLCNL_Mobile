@@ -7,6 +7,7 @@ import 'package:meowlish/presentation/category_screen/category_screen.dart';
 import 'package:meowlish/presentation/home_page/carousel/landing.dart';
 import 'package:meowlish/presentation/notifications_screen/notifications_screen.dart';
 import 'package:meowlish/presentation/popular_courses_screen/popular_courses_screen.dart';
+import 'package:meowlish/presentation/top_mentors_screen/top_mentors_screen.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
 
@@ -197,12 +198,6 @@ class HomePageState extends State<HomePage> {
                       padding: EdgeInsets.only(top: 4.v, bottom: 6.v),
                       child: Text("See All".toUpperCase(),
                           style: CustomTextStyles.labelLargePrimary)),
-                  CustomImageView(
-                      imagePath: ImageConstant.imgArrowRightPrimary,
-                      height: 10.v,
-                      width: 5.h,
-                      margin:
-                          EdgeInsets.only(left: 10.h, top: 6.v, bottom: 10.v))
                 ])));
   }
 
@@ -250,12 +245,12 @@ class HomePageState extends State<HomePage> {
                 width: 80.h,
                 child: Column(
                   children: [
-                    Image.network(
-                      tutors.account!.imageUrl ?? '', // Replace 'path_to_your_image' with the actual path to your image asset
-                      height: 70.v,
-                      width: 280.h,
-                      fit: BoxFit.cover, // Adjust the BoxFit property based on your image requirements
-                    ),
+                    CustomImageView(
+                        imagePath: "${tutors.account!.imageUrl ?? ''}",
+                        fit: BoxFit.cover,
+                        height: 66.adaptSize,
+                        width: 66.adaptSize,
+                        radius: BorderRadius.circular(27.h)),
                     SizedBox(height: 8.v),
                     Text(
                       tutors.account!.fullName ?? 'MC',
@@ -280,7 +275,7 @@ class HomePageState extends State<HomePage> {
                   Padding(
                       padding: EdgeInsets.only(right: 38.h),
                       child: _buildHeadingSection(context,
-                          title: "Polupar Courses",
+                          title: "Popular Courses",
                           seeAllText: "See All", onTapHeadingSection: () {
                         onTapHeadingSection2(context);
                       })),
@@ -401,7 +396,7 @@ class HomePageState extends State<HomePage> {
                                                         left: 3.h),
                                                     child: Text(
                                                       // course.rating.toString(),
-                                                      "2.0",
+                                                      course.rating.toString(),
                                                       style: theme
                                                           .textTheme.labelMedium,
                                                     ),
@@ -487,7 +482,10 @@ class HomePageState extends State<HomePage> {
 
   /// Navigates to the topMentorsScreen when the action is triggered.
   onTapHeadingSection1(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.topMentorsScreen);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => TopMentorsScreen()),
+    );
   }
 
   /// Navigates to the popularCoursesScreen when the action is triggered.

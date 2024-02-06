@@ -8,21 +8,23 @@ import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_phone_number.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 
-class EditProfilesScreen extends StatelessWidget {
+class EditProfilesScreen extends StatefulWidget {
   EditProfilesScreen({Key? key})
       : super(
           key: key,
         );
 
+  @override
+  EditProfilesScreenState createState() => EditProfilesScreenState();
+}
+class EditProfilesScreenState extends State<EditProfilesScreen> {
   TextEditingController fullNameController = TextEditingController();
 
   TextEditingController nameController = TextEditingController();
 
   TextEditingController dateOfBirthController = TextEditingController();
 
-  TextEditingController emailController = TextEditingController();
-
-  Country selectedCountry = CountryPickerUtils.getCountryByPhoneCode('91');
+  Country selectedCountry = CountryPickerUtils.getCountryByPhoneCode('84');
 
   TextEditingController phoneNumberController = TextEditingController();
 
@@ -127,8 +129,6 @@ class EditProfilesScreen extends StatelessWidget {
                     SizedBox(height: 18.v),
                     _buildDateOfBirth(context),
                     SizedBox(height: 18.v),
-                    _buildEmail(context),
-                    SizedBox(height: 18.v),
                     _buildPhoneNumber(context),
                     SizedBox(height: 18.v),
                     CustomDropDown(
@@ -203,32 +203,6 @@ class EditProfilesScreen extends StatelessWidget {
     );
   }
 
-  /// Section Widget
-  Widget _buildEmail(BuildContext context) {
-    return CustomTextFormField(
-      controller: emailController,
-      hintText: "Email",
-      hintStyle: CustomTextStyles.titleSmallGray80001,
-      textInputType: TextInputType.emailAddress,
-      prefix: Container(
-        margin: EdgeInsets.fromLTRB(20.h, 23.v, 7.h, 22.v),
-        child: CustomImageView(
-          imagePath: ImageConstant.imgLock,
-          height: 14.v,
-          width: 18.h,
-        ),
-      ),
-      prefixConstraints: BoxConstraints(
-        maxHeight: 60.v,
-      ),
-      contentPadding: EdgeInsets.only(
-        top: 21.v,
-        right: 30.h,
-        bottom: 21.v,
-      ),
-      borderDecoration: TextFormFieldStyleHelper.outlineBlack,
-    );
-  }
 
   /// Section Widget
   Widget _buildPhoneNumber(BuildContext context) {
@@ -267,21 +241,6 @@ class EditProfilesScreen extends StatelessWidget {
         left: 39.h,
         right: 39.h,
         bottom: 42.v,
-      ),
-      rightIcon: Container(
-        padding: EdgeInsets.fromLTRB(14.h, 16.v, 12.h, 14.v),
-        margin: EdgeInsets.only(left: 30.h),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.onPrimaryContainer,
-          borderRadius: BorderRadius.circular(
-            24.h,
-          ),
-        ),
-        child: CustomImageView(
-          imagePath: ImageConstant.imgFill1Primary,
-          height: 17.v,
-          width: 21.h,
-        ),
       ),
     );
   }

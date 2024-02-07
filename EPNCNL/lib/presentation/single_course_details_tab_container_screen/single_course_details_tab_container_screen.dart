@@ -4,16 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/tutors.dart';
+import 'package:meowlish/presentation/single_course_details_curriculcum_page/single_course_details_curriculcum_page.dart';
 import 'package:meowlish/presentation/single_meet_course_details_page/single_meet_course_details_page.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 
-import '../../data/models/enrollments.dart';
 import '../../data/models/lessons.dart';
 import '../../data/models/modules.dart';
 import '../../network/network.dart';
-import '../../session/session.dart';
 import '../../widgets/custom_elevated_button.dart';
-import '../payment_methods_screen/payment_methods_screen.dart';
 import '../single_course_meet_details_curriculcum_page/single_course_meet_details_curriculcum_page.dart';
 
 final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
@@ -48,6 +47,7 @@ class SingleCourseDetailsTabContainerScreenState
 
   @override
   void dispose() {
+    tabviewController.dispose();
     super.dispose();
   }
 
@@ -85,7 +85,10 @@ class SingleCourseDetailsTabContainerScreenState
                 _buildArrowDown(context),
                 SizedBox(
                   height: 881.v,
-                  child: TabBarView(
+                  child: Navigator(
+                    key: _navKey,
+                    onGenerateRoute: (_) => MaterialPageRoute(
+                      builder: (_) => TabBarView(
                         controller: tabviewController,
                         children: [
                           SingleMeetCourseDetailsPage(
@@ -96,6 +99,8 @@ class SingleCourseDetailsTabContainerScreenState
                         ],
                       ),
                     ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -343,25 +348,20 @@ class SingleCourseDetailsCurriculumPage extends StatefulWidget {
       SingleCourseDetailsCurriculumPageState();
 }
 
-class SingleCourseDetailsCurriculumPageState
-    extends State<SingleCourseDetailsCurriculumPage> {
-  // Placeholder tutor data
-
+class SingleCourseDetailsCurriculumPageState extends State<SingleCourseDetailsCurriculumPage> {
   late List<Module> listModuleByCourseId = [];
   late List<ClassModule> listClassModuleByCourseId = [];
-  late List<Lesson> listLessonByModuleId = [];
   late Course chosenCourse = Course();
-  late Enrollment enrollment = Enrollment();
 
+  // Map to store lessons for each module
+  Map<String, List<Lesson>> moduleLessonsMap = {};
 
   @override
   void initState() {
     super.initState();
+    loadCourseByCourseID();
     loadModuleByCourseId();
     loadClassModuleByCourseId();
-    loadCourseByCourseID();
-    loadAllLessons();
-    loadEnrollmentByLearnerAndCourseId();
   }
 
   @override
@@ -370,11 +370,17 @@ class SingleCourseDetailsCurriculumPageState
   }
 
   Future<void> loadModuleByCourseId() async {
-    List<Module> loadedModule =
-    await Network.getModulesByCourseId(widget.courseID);
-    setState(() {
-      listModuleByCourseId = loadedModule;
-    });
+    try {
+      List<Module> loadedModule = await Network.getModulesByCourseId(widget.courseID);
+      setState(() {
+        listModuleByCourseId = loadedModule;
+      });
+      // After loading modules, load all lessons
+      loadAllLessons();
+    } catch (e) {
+      // Handle errors here
+      print('Error loading modules: $e');
+    }
   }
 
   Future<void> loadCourseByCourseID() async {
@@ -390,8 +396,7 @@ class SingleCourseDetailsCurriculumPageState
   }
 
   Future<void> loadClassModuleByCourseId() async {
-    List<ClassModule> loadedModule =
-    await Network.getClassModulesByCourseId(widget.courseID);
+    List<ClassModule> loadedModule = await Network.getClassModulesByCourseId(widget.courseID);
     setState(() {
       listClassModuleByCourseId = loadedModule;
     });
@@ -399,53 +404,31 @@ class SingleCourseDetailsCurriculumPageState
 
   Future<void> loadLessonByModuleId(String moduleId) async {
     List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
-    setState(() {
-      listLessonByModuleId = loadedLesson;
-      // print("this is length of list lesson: " + listLessonByModuleId.length.toString());
-    });
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleLessonsMap[moduleId] = loadedLesson;
+      });
+    }
   }
 
   Future<void> loadAllLessons() async {
-    for (final module in listModuleByCourseId) {
-      await loadLessonByModuleId(module.id.toString());
-    }
-  }
-
-  Future<ClassModule> loadClassModule(String classModuleId) async {
     try {
-      var classModule = await Network.getClassModule(classModuleId);
-      return classModule;  // Return the loaded ClassModule
+      // Load lessons for each module
+      for (final module in listModuleByCourseId) {
+        await loadLessonByModuleId(module.id.toString());
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
     } catch (e) {
       // Handle errors here
-      print('Error: $e');
-      throw e;  // Re-throw the error to be caught by the FutureBuilder
-    }
-  }
-
-  Future<void> loadEnrollmentByLearnerAndCourseId() async {
-    try {
-      final enrollmentResponse = await Network.getEnrollmentByLearnerAndCourseId(
-        SessionManager().getLearnerId().toString(),
-        widget.courseID,
-      );
-
-      setState(() {
-        enrollment = enrollmentResponse;
-        print("Enrollment ID: ${enrollment.id}");
-        print("Enrollment Learner ID: ${enrollment.learnerId}");
-        print("Enrollment Course ID: ${enrollment.courseId}");
-        // Add more print statements for other properties if needed
-      });
-    } catch (e) {
-      // Handle errors here
-      print('Error: $e');
+      print('Error loading lessons: $e');
     }
   }
 
 
   @override
   Widget build(BuildContext context) {
-    bool isEnrolled = enrollment.id != null;
     return SafeArea(
       child: Scaffold(
         body: SizedBox(
@@ -460,40 +443,15 @@ class SingleCourseDetailsCurriculumPageState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Use ListView.builder to build the list of tutors
                       if (chosenCourse.isOnlineClass == false)
                         _buildVideoCourseListView(),
+
                       if (chosenCourse.isOnlineClass == true)
                         _buildClassCourseListView(),
                       SizedBox(height: 21.v),
-                      if (!isEnrolled)
-                        CustomElevatedButton(
-                          text: "Enroll Course - \$${chosenCourse.stockPrice}",
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PaymentMethodsScreen(
-                                  courseID: widget.courseID,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      if (isEnrolled)
-                        CustomElevatedButton(
-                          text: "Study Now",
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SingleCourseMeetDetailsCurriculcumPage(
-                                  courseID: widget.courseID,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                      CustomElevatedButton(
+                        text: "Enroll Course",
+                      )
                     ],
                   ),
                 ),
@@ -506,6 +464,7 @@ class SingleCourseDetailsCurriculumPageState
   }
 
   Widget _buildVideoCourseListView() {
+    // loadAllLessons();
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -513,64 +472,61 @@ class SingleCourseDetailsCurriculumPageState
       itemBuilder: (context, index) {
         final module = listModuleByCourseId[index];
         final number = index + 1;
+        // loadAllLessons();
+        // Print module information
+        print('Module ${module.name}:');
 
-        return FutureBuilder<void>(
-          future: loadLessonByModuleId(module.id.toString()),
-          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-            // print("Number of lessons: ${listLessonByModuleId.length}");
+        // Print lessons for this module
+        for (final lesson in moduleLessonsMap[module.id.toString()] ?? []) {
+          print('Lesson: ${lesson.name}');
+        }
 
-            return Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 1.h),
-                  child: Row(
-                    children: [
-                      Text("Session $number - ",
-                          style: theme.textTheme.labelMedium),
-                      Text(module.name.toString(),
-                          style: CustomTextStyles.labelLargeOrangeA700),
-                    ],
-                  ),
-                ),
-                for (final lessonIndex in listLessonByModuleId
-                    .asMap()
-                    .keys)
-                  GestureDetector(
-                    onTap: () {
-                      // Handle the onTap action for each video session
-                    },
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        CircleWithNumber(number: lessonIndex + 1),
-                        Padding(
-                          padding: EdgeInsets.only(left: 12.h,
-                              top: 7.v,
-                              bottom: 5.v),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(listLessonByModuleId[lessonIndex].name
-                                  .toString(),
-                                  style: CustomTextStyles.titleMedium17),
-                              // Add other information about the video session here
-                            ],
-                          ),
-                        ),
-                        Spacer(),
-                        Icon(
-                          Icons.play_arrow,
-                          size: 17.0,
-                          color: Colors.orange,
-                        ),
-                      ],
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 1.h),
+              child: Row(
+                children: [
+                  Text("Session $number - ", style: theme.textTheme.labelMedium),
+                  Text(module.name.toString(), style: CustomTextStyles.labelLargeOrangeA700),
+                ],
+              ),
+            ),
+            // Print lessons for this module
+            for (int lessonIndex = 0; lessonIndex < (moduleLessonsMap[module.id.toString()]?.length ?? 0); lessonIndex++)
+
+              GestureDetector(
+                onTap: () {
+                  // Handle the onTap action for each video session
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    CircleWithNumber(number: lessonIndex + 1),
+                    Padding(
+                      padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(moduleLessonsMap[module.id.toString()]![lessonIndex].name.toString(), style: CustomTextStyles.titleMedium17),
+
+                          // Add other information about the video session here
+                        ],
+                      ),
                     ),
-                  ),
-                SizedBox(height: 21.v),
-                Divider(),
-              ],
-            );
-          },
+                    Spacer(),
+                    Icon(
+                      Icons.play_arrow,
+                      size: 17.0,
+                      color: Colors.orange,
+                    ),
+                  ],
+                ),
+              ),
+            SizedBox(height: 21.v),
+            Divider(),
+          ],
         );
       },
     );
@@ -585,86 +541,28 @@ class SingleCourseDetailsCurriculumPageState
       itemBuilder: (context, index) {
         final module = listClassModuleByCourseId[index];
         final number = index + 1;
-
-        // Load the class module asynchronously
-        return FutureBuilder<ClassModule>(
-          future: loadClassModule(module.id.toString()),
-          builder: (BuildContext context, AsyncSnapshot<ClassModule> snapshot) {
-            if (snapshot.hasData) {
-              final loadedClassModule = snapshot.data!;
-
-              // Use loadedClassModule for rendering
-              print(loadedClassModule.classLesson!.classHours.toString());
-
-              return Column(
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 1.h),
+              child: Row(
                 children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 1.h),
-                    child: Row(
-                      children: [
-                        Text(
-                          "Session $number - ",
-                          style: theme.textTheme.labelMedium,
-                        ),
-                        Text(
-                          module.startDate.toString(),
-                          style: CustomTextStyles.labelLargeOrangeA700,
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      // Handle the onTap action for each video session
-                    },
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(
-                              left: 12.h, top: 7.v, bottom: 5.v),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                loadedClassModule
-                                    .classLesson!.classHours
-                                    .toString(),
-                                style: CustomTextStyles.titleMedium17,
-                              ),
-                              // Add other information about the video session here
-                            ],
-                          ),
-                        ),
-                        Spacer(),
-                        Icon(
-                          Icons.play_arrow,
-                          size: 17.0,
-                          color: Colors.orange,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 21.v),
-                  Divider(),
+                  Text("Session $number - ", style: theme.textTheme.labelMedium),
+                  Text(module.startDate.toString(), style: CustomTextStyles.labelLargeOrangeA700),
                 ],
-              );
-            } else if (snapshot.hasError) {
-              // Handle errors here
-              print('Error: ${snapshot.error}');
-              return Container(); // Placeholder widget or handle error UI
-            } else {
-              // Still loading, return a loading indicator if needed
-              return Container();
-            }
-          },
+              ),
+            ),
+            SizedBox(height: 21.v),
+            Divider(),
+          ],
         );
       },
     );
   }
 }
 
-  class CircleWithNumber extends StatelessWidget {
+
+class CircleWithNumber extends StatelessWidget {
   final int number;
 
   CircleWithNumber({required this.number});

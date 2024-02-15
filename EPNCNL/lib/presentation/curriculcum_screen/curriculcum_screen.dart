@@ -5,11 +5,10 @@ import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/curriculcum_screen/widgets/videoplayer_widget.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../curriculcum_screen/widgets/viewhierarchylist_item_widget.dart';
 
 class CurriculumScreen extends StatefulWidget {
   final courseID;
@@ -26,29 +25,36 @@ class CurriculumScreen extends StatefulWidget {
 class CurriculumScreenState extends State<CurriculumScreen> {
   late List<Module> listModuleByCourseId = [];
   late List<ClassModule> listClassModuleByCourseId = [];
-  late List<Lesson> listLessonByModuleId = [];
   late Course chosenCourse = Course();
-  late List<Lesson> listLesson = [];
+
+  // Map to store lessons for each module
+  Map<String, List<Lesson>> moduleLessonsMap = {};
+
   @override
   void initState() {
     super.initState();
+    loadCourseByCourseID();
     loadModuleByCourseId();
     loadClassModuleByCourseId();
-    loadCourseByCourseID();
-    loadLesson();
   }
-  Future<void> loadLesson() async {
-    List<Lesson> loadedLesson = await Network.getLesson();
-    setState(() {
-      listLesson = loadedLesson;
-    });
+
+  @override
+  void dispose() {
+    super.dispose();
   }
+
   Future<void> loadModuleByCourseId() async {
-    List<Module> loadedModule =
-        await Network.getModulesByCourseId(widget.courseID);
-    setState(() {
-      listModuleByCourseId = loadedModule;
-    });
+    try {
+      List<Module> loadedModule = await Network.getModulesByCourseId(widget.courseID);
+      setState(() {
+        listModuleByCourseId = loadedModule;
+      });
+      // After loading modules, load all lessons
+      loadAllLessons();
+    } catch (e) {
+      // Handle errors here
+      print('Error loading modules: $e');
+    }
   }
 
   Future<void> loadCourseByCourseID() async {
@@ -72,9 +78,26 @@ class CurriculumScreenState extends State<CurriculumScreen> {
 
   Future<void> loadLessonByModuleId(String moduleId) async {
     List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
-    setState(() {
-      listLessonByModuleId = loadedLesson;
-    });
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleLessonsMap[moduleId] = loadedLesson;
+      });
+    }
+  }
+
+  Future<void> loadAllLessons() async {
+    try {
+      // Load lessons for each module
+      for (final module in listModuleByCourseId) {
+        await loadLessonByModuleId(module.id.toString());
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lessons: $e');
+    }
   }
 
   @override
@@ -114,6 +137,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 21.v),
+                _buildVideoCourseListView(),
                 CustomElevatedButton(
                   text: "Enroll Course",
                 )
@@ -122,6 +146,71 @@ class CurriculumScreenState extends State<CurriculumScreen> {
           ),
         ),
       ),
+    );
+  }
+  Widget _buildVideoCourseListView() {
+    // loadAllLessons();
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: listModuleByCourseId.length,
+      itemBuilder: (context, index) {
+        final module = listModuleByCourseId[index];
+        final number = index + 1;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 1.h),
+              child: Row(
+                children: [
+                  Text("Session $number - ", style: theme.textTheme.labelMedium),
+                  Text(module.name.toString(), style: CustomTextStyles.labelLargeOrangeA700),
+                ],
+              ),
+            ),
+            // Print lessons for this module
+            for (int lessonIndex = 0; lessonIndex < (moduleLessonsMap[module.id.toString()]?.length ?? 0); lessonIndex++)
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          // VideoPlayerWidget(videoUrl: moduleLessonsMap[module.id.toString()]![lessonIndex].videoUrl.toString(),
+                          VideoPlayerWidget(
+                      ),
+                    ),
+                  );
+                  },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    CircleWithNumber(number: lessonIndex + 1),
+                    Padding(
+                      padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(moduleLessonsMap[module.id.toString()]![lessonIndex].name.toString(), style: CustomTextStyles.titleMedium17),
+                          // Add other information about the video session here
+                        ],
+                      ),
+                    ),
+                    Spacer(),
+                    Icon(
+                      Icons.play_arrow,
+                      size: 17.0,
+                      color: Colors.orange,
+                    ),
+                  ],
+                ),
+              ),
+            SizedBox(height: 21.v),
+            Divider(),
+          ],
+        );
+      },
     );
   }
 }

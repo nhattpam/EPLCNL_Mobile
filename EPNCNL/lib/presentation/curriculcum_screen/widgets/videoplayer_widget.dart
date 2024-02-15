@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:meowlish/data/models/lessons.dart';
+import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/curriculcum_screen/widgets/landscape_page.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget({
-    Key? key,
+    Key? key, required this.lessonId,
   }) : super(key: key);
 
   // required this.videoUrl
-  // final String videoUrl;
+  final String lessonId;
 
   @override
   State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
@@ -18,18 +21,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   late VideoPlayerController _videoPlayerController;
   late Future<void> _initializeVideoPlayerFuture;
   int _currentIndex = 0;
+  late Lesson chosenLesson = Lesson();
+
 
   @override
-  @override
   void initState() {
-    _videoPlayerController = VideoPlayerController.network(
-        'https://firebasestorage.googleapis.com/v0/b/meowlish-3f184.appspot.com/o/videos%2Fy2mate.com%20-%205%20Second%20Video%20Watch%20the%20Milky%20Way%20Rise_v144P.mp4?alt=media&token=4b5610c4-384f-4fcd-b088-2838c0ae7e3c');
-    _initializeVideoPlayerFuture =
-        _videoPlayerController.initialize().then((_) {
-      _videoPlayerController.play();
-      _videoPlayerController.setLooping(true);
-      setState(() {});
-    });
+    loadClassModuleByCourseId();
     super.initState();
   }
 
@@ -39,20 +36,20 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     super.dispose();
   }
 
-  void _playVideo({int index = 0, bool init = false}) {
-    if (index < 0 || index >= 4) return;
-
-    if (!init) {
-      _videoPlayerController.pause();
-    }
-
-    setState(() {
-      _currentIndex = index;
-    });
-
-    _videoPlayerController.seekTo(Duration.zero);
-    _videoPlayerController.play();
-  }
+  // void _playVideo({int index = 0, bool init = false}) {
+  //   if (index < 0 || index >= 4) return;
+  //
+  //   if (!init) {
+  //     _videoPlayerController.pause();
+  //   }
+  //
+  //   setState(() {
+  //     _currentIndex = index;
+  //   });
+  //
+  //   _videoPlayerController.seekTo(Duration.zero);
+  //   _videoPlayerController.play();
+  // }
 
   String _videoDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
@@ -67,17 +64,33 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     ].join(':');
   }
 
+
+  Future<void> loadClassModuleByCourseId() async {
+    Lesson loadedLesson = await Network.getLessonByLessonId(widget.lessonId);
+    setState(() {
+      chosenLesson = loadedLesson;
+      _videoPlayerController = VideoPlayerController.network(chosenLesson.videoUrl.toString());
+      _initializeVideoPlayerFuture =
+          _videoPlayerController.initialize().then((_) {
+            _videoPlayerController.play();
+            _videoPlayerController.setLooping(true);
+            setState(() {});
+          });
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Video Player'),
+        title: Text(chosenLesson?.name ?? ''),
         centerTitle: true,
       ),
       body: Column(
         children: [
           Container(
-              color: Colors.deepPurpleAccent,
+              color: Colors.white,
               height: 300,
               child: _videoPlayerController.value.isInitialized
                   ? Column(
@@ -170,38 +183,46 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                               ),
                             ),
                           ],
-                        )
+                        ),
                       ],
                     )
+
                   : const Center(
                       child: CircularProgressIndicator(color: Colors.white),
                     )),
-          Expanded(
-              child: ListView.builder(
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () => _playVideo(index: index),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              height: 100,
-                              width: 100,
-                              child: Image.network(
-                                'https://afamilycdn.com/150157425591193600/2020/6/23/2-1592892139944338702858.jpg',
-                                fit: BoxFit.contain,
-                              ),
+          SingleChildScrollView(
+            child: Container(
+              // autogroupuf4dMr9 (X1wABu8QvLkeaBNfpvUF4d)
+              width: double.infinity,
+              height: 300 ,
+              child: Stack(
+                children: [
+                  Center(
+                    child: Align(
+                      child: SizedBox(
+                        width: 338 ,
+                        height: 13000 ,
+                        child: Html(
+                          data: chosenLesson?.reading ?? '',
+                          style: {
+                            "body": Style(
+                              textAlign: TextAlign.center,
+                              fontSize: FontSize(20),
+                              fontWeight: FontWeight.w400,
+                              lineHeight: LineHeight(1.2125),
+                              color: Color(0xff6c6363),
                             ),
-                            const SizedBox(width: 20),
-                            Text('Ju Jing Yi',
-                                style: const TextStyle(fontSize: 25)),
-                          ],
+                          },
                         ),
+
                       ),
-                    );
-                  }))
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
         ],
       ),
     );

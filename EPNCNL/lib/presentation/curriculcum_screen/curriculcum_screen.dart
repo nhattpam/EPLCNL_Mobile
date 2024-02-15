@@ -178,8 +178,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                     MaterialPageRoute(
                       builder: (context) =>
                           // VideoPlayerWidget(videoUrl: moduleLessonsMap[module.id.toString()]![lessonIndex].videoUrl.toString(),
-                          VideoPlayerWidget(
-                      ),
+                          VideoPlayerWidget(lessonId: moduleLessonsMap[module.id.toString()]![lessonIndex].id.toString()),
                     ),
                   );
                   },

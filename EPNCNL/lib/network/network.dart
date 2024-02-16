@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:meowlish/data/models/accounts.dart';
+import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/classtopics.dart';
@@ -10,6 +11,7 @@ import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/learners.dart';
 import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
+import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/tutors.dart';
 
@@ -670,7 +672,58 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+  // assignment
+  static Future<List<Assignment>> getAssignmentByModuleId(String moduleId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/assignments'; // Replace with your API URL
 
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> assignmentListJson = jsonDecode(response.body);
+
+        return assignmentListJson.map((json) => Assignment.fromJson(json)).toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  // quiz
+  static Future<List<Quiz>> getQuizByModuleId(String moduleId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/quizzes'; // Replace with your API URL
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> quizListJson = jsonDecode(response.body);
+
+        return quizListJson.map((json) => Quiz.fromJson(json)).toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
   //class module
   static Future<ClassModule> getClassModule(String classModuleId) async {
     final apiUrl =

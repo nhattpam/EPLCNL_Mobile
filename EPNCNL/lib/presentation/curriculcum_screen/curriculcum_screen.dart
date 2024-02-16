@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
+import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/curriculcum_screen/widgets/videoplayer_widget.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
@@ -29,6 +31,8 @@ class CurriculumScreenState extends State<CurriculumScreen> {
 
   // Map to store lessons for each module
   Map<String, List<Lesson>> moduleLessonsMap = {};
+  Map<String, List<Quiz>> moduleQuizMap = {};
+  Map<String, List<Assignment>> moduleAssignmentMap = {};
 
   @override
   void initState() {
@@ -85,12 +89,31 @@ class CurriculumScreenState extends State<CurriculumScreen> {
       });
     }
   }
-
+  Future<void> loadQuizByModuleId(String moduleId) async {
+    List<Quiz> loadedQuiz = await Network.getQuizByModuleId(moduleId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleQuizMap[moduleId] = loadedQuiz;
+      });
+    }
+  }
+  Future<void> loadAssignmentByModuleId(String moduleId) async {
+    List<Assignment> loadedAssignment = await Network.getAssignmentByModuleId(moduleId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleAssignmentMap[moduleId] = loadedAssignment;
+      });
+    }
+  }
   Future<void> loadAllLessons() async {
     try {
       // Load lessons for each module
       for (final module in listModuleByCourseId) {
         await loadLessonByModuleId(module.id.toString());
+        await loadQuizByModuleId(module.id.toString());
+        await loadAssignmentByModuleId(module.id.toString());
       }
       // After all lessons are loaded, proceed with building the UI
       setState(() {});
@@ -171,7 +194,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
             ),
             // Print lessons for this module
             for (int lessonIndex = 0; lessonIndex < (moduleLessonsMap[module.id.toString()]?.length ?? 0); lessonIndex++)
-              GestureDetector(
+            GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
@@ -205,7 +228,63 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                   ],
                 ),
               ),
-            SizedBox(height: 21.v),
+            Divider(),
+            for (int assignmentIndex = 0; assignmentIndex < (moduleAssignmentMap[module.id.toString()]?.length ?? 0); assignmentIndex++)
+            GestureDetector(
+                onTap: () {
+
+                  },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    CircleWithNumber(number: assignmentIndex + 1),
+                    Padding(
+                      padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText.toString(), style: CustomTextStyles.titleMedium17),
+                          // Add other information about the video session here
+                        ],
+                      ),
+                    ),
+                    Spacer(),
+                    Icon(
+                      Icons.question_mark,
+                      size: 17.0,
+                      color: Colors.orange,
+                    ),
+                  ],
+                ),
+              ),
+            Divider(),
+            for (int quizIndex = 0; quizIndex < (moduleQuizMap[module.id.toString()]?.length ?? 0); quizIndex++)
+            GestureDetector(
+                onTap: () {
+                  },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    CircleWithNumber(number: quizIndex + 1),
+                    Padding(
+                      padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(moduleQuizMap[module.id.toString()]![quizIndex].name.toString(), style: CustomTextStyles.titleMedium17),
+                          // Add other information about the video session here
+                        ],
+                      ),
+                    ),
+                    Spacer(),
+                    Icon(
+                      Icons.question_mark,
+                      size: 17.0,
+                      color: Colors.orange,
+                    ),
+                  ],
+                ),
+              ),
             Divider(),
           ],
         );

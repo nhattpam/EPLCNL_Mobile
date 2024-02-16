@@ -4,7 +4,7 @@ class Quiz {
   String? classPracticeId;
   String? name;
   int? gradeToPass;
-  Deadline? deadline;
+  int? deadline;
   String? createdDate;
   String? updatedDate;
 
@@ -24,9 +24,7 @@ class Quiz {
     classPracticeId = json['classPracticeId'];
     name = json['name'];
     gradeToPass = json['gradeToPass'];
-    deadline = json['deadline'] != null
-        ? new Deadline.fromJson(json['deadline'])
-        : null;
+    deadline = json['deadline'];
     createdDate = json['createdDate'];
     updatedDate = json['updatedDate'];
   }
@@ -38,9 +36,7 @@ class Quiz {
     data['classPracticeId'] = this.classPracticeId;
     data['name'] = this.name;
     data['gradeToPass'] = this.gradeToPass;
-    if (this.deadline != null) {
-      data['deadline'] = this.deadline!.toJson();
-    }
+    data['deadline'] = this.deadline;
     data['createdDate'] = this.createdDate;
     data['updatedDate'] = this.updatedDate;
     return data;

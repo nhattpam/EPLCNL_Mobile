@@ -82,9 +82,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
           : SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              color: Colors.black,
-              height: 300,
+            AspectRatio(
+              aspectRatio: _videoPlayerController.value.aspectRatio,
               child: Chewie(controller: _chewieController),
             ),
             Container(

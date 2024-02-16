@@ -698,6 +698,72 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+  static Future<Assignment> getAssignmentByAssignmentId(String assignmentId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/assignments/$assignmentId'; // Replace with your API URL
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic assignmentJson = jsonDecode(response.body);
+
+        // Map the JSON object to a User object and return it
+        return Assignment.fromJson(assignmentJson);
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch class module by class module id. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<void> createAssignmentAttempt({
+    required String assignmentId,
+    required String answerText,
+
+  }) async {
+
+    final leanerId = SessionManager().getLearnerId() ?? 0;
+    final learnerData = {
+      "assignmentId": assignmentId,
+      "learnerId": leanerId,
+      "answerText": answerText,
+      "attemptedDate": DateTime.now().toString(),
+      "totalGrade": 0
+    };
+
+    final jsonData = jsonEncode(learnerData);
+    print("This is" + jsonData);
+
+    // Print the JSON data before making the API call
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/assignment-attempts'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+    }
+    else {
+      print('Create assignment failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
+    }
+  }
   // quiz
   static Future<List<Quiz>> getQuizByModuleId(String moduleId) async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/quizzes'; // Replace with your API URL

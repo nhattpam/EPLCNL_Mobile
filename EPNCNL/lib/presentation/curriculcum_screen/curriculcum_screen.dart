@@ -8,6 +8,7 @@ import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/curriculcum_screen/widgets/videoplayer_widget.dart';
+import 'package:meowlish/presentation/doing_assignment_screen/doing_assignment_screen.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -228,7 +229,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
             children: [
               Text('Lesson', style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),),
               IconButton(
-                icon: Icon(minimizedLessonsMap[module.id.toString()] ?? false ? Icons.maximize : Icons.minimize),
+                icon: Icon(minimizedLessonsMap[module.id.toString()] ?? false ? Icons.arrow_drop_down_outlined : Icons.minimize),
                 onPressed: () {
                   setState(() {
                     minimizedLessonsMap[module.id.toString()] = !(minimizedLessonsMap[module.id.toString()] ?? false);
@@ -242,7 +243,14 @@ class CurriculumScreenState extends State<CurriculumScreen> {
             for (int lessonIndex = 0; lessonIndex < (moduleLessonsMap[module.id.toString()]?.length ?? 0); lessonIndex++)
               TextButton(
                 onPressed: () {
-                  // Handle lesson tap
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      // VideoPlayerWidget(videoUrl: moduleLessonsMap[module.id.toString()]![lessonIndex].videoUrl.toString(),
+                      VideoPlayerWidget(lessonId: moduleLessonsMap[module.id.toString()]![lessonIndex].id.toString(), videoUrl: moduleLessonsMap[module.id.toString()]![lessonIndex].videoUrl.toString(),),
+                    ),
+                  );
                 },
                 child: Text(moduleLessonsMap[module.id.toString()]![lessonIndex].name.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
               ),
@@ -262,7 +270,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
             children: [
               Text('Assignment', style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),),
               IconButton(
-                icon: Icon(minimizedAssignmentsMap[module.id.toString()] ?? false ? Icons.maximize : Icons.minimize),
+                icon: Icon(minimizedAssignmentsMap[module.id.toString()] ?? false ? Icons.arrow_drop_down_outlined : Icons.minimize),
                 onPressed: () {
                   setState(() {
                     minimizedAssignmentsMap[module.id.toString()] = !(minimizedAssignmentsMap[module.id.toString()] ?? false);
@@ -276,7 +284,13 @@ class CurriculumScreenState extends State<CurriculumScreen> {
             for (int assignmentIndex = 0; assignmentIndex < (moduleAssignmentMap[module.id.toString()]?.length ?? 0); assignmentIndex++)
               TextButton(
                 onPressed: () {
-                  // Handle assignment tap
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DoingAssignmentScreen(assignmentID: moduleAssignmentMap[module.id.toString()]![assignmentIndex].id.toString())
+                    ),
+                  );
                 },
                 child: Text(moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
               ),
@@ -296,7 +310,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
             children: [
               Text('Quiz', style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),),
               IconButton(
-                icon: Icon(minimizedQuizzesMap[module.id.toString()] ?? false ? Icons.maximize : Icons.minimize),
+                icon: Icon(minimizedQuizzesMap[module.id.toString()] ?? false ? Icons.arrow_drop_down_outlined : Icons.minimize),
                 onPressed: () {
                   setState(() {
                     minimizedQuizzesMap[module.id.toString()] = !(minimizedQuizzesMap[module.id.toString()] ?? false);

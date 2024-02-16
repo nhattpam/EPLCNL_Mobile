@@ -34,6 +34,12 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   Map<String, List<Quiz>> moduleQuizMap = {};
   Map<String, List<Assignment>> moduleAssignmentMap = {};
 
+  // Maps to track minimized states for each type of content within each module
+  Map<String, bool> minimizedLessonsMap = {};
+  Map<String, bool> minimizedAssignmentsMap = {};
+  Map<String, bool> minimizedQuizzesMap = {};
+
+
   @override
   void initState() {
     super.initState();
@@ -172,7 +178,6 @@ class CurriculumScreenState extends State<CurriculumScreen> {
     );
   }
   Widget _buildVideoCourseListView() {
-    // loadAllLessons();
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -187,108 +192,128 @@ class CurriculumScreenState extends State<CurriculumScreen> {
               padding: EdgeInsets.only(left: 1.h),
               child: Row(
                 children: [
-                  Text("Session $number - ", style: theme.textTheme.labelMedium),
-                  Text(module.name.toString(), style: CustomTextStyles.labelLargeOrangeA700),
+                  Text("Module $number - ",  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w600,
+                  ),),
+                  Text(module.name.toString(), style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w600,
+                  ),),
                 ],
               ),
             ),
-            // Print lessons for this module
-            for (int lessonIndex = 0; lessonIndex < (moduleLessonsMap[module.id.toString()]?.length ?? 0); lessonIndex++)
-            GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          // VideoPlayerWidget(videoUrl: moduleLessonsMap[module.id.toString()]![lessonIndex].videoUrl.toString(),
-                          VideoPlayerWidget(lessonId: moduleLessonsMap[module.id.toString()]![lessonIndex].id.toString(), videoUrl: moduleLessonsMap[module.id.toString()]![lessonIndex].videoUrl.toString(),),
-                    ),
-                  );
-                  },
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    CircleWithNumber(number: lessonIndex + 1),
-                    Padding(
-                      padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(moduleLessonsMap[module.id.toString()]![lessonIndex].name.toString(), style: CustomTextStyles.titleMedium17),
-                          // Add other information about the video session here
-                        ],
-                      ),
-                    ),
-                    Spacer(),
-                    Icon(
-                      Icons.play_arrow,
-                      size: 17.0,
-                      color: Colors.orange,
-                    ),
-                  ],
-                ),
-              ),
-            Divider(),
-            for (int assignmentIndex = 0; assignmentIndex < (moduleAssignmentMap[module.id.toString()]?.length ?? 0); assignmentIndex++)
-            GestureDetector(
-                onTap: () {
-
-                  },
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    CircleWithNumber(number: assignmentIndex + 1),
-                    Padding(
-                      padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText.toString(), style: CustomTextStyles.titleMedium17),
-                          // Add other information about the video session here
-                        ],
-                      ),
-                    ),
-                    Spacer(),
-                    Icon(
-                      Icons.question_mark,
-                      size: 17.0,
-                      color: Colors.orange,
-                    ),
-                  ],
-                ),
-              ),
-            Divider(),
-            for (int quizIndex = 0; quizIndex < (moduleQuizMap[module.id.toString()]?.length ?? 0); quizIndex++)
-            GestureDetector(
-                onTap: () {
-                  },
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    CircleWithNumber(number: quizIndex + 1),
-                    Padding(
-                      padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(moduleQuizMap[module.id.toString()]![quizIndex].name.toString(), style: CustomTextStyles.titleMedium17),
-                          // Add other information about the video session here
-                        ],
-                      ),
-                    ),
-                    Spacer(),
-                    Icon(
-                      Icons.question_mark,
-                      size: 17.0,
-                      color: Colors.orange,
-                    ),
-                  ],
-                ),
-              ),
+            _buildLessonsMenu(module),
+            _buildAssignmentsMenu(module),
+            _buildQuizzesMenu(module),
             Divider(),
           ],
         );
       },
     );
   }
+
+  Widget _buildLessonsMenu(Module module) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Lesson',  style: TextStyle(fontWeight: FontWeight.bold
+                , color: theme.colorScheme.primary),),
+            IconButton(
+              icon: Icon(minimizedLessonsMap[module.id.toString()] ?? false ? Icons.maximize : Icons.minimize),
+              onPressed: () {
+                setState(() {
+                  minimizedLessonsMap[module.id.toString()] = !(minimizedLessonsMap[module.id.toString()] ?? false);
+                });
+              },
+            ),
+          ],
+        ),
+        // Only show the lessons if the module is not minimized
+        if (!(minimizedLessonsMap[module.id.toString()] ?? false))
+          for (int lessonIndex = 0; lessonIndex < (moduleLessonsMap[module.id.toString()]?.length ?? 0); lessonIndex++)
+            TextButton(
+              onPressed: () {
+                // Handle lesson tap
+              },
+              child: Text(moduleLessonsMap[module.id.toString()]![lessonIndex].name.toString(), style: TextStyle(fontWeight: FontWeight.bold
+                  , color: Colors.black)),
+            ),
+      ],
+    );
+  }
+
+  Widget _buildAssignmentsMenu(Module module) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Assignment', style: TextStyle(fontWeight: FontWeight.bold
+                , color: theme.colorScheme.primary),),
+            IconButton(
+              icon: Icon(minimizedAssignmentsMap[module.id.toString()] ?? false ? Icons.maximize : Icons.minimize),
+              onPressed: () {
+                setState(() {
+                  minimizedAssignmentsMap[module.id.toString()] = !(minimizedAssignmentsMap[module.id.toString()] ?? false);
+                });
+              },
+            ),
+          ],
+        ),
+        // Only show the assignments if the module is not minimized
+        if (!(minimizedAssignmentsMap[module.id.toString()] ?? false))
+          for (int assignmentIndex = 0; assignmentIndex < (moduleAssignmentMap[module.id.toString()]?.length ?? 0); assignmentIndex++)
+            TextButton(
+              onPressed: () {
+                // Handle assignment tap
+              },
+              child: Text(moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText.toString(), style: TextStyle(fontWeight: FontWeight.bold
+    , color: Colors.black)),
+            ),
+      ],
+    );
+  }
+
+  Widget _buildQuizzesMenu(Module module) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Quiz', style: TextStyle(fontWeight: FontWeight.bold
+                , color: theme.colorScheme.primary),),
+            IconButton(
+              icon: Icon(minimizedQuizzesMap[module.id.toString()] ?? false ? Icons.maximize : Icons.minimize),
+              onPressed: () {
+                setState(() {
+                  minimizedQuizzesMap[module.id.toString()] = !(minimizedQuizzesMap[module.id.toString()] ?? false);
+                });
+              },
+            ),
+          ],
+        ),
+        // Only show the quizzes if the module is not minimized
+        if (!(minimizedQuizzesMap[module.id.toString()] ?? false))
+          for (int quizIndex = 0; quizIndex < (moduleQuizMap[module.id.toString()]?.length ?? 0); quizIndex++)
+            TextButton(
+              onPressed: () {
+                // Handle quiz tap
+              },
+              child: Text(moduleQuizMap[module.id.toString()]![quizIndex].name.toString(), style: TextStyle(fontWeight: FontWeight.bold
+                  , color: Colors.black)),
+            ),
+      ],
+    );
+  }
+
 }

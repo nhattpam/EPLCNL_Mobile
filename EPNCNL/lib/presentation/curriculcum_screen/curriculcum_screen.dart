@@ -218,102 +218,106 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   }
 
   Widget _buildLessonsMenu(Module module) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Lesson',  style: TextStyle(fontWeight: FontWeight.bold
-                , color: theme.colorScheme.primary),),
-            IconButton(
-              icon: Icon(minimizedLessonsMap[module.id.toString()] ?? false ? Icons.maximize : Icons.minimize),
-              onPressed: () {
-                setState(() {
-                  minimizedLessonsMap[module.id.toString()] = !(minimizedLessonsMap[module.id.toString()] ?? false);
-                });
-              },
-            ),
-          ],
-        ),
-        // Only show the lessons if the module is not minimized
-        if (!(minimizedLessonsMap[module.id.toString()] ?? false))
-          for (int lessonIndex = 0; lessonIndex < (moduleLessonsMap[module.id.toString()]?.length ?? 0); lessonIndex++)
-            TextButton(
-              onPressed: () {
-                // Handle lesson tap
-              },
-              child: Text(moduleLessonsMap[module.id.toString()]![lessonIndex].name.toString(), style: TextStyle(fontWeight: FontWeight.bold
-                  , color: Colors.black)),
-            ),
-      ],
+    return Visibility(
+      visible: moduleLessonsMap[module.id.toString()] != null && moduleLessonsMap[module.id.toString()]!.isNotEmpty,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Lesson', style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),),
+              IconButton(
+                icon: Icon(minimizedLessonsMap[module.id.toString()] ?? false ? Icons.maximize : Icons.minimize),
+                onPressed: () {
+                  setState(() {
+                    minimizedLessonsMap[module.id.toString()] = !(minimizedLessonsMap[module.id.toString()] ?? false);
+                  });
+                },
+              ),
+            ],
+          ),
+          // Only show the lessons if the module is not minimized
+          if (!(minimizedLessonsMap[module.id.toString()] ?? false))
+            for (int lessonIndex = 0; lessonIndex < (moduleLessonsMap[module.id.toString()]?.length ?? 0); lessonIndex++)
+              TextButton(
+                onPressed: () {
+                  // Handle lesson tap
+                },
+                child: Text(moduleLessonsMap[module.id.toString()]![lessonIndex].name.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+              ),
+        ],
+      ),
     );
   }
 
   Widget _buildAssignmentsMenu(Module module) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Assignment', style: TextStyle(fontWeight: FontWeight.bold
-                , color: theme.colorScheme.primary),),
-            IconButton(
-              icon: Icon(minimizedAssignmentsMap[module.id.toString()] ?? false ? Icons.maximize : Icons.minimize),
-              onPressed: () {
-                setState(() {
-                  minimizedAssignmentsMap[module.id.toString()] = !(minimizedAssignmentsMap[module.id.toString()] ?? false);
-                });
-              },
-            ),
-          ],
-        ),
-        // Only show the assignments if the module is not minimized
-        if (!(minimizedAssignmentsMap[module.id.toString()] ?? false))
-          for (int assignmentIndex = 0; assignmentIndex < (moduleAssignmentMap[module.id.toString()]?.length ?? 0); assignmentIndex++)
-            TextButton(
-              onPressed: () {
-                // Handle assignment tap
-              },
-              child: Text(moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText.toString(), style: TextStyle(fontWeight: FontWeight.bold
-    , color: Colors.black)),
-            ),
-      ],
+    return Visibility(
+      visible: moduleAssignmentMap[module.id.toString()] != null && moduleAssignmentMap[module.id.toString()]!.isNotEmpty,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Assignment', style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),),
+              IconButton(
+                icon: Icon(minimizedAssignmentsMap[module.id.toString()] ?? false ? Icons.maximize : Icons.minimize),
+                onPressed: () {
+                  setState(() {
+                    minimizedAssignmentsMap[module.id.toString()] = !(minimizedAssignmentsMap[module.id.toString()] ?? false);
+                  });
+                },
+              ),
+            ],
+          ),
+          // Only show the assignments if the module is not minimized
+          if (!(minimizedAssignmentsMap[module.id.toString()] ?? false))
+            for (int assignmentIndex = 0; assignmentIndex < (moduleAssignmentMap[module.id.toString()]?.length ?? 0); assignmentIndex++)
+              TextButton(
+                onPressed: () {
+                  // Handle assignment tap
+                },
+                child: Text(moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+              ),
+        ],
+      ),
     );
   }
 
   Widget _buildQuizzesMenu(Module module) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Quiz', style: TextStyle(fontWeight: FontWeight.bold
-                , color: theme.colorScheme.primary),),
-            IconButton(
-              icon: Icon(minimizedQuizzesMap[module.id.toString()] ?? false ? Icons.maximize : Icons.minimize),
-              onPressed: () {
-                setState(() {
-                  minimizedQuizzesMap[module.id.toString()] = !(minimizedQuizzesMap[module.id.toString()] ?? false);
-                });
-              },
-            ),
-          ],
-        ),
-        // Only show the quizzes if the module is not minimized
-        if (!(minimizedQuizzesMap[module.id.toString()] ?? false))
-          for (int quizIndex = 0; quizIndex < (moduleQuizMap[module.id.toString()]?.length ?? 0); quizIndex++)
-            TextButton(
-              onPressed: () {
-                // Handle quiz tap
-              },
-              child: Text(moduleQuizMap[module.id.toString()]![quizIndex].name.toString(), style: TextStyle(fontWeight: FontWeight.bold
-                  , color: Colors.black)),
-            ),
-      ],
+    return Visibility(
+      visible: moduleQuizMap[module.id.toString()] != null && moduleQuizMap[module.id.toString()]!.isNotEmpty,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Quiz', style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),),
+              IconButton(
+                icon: Icon(minimizedQuizzesMap[module.id.toString()] ?? false ? Icons.maximize : Icons.minimize),
+                onPressed: () {
+                  setState(() {
+                    minimizedQuizzesMap[module.id.toString()] = !(minimizedQuizzesMap[module.id.toString()] ?? false);
+                  });
+                },
+              ),
+            ],
+          ),
+          // Only show the quizzes if the module is not minimized
+          if (!(minimizedQuizzesMap[module.id.toString()] ?? false))
+            for (int quizIndex = 0; quizIndex < (moduleQuizMap[module.id.toString()]?.length ?? 0); quizIndex++)
+              TextButton(
+                onPressed: () {
+                  // Handle quiz tap
+                },
+                child: Text(moduleQuizMap[module.id.toString()]![quizIndex].name.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+              ),
+        ],
+      ),
     );
   }
+
 
 }

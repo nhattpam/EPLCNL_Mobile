@@ -37,6 +37,8 @@ class SingleMeetCourseDetailsPageState
     super.initState();
     loadTutorByTutorID();
     loadCourseByCourseID();
+    print("this is learnerId in pl: " +
+        SessionManager().getLearnerId().toString());
     loadEnrollmentByLearnerAndCourseId();
   }
 
@@ -66,6 +68,7 @@ class SingleMeetCourseDetailsPageState
 
   Future<void> loadEnrollmentByLearnerAndCourseId() async {
     try {
+      print("This is dmmmmm: " + SessionManager().getLearnerId().toString());
       final enrollmentResponse =
           await Network.getEnrollmentByLearnerAndCourseId(
         SessionManager().getLearnerId().toString(),
@@ -242,7 +245,9 @@ class SingleMeetCourseDetailsPageState
                                 ])),
                             SizedBox(height: 56.v),
                             if (!isEnrolled ||
-                                chosenCourse.id != enrollment.courseId)
+                                chosenCourse.id != enrollment.courseId &&
+                                    SessionManager().getLearnerId() !=
+                                        enrollment.learnerId)
                               CustomElevatedButton(
                                 text:
                                     "Enroll Course - \$${chosenCourse.stockPrice}",
@@ -260,7 +265,9 @@ class SingleMeetCourseDetailsPageState
                               ),
                             if (isEnrolled &&
                                 chosenCourse.isOnlineClass == true &&
-                                chosenCourse.id == enrollment.courseId)
+                                chosenCourse.id == enrollment.courseId &&
+                                SessionManager().getLearnerId() ==
+                                    enrollment.learnerId)
                               CustomElevatedButton(
                                 text: "Study Now",
                                 onPressed: () {
@@ -277,7 +284,9 @@ class SingleMeetCourseDetailsPageState
                               ),
                             if (isEnrolled &&
                                 chosenCourse.isOnlineClass == false &&
-                                chosenCourse.id == enrollment.courseId)
+                                chosenCourse.id == enrollment.courseId &&
+                                SessionManager().getLearnerId() ==
+                                    enrollment.learnerId)
                               CustomElevatedButton(
                                 text: "Study Now",
                                 onPressed: () {

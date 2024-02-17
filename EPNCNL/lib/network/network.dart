@@ -21,9 +21,8 @@ import '../session/session.dart';
 typedef AuthCodeCallback = void Function(String authCode);
 
 class Network {
- static  Future<bool> loginUser(String email, String password) async {
+  static Future<bool> loginUser(String email, String password) async {
     // Initialize the session manager
-
 
     final loginData = {
       "email": email,
@@ -54,7 +53,7 @@ class Network {
         // Access the JWT token from the response
         final jwtToken = jsonResponse['data'];
 
-          // Check if the 'role' key exists in the JSON response
+        // Check if the 'role' key exists in the JSON response
         print('this is JWT: ' + jwtToken);
 
         // To decode the token
@@ -93,8 +92,8 @@ class Network {
     // Return false to indicate a failed login
     return false;
   }
- static Future<void> registerUser(
-     {
+
+  static Future<void> registerUser({
     required String email,
     required String password,
     required String fullName,
@@ -114,7 +113,7 @@ class Network {
       "phoneNumber": phoneNumber,
       "roleId": "f3db0ef2-7f03-4728-a868-aacbe76891a8",
       "isActive": false,
-      "imageUrl" : imageUrl
+      "imageUrl": imageUrl
     };
 
     final jsonData = jsonEncode(userData);
@@ -139,64 +138,62 @@ class Network {
       createLearner(accountId: accountId);
       // Set the userId in session
       SessionManager().setUserId(accountId);
-    }
-    else {
+    } else {
       print('Registration failed');
       // Print the JSON data before making the API call
       print('JSON Data: $jsonData');
     }
   }
 
- static Future<String> activeAccount(String email) async {
+  static Future<String> activeAccount(String email) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/authentications/$email/activation'; // Replace with your API URL
+    print("this is " + apiUrl);
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      return response.statusCode.toString();
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
 
-   final apiUrl =
-       'https://nhatpmse.twentytwo.asia/api/authentications/$email/activation'; // Replace with your API URL
-   print("this is " + apiUrl);
-   try {
-     final response = await http.post(
-       Uri.parse(apiUrl),
-       headers: {
-         'Content-Type': 'application/json',
-       },
-     );
-     return response.statusCode.toString();
-
-   } catch (e) {
-     // Handle any exceptions that may occur during the request
-     throw Exception('An error occurred: $e');
-   }
- }
- static Future<Leaner> getLeaner() async {
-   final accountId = SessionManager().getUserId() ?? 0;
-   final apiUrl = 'https://nhatpmse.twentytwo.asia/api/accounts/$accountId/learners'; // Replace with your API URL
+  static Future<Leaner> getLeaner() async {
+    final accountId = SessionManager().getUserId() ?? 0;
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/accounts/$accountId/learners'; // Replace with your API URL
     print(apiUrl);
-   try {
-     final response = await http.get(
-       Uri.parse(apiUrl),
-       headers: {
-         'Content-Type': 'application/json',
-       },
-     );
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
 
-     if (response.statusCode == 200) {
-       // If the request is successful, parse the JSON response
-       final dynamic petJson = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic petJson = jsonDecode(response.body);
 
-       // Map the JSON object to a User object and return it
-       return Leaner.fromJson(petJson);
-     } else {
-       // If the request fails, throw an exception or return null
-       throw Exception(
-           'Failed to fetch account. Status code: ${response.statusCode}');
-     }
-   } catch (e) {
-     // Handle any exceptions that may occur during the request
-     throw Exception('An error occurred: $e');
-   }
- }
+        // Map the JSON object to a User object and return it
+        return Leaner.fromJson(petJson);
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch account. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
 
-
- static Future<void> createLearner({
+  static Future<void> createLearner({
     required String accountId,
   }) async {
     final learnerData = {
@@ -218,14 +215,12 @@ class Network {
     if (response.statusCode == 201) {
       // Parse the JSON response
       final jsonResponse = jsonDecode(response.body);
-    }
-    else {
+    } else {
       print('Create learner failed');
       // Print the JSON data before making the API call
       print('JSON Data: $jsonData');
     }
   }
-
 
 ////// Put Api for Category here
   static Future<List<Category>> getCategories() async {
@@ -255,6 +250,7 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
   static Future<Category> getCategoryByCategoryId(String courseId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/categories/$courseId'; // Replace with your API URL
@@ -347,7 +343,8 @@ class Network {
 
   static Future<List<Course>> getCourseByCategoryID(String cateId) async {
     print('This is cateId in Api' + cateId);
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/categories/$cateId/courses'; // Replace with your API URL
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/categories/$cateId/courses'; // Replace with your API URL
 
     try {
       final response = await http.get(
@@ -374,7 +371,6 @@ class Network {
     }
   }
 
-
 ////// Put Api for Tutor here
   static Future<List<Tutor>> getTutor() async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/tutors';
@@ -391,7 +387,8 @@ class Network {
         // If the request is successful, parse the JSON response
         final List<dynamic> tutorListJson = jsonDecode(response.body);
         // Map each JSON object to a Pet object and return a list of pets
-        final List<Tutor> tutorList = tutorListJson.map((json) => Tutor.fromJson(json as Map<String, dynamic>))
+        final List<Tutor> tutorList = tutorListJson
+            .map((json) => Tutor.fromJson(json as Map<String, dynamic>))
             .toList();
 
         return tutorList;
@@ -400,8 +397,7 @@ class Network {
         throw Exception(
             'Failed to fetch course. Status code: ${response.statusCode}');
       }
-    }
-    catch (e) {
+    } catch (e) {
       // Handle any exceptions that may occur during the request
       throw Exception('An error occurred: $e');
     }
@@ -439,7 +435,8 @@ class Network {
 ////// Put Api for Account here
   static Future<Account> getAccount() async {
     final accountId = SessionManager().getUserId() ?? 0;
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/accounts/$accountId'; // Replace with your API URL
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/accounts/$accountId'; // Replace with your API URL
 
     try {
       final response = await http.get(
@@ -467,7 +464,7 @@ class Network {
   }
 
   static Future<Account> getAccountByAccountId() async {
-   String accountId = SessionManager().getUserId().toString();
+    String accountId = SessionManager().getUserId().toString();
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/accounts/$accountId'; // Replace with your API URL
     try {
@@ -497,7 +494,8 @@ class Network {
 
 ////// Put Api for Module here
   static Future<List<Module>> getModulesByCourseId(String courseId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/courses/$courseId/modules';
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/courses/$courseId/modules';
 
     try {
       final response = await http.get(
@@ -511,7 +509,8 @@ class Network {
         // If the request is successful, parse the JSON response
         final List<dynamic> moduleListJson = jsonDecode(response.body);
         // Map each JSON object to a Pet object and return a list of pets
-        final List<Module> moduleList = moduleListJson.map((json) => Module.fromJson(json as Map<String, dynamic>))
+        final List<Module> moduleList = moduleListJson
+            .map((json) => Module.fromJson(json as Map<String, dynamic>))
             .toList();
 
         return moduleList;
@@ -520,15 +519,17 @@ class Network {
         throw Exception(
             'Failed to fetch modules. Status code: ${response.statusCode}');
       }
-    }
-    catch (e) {
+    } catch (e) {
       // Handle any exceptions that may occur during the request
       throw Exception('An error occurred: $e');
     }
   }
+
   ////// Put Api for Module here
-  static Future<List<ClassModule>> getClassModulesByCourseId(String courseId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/courses/$courseId/class-modules';
+  static Future<List<ClassModule>> getClassModulesByCourseId(
+      String courseId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/courses/$courseId/class-modules';
     print(apiUrl);
     try {
       final response = await http.get(
@@ -542,7 +543,8 @@ class Network {
         // If the request is successful, parse the JSON response
         final List<dynamic> moduleListJson = jsonDecode(response.body);
         // Map each JSON object to a Pet object and return a list of pets
-        final List<ClassModule> moduleList = moduleListJson.map((json) => ClassModule.fromJson(json as Map<String, dynamic>))
+        final List<ClassModule> moduleList = moduleListJson
+            .map((json) => ClassModule.fromJson(json as Map<String, dynamic>))
             .toList();
 
         return moduleList;
@@ -551,17 +553,17 @@ class Network {
         throw Exception(
             'Failed to fetch class modules. Status code: ${response.statusCode}');
       }
-    }
-    catch (e) {
+    } catch (e) {
       // Handle any exceptions that may occur during the request
       throw Exception('An error occurred: $e');
     }
   }
 
-
   //class topic
-  static Future<List<ClassTopic>> getClassTopicsByClassLessonId(String classLessonId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/class-lessons/$classLessonId/class-topics'; // Replace with your API URL
+  static Future<List<ClassTopic>> getClassTopicsByClassLessonId(
+      String classLessonId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/class-lessons/$classLessonId/class-topics'; // Replace with your API URL
 
     try {
       final response = await http.get(
@@ -575,7 +577,9 @@ class Network {
         final List<dynamic> classLessonListJson = jsonDecode(response.body);
 
         // Map each JSON object to a Pet object and return a list of pets
-        return classLessonListJson.map((json) => ClassTopic.fromJson(json)).toList();
+        return classLessonListJson
+            .map((json) => ClassTopic.fromJson(json))
+            .toList();
       } else {
         // If the request fails, throw an exception or return null
         throw Exception(
@@ -587,11 +591,10 @@ class Network {
     }
   }
 
-
-
   //lesson
   static Future<List<Lesson>> getLessonsByModuleId(String moduleId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/lessons'; // Replace with your API URL
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/lessons'; // Replace with your API URL
 
     try {
       final response = await http.get(
@@ -615,6 +618,7 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
   static Future<List<Lesson>> getLesson() async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/lessons';
 
@@ -630,7 +634,8 @@ class Network {
         // If the request is successful, parse the JSON response
         final List<dynamic> lessonListJson = jsonDecode(response.body);
         // Map each JSON object to a Pet object and return a list of pets
-        final List<Lesson> lessonList = lessonListJson.map((json) => Lesson.fromJson(json as Map<String, dynamic>))
+        final List<Lesson> lessonList = lessonListJson
+            .map((json) => Lesson.fromJson(json as Map<String, dynamic>))
             .toList();
 
         return lessonList;
@@ -639,14 +644,15 @@ class Network {
         throw Exception(
             'Failed to fetch course. Status code: ${response.statusCode}');
       }
-    }
-    catch (e) {
+    } catch (e) {
       // Handle any exceptions that may occur during the request
       throw Exception('An error occurred: $e');
     }
   }
+
   static Future<Lesson> getLessonByLessonId(String lessonId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/Lessons/$lessonId'; // Replace with your API URL
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/Lessons/$lessonId'; // Replace with your API URL
 
     try {
       final response = await http.get(
@@ -672,9 +678,12 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
   // assignment
-  static Future<List<Assignment>> getAssignmentByModuleId(String moduleId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/assignments'; // Replace with your API URL
+  static Future<List<Assignment>> getAssignmentByModuleId(
+      String moduleId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/assignments'; // Replace with your API URL
 
     try {
       final response = await http.get(
@@ -687,7 +696,9 @@ class Network {
       if (response.statusCode == 200) {
         final List<dynamic> assignmentListJson = jsonDecode(response.body);
 
-        return assignmentListJson.map((json) => Assignment.fromJson(json)).toList();
+        return assignmentListJson
+            .map((json) => Assignment.fromJson(json))
+            .toList();
       } else {
         // If the request fails, throw an exception or return null
         throw Exception(
@@ -698,7 +709,9 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
-  static Future<Assignment> getAssignmentByAssignmentId(String assignmentId) async {
+
+  static Future<Assignment> getAssignmentByAssignmentId(
+      String assignmentId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/assignments/$assignmentId'; // Replace with your API URL
 
@@ -726,12 +739,11 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
   static Future<void> createAssignmentAttempt({
     required String assignmentId,
     required String answerText,
-
   }) async {
-
     final leanerId = SessionManager().getLearnerId() ?? 0;
     final learnerData = {
       "assignmentId": assignmentId,
@@ -757,16 +769,17 @@ class Network {
     if (response.statusCode == 201) {
       // Parse the JSON response
       final jsonResponse = jsonDecode(response.body);
-    }
-    else {
+    } else {
       print('Create assignment failed');
       // Print the JSON data before making the API call
       print('JSON Data: $jsonData');
     }
   }
+
   // quiz
   static Future<List<Quiz>> getQuizByModuleId(String moduleId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/quizzes'; // Replace with your API URL
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/quizzes'; // Replace with your API URL
 
     try {
       final response = await http.get(
@@ -790,6 +803,7 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
   static Future<Quiz> getQuizByQuizId(String quizId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/quizzes/$quizId'; // Replace with your API URL
@@ -848,13 +862,12 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
-//////////Transaction
-  static Future<String> createTransaction(
-      {
-        required String courseId,
-        required double amount,
 
-      }) async {
+//////////Transaction
+  static Future<String> createTransaction({
+    required String courseId,
+    required double amount,
+  }) async {
     final userData = {
       "paymentMethodId": "1dffb0d3-f5a5-4725-98fc-b4dea22f4b0e",
       "amount": amount,
@@ -883,8 +896,7 @@ class Network {
       //set accountId to create learner
       print("After create transaction:  " + transactionId.toString());
       return transactionId;
-    }
-    else {
+    } else {
       print('Create transaction failed');
       // Print the JSON data before making the API call
       print('JSON Data: $jsonData');
@@ -918,7 +930,9 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
-  static Future<Transaction> getTransactionByTransactionId(String? transactionId) async {
+
+  static Future<Transaction> getTransactionByTransactionId(
+      String? transactionId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/transactions/$transactionId'; // Replace with your API URL
 
@@ -953,7 +967,7 @@ class Network {
       "status": enrollment.status,
       "learnerId": SessionManager().getLearnerId(),
       "courseId": enrollment.courseId,
-      "enrolledDate" : enrollment.enrolledDate
+      "enrolledDate": enrollment.enrolledDate
     };
 
     final jsonData = jsonEncode(userData);
@@ -977,8 +991,7 @@ class Network {
       //set accountId to create learner
       print("After create enrollment:  " + enrollmentId.toString());
       return enrollmentId;
-    }
-    else {
+    } else {
       print('Create enrollment failed');
       // Print the JSON data before making the API call
       print('JSON Data: $jsonData');
@@ -986,8 +999,10 @@ class Network {
     }
   }
 
-  static Future<Enrollment> getEnrollmentByLearnerAndCourseId(String learnerId, String courseId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/enrollments?learnerId=$learnerId&courseId=$courseId';
+  static Future<Enrollment> getEnrollmentByLearnerAndCourseId(
+      String learnerId, String courseId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/enrollments/learner-course?learnerId=$learnerId&courseId=$courseId';
 
     try {
       final response = await http.get(
@@ -997,7 +1012,8 @@ class Network {
         },
       );
 
-      print('API Response: ${response.body}'); // Add this line to print the response
+      print(
+          'API Response: ${response.body}'); // Add this line to print the response
 
       if (response.statusCode == 200) {
         final dynamic enrollmentJson = jsonDecode(response.body);
@@ -1011,12 +1027,11 @@ class Network {
           throw Exception('Unexpected response format');
         }
       } else {
-        throw Exception('Failed to fetch enrollment. Status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to fetch enrollment. Status code: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('An error occurred: $e');
     }
   }
-
-
 }

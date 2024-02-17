@@ -9,6 +9,7 @@ import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/curriculcum_screen/widgets/videoplayer_widget.dart';
 import 'package:meowlish/presentation/doing_assignment_screen/doing_assignment_screen.dart';
+import 'package:meowlish/presentation/doing_quiz_screen/doing_quiz_screen.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -288,7 +289,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          DoingAssignmentScreen(assignmentID: moduleAssignmentMap[module.id.toString()]![assignmentIndex].id.toString())
+                          DoingAssignmentScreen(assignmentID: moduleAssignmentMap[module.id.toString()]![assignmentIndex].id.toString(), cooldownTime: Duration(minutes: 15))
                     ),
                   );
                 },
@@ -324,7 +325,13 @@ class CurriculumScreenState extends State<CurriculumScreen> {
             for (int quizIndex = 0; quizIndex < (moduleQuizMap[module.id.toString()]?.length ?? 0); quizIndex++)
               TextButton(
                 onPressed: () {
-                  // Handle quiz tap
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            DoingQuizScreen(quizId: '',)
+                            ),
+                  );// Handle quiz tap
                 },
                 child: Text(moduleQuizMap[module.id.toString()]![quizIndex].name.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
               ),

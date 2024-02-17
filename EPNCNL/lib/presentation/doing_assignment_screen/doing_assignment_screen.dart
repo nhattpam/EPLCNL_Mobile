@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/assignments.dart';
@@ -8,8 +10,9 @@ import 'package:meowlish/widgets/custom_text_form_field.dart';
 
 class DoingAssignmentScreen extends StatefulWidget {
   final String assignmentID;
+  final Duration cooldownTime;
 
-  const DoingAssignmentScreen({Key? key, required this.assignmentID,}) : super(key: key);
+  const DoingAssignmentScreen({Key? key, required this.assignmentID, required this.cooldownTime,}) : super(key: key);
 
   @override
   DoingAssignmentScreenState createState() => DoingAssignmentScreenState();
@@ -18,14 +21,24 @@ class DoingAssignmentScreen extends StatefulWidget {
 class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
   TextEditingController additionalInfoController = TextEditingController();
   late Assignment chosenAssignment = Assignment();
+  Timer? _timer;
+  int _remainingSeconds = 0;
 
   @override
   void initState(){
     super.initState();
-    loadCourseByCourseID();
+    loadAssignmentByAssignmentId();
+    _startCooldownTimer();
   }
 
-  Future<void> loadCourseByCourseID() async {
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+
+  Future<void> loadAssignmentByAssignmentId() async {
     try {
       final assignment = await Network.getAssignmentByAssignmentId(widget.assignmentID);
       setState(() {
@@ -37,9 +50,28 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
     }
   }
 
+  void _startCooldownTimer() {
 
+    if (_timer != null && _timer!.isActive) {
+      return;
+    }
 
+    setState(() {
+      _remainingSeconds = widget.cooldownTime.inSeconds;
+    });
+    // Start a timer for the cooldownTime
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _remainingSeconds -= 1;
+      });
 
+      if (_remainingSeconds <= 0) {
+        _timer?.cancel();
+        _timer = null;
+      }
+    });
+
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -76,9 +108,17 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch, // Ensure children stretch horizontally
               children: [
+
                 Center(
                   child: Text(
                     chosenAssignment.questionText.toString(),
+                    style: CustomTextStyles.headlineSmall25,
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    "Time remaining: " +
+                        '${(_remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(_remainingSeconds % 60).toString().padLeft(2, '0')}',
                     style: CustomTextStyles.headlineSmall25,
                   ),
                 ),

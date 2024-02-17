@@ -1,22 +1,72 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/quizzes.dart';
+import 'package:meowlish/network/network.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_radio_button.dart';
 
-class DoingQuizScreen extends StatelessWidget {
-  DoingQuizScreen({Key? key})
+class DoingQuizScreen extends StatefulWidget {
+  final String quizId;
+  const DoingQuizScreen({Key? key, required this.quizId})
       : super(
-          key: key,
-        );
+    key: key,
+  );
+
+  @override
+  DoingQuizScreenState createState() => DoingQuizScreenState();
+}
+class DoingQuizScreenState extends State<DoingQuizScreen> {
 
   String radioGroup = "";
 
   List<String> radioList = ["lbl_cow", "lbl_pig", "lbl_dog", "lbl_cat"];
+  late Quiz chosenQuiz = Quiz();
+
+  @override
+  void initState(){
+
+  }
+
+  Future<void> loadAssignmentByAssignmentId() async {
+    try {
+      final quiz = await Network.getQuizByQuizId(widget.quizId);
+      setState(() {
+        chosenQuiz = quiz;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          toolbarHeight: 65,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              width: 300,
+              height: 100, // Add margin
+              child: Text(
+                'Quiz',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
         body: Container(
           width: double.maxFinite,
           padding: EdgeInsets.symmetric(
@@ -25,33 +75,9 @@ class DoingQuizScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
-              SizedBox(height: 16.v),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  children: [
-                    CustomImageView(
-                      imagePath: ImageConstant.imgArrowDownBlueGray900,
-                      height: 20.v,
-                      width: 26.h,
-                      margin: EdgeInsets.only(
-                        top: 5.v,
-                        bottom: 4.v,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 11.h),
-                      child: Text(
-                        "Back",
-                        style: theme.textTheme.titleLarge,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               SizedBox(height: 70.v),
               Text(
-                "What is  Mthanh ?",
+                '',
                 style: CustomTextStyles.headlineSmall25,
               ),
               Spacer(
@@ -64,42 +90,12 @@ class DoingQuizScreen extends StatelessWidget {
               CustomElevatedButton(
                 text: "Previous Question",
                 margin: EdgeInsets.symmetric(horizontal: 5.h),
-                rightIcon: Container(
-                  padding: EdgeInsets.fromLTRB(14.h, 16.v, 12.h, 14.v),
-                  margin: EdgeInsets.only(left: 30.h),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.onPrimaryContainer,
-                    borderRadius: BorderRadius.circular(
-                      24.h,
-                    ),
-                  ),
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgArrowdownGray500,
-                    height: 17.v,
-                    width: 21.h,
-                  ),
-                ),
                 buttonStyle: CustomButtonStyles.outlineBlackTL30,
               ),
               SizedBox(height: 26.v),
               CustomElevatedButton(
                 text: "Next Question",
                 margin: EdgeInsets.symmetric(horizontal: 5.h),
-                rightIcon: Container(
-                  padding: EdgeInsets.fromLTRB(14.h, 16.v, 12.h, 14.v),
-                  margin: EdgeInsets.only(left: 30.h),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.onPrimaryContainer,
-                    borderRadius: BorderRadius.circular(
-                      24.h,
-                    ),
-                  ),
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgFill1Primary,
-                    height: 17.v,
-                    width: 21.h,
-                  ),
-                ),
               ),
             ],
           ),

@@ -719,7 +719,7 @@ class Network {
       } else {
         // If the request fails, throw an exception or return null
         throw Exception(
-            'Failed to fetch class module by class module id. Status code: ${response.statusCode}');
+            'Failed to fetch assignment by assignment id. Status code: ${response.statusCode}');
       }
     } catch (e) {
       // Handle any exceptions that may occur during the request
@@ -790,6 +790,35 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+  static Future<Quiz> getQuizByQuizId(String quizId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/quizzes/$quizId'; // Replace with your API URL
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic assignmentJson = jsonDecode(response.body);
+
+        // Map the JSON object to a User object and return it
+        return Quiz.fromJson(assignmentJson);
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch quiz by quiz id. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
   //class module
   static Future<ClassModule> getClassModule(String classModuleId) async {
     final apiUrl =

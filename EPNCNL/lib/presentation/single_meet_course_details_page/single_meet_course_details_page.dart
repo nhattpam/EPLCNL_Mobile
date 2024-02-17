@@ -66,7 +66,8 @@ class SingleMeetCourseDetailsPageState
 
   Future<void> loadEnrollmentByLearnerAndCourseId() async {
     try {
-      final enrollmentResponse = await Network.getEnrollmentByLearnerAndCourseId(
+      final enrollmentResponse =
+          await Network.getEnrollmentByLearnerAndCourseId(
         SessionManager().getLearnerId().toString(),
         widget.courseID,
       );
@@ -84,11 +85,10 @@ class SingleMeetCourseDetailsPageState
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-    bool isEnrolled = enrollment.id != null;
+    bool isEnrolled =
+        enrollment.learnerId != null && enrollment.courseId != null;
 
     return SafeArea(
         child: Scaffold(
@@ -241,36 +241,43 @@ class SingleMeetCourseDetailsPageState
                                           style: theme.textTheme.titleSmall))
                                 ])),
                             SizedBox(height: 56.v),
-                            if (!isEnrolled)
+                            if (!isEnrolled ||
+                                chosenCourse.id != enrollment.courseId)
                               CustomElevatedButton(
-                                text: "Enroll Course - \$${chosenCourse.stockPrice}",
+                                text:
+                                    "Enroll Course - \$${chosenCourse.stockPrice}",
                                 onPressed: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => PaymentMethodsScreen(
+                                      builder: (context) =>
+                                          PaymentMethodsScreen(
                                         courseID: widget.courseID,
                                       ),
                                     ),
                                   );
                                 },
                               ),
-
-                            if (isEnrolled && chosenCourse.isOnlineClass == true)
+                            if (isEnrolled &&
+                                chosenCourse.isOnlineClass == true &&
+                                chosenCourse.id == enrollment.courseId)
                               CustomElevatedButton(
                                 text: "Study Now",
                                 onPressed: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => SingleCourseMeetDetailsCurriculcumPage(
+                                      builder: (context) =>
+                                          SingleCourseMeetDetailsCurriculcumPage(
                                         courseID: widget.courseID,
                                       ),
                                     ),
                                   );
                                 },
                               ),
-                            if (isEnrolled && chosenCourse.isOnlineClass == false)
+                            if (isEnrolled &&
+                                chosenCourse.isOnlineClass == false &&
+                                chosenCourse.id == enrollment.courseId)
                               CustomElevatedButton(
                                 text: "Study Now",
                                 onPressed: () {

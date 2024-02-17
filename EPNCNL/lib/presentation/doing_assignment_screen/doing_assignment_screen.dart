@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/network/network.dart';
@@ -12,7 +13,7 @@ class DoingAssignmentScreen extends StatefulWidget {
   final String assignmentID;
   final Duration cooldownTime;
 
-  const DoingAssignmentScreen({Key? key, required this.assignmentID, required this.cooldownTime,}) : super(key: key);
+  const DoingAssignmentScreen({Key? key, required this.assignmentID, required this.cooldownTime}) : super(key: key);
 
   @override
   DoingAssignmentScreenState createState() => DoingAssignmentScreenState();
@@ -108,19 +109,37 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch, // Ensure children stretch horizontally
               children: [
-
                 Center(
-                  child: Text(
-                    chosenAssignment.questionText.toString(),
-                    style: CustomTextStyles.headlineSmall25,
+                  child: Html(
+                    data: chosenAssignment.questionText.toString(),
+                    style: {
+                      "body": Style(
+                        textAlign: TextAlign.center,
+                        fontSize: FontSize(20),
+                        fontWeight: FontWeight.w400,
+                        lineHeight: LineHeight(1.2125),
+                        color: Color(0xff6c6363),
+                      ),
+                    },
                   ),
                 ),
                 Center(
-                  child: Text(
-                    "Time remaining: " +
-                        '${(_remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(_remainingSeconds % 60).toString().padLeft(2, '0')}',
-                    style: CustomTextStyles.headlineSmall25,
-                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Time remaining: " ,
+                        style:  theme.textTheme.titleSmall!.copyWith(
+                          fontSize: 15.fSize,
+                          fontWeight: FontWeight.w800,
+                        )
+                        ),
+                        Text(
+                          '${(_remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(_remainingSeconds % 60).toString().padLeft(2, '0')}',
+                          style: CustomTextStyles.titleSmallPrimary,
+                        ),
+                      ],
+                    ),
                 ),
                 SizedBox(height: 73.v),
                 Align(

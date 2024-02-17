@@ -289,7 +289,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          DoingAssignmentScreen(assignmentID: moduleAssignmentMap[module.id.toString()]![assignmentIndex].id.toString(), cooldownTime: Duration(minutes: 15))
+                          DoingAssignmentScreen(assignmentID: moduleAssignmentMap[module.id.toString()]![assignmentIndex].id.toString(), cooldownTime: Duration(minutes: moduleAssignmentMap[module.id.toString()]![assignmentIndex].deadline as int))
                     ),
                   );
                 },
@@ -329,8 +329,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            DoingQuizScreen(quizId: '',)
-                            ),
+                            DoingQuizScreen(quizId: moduleQuizMap[module.id.toString()]![quizIndex].id.toString(), cooldownTime: Duration(minutes: moduleQuizMap[module.id.toString()]![quizIndex].deadline as int))),
                   );// Handle quiz tap
                 },
                 child: Text(moduleQuizMap[module.id.toString()]![quizIndex].name.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),

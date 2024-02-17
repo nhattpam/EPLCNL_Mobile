@@ -1,33 +1,66 @@
+import 'dart:async';
+import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/questionanswers.dart';
+import 'package:meowlish/data/models/questions.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
-import 'package:meowlish/widgets/custom_radio_button.dart';
+import 'package:video_player/video_player.dart';
 
 class DoingQuizScreen extends StatefulWidget {
   final String quizId;
-  const DoingQuizScreen({Key? key, required this.quizId})
-      : super(
-    key: key,
-  );
+  final Duration cooldownTime;
+
+  const DoingQuizScreen(
+      {Key? key, required this.quizId, required this.cooldownTime})
+      : super(key: key);
 
   @override
   DoingQuizScreenState createState() => DoingQuizScreenState();
 }
-class DoingQuizScreenState extends State<DoingQuizScreen> {
 
+class DoingQuizScreenState extends State<DoingQuizScreen> {
   String radioGroup = "";
 
-  List<String> radioList = ["lbl_cow", "lbl_pig", "lbl_dog", "lbl_cat"];
   late Quiz chosenQuiz = Quiz();
+  late List<Question> listquestion = [];
+  late List<QuestionAnswer> listquestionanswer = [];
+  Map<String, List<QuestionAnswer>> moduleQuestionAnswerMap = {};
+  late VideoPlayerController _videoPlayerController;
+  late ChewieAudioController _chewieController;
+  int index = 0;
+  Timer? _timer;
+  int _remainingSeconds = 0;
+
+  bool isPlaying = false;
+  Duration duration = Duration.zero;
+  Duration position = Duration.zero;
 
   @override
-  void initState(){
-
+  void initState() {
+    super.initState();
+    loadQuizByQuizId();
+    loadQuestion();
+    _startCooldownTimer();
+    _initializeVideoPlayer();
   }
 
-  Future<void> loadAssignmentByAssignmentId() async {
+  Future<void> _initializeVideoPlayer() async {
+    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(
+        'https://firebasestorage.googleapis.com/v0/b/meowlish-3f184.appspot.com/o/audios%2Ffile_example_MP3_700KB.mp3?alt=media&token=b79e6e35-4d83-4e08-be2b-9b31bfa8af9d'));
+    await _videoPlayerController.initialize();
+    setState(() {
+      _chewieController = ChewieAudioController(
+        videoPlayerController: _videoPlayerController,
+        autoPlay: true,
+        looping: true,
+      );
+    });
+  }
+
+  Future<void> loadQuizByQuizId() async {
     try {
       final quiz = await Network.getQuizByQuizId(widget.quizId);
       setState(() {
@@ -39,6 +72,68 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
     }
   }
 
+  void loadQuestion() async {
+    List<Question> loadedQuestion =
+        await Network.getQuestionByQuizId(widget.quizId);
+    setState(() {
+      listquestion = loadedQuestion;
+    });
+    loadAllQuestionAnswer();
+  }
+
+  Future<void> loadQuestionAnswerByQuestionId(String questionId) async {
+    print("This is question ID" + questionId);
+    List<QuestionAnswer> loadedQuestionAnswer =
+        await Network.getQuestionAnswerByQuestionId(questionId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleQuestionAnswerMap[questionId] = loadedQuestionAnswer;
+      });
+    }
+  }
+
+  Future<void> loadAllQuestionAnswer() async {
+    try {
+      // Load lessons for each module
+      for (final answer in listquestion) {
+        await loadQuestionAnswerByQuestionId(answer.id.toString());
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading answer: $e');
+    }
+  }
+
+  void _startCooldownTimer() {
+    if (_timer != null && _timer!.isActive) {
+      return;
+    }
+
+    setState(() {
+      _remainingSeconds = widget.cooldownTime.inSeconds;
+    });
+    // Start a timer for the cooldownTime
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _remainingSeconds -= 1;
+      });
+
+      if (_remainingSeconds <= 0) {
+        _timer?.cancel();
+        _timer = null;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    _chewieController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,93 +162,93 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
         ),
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
-        body: Container(
-          width: double.maxFinite,
-          padding: EdgeInsets.symmetric(
-            horizontal: 34.h,
-            vertical: 53.v,
-          ),
-          child: Column(
-            children: [
-              SizedBox(height: 70.v),
-              Text(
-                '',
-                style: CustomTextStyles.headlineSmall25,
-              ),
-              Spacer(
-                flex: 44,
-              ),
-              _buildPaymentMethodsGroup(context),
-              Spacer(
-                flex: 55,
-              ),
-              CustomElevatedButton(
-                text: "Previous Question",
-                margin: EdgeInsets.symmetric(horizontal: 5.h),
-                buttonStyle: CustomButtonStyles.outlineBlackTL30,
-              ),
-              SizedBox(height: 26.v),
-              CustomElevatedButton(
-                text: "Next Question",
-                margin: EdgeInsets.symmetric(horizontal: 5.h),
-              ),
-            ],
+        body: SingleChildScrollView(
+          // Wrap the entire Column with SingleChildScrollView
+          child: Container(
+            width: double.maxFinite,
+            padding: EdgeInsets.symmetric(
+              horizontal: 34.h,
+              vertical: 53.v,
+            ),
+            child: Column(
+              children: [
+                Text(
+                  listquestion[index].defaultGrade.toString(),
+                  style: CustomTextStyles.headlineSmall25,
+                ),
+                if (listquestion[index].questionText.toString() != "")
+                  Text(
+                    listquestion[index].questionText.toString(),
+                    style: CustomTextStyles.headlineSmall25,
+                  ),
+                if (listquestion[index].questionAudioUrl.toString() != "")
+                  ChewieAudio(controller: _chewieController),
+                if (listquestion[index].questionImageUrl.toString() != "")
+                  Image.network(
+                    listquestion[index].questionImageUrl.toString(),
+                    height: 167.v,
+                    width: 300.h,
+                    fit: BoxFit
+                        .cover, // Adjust the BoxFit property based on your image requirements
+                  ),
+
+                SizedBox(height: 44.v),
+                // Remove Spacer and use SizedBox with height
+                _buildQuestionsMenu(listquestion[index]),
+                SizedBox(height: 55.v),
+                // Remove Spacer and use SizedBox with height
+                CustomElevatedButton(
+                  text: "Previous Question",
+                  margin: EdgeInsets.symmetric(horizontal: 5.h),
+                  buttonStyle: CustomButtonStyles.outlineBlackTL30,
+                ),
+                SizedBox(height: 26.v),
+                CustomElevatedButton(
+                  text: "Next Question",
+                  margin: EdgeInsets.symmetric(horizontal: 5.h),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  /// Section Widget
-  Widget _buildPaymentMethodsGroup(BuildContext context) {
-    return Column(
-      children: [
-        CustomRadioButton(
-          text: "Cow",
-          value: radioList[0],
-          groupValue: radioGroup,
-          padding: EdgeInsets.fromLTRB(15.h, 20.v, 30.h, 20.v),
-          onChange: (value) {
-            radioGroup = value;
-          },
+  Widget _buildQuestionsMenu(Question question) {
+    return Visibility(
+      visible: moduleQuestionAnswerMap[question.id.toString()] != null &&
+          moduleQuestionAnswerMap[question.id.toString()]!.isNotEmpty,
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // You can adjust the cross axis count as needed
+          mainAxisSpacing: 20.0,
+          crossAxisSpacing: 20.0,
+          childAspectRatio: 2.5, // You can adjust the aspect ratio as needed
         ),
-        Padding(
-          padding: EdgeInsets.only(top: 12.v),
-          child: CustomRadioButton(
-            text: "Pig",
-            value: radioList[1],
-            groupValue: radioGroup,
-            padding: EdgeInsets.fromLTRB(15.h, 19.v, 30.h, 19.v),
-            onChange: (value) {
-              radioGroup = value;
-            },
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: 12.v),
-          child: CustomRadioButton(
-            text: "Dog",
-            value: radioList[2],
-            groupValue: radioGroup,
-            padding: EdgeInsets.fromLTRB(15.h, 19.v, 30.h, 19.v),
-            onChange: (value) {
-              radioGroup = value;
-            },
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: 12.v),
-          child: CustomRadioButton(
-            text: "Cat",
-            value: radioList[3],
-            groupValue: radioGroup,
-            padding: EdgeInsets.fromLTRB(15.h, 20.v, 30.h, 20.v),
-            onChange: (value) {
-              radioGroup = value;
-            },
-          ),
-        ),
-      ],
+        itemCount: moduleQuestionAnswerMap[question.id.toString()]?.length ?? 0,
+        itemBuilder: (context, index) {
+          final answer =
+              moduleQuestionAnswerMap[question.id.toString()]![index];
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Center(
+              child: Text(
+                answer.answerText.toString(),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

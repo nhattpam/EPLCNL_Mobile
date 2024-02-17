@@ -11,6 +11,8 @@ import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/learners.dart';
 import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
+import 'package:meowlish/data/models/questionanswers.dart';
+import 'package:meowlish/data/models/questions.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/tutors.dart';
@@ -832,7 +834,60 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+  //Question
+  static Future<List<Question>> getQuestionByQuizId(String quizId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/quizzes/$quizId/questions'; // Replace with your API URL
 
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> questionListJson = jsonDecode(response.body);
+
+        return questionListJson.map((json) => Question.fromJson(json)).toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  //Question Answer
+  static Future<List<QuestionAnswer>> getQuestionAnswerByQuestionId(String questionId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/questions/$questionId/question-answers'; // Replace with your API URL
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> questionanswerListJson = jsonDecode(response.body);
+
+        return questionanswerListJson.map((json) => QuestionAnswer.fromJson(json)).toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
   //class module
   static Future<ClassModule> getClassModule(String classModuleId) async {
     final apiUrl =

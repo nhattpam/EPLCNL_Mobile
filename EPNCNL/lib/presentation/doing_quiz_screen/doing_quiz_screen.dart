@@ -34,7 +34,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   Timer? _timer;
   int _remainingSeconds = 0;
 
-  bool isPlaying = false;
+  bool isLoading = true;
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
 
@@ -57,6 +57,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
         looping: true,
         allowMuting: true,
       );
+      isLoading = false;
     });
   }
 
@@ -184,7 +185,10 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                     style: CustomTextStyles.headlineSmall25,
                   ),
                 if (listquestion[index].questionAudioUrl.toString() != "")
-                  ChewieAudio(controller: _chewieController),
+                      isLoading ? Center(
+                      child: CircularProgressIndicator(),
+                      )
+                          : ChewieAudio(controller: _chewieController),
                 if (listquestion[index].questionImageUrl.toString() != "")
                   Image.network(
                     listquestion[index].questionImageUrl.toString(),

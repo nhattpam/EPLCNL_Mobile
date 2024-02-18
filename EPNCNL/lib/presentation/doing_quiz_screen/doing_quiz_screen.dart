@@ -44,18 +44,18 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
     loadQuizByQuizId();
     loadQuestion();
     _startCooldownTimer();
-    _initializeVideoPlayer();
   }
 
-  Future<void> _initializeVideoPlayer() async {
-    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(
-        'https://firebasestorage.googleapis.com/v0/b/meowlish-3f184.appspot.com/o/audios%2Ffile_example_MP3_700KB.mp3?alt=media&token=b79e6e35-4d83-4e08-be2b-9b31bfa8af9d'));
+  Future<void> _initializeVideoPlayer(String audioUrl) async {
+    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(audioUrl));
     await _videoPlayerController.initialize();
     setState(() {
       _chewieController = ChewieAudioController(
+        autoInitialize: true,
         videoPlayerController: _videoPlayerController,
         autoPlay: true,
         looping: true,
+        allowMuting: true,
       );
     });
   }
@@ -97,7 +97,9 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
     try {
       // Load lessons for each module
       for (final answer in listquestion) {
+        await _initializeVideoPlayer(answer.questionAudioUrl.toString());
         await loadQuestionAnswerByQuestionId(answer.id.toString());
+
       }
       // After all lessons are loaded, proceed with building the UI
       setState(() {});

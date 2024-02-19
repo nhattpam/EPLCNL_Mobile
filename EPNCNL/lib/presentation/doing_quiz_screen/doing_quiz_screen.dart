@@ -23,7 +23,6 @@ class DoingQuizScreen extends StatefulWidget {
 
 class DoingQuizScreenState extends State<DoingQuizScreen> {
   String radioGroup = "";
-
   late Quiz chosenQuiz = Quiz();
   late List<Question> listquestion = [];
   late List<QuestionAnswer> listquestionanswer = [];
@@ -33,10 +32,8 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   int index = 0;
   Timer? _timer;
   int _remainingSeconds = 0;
-
   bool isLoading = true;
-  Duration duration = Duration.zero;
-  Duration position = Duration.zero;
+  bool isCorrect = false;
 
   @override
   void initState() {
@@ -222,6 +219,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   }
 
   Widget _buildQuestionsMenu(Question question) {
+    Color color = Colors.white;
     return Visibility(
       visible: moduleQuestionAnswerMap[question.id.toString()] != null &&
           moduleQuestionAnswerMap[question.id.toString()]!.isNotEmpty,
@@ -238,21 +236,28 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
         itemBuilder: (context, index) {
           final answer =
               moduleQuestionAnswerMap[question.id.toString()]![index];
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Center(
-              child: Text(
-                answer.answerText.toString(),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+          return
+            GestureDetector(
+              onTap: () {
+                isCorrect = answer.isAnswer ?? false;
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isCorrect ? (answer.isAnswer ?? false) ? Colors.green : Colors.red : null
+                  ,
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Center(
+                  child: Text(
+                    answer?.answerText?.toString() ?? "", // Providing default value in case answerText is null
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          );
+            );
         },
       ),
     );

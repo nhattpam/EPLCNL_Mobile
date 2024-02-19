@@ -836,9 +836,7 @@ class Network {
   }
   //Question
   static Future<List<Question>> getQuestionByQuizId(String quizId) async {
-    final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/quizzes/$quizId/questions'; // Replace with your API URL
-
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/quizzes/$quizId/questions'; // Replace with your API URL
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -865,7 +863,7 @@ class Network {
   static Future<List<QuestionAnswer>> getQuestionAnswerByQuestionId(String questionId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/questions/$questionId/question-answers'; // Replace with your API URL
-
+    print(apiUrl);
     try {
       final response = await http.get(
         Uri.parse(apiUrl),

@@ -34,7 +34,8 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   int _remainingSeconds = 0;
   bool isLoading = true;
   bool isCorrect = false;
-
+  bool endOfQuiz = false;
+  int totalScore = 0;
   @override
   void initState() {
     super.initState();
@@ -71,8 +72,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   }
 
   void loadQuestion() async {
-    List<Question> loadedQuestion =
-        await Network.getQuestionByQuizId(widget.quizId);
+    List<Question> loadedQuestion = await Network.getQuestionByQuizId(widget.quizId);
     setState(() {
       listquestion = loadedQuestion;
     });
@@ -80,9 +80,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   }
 
   Future<void> loadQuestionAnswerByQuestionId(String questionId) async {
-    print("This is question ID" + questionId);
-    List<QuestionAnswer> loadedQuestionAnswer =
-        await Network.getQuestionAnswerByQuestionId(questionId);
+    List<QuestionAnswer> loadedQuestionAnswer = await Network.getQuestionAnswerByQuestionId(questionId);
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
@@ -95,9 +93,10 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
     try {
       // Load lessons for each module
       for (final answer in listquestion) {
-        await _initializeVideoPlayer(answer.questionAudioUrl.toString());
         await loadQuestionAnswerByQuestionId(answer.id.toString());
-
+        if(answer.questionAudioUrl != ''){
+          await _initializeVideoPlayer(answer.questionAudioUrl.toString());
+        }
       }
       // After all lessons are loaded, proceed with building the UI
       setState(() {});
@@ -125,6 +124,27 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
         _timer?.cancel();
         _timer = null;
       }
+    });
+  }
+
+  void nextQuestion(){
+    setState(() {
+      index++;
+      loadQuestion();
+      if(index++ == listquestion.length){
+        endOfQuiz = true;
+      }
+
+    });
+    if(index >= listquestion.length){
+      _resetQuiz();
+    }
+  }
+
+  void _resetQuiz(){
+    setState(() {
+      index = 0;
+      endOfQuiz = false;
     });
   }
 
@@ -172,10 +192,6 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
             ),
             child: Column(
               children: [
-                Text(
-                  listquestion[index].defaultGrade.toString(),
-                  style: CustomTextStyles.headlineSmall25,
-                ),
                 if (listquestion[index].questionText.toString() != "")
                   Text(
                     listquestion[index].questionText.toString(),
@@ -207,7 +223,10 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                 ),
                 SizedBox(height: 26.v),
                 CustomElevatedButton(
-                  text: "Next Question",
+                  onPressed: (){
+                    nextQuestion();
+                  },
+                  text: endOfQuiz ? "Finish Attempt" : "Next Question",
                   margin: EdgeInsets.symmetric(horizontal: 5.h),
                 ),
               ],
@@ -219,7 +238,6 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   }
 
   Widget _buildQuestionsMenu(Question question) {
-    Color color = Colors.white;
     return Visibility(
       visible: moduleQuestionAnswerMap[question.id.toString()] != null &&
           moduleQuestionAnswerMap[question.id.toString()]!.isNotEmpty,
@@ -240,11 +258,17 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
             GestureDetector(
               onTap: () {
                 isCorrect = answer.isAnswer ?? false;
+                setState(() {
+                  print(isCorrect);
+                  if(answer.isAnswer ?? false){
+                    totalScore += listquestion[index].defaultGrade as int;
+                    // print(totalScore);
+                  }
+                });
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: isCorrect ? (answer.isAnswer ?? false) ? Colors.green : Colors.red : null
-                  ,
+                  color: isCorrect ? (answer.isAnswer ?? false) ? Colors.green : Colors.red : null,
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: Center(

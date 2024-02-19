@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
@@ -29,14 +30,16 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   Map<String, List<QuestionAnswer>> moduleQuestionAnswerMap = {};
   late VideoPlayerController _videoPlayerController;
   late ChewieAudioController _chewieController;
-  int index = 0;
+  int _questionIndex = 0;
   Timer? _timer;
   int _remainingSeconds = 0;
   bool isLoading = true;
   bool isSelected = false;
   bool isCorrect = false;
+  bool isPointed = false;
   bool endOfQuiz = false;
   int totalScore = 0;
+
   @override
   void initState() {
     super.initState();
@@ -52,7 +55,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
       _chewieController = ChewieAudioController(
         autoInitialize: true,
         videoPlayerController: _videoPlayerController,
-        autoPlay: true,
+        autoPlay: false,
         looping: true,
         allowMuting: true,
       );
@@ -130,24 +133,33 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
 
   void nextQuestion(){
     setState(() {
-      _chewieController.dispose();
-      index++;
+      _questionIndex++;
       loadQuestion();
       isSelected = false;
-      print("This is" + index.toString());
-      if(index == listquestion.length){
-        endOfQuiz = true;
-      }
+      print("This is" + _questionIndex.toString());
 
     });
-    if(index >= listquestion.length){
+    if(_questionIndex >= listquestion.length){
+      endOfQuiz = true;
       _resetQuiz();
     }
   }
 
+  // void previousQuestion(){
+  //   setState(() {
+  //     index--;
+  //     loadQuestion();
+  //     isSelected = false;
+  //     print("This is" + index.toString());
+  //     if(index < 0){
+  //       // i dont know
+  //     }
+  //   });
+  // }
+
   void _resetQuiz(){
     setState(() {
-      index = 0;
+      _questionIndex = 0;
       endOfQuiz = false;
     });
   }
@@ -196,39 +208,47 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
             ),
             child: Column(
               children: [
-                if (listquestion[index].questionText.toString() != "")
+                if (listquestion[_questionIndex].questionText.toString() != '')
                   Text(
-                    listquestion[index].questionText.toString(),
+                    listquestion[_questionIndex].questionText.toString(),
                     style: CustomTextStyles.headlineSmall25,
                   ),
-                if (listquestion[index].questionAudioUrl.toString() != "")
+                if (listquestion[_questionIndex].questionAudioUrl.toString() != '')
                       isLoading ? Center(
                       child: CircularProgressIndicator(),
                       )
                           : ChewieAudio(controller: _chewieController),
-                if (listquestion[index].questionImageUrl.toString() != "")
+                if (listquestion[_questionIndex].questionImageUrl.toString() != '')
                   Image.network(
-                    listquestion[index].questionImageUrl.toString(),
+                    listquestion[_questionIndex].questionImageUrl.toString(),
                     height: 167.v,
                     width: 300.h,
                     fit: BoxFit
                         .cover, // Adjust the BoxFit property based on your image requirements
                   ),
-
                 SizedBox(height: 44.v),
                 // Remove Spacer and use SizedBox with height
-                _buildQuestionsMenu(listquestion[index]),
+                _buildQuestionsMenu(listquestion[_questionIndex]),
                 SizedBox(height: 55.v),
                 // Remove Spacer and use SizedBox with height
-                CustomElevatedButton(
-                  text: "Previous Question",
-                  margin: EdgeInsets.symmetric(horizontal: 5.h),
-                  buttonStyle: CustomButtonStyles.outlineBlackTL30,
-                ),
-                SizedBox(height: 26.v),
+                // CustomElevatedButton(
+                //   onPressed: (){
+                //       previousQuestion();
+                //     _videoPlayerController.dispose();
+                //     _chewieController.dispose();
+                //   },
+                //   text: "Previous Question",
+                //   margin: EdgeInsets.symmetric(horizontal: 5.h),
+                //   buttonStyle: CustomButtonStyles.outlineBlackTL30,
+                // ),
+                // SizedBox(height: 26.v),
                 CustomElevatedButton(
                   onPressed: (){
-                    nextQuestion();
+                    if(isSelected == true){
+                      nextQuestion();
+                    }
+                    _videoPlayerController.dispose();
+                    _chewieController.dispose();
                   },
                   text: endOfQuiz ? "Finish Attempt" : "Next Question",
                   margin: EdgeInsets.symmetric(horizontal: 5.h),
@@ -256,22 +276,49 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
         ),
         itemCount: moduleQuestionAnswerMap[question.id.toString()]?.length ?? 0,
         itemBuilder: (context, index) {
-          final answer =
-              moduleQuestionAnswerMap[question.id.toString()]![index];
-          return
-            GestureDetector(
-              onTap: () {
+          final answer = moduleQuestionAnswerMap[question.id.toString()]![index];
+          return GestureDetector(
+              onTap: isSelected ? null : () {
                 isCorrect = answer.isAnswer ?? false;
-                print(isCorrect);
                 setState(() {
-                  isSelected = !isSelected;
+                  isSelected = true;
                   if(isCorrect){
-                    totalScore += listquestion[index].defaultGrade as int;
+                    print('Point of this question' + listquestion[_questionIndex].defaultGrade.toString());
+                    totalScore += listquestion[_questionIndex].defaultGrade as int;
+                    // isPointed = true;
+                    AwesomeDialog(
+                      context: context,
+                      animType: AnimType.scale,
+                      dialogType: DialogType.success,
+                      body: Center(
+                        child: Text(
+                          'Your answer is correct: $totalScore point',
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      ),
+                      btnOkOnPress: () {},
+                    )..show();
+                  } else {
+                    AwesomeDialog(
+                      context: context,
+                      animType: AnimType.scale,
+                      dialogType: DialogType.error,
+                      body: Center(
+                        child: Text(
+                          'Your answer is incorrect: $totalScore point',
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      ),
+                      btnOkColor: Colors.red,
+                      btnOkOnPress: () {},
+                    )
+                      ..show();
                   }
                 });
               },
               child: Container(
                 decoration: BoxDecoration(
+                  borderRadius: BorderRadiusStyle.roundedBorder22,
                   color: isSelected
                     ? isCorrect
                       ? (answer.isAnswer ?? false)
@@ -280,8 +327,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                       : (answer.isAnswer ?? false)
                         ? Colors.green
                         : Colors.red
-                     : Colors.white,
-                  borderRadius: BorderRadius.circular(10.0),
+                     : Colors.grey,
                 ),
                 child: Center(
                   child: Text(

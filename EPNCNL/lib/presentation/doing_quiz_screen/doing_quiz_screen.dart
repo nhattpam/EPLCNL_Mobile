@@ -32,14 +32,15 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   late ChewieAudioController _chewieController;
   int _questionIndex = 0;
   Timer? _timer;
+  Timer? __timer;
   int _remainingSeconds = 0;
+  int _remainingSecondsPopUp = 3;
   bool isLoading = true;
   bool isSelected = false;
   bool isCorrect = false;
   bool isPointed = false;
   bool endOfQuiz = false;
   int totalScore = 0;
-
   @override
   void initState() {
     super.initState();
@@ -114,7 +115,6 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
     if (_timer != null && _timer!.isActive) {
       return;
     }
-
     setState(() {
       _remainingSeconds = widget.cooldownTime.inSeconds;
     });
@@ -127,6 +127,23 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
       if (_remainingSeconds <= 0) {
         _timer?.cancel();
         _timer = null;
+      }
+    });
+  }
+  void _startCooldownPopup() {
+    if (__timer != null && __timer!.isActive) {
+      return;
+    }
+    // Start a timer for the cooldownTime
+    __timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _remainingSecondsPopUp -= 1;
+      });
+
+      if (_remainingSecondsPopUp <= 0) {
+        Navigator.of(context).pop();
+        __timer?.cancel();
+        __timer = null;
       }
     });
   }
@@ -208,6 +225,26 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
             ),
             child: Column(
               children: [
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                          "Time remaining: " ,
+                          style:  theme.textTheme.titleSmall!.copyWith(
+                            fontSize: 15.fSize,
+                            fontWeight: FontWeight.w800,
+                          )
+                      ),
+                      Text(
+                        '${(_remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(_remainingSeconds % 60).toString().padLeft(2, '0')}',
+                        style: CustomTextStyles.titleSmallPrimary,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 44.v),
+
                 if (listquestion[_questionIndex].questionText.toString() != '')
                   Text(
                     listquestion[_questionIndex].questionText.toString(),
@@ -226,6 +263,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                     fit: BoxFit
                         .cover, // Adjust the BoxFit property based on your image requirements
                   ),
+
                 SizedBox(height: 44.v),
                 // Remove Spacer and use SizedBox with height
                 _buildQuestionsMenu(listquestion[_questionIndex]),
@@ -283,6 +321,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                 setState(() {
                   isSelected = true;
                   if(isCorrect){
+                    _startCooldownPopup();
                     print('Point of this question' + listquestion[_questionIndex].defaultGrade.toString());
                     totalScore += listquestion[_questionIndex].defaultGrade as int;
                     // isPointed = true;
@@ -296,9 +335,18 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                           style: TextStyle(fontStyle: FontStyle.italic),
                         ),
                       ),
-                      btnOkOnPress: () {},
+                      btnOkOnPress: () {
+                        setState(() {
+                          __timer?.cancel();
+                          __timer = null;
+                        });
+                        // if(isSelected == true){
+                        //   nextQuestion();
+                        // }
+                      },
                     )..show();
                   } else {
+                    _startCooldownPopup();
                     AwesomeDialog(
                       context: context,
                       animType: AnimType.scale,
@@ -310,7 +358,10 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                         ),
                       ),
                       btnOkColor: Colors.red,
-                      btnOkOnPress: () {},
+                      btnOkOnPress: () {
+                        __timer?.cancel();
+                        __timer = null;
+                      },
                     )
                       ..show();
                   }

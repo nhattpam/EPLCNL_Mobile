@@ -131,7 +131,9 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
     setState(() {
       index++;
       loadQuestion();
-      if(index++ == listquestion.length){
+      isCorrect = false;
+      print("This is" + index.toString());
+      if(index == listquestion.length){
         endOfQuiz = true;
       }
 
@@ -262,7 +264,6 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                   print(isCorrect);
                   if(answer.isAnswer ?? false){
                     totalScore += listquestion[index].defaultGrade as int;
-                    // print(totalScore);
                   }
                 });
               },

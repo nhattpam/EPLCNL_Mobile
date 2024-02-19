@@ -33,6 +33,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   Timer? _timer;
   int _remainingSeconds = 0;
   bool isLoading = true;
+  bool isSelected = false;
   bool isCorrect = false;
   bool endOfQuiz = false;
   int totalScore = 0;
@@ -129,9 +130,10 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
 
   void nextQuestion(){
     setState(() {
+      _chewieController.dispose();
       index++;
       loadQuestion();
-      isCorrect = false;
+      isSelected = false;
       print("This is" + index.toString());
       if(index == listquestion.length){
         endOfQuiz = true;
@@ -260,16 +262,25 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
             GestureDetector(
               onTap: () {
                 isCorrect = answer.isAnswer ?? false;
+                print(isCorrect);
                 setState(() {
-                  print(isCorrect);
-                  if(answer.isAnswer ?? false){
+                  isSelected = !isSelected;
+                  if(isCorrect){
                     totalScore += listquestion[index].defaultGrade as int;
                   }
                 });
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: isCorrect ? (answer.isAnswer ?? false) ? Colors.green : Colors.red : null,
+                  color: isSelected
+                    ? isCorrect
+                      ? (answer.isAnswer ?? false)
+                        ? Colors.green
+                        : Colors.red
+                      : (answer.isAnswer ?? false)
+                        ? Colors.green
+                        : Colors.red
+                     : Colors.white,
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: Center(

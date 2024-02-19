@@ -13,6 +13,7 @@ import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/data/models/questionanswers.dart';
 import 'package:meowlish/data/models/questions.dart';
+import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/tutors.dart';
@@ -834,6 +835,43 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
+  //Quiz-Attemps
+  static Future<void> createQuizAttempt({
+    required String quizId,
+    required int totalGrade,
+  }) async {
+    final leanerId = SessionManager().getLearnerId() ?? 0;
+    final userData = {
+      "quizId": quizId,
+      "learnerId": leanerId,
+      // "attemptedDate": DateTime.now().toString(),
+      "totalGrade": totalGrade
+    };
+
+    final jsonData = jsonEncode(userData);
+
+    // Print the JSON data before making the API call
+    print('JSON Data: $jsonData');
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/quiz-attempts'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+    } else {
+      print('Quiz attempt failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
+    }
+  }
+
   //Question
   static Future<List<Question>> getQuestionByQuizId(String quizId) async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/quizzes/$quizId/questions'; // Replace with your API URL

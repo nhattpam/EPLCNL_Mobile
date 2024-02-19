@@ -156,9 +156,8 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
       print("This is" + _questionIndex.toString());
 
     });
-    if(_questionIndex >= listquestion.length){
+    if(_questionIndex >= listquestion.length-1){
       endOfQuiz = true;
-      _resetQuiz();
     }
   }
 
@@ -283,7 +282,11 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                 CustomElevatedButton(
                   onPressed: (){
                     if(isSelected == true){
-                      nextQuestion();
+                      if(endOfQuiz == true){
+                        Network.createQuizAttempt(quizId: widget.quizId, totalGrade: totalScore);
+                      } else {
+                        nextQuestion();
+                      }
                     }
                     _videoPlayerController.dispose();
                     _chewieController.dispose();

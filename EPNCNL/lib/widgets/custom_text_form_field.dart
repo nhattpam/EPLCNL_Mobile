@@ -92,7 +92,7 @@ class CustomTextFormField extends StatelessWidget {
           controller: controller,
           focusNode: focusNode ?? FocusNode(),
           autofocus: autofocus!,
-          style: textStyle ?? CustomTextStyles.labelLargeBluegray20012,
+          style: textStyle ?? CustomTextStyles.labelLargeBlack900,
           obscureText: obscureText!,
           textInputAction: textInputAction,
           keyboardType: textInputType,
@@ -143,9 +143,10 @@ class CustomTextFormField extends StatelessWidget {
 /// Extension on [CustomTextFormField] to facilitate inclusion of all types of border style etc
 extension TextFormFieldStyleHelper on CustomTextFormField {
   static OutlineInputBorder get outlineBlack => OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.h),
-        borderSide: BorderSide.none,
-      );
+      borderRadius: BorderRadius.circular(12.h),
+      borderSide: BorderSide(
+        color: Colors.black, // Đặt màu đen cho đường viền dưới
+      ));
 
   static OutlineInputBorder get outlineBlackTL16 => OutlineInputBorder(
         borderRadius: BorderRadius.circular(16.h),

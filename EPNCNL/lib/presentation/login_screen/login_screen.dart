@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/learners.dart';
 import 'package:meowlish/widgets/custom_checkbox_button.dart';
@@ -17,7 +18,6 @@ class LoginScreen extends StatefulWidget {
 
 // ignore_for_file: must_be_immutable
 class LoginScreenState extends State<LoginScreen> {
-
   TextEditingController emailController = TextEditingController();
 
   TextEditingController passwordController = TextEditingController();
@@ -32,8 +32,8 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-
   }
+
   void loginPressed() async {
     final email = emailController.text;
     final password = passwordController.text;
@@ -62,129 +62,127 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: SizedBox(
-                width: SizeUtils.width,
-                child: SingleChildScrollView(
-                    padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom),
-                    child: Form(
-                        key: _formKey,
-                        child: Container(
-                            width: double.maxFinite,
-                            height: 716,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 34.h, vertical: 14.v),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  _buildLetSSignIn(context),
-                                  SizedBox(height: 9.v),
-                                  CustomTextFormField(
-                                      controller: emailController,
-                                      hintText: "Email",
-                                      hintStyle:
-                                          CustomTextStyles.titleSmallGray80001,
-                                      textInputType: TextInputType.emailAddress,
-                                      prefix: Container(
-                                          margin: EdgeInsets.fromLTRB(
-                                              20.h, 22.v, 7.h, 23.v),
-                                          child: CustomImageView(
-                                              imagePath: ImageConstant.imgLock,
-                                              height: 14.v,
-                                              width: 18.h)),
-                                      prefixConstraints:
-                                          BoxConstraints(maxHeight: 60.v),
-                                      contentPadding: EdgeInsets.only(
-                                          top: 21.v, right: 30.h, bottom: 21.v),
-                                      borderDecoration: TextFormFieldStyleHelper
-                                          .outlineBlack),
-                                  SizedBox(height: 20.v),
-                                  CustomTextFormField(
-                                      controller: passwordController,
-                                      hintText: "Password",
-                                      hintStyle:
-                                          CustomTextStyles.titleSmallGray80001,
-                                      textInputAction: TextInputAction.done,
-                                      textInputType:
-                                          TextInputType.visiblePassword,
-                                      prefix: Container(
-                                          margin: EdgeInsets.fromLTRB(
-                                              22.h, 20.v, 9.h, 20.v),
-                                          child: CustomImageView(
-                                              imagePath:
-                                                  ImageConstant.imgLocation,
-                                              height: 19.v,
-                                              width: 14.h)),
-                                      prefixConstraints:
-                                          BoxConstraints(maxHeight: 60.v),
-                                      suffix: Container(
-                                          margin: EdgeInsets.fromLTRB(
-                                              30.h, 21.v, 24.h, 21.v),
-                                          child: CustomImageView(
-                                              imagePath:
-                                                  ImageConstant.imgThumbsup,
-                                              height: 15.adaptSize,
-                                              width: 15.adaptSize)),
-                                      suffixConstraints:
-                                          BoxConstraints(maxHeight: 60.v),
-                                      obscureText: true,
-                                      contentPadding:
-                                          EdgeInsets.symmetric(vertical: 21.v),
-                                      borderDecoration: TextFormFieldStyleHelper
-                                          .outlineBlack),
-                                  SizedBox(height: 23.v),
-                                  _buildRememberMe(context),
-                                  SizedBox(height: 36.v),
-                                  _buildSignIn(context),
-                                  Spacer(),
-                                  SizedBox(height: 58.v),
-                                  Container(
-                                      height: 19.v,
-                                      width: 221.h,
-                                      margin: EdgeInsets.only(right: 60.h),
-                                      child: Stack(
-                                          alignment: Alignment.topRight,
-                                          children: [
-                                            Align(
-                                                alignment:
-                                                    Alignment.bottomCenter,
-                                                child: GestureDetector(
-                                                    onTap: () {
-                                                      onTapTxtDonthaveanaccount(
-                                                          context);
-                                                    },
-                                                    child: RichText(
-                                                        text:
-                                                            TextSpan(children: [
-                                                          TextSpan(
-                                                              text:
-                                                                  "Don’t have an Account? ",
-                                                              style: CustomTextStyles
-                                                                  .titleSmallff545454_1),
-                                                          TextSpan(
-                                                              text: "SIGN",
-                                                              style: CustomTextStyles
-                                                                  .titleSmallffff9300ExtraBold),
-                                                          TextSpan(text: " "),
-                                                          TextSpan(
-                                                              text: "UP",
-                                                              style: CustomTextStyles
-                                                                  .titleSmallffff9300ExtraBold)
-                                                        ]),
-                                                        textAlign:
-                                                            TextAlign.left))),
-                                            Align(
-                                                alignment: Alignment.topRight,
-                                                child: SizedBox(
-                                                    width: 66.h,
-                                                    child: Divider(
-                                                        color: theme.colorScheme
-                                                            .onPrimaryContainer,
-                                                        endIndent: 10.h)))
-                                          ]))
-                                ])))))));
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: SizedBox(
+          width: SizeUtils.width,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Form(
+              key: _formKey,
+              child: Container(
+                width: double.maxFinite,
+                height: 716,
+                padding: EdgeInsets.symmetric(horizontal: 34.h, vertical: 14.v),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _buildLetSSignIn(context),
+                    SizedBox(height: 9.v),
+                    CustomTextFormField(
+                      controller: emailController,
+                      hintText: "Email",
+                      hintStyle: CustomTextStyles.titleSmallGray80001,
+                      textInputType: TextInputType.emailAddress,
+                      prefix: Container(
+                        margin: EdgeInsets.fromLTRB(20.h, 22.v, 7.h, 23.v),
+                        child: CustomImageView(
+                            imagePath: ImageConstant.imgLock,
+                            height: 14.v,
+                            width: 18.h),
+                      ),
+                      prefixConstraints: BoxConstraints(maxHeight: 60.v),
+                      contentPadding:
+                          EdgeInsets.only(top: 21.v, right: 30.h, bottom: 21.v),
+                      borderDecoration: TextFormFieldStyleHelper
+                          .outlineBlack, //TextFormFieldStyleHelper chứa thuộc tính của form có thể viền đen giao diện
+                    ),
+                    SizedBox(height: 20.v),
+                    CustomTextFormField(
+                        controller: passwordController,
+                        hintText: "Password",
+                        hintStyle: CustomTextStyles.titleSmallGray80001,
+                        textInputAction: TextInputAction.done,
+                        textInputType: TextInputType.visiblePassword,
+                        prefix: Container(
+                            margin: EdgeInsets.fromLTRB(22.h, 20.v, 9.h, 20.v),
+                            child: CustomImageView(
+                                imagePath: ImageConstant.imgLocation,
+                                height: 19.v,
+                                width: 14.h)),
+                        prefixConstraints: BoxConstraints(maxHeight: 60.v),
+                        suffix: Container(
+                            margin: EdgeInsets.fromLTRB(30.h, 21.v, 24.h, 21.v),
+                            child: CustomImageView(
+                                imagePath: ImageConstant.imgThumbsup,
+                                height: 15.adaptSize,
+                                width: 15.adaptSize)),
+                        suffixConstraints: BoxConstraints(maxHeight: 60.v),
+                        obscureText: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 21.v),
+                        borderDecoration:
+                            TextFormFieldStyleHelper.outlineBlack),
+                    SizedBox(height: 23.v),
+                    _buildRememberMe(context),
+                    SizedBox(height: 36.v),
+                    _buildSignIn(context),
+                    Spacer(),
+                    SizedBox(height: 58.v),
+                    Container(
+                      height: 19.v,
+                      width: 221.h,
+                      margin: EdgeInsets.only(right: 60.h),
+                      child: Stack(
+                        alignment: Alignment.topRight,
+                        children: [
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: GestureDetector(
+                              onTap: () {
+                                onTapTxtDonthaveanaccount(context);
+                              },
+                              child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                          text: "Don’t have an Account? ",
+                                          style: CustomTextStyles
+                                              .titleSmallff545454_1),
+                                      TextSpan(
+                                          text: "SIGN",
+                                          style: CustomTextStyles
+                                              .titleSmallffff9300ExtraBold),
+                                      TextSpan(text: " "),
+                                      TextSpan(
+                                          text: "UP",
+                                          style: CustomTextStyles
+                                              .titleSmallffff9300ExtraBold)
+                                    ],
+                                  ),
+                                  textAlign: TextAlign.left),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: SizedBox(
+                              width: 66.h,
+                              child: Divider(
+                                  color: theme.colorScheme.onPrimaryContainer,
+                                  endIndent: 10.h),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   /// Section Widget
@@ -195,11 +193,13 @@ class LoginScreenState extends State<LoginScreen> {
         margin: EdgeInsets.only(right: 7.h),
         child: Stack(alignment: Alignment.bottomLeft, children: [
           Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                  padding: EdgeInsets.only(bottom: 66.v),
-                  child: Text("Let’s Sign In.!",
-                      style: theme.textTheme.headlineSmall))),
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 66.v),
+              child:
+                  Text("Let’s Sign In.!", style: theme.textTheme.headlineSmall),
+            ),
+          ),
           Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
@@ -282,7 +282,8 @@ class LoginScreenState extends State<LoginScreen> {
                                   width: 48.adaptSize,
                                   padding: EdgeInsets.all(13.h),
                                   child: CustomImageView(
-                                      imagePath: ImageConstant.imgFill1Primary)))
+                                      imagePath:
+                                          ImageConstant.imgFill1Primary)))
                         ])))
           ])),
     );
@@ -299,7 +300,8 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   onTapBtnSignin(BuildContext context) {
-    Navigator.pushNamed(context,
+    Navigator.pushNamed(
+      context,
       AppRoutes.homeContainerScreen,
     );
   }

@@ -8,9 +8,8 @@ import '../core/app_export.dart';
 
 class CustomTextStyles {
   // Headline text style
-  static get headlineSmall25 => theme.textTheme.headlineSmall!.copyWith(
-        fontSize: 25.fSize,
-      );
+  static get headlineSmall25 => theme.textTheme.headlineSmall!
+      .copyWith(fontSize: 25.fSize, color: Colors.black);
 
   static get headlineSmallHelenaJohnsmithGray80001 =>
       theme.textTheme.headlineSmall!.helenaJohnsmith.copyWith(

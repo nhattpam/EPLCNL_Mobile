@@ -79,7 +79,7 @@ class MyCourseOngoingLessonsScreen extends StatelessWidget {
                               left: 15.h,
                               top: 21.v,
                               bottom: 21.v,
-                            ),
+                            ), context: context,
                           ),
                           SizedBox(height: 16.v),
                         ],

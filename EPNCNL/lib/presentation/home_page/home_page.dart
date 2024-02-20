@@ -110,7 +110,7 @@ class HomePageState extends State<HomePage> {
                                               ),
                                               child: CustomSearchView(
                                                   controller: searchController,
-                                                  hintText: "Search for.."),
+                                                  hintText: "Search for.." ,context: context),
                                             )),
                                         SizedBox(height: 30.v),
                                         _buildDiscountTextSection(context),

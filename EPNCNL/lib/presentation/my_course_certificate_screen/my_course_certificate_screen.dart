@@ -54,7 +54,7 @@ class MyCourseCertificateScreen extends StatelessWidget {
                   left: 21.h,
                   top: 21.v,
                   bottom: 21.v,
-                ),
+                ), context: context,
               ),
               SizedBox(height: 20.v),
               Container(

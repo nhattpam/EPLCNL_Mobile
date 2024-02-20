@@ -10,9 +10,7 @@ import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/curriculcum_screen/widgets/videoplayer_widget.dart';
 import 'package:meowlish/presentation/doing_assignment_screen/doing_assignment_screen.dart';
 import 'package:meowlish/presentation/doing_quiz_screen/doing_quiz_screen.dart';
-import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class CurriculumScreen extends StatefulWidget {
   final courseID;

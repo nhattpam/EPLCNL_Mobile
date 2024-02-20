@@ -1,9 +1,9 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:video_player/video_player.dart';
-import 'package:chewie/chewie.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget({

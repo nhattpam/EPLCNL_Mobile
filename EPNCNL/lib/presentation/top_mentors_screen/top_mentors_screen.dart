@@ -2,15 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/tutors.dart';
 import 'package:meowlish/network/network.dart';
-import 'package:meowlish/presentation/home_page/home_page.dart';
-import 'package:meowlish/presentation/indox_calls_page/indox_calls_page.dart';
-import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
-import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
-import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
-import 'package:meowlish/widgets/custom_bottom_bar.dart';
 
 import '../../widgets/custom_search_view.dart';
-import '../top_mentors_screen/widgets/userprofile1_item_widget.dart';
 
 class TopMentorsScreen extends StatefulWidget {
   TopMentorsScreen({Key? key})
@@ -100,7 +93,7 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
                               ),
                               child: CustomSearchView(
                                   controller: searchController,
-                                  hintText: "Search for.."),
+                                  hintText: "Search for..", context: context,),
                             )),
                         SizedBox(height: 30.v),
                         _buildUserProfile(context),

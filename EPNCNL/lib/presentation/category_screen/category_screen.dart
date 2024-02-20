@@ -65,7 +65,7 @@ class CategoryScreenState extends State<CategoryScreen> {
                         controller: searchController,
                         hintText: "Search for..",
                         contentPadding:
-                            EdgeInsets.only(left: 20.h, top: 21.v, bottom: 21.v)),
+                            EdgeInsets.only(left: 20.h, top: 21.v, bottom: 21.v), context: context,),
                     SizedBox(height: 58.v),
                     Container(
                       // frame15ZFo (365:101)

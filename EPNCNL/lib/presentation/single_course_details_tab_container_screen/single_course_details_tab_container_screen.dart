@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
-import 'package:meowlish/data/models/tutors.dart';
-import 'package:meowlish/presentation/single_course_details_curriculcum_page/single_course_details_curriculcum_page.dart';
 import 'package:meowlish/presentation/single_meet_course_details_page/single_meet_course_details_page.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 
@@ -13,7 +11,6 @@ import '../../data/models/lessons.dart';
 import '../../data/models/modules.dart';
 import '../../network/network.dart';
 import '../../widgets/custom_elevated_button.dart';
-import '../single_course_meet_details_curriculcum_page/single_course_meet_details_curriculcum_page.dart';
 
 final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 

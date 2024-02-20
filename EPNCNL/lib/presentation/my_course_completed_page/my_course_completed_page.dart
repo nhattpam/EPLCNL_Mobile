@@ -61,7 +61,7 @@ class MyCourseCompletedPage extends StatelessWidget {
                                   ),
                                   child: CustomSearchView(
                                       controller: searchController,
-                                      hintText: "Search for.."),
+                                      hintText: "Search for..", context: context,),
                                 )),
                             SizedBox(height: 20.v),
                             _buildCategory(context),

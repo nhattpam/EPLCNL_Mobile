@@ -6,8 +6,6 @@ import 'package:meowlish/network/network.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
 
-import '../courses_list_screen/widgets/productcard1_item_widget.dart';
-
 // ignore_for_file: must_be_immutable
 class CoursesListScreen extends StatefulWidget {
   final categoryId;
@@ -98,7 +96,7 @@ class CoursesListScreenState extends State<CoursesListScreen> {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               SizedBox(height: 16.v),
               CustomSearchView(
-                  controller: searchController, hintText: "Search for...."),
+                  controller: searchController, hintText: "Search for....", context: context,),
               SizedBox(height: 25.v),
               _buildCategory(context),
               SizedBox(height: 15.v),

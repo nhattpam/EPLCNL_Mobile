@@ -14,7 +14,6 @@ import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/data/models/questionanswers.dart';
 import 'package:meowlish/data/models/questions.dart';
-import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/tutors.dart';

@@ -1,10 +1,14 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
-import 'package:meowlish/data/models/classlessons.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/models/classtopics.dart';
@@ -105,6 +109,58 @@ class SingleCourseMeetDetailsCurriculcumPageState
       print('Error loading lesson material: $e');
     }
   }
+
+  void downloadFile(String url, int index) async {
+    print(url);
+
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.storage,
+      //add more permission to request here.
+    ].request();
+
+    if (statuses[Permission.storage]!.isGranted) {
+      var dir = await DownloadsPathProvider.downloadsDirectory;
+      if (dir != null) {
+        String savename = "${moduleLessonMaterialMap[index].name.toString()}";
+        String savePath = dir.path + "/$savename";
+        print(savePath);
+        //output:  /storage/emulated/0/Download/banner.png
+        try {
+          await Dio().download(url, savePath,
+              onReceiveProgress: (received, total) {
+                if (total != -1) {
+                  print((received / total * 100).toStringAsFixed(0) + "%");
+                  //you can build progressbar feature too
+                }
+              });
+          ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Container(
+              height: 40.0, // Adjust the height as needed
+              alignment: Alignment.center,
+              child: Text(
+                'Download success',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16.0,
+                ),
+              ),
+            ),
+            backgroundColor: Color(0xffff9300), // Customize the background color
+            duration: Duration(seconds: 1), // Adjust the duration as needed
+            behavior: SnackBarBehavior.floating, // Makes the SnackBar float in the center
+          )
+          );
+        } on DioError catch (e) {
+          print(e.message);
+        }
+      }
+    } else {
+      print("No permission to read and write.");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +287,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                           child: ElevatedButton(
                                             onPressed: () {
                                               for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
-                                                launchUrl(Uri.parse(lessonMaterials[lessonIndex].materialUrl.toString()));
+                                                downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
                                               }
                                             },
 

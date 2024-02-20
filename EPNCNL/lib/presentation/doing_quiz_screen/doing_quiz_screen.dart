@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/questionanswers.dart';
 import 'package:meowlish/data/models/questions.dart';
@@ -191,94 +192,94 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
         final value = await showDialog<bool>(
             context: context,
             builder: (context) {
-              return AlertDialog(
-                content: const Text(
-                  'If you want to exit, quiz will submit',
-                  textAlign: TextAlign.center,
-                ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(false);
-                      } ,
-                      style: ElevatedButton.styleFrom(
-                        // Customize the button's background color
-                        backgroundColor: Color(0xFFFF9300),
-                        minimumSize:
-                        Size(100, 48), // Change to your desired color
-                      ),
-                      child: const Text('No'),
-                    ),
+                return AlertDialog(
+                  content: const Text(
+                    'If you want to exit, quiz will submit',
+                    textAlign: TextAlign.center,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 40, 0),
-                    child: ElevatedButton(
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                      child: ElevatedButton(
                         onPressed: () {
-                          Network.createQuizAttempt(quizId: widget.quizId, totalGrade: totalScore);
-                          if(totalScore >= (chosenQuiz.gradeToPass as int)){
-                            AwesomeDialog(
-                              context: context,
-                              animType: AnimType.scale,
-                              dialogType: DialogType.success,
-                              body: Center(
-                                child: Text(
-                                  'You passed the quiz: $totalScore/$gradeToPass',
-                                  style: TextStyle(fontStyle: FontStyle.italic),
-                                ),
-                              ),
-                              btnOkOnPress: () {
-                                setState(() {
-                                  Navigator.of(context).pop(true);
-                                  __timer?.cancel();
-                                  __timer = null;
-                                });
-                                // if(isSelected == true){
-                                //   nextQuestion();
-                                // }
-                              },
-                            )..show();
-                          } else {
-                            AwesomeDialog(
-                              context: context,
-                              animType: AnimType.scale,
-                              dialogType: DialogType.error,
-                              body: Center(
-                                child: Text(
-                                  'You score: $totalScore/$gradeToPass',
-                                  style: TextStyle(fontStyle: FontStyle.italic),
-                                ),
-                              ),
-                              btnCancelColor: Colors.orange,
-                              btnCancelText: 'Re-attempt Quiz',
-                              btnCancelOnPress: (){
-                                resetQuiz();
-                              },
-                              btnOkText: 'Return to Curriculum',
-                              btnOkOnPress: () {
-                                setState(() {
-                                  Navigator.of(context).pop(true);
-                                  __timer?.cancel();
-                                  __timer = null;
-                                });
-                                // if(isSelected == true){
-                                //   nextQuestion();
-                                // }
-                              },
-                            )..show();
-                          }
-                        },
+                          Navigator.of(context).pop(false);
+                        } ,
                         style: ElevatedButton.styleFrom(
                           // Customize the button's background color
-                          backgroundColor: Color(0xFF168F71),
+                          backgroundColor: Color(0xFFFF9300),
                           minimumSize:
                           Size(100, 48), // Change to your desired color
                         ),
-                        child: const Text('Yes')),
-                  )
-                ],
-              );
+                        child: const Text('No'),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 40, 0),
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Network.createQuizAttempt(quizId: widget.quizId, totalGrade: totalScore);
+                            if(totalScore >= (chosenQuiz.gradeToPass as int)){
+                              AwesomeDialog(
+                                context: context,
+                                animType: AnimType.scale,
+                                dialogType: DialogType.success,
+                                body: Center(
+                                  child: Text(
+                                    'You passed the quiz: $totalScore/$gradeToPass',
+                                    style: TextStyle(fontStyle: FontStyle.italic),
+                                  ),
+                                ),
+                                btnOkOnPress: () {
+                                  setState(() {
+                                    Navigator.of(context).pop(true);
+                                    __timer?.cancel();
+                                    __timer = null;
+                                  });
+                                  // if(isSelected == true){
+                                  //   nextQuestion();
+                                  // }
+                                },
+                              )..show();
+                            } else {
+                              AwesomeDialog(
+                                context: context,
+                                animType: AnimType.scale,
+                                dialogType: DialogType.error,
+                                body: Center(
+                                  child: Text(
+                                    'You score: $totalScore/$gradeToPass',
+                                    style: TextStyle(fontStyle: FontStyle.italic),
+                                  ),
+                                ),
+                                btnCancelColor: Colors.orange,
+                                btnCancelText: 'Re-attempt Quiz',
+                                btnCancelOnPress: (){
+                                  resetQuiz();
+                                },
+                                btnOkText: 'Return to Curriculum',
+                                btnOkOnPress: () {
+                                  setState(() {
+                                    Navigator.of(context).pop(true);
+                                    __timer?.cancel();
+                                    __timer = null;
+                                  });
+                                  // if(isSelected == true){
+                                  //   nextQuestion();
+                                  // }
+                                },
+                              )..show();
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            // Customize the button's background color
+                            backgroundColor: Color(0xFF168F71),
+                            minimumSize:
+                            Size(100, 48), // Change to your desired color
+                          ),
+                          child: const Text('Yes')),
+                    )
+                  ],
+                );
             });
         if (value != null) {
           return Future.value(value);
@@ -342,9 +343,17 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                   SizedBox(height: 44.v),
 
                   if (listquestion[_questionIndex].questionText.toString() != '')
-                    Text(
-                      listquestion[_questionIndex].questionText.toString(),
-                      style: CustomTextStyles.headlineSmall25,
+                    Html(
+                      data: listquestion[_questionIndex].questionText.toString(),
+                      style: {
+                        "body": Style(
+                          textAlign: TextAlign.center,
+                          fontSize: FontSize(20),
+                          fontWeight: FontWeight.w400,
+                          lineHeight: LineHeight(1.2125),
+                          color: Color(0xff6c6363),
+                        ),
+                      },
                     ),
                   if (listquestion[_questionIndex].questionAudioUrl.toString() != '')
                         isLoading ? Center(

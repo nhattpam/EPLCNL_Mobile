@@ -203,6 +203,8 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                       btnOkOnPress: () {
                         setState(() {
                           Navigator.pop(context);
+                          _timer?.cancel();
+                          _timer = null;
                         });
                         // if(isSelected == true){
                         //   nextQuestion();

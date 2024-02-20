@@ -129,6 +129,61 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
 
       if (_remainingSeconds <= 0) {
         Network.createQuizAttempt(quizId: widget.quizId, totalGrade: totalScore);
+        String gradeToPass = chosenQuiz.gradeToPass.toString();
+
+        if(totalScore >= (chosenQuiz.gradeToPass as int)){
+          AwesomeDialog(
+            context: context,
+            animType: AnimType.scale,
+            dialogType: DialogType.success,
+            body: Center(
+              child: Text(
+                'You passed the quiz: $totalScore/$gradeToPass',
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
+            ),
+            btnOkOnPress: () {
+              setState(() {
+                Navigator.pop(context);
+                __timer?.cancel();
+                __timer = null;
+              });
+              // if(isSelected == true){
+              //   nextQuestion();
+              // }
+            },
+          )..show();
+        } else {
+          AwesomeDialog(
+            context: context,
+            animType: AnimType.scale,
+            dialogType: DialogType.error,
+            body: Center(
+              child: Text(
+                'You score: $totalScore/$gradeToPass',
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
+            ),
+            btnCancelColor: Colors.orange,
+            btnCancelText: 'Re-attempt Quiz',
+            btnCancelOnPress: (){
+              __timer?.cancel();
+              __timer = null;
+              resetQuiz();
+            },
+            btnOkText: 'Return to Curriculum',
+            btnOkOnPress: () {
+              setState(() {
+                Navigator.pop(context);
+                _timer?.cancel();
+                _timer = null;
+              });
+              // if(isSelected == true){
+              //   nextQuestion();
+              // }
+            },
+          )..show();
+        }
         _timer?.cancel();
         _timer = null;
       }

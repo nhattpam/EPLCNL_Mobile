@@ -68,7 +68,6 @@ class SingleMeetCourseDetailsPageState
 
   Future<void> loadEnrollmentByLearnerAndCourseId() async {
     try {
-      print("This is dmmmmm: " + SessionManager().getLearnerId().toString());
       final enrollmentResponse =
           await Network.getEnrollmentByLearnerAndCourseId(
         SessionManager().getLearnerId().toString(),
@@ -77,9 +76,6 @@ class SingleMeetCourseDetailsPageState
 
       setState(() {
         enrollment = enrollmentResponse;
-        print("Enrollment ID: ${enrollment.id}");
-        print("Enrollment Learner ID: ${enrollment.learnerId}");
-        print("Enrollment Course ID: ${enrollment.courseId}");
         // Add more print statements for other properties if needed
       });
     } catch (e) {

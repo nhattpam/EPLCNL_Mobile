@@ -9,6 +9,7 @@ import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/classtopics.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/learners.dart';
+import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/data/models/questionanswers.dart';
@@ -151,7 +152,6 @@ class Network {
   static Future<String> activeAccount(String email) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/authentications/$email/activation'; // Replace with your API URL
-    print("this is " + apiUrl);
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
@@ -345,7 +345,6 @@ class Network {
   }
 
   static Future<List<Course>> getCourseByCategoryID(String cateId) async {
-    print('This is cateId in Api' + cateId);
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/categories/$cateId/courses'; // Replace with your API URL
 
@@ -565,9 +564,7 @@ class Network {
   //class topic
   static Future<List<ClassTopic>> getClassTopicsByClassLessonId(
       String classLessonId) async {
-    final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/class-lessons/$classLessonId/class-topics'; // Replace with your API URL
-
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/class-lessons/$classLessonId/class-topics'; // Replace with your API URL
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -681,6 +678,32 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+ //lesson-material
+  static Future<List<LessonMaterial>> getLessonMaterialByClassTopicId(String classtopicId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/class-topics/$classtopicId/lesson-materials';
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> lessonmaterialListJson = jsonDecode(response.body);
+
+        return lessonmaterialListJson.map((json) => LessonMaterial.fromJson(json)).toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
 
   // assignment
   static Future<List<Assignment>> getAssignmentByModuleId(
@@ -757,7 +780,6 @@ class Network {
     };
 
     final jsonData = jsonEncode(learnerData);
-    print("This is" + jsonData);
 
     // Print the JSON data before making the API call
 
@@ -1006,7 +1028,6 @@ class Network {
           'Content-Type': 'application/json',
         },
       );
-      print("this is link pay: " + apiUrl);
 
       if (response.statusCode == 200) {
         // Map the JSON object to a User object and return it

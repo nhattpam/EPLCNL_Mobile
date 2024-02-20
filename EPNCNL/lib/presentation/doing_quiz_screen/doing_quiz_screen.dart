@@ -404,8 +404,8 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                               btnOkOnPress: () {
                                 setState(() {
                                   Navigator.pop(context);
-                                  __timer?.cancel();
-                                  __timer = null;
+                                  _timer?.cancel();
+                                  _timer = null;
                                 });
                                 // if(isSelected == true){
                                 //   nextQuestion();
@@ -426,14 +426,16 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                               btnCancelColor: Colors.orange,
                               btnCancelText: 'Re-attempt Quiz',
                               btnCancelOnPress: (){
+                                _timer?.cancel();
+                                _timer = null;
                                 resetQuiz();
                               },
                               btnOkText: 'Return to Curriculum',
                               btnOkOnPress: () {
                                 setState(() {
                                   Navigator.pop(context);
-                                  __timer?.cancel();
-                                  __timer = null;
+                                  _timer?.cancel();
+                                  _timer = null;
                                 });
                                 // if(isSelected == true){
                                 //   nextQuestion();

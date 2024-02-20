@@ -1,7 +1,9 @@
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/classlessons.dart';
 import 'package:meowlish/data/models/classmodules.dart';
+import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -29,6 +31,9 @@ class SingleCourseMeetDetailsCurriculcumPageState
   DateTime selectedDatesFromCalendar1 = DateTime.now();
   late List<ClassModule> listClassModule = [];
   late List<ClassTopic> listClassTopic = [];
+  List<LessonMaterial> moduleLessonMaterialMap = [];
+  Map<String, List<ClassTopic>> moduleClassLessonMap = {};
+
   late ClassModule chosenCourse = ClassModule();
 
   @override
@@ -46,6 +51,59 @@ class SingleCourseMeetDetailsCurriculcumPageState
     setState(() {
       listClassModule = loadedClassModules;
     });
+    loadClassLessonId();
+  }
+
+  Future<void> loadClassTopicsByClassLessonId(String classlessonId) async {
+    List<ClassTopic> loadedClassTopicMaterial = await Network.getClassTopicsByClassLessonId(classlessonId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleClassLessonMap[classlessonId] = loadedClassTopicMaterial;
+      });
+    }
+  }
+
+  Future<void> loadLessonMaterialByClassTopicId(String classtopicId) async {
+      try {
+        List<LessonMaterial> loadedLessonMaterial = await Network.getLessonMaterialByClassTopicId(classtopicId);
+        setState(() {
+          moduleLessonMaterialMap = loadedLessonMaterial;
+        });
+      } catch (e) {
+        // Handle errors here
+        print('Error: $e');
+      }
+    }
+
+  Future<void> loadClassLessonId() async {
+    try {
+      // Load lessons for each module
+      for (final lesson in listClassModule) {
+        await loadClassTopicsByClassLessonId(lesson.classLesson?.id ?? '');
+        await loadLessonMaterial();
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading class-lessons: $e');
+    }
+  }
+  Future<void> loadLessonMaterial() async {
+    try {
+      // Load lessons for each module
+      for (final module in moduleClassLessonMap.values) {
+        for (final classTopic in module) {
+          await loadLessonMaterialByClassTopicId(classTopic.id.toString());
+        }
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lesson material: $e');
+    }
   }
 
   @override
@@ -93,6 +151,8 @@ class SingleCourseMeetDetailsCurriculcumPageState
                       itemCount: listClassModule.length,
                       itemBuilder: (context, index) {
                         final classModule = listClassModule[index];
+                        final lessonMaterials = moduleLessonMaterialMap;
+
                         // loadClassTopicsByClassLessonId();
                         return Row(
                           children: [
@@ -169,7 +229,12 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                           padding:
                                               const EdgeInsets.only(left: 8.0),
                                           child: ElevatedButton(
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
+                                                launchUrl(Uri.parse(lessonMaterials[lessonIndex].materialUrl.toString()));
+                                              }
+                                            },
+
                                             style: ElevatedButton.styleFrom(
                                               minimumSize: Size(100, 50),
                                               primary: Color(0xffefc83c),

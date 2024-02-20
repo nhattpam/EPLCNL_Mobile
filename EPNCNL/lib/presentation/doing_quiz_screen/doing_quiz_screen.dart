@@ -53,13 +53,15 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
     _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(audioUrl));
     await _videoPlayerController.initialize();
     setState(() {
-      _chewieController = ChewieAudioController(
-        autoInitialize: true,
-        videoPlayerController: _videoPlayerController,
-        autoPlay: false,
-        looping: true,
-        allowMuting: true,
-      );
+      if(_videoPlayerController.value.isInitialized){
+        _chewieController = ChewieAudioController(
+          autoInitialize: true,
+          videoPlayerController: _videoPlayerController,
+          autoPlay: false,
+          looping: true,
+          allowMuting: true,
+        );
+      }
       isLoading = false;
     });
   }
@@ -125,6 +127,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
       });
 
       if (_remainingSeconds <= 0) {
+        Network.createQuizAttempt(quizId: widget.quizId, totalGrade: totalScore);
         _timer?.cancel();
         _timer = null;
       }
@@ -161,22 +164,15 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
     }
   }
 
-  // void previousQuestion(){
-  //   setState(() {
-  //     index--;
-  //     loadQuestion();
-  //     isSelected = false;
-  //     print("This is" + index.toString());
-  //     if(index < 0){
-  //       // i dont know
-  //     }
-  //   });
-  // }
-
-  void _resetQuiz(){
+  void resetQuiz(){
+    loadQuestion();
+    _startCooldownTimer();
     setState(() {
-      _questionIndex = 0;
+      totalScore = 0;
       endOfQuiz = false;
+      isPointed = false;
+      isSelected = false;
+      _questionIndex = 0;
     });
   }
 
@@ -189,112 +185,265 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0.0,
-          toolbarHeight: 65,
-          flexibleSpace: FlexibleSpaceBar(
-            title: Container(
-              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-              width: 300,
-              height: 100, // Add margin
-              child: Text(
-                'Quiz',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 25,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w600,
+    String gradeToPass = chosenQuiz.gradeToPass.toString();
+    return WillPopScope(
+      onWillPop: () async {
+        final value = await showDialog<bool>(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: const Text(
+                  'If you want to exit, quiz will submit',
+                  textAlign: TextAlign.center,
+                ),
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      } ,
+                      style: ElevatedButton.styleFrom(
+                        // Customize the button's background color
+                        backgroundColor: Color(0xFFFF9300),
+                        minimumSize:
+                        Size(100, 48), // Change to your desired color
+                      ),
+                      child: const Text('No'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 40, 0),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Network.createQuizAttempt(quizId: widget.quizId, totalGrade: totalScore);
+                          if(totalScore >= (chosenQuiz.gradeToPass as int)){
+                            AwesomeDialog(
+                              context: context,
+                              animType: AnimType.scale,
+                              dialogType: DialogType.success,
+                              body: Center(
+                                child: Text(
+                                  'You passed the quiz: $totalScore/$gradeToPass',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                              btnOkOnPress: () {
+                                setState(() {
+                                  Navigator.of(context).pop(true);
+                                  __timer?.cancel();
+                                  __timer = null;
+                                });
+                                // if(isSelected == true){
+                                //   nextQuestion();
+                                // }
+                              },
+                            )..show();
+                          } else {
+                            AwesomeDialog(
+                              context: context,
+                              animType: AnimType.scale,
+                              dialogType: DialogType.error,
+                              body: Center(
+                                child: Text(
+                                  'You score: $totalScore/$gradeToPass',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                              btnCancelColor: Colors.orange,
+                              btnCancelText: 'Re-attempt Quiz',
+                              btnCancelOnPress: (){
+                                resetQuiz();
+                              },
+                              btnOkText: 'Return to Curriculum',
+                              btnOkOnPress: () {
+                                setState(() {
+                                  Navigator.of(context).pop(true);
+                                  __timer?.cancel();
+                                  __timer = null;
+                                });
+                                // if(isSelected == true){
+                                //   nextQuestion();
+                                // }
+                              },
+                            )..show();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          // Customize the button's background color
+                          backgroundColor: Color(0xFF168F71),
+                          minimumSize:
+                          Size(100, 48), // Change to your desired color
+                        ),
+                        child: const Text('Yes')),
+                  )
+                ],
+              );
+            });
+        if (value != null) {
+          return Future.value(value);
+        } else {
+          return Future.value(false);
+        }
+      },
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0.0,
+            toolbarHeight: 65,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Container(
+                margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                width: 300,
+                height: 100, // Add margin
+                child: Text(
+                  'Quiz',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 25,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: false,
-        body: SingleChildScrollView(
-          // Wrap the entire Column with SingleChildScrollView
-          child: Container(
-            width: double.maxFinite,
-            padding: EdgeInsets.symmetric(
-              horizontal: 34.h,
-              vertical: 53.v,
-            ),
-            child: Column(
-              children: [
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                          "Time remaining: " ,
-                          style:  theme.textTheme.titleSmall!.copyWith(
-                            fontSize: 15.fSize,
-                            fontWeight: FontWeight.w800,
-                          )
-                      ),
-                      Text(
-                        '${(_remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(_remainingSeconds % 60).toString().padLeft(2, '0')}',
-                        style: CustomTextStyles.titleSmallPrimary,
-                      ),
-                    ],
+          backgroundColor: Colors.white,
+          resizeToAvoidBottomInset: false,
+          body: SingleChildScrollView(
+            // Wrap the entire Column with SingleChildScrollView
+            child: Container(
+              width: double.maxFinite,
+              padding: EdgeInsets.symmetric(
+                horizontal: 34.h,
+                vertical: 53.v,
+              ),
+              child: Column(
+                children: [
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            "Time remaining: " ,
+                            style:  theme.textTheme.titleSmall!.copyWith(
+                              fontSize: 15.fSize,
+                              fontWeight: FontWeight.w800,
+                            )
+                        ),
+                        Text(
+                          '${(_remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(_remainingSeconds % 60).toString().padLeft(2, '0')}',
+                          style: CustomTextStyles.titleSmallPrimary,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 44.v),
+                  SizedBox(height: 44.v),
 
-                if (listquestion[_questionIndex].questionText.toString() != '')
-                  Text(
-                    listquestion[_questionIndex].questionText.toString(),
-                    style: CustomTextStyles.headlineSmall25,
-                  ),
-                if (listquestion[_questionIndex].questionAudioUrl.toString() != '')
-                      isLoading ? Center(
-                      child: CircularProgressIndicator(),
-                      )
-                          : ChewieAudio(controller: _chewieController),
-                if (listquestion[_questionIndex].questionImageUrl.toString() != '')
-                  Image.network(
-                    listquestion[_questionIndex].questionImageUrl.toString(),
-                    height: 167.v,
-                    width: 300.h,
-                    fit: BoxFit
-                        .cover, // Adjust the BoxFit property based on your image requirements
-                  ),
+                  if (listquestion[_questionIndex].questionText.toString() != '')
+                    Text(
+                      listquestion[_questionIndex].questionText.toString(),
+                      style: CustomTextStyles.headlineSmall25,
+                    ),
+                  if (listquestion[_questionIndex].questionAudioUrl.toString() != '')
+                        isLoading ? Center(
+                        child: CircularProgressIndicator(),
+                        )
+                            : ChewieAudio(controller: _chewieController),
+                  if (listquestion[_questionIndex].questionImageUrl.toString() != '')
+                    Image.network(
+                      listquestion[_questionIndex].questionImageUrl.toString(),
+                      height: 167.v,
+                      width: 300.h,
+                      fit: BoxFit
+                          .cover, // Adjust the BoxFit property based on your image requirements
+                    ),
 
-                SizedBox(height: 44.v),
-                // Remove Spacer and use SizedBox with height
-                _buildQuestionsMenu(listquestion[_questionIndex]),
-                SizedBox(height: 55.v),
-                // Remove Spacer and use SizedBox with height
-                // CustomElevatedButton(
-                //   onPressed: (){
-                //       previousQuestion();
-                //     _videoPlayerController.dispose();
-                //     _chewieController.dispose();
-                //   },
-                //   text: "Previous Question",
-                //   margin: EdgeInsets.symmetric(horizontal: 5.h),
-                //   buttonStyle: CustomButtonStyles.outlineBlackTL30,
-                // ),
-                // SizedBox(height: 26.v),
-                CustomElevatedButton(
-                  onPressed: (){
-                    if(isSelected == true){
-                      if(endOfQuiz == true){
-                        Network.createQuizAttempt(quizId: widget.quizId, totalGrade: totalScore);
-                      } else {
-                        nextQuestion();
+                  SizedBox(height: 44.v),
+                  // Remove Spacer and use SizedBox with height
+                  _buildQuestionsMenu(listquestion[_questionIndex]),
+                  SizedBox(height: 55.v),
+                  // Remove Spacer and use SizedBox with height
+                  // CustomElevatedButton(
+                  //   onPressed: (){
+                  //       previousQuestion();
+                  //     _videoPlayerController.dispose();
+                  //     _chewieController.dispose();
+                  //   },
+                  //   text: "Previous Question",
+                  //   margin: EdgeInsets.symmetric(horizontal: 5.h),
+                  //   buttonStyle: CustomButtonStyles.outlineBlackTL30,
+                  // ),
+                  // SizedBox(height: 26.v),
+                  CustomElevatedButton(
+                    onPressed: (){
+                      if(isSelected == true){
+                        if(endOfQuiz == true){
+                          Network.createQuizAttempt(quizId: widget.quizId, totalGrade: totalScore);
+                          if(totalScore >= (chosenQuiz.gradeToPass as int)){
+                            AwesomeDialog(
+                              context: context,
+                              animType: AnimType.scale,
+                              dialogType: DialogType.success,
+                              body: Center(
+                                child: Text(
+                                  'You passed the quiz: $totalScore/$gradeToPass',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                              btnOkOnPress: () {
+                                setState(() {
+                                  Navigator.pop(context);
+                                  __timer?.cancel();
+                                  __timer = null;
+                                });
+                                // if(isSelected == true){
+                                //   nextQuestion();
+                                // }
+                              },
+                            )..show();
+                          } else {
+                            AwesomeDialog(
+                              context: context,
+                              animType: AnimType.scale,
+                              dialogType: DialogType.error,
+                              body: Center(
+                                child: Text(
+                                  'You score: $totalScore/$gradeToPass',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                              btnCancelColor: Colors.orange,
+                              btnCancelText: 'Re-attempt Quiz',
+                              btnCancelOnPress: (){
+                                resetQuiz();
+                              },
+                              btnOkText: 'Return to Curriculum',
+                              btnOkOnPress: () {
+                                setState(() {
+                                  Navigator.pop(context);
+                                  __timer?.cancel();
+                                  __timer = null;
+                                });
+                                // if(isSelected == true){
+                                //   nextQuestion();
+                                // }
+                              },
+                            )..show();
+                          }
+                        } else {
+                          nextQuestion();
+                        }
                       }
-                    }
-                    _videoPlayerController.dispose();
-                    _chewieController.dispose();
-                  },
-                  text: endOfQuiz ? "Finish Attempt" : "Next Question",
-                  margin: EdgeInsets.symmetric(horizontal: 5.h),
-                ),
-              ],
+                      _videoPlayerController.dispose();
+                      _chewieController.dispose();
+                    },
+                    text: endOfQuiz ? "Finish Attempt" : "Next Question",
+                    margin: EdgeInsets.symmetric(horizontal: 5.h),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -334,7 +483,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                       dialogType: DialogType.success,
                       body: Center(
                         child: Text(
-                          'Your answer is correct: $totalScore point',
+                          '+ $totalScore point',
                           style: TextStyle(fontStyle: FontStyle.italic),
                         ),
                       ),
@@ -356,7 +505,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                       dialogType: DialogType.error,
                       body: Center(
                         child: Text(
-                          'Your answer is incorrect: $totalScore point',
+                          '+ $totalScore point',
                           style: TextStyle(fontStyle: FontStyle.italic),
                         ),
                       ),
@@ -373,15 +522,16 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadiusStyle.roundedBorder22,
-                  color: isSelected
-                    ? isCorrect
-                      ? (answer.isAnswer ?? false)
+                  color: Colors.white,
+                    border: Border.all(width: 2, color: isSelected
+                        ? isCorrect
+                        ? (answer.isAnswer ?? false)
                         ? Colors.green
                         : Colors.red
-                      : (answer.isAnswer ?? false)
+                        : (answer.isAnswer ?? false)
                         ? Colors.green
                         : Colors.red
-                     : Colors.grey,
+                        : Colors.grey,)
                 ),
                 child: Center(
                   child: Text(

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:meowlish/core/app_export.dart';
@@ -67,6 +68,10 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
       });
 
       if (_remainingSeconds <= 0) {
+        Network.createAssignmentAttempt(
+          assignmentId: widget.assignmentID,
+          answerText: additionalInfoController.text.toString(),
+        );
         _timer?.cancel();
         _timer = null;
       }
@@ -185,6 +190,25 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                       assignmentId: widget.assignmentID,
                       answerText: additionalInfoController.text.toString(),
                     );
+                    AwesomeDialog(
+                      context: context,
+                      animType: AnimType.scale,
+                      dialogType: DialogType.success,
+                      body: Center(
+                        child: Text(
+                          'Submit successfully',
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      ),
+                      btnOkOnPress: () {
+                        setState(() {
+                          Navigator.pop(context);
+                        });
+                        // if(isSelected == true){
+                        //   nextQuestion();
+                        // }
+                      },
+                    )..show();
                   },
                   text: "Submit Assignment",
                 )

@@ -121,7 +121,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
     if (statuses[Permission.storage]!.isGranted) {
       var dir = await DownloadsPathProvider.downloadsDirectory;
       if (dir != null) {
-        String savename = "${moduleLessonMaterialMap[index].name.toString()}";
+        String savename = "${moduleLessonMaterialMap[index].name.toString()}.pdf";
         String savePath = dir.path + "/$savename";
         print(savePath);
         //output:  /storage/emulated/0/Download/banner.png

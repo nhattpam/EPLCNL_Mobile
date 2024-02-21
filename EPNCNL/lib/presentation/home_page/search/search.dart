@@ -33,8 +33,8 @@ class FetchCourseList{
       print('error: $e');
     }
     return results;
-  }Future<List<Course>>
-  getCourseListById({List<String>? query}) async {
+  }
+  Future<List<Course>> getCourseListById({List<String>? query}) async {
     var data = [];
     List<Course> results = [];
     String urlList = 'https://nhatpmse.twentytwo.asia/api/categories/';
@@ -49,7 +49,11 @@ class FetchCourseList{
           var response = await http.get(url);
           if (response.statusCode == 200) {
             data = json.decode(response.body);
+            if(data.isEmpty){
+              print('');
+            }else{
             results.addAll(data.map((e) => Course.fromJson(e)));
+            }
           } else {
             print("fetch error");
           }

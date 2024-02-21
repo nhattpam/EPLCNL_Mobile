@@ -678,7 +678,7 @@ class Network {
     }
   }
  //lesson-material
-  static Future<List<LessonMaterial>> getLessonMaterialByClassTopicId(String classtopicId) async {
+  static Future<List<LessonMaterial>> getListLessonMaterialByClassTopicId(String classtopicId) async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/class-topics/$classtopicId/lesson-materials';
     print(apiUrl);
     try {
@@ -697,6 +697,33 @@ class Network {
         // If the request fails, throw an exception or return null
         throw Exception(
             'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<LessonMaterial> getLessonMaterialByClassTopicId(String classtopicId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/class-topics/$classtopicId/lesson-materials';
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic lessonMaterialJson = jsonDecode(response.body);
+
+        // Map the JSON object to a User object and return it
+        return LessonMaterial.fromJson(lessonMaterialJson);
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson by id. Status code: ${response.statusCode}');
       }
     } catch (e) {
       // Handle any exceptions that may occur during the request

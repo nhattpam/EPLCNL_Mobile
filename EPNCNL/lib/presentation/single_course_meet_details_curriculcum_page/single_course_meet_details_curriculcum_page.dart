@@ -35,9 +35,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
   DateTime selectedDatesFromCalendar1 = DateTime.now();
   late List<ClassModule> listClassModule = [];
   late List<ClassTopic> listClassTopic = [];
-  List<LessonMaterial> moduleLessonMaterialMap = [];
   Map<String, List<ClassTopic>> moduleClassLessonMap = {};
-
   late ClassModule chosenCourse = ClassModule();
 
   @override
@@ -50,12 +48,10 @@ class SingleCourseMeetDetailsCurriculcumPageState
   }
 
   void loadClassModuleByCourseId() async {
-    List<ClassModule> loadedClassModules =
-        await Network.getClassModulesByCourseId(widget.courseID);
+    List<ClassModule> loadedClassModules = await Network.getClassModulesByCourseId(widget.courseID);
     setState(() {
       listClassModule = loadedClassModules;
     });
-    loadClassLessonId();
   }
 
   Future<void> loadClassTopicsByClassLessonId(String classlessonId) async {
@@ -68,99 +64,12 @@ class SingleCourseMeetDetailsCurriculcumPageState
     }
   }
 
-  Future<void> loadLessonMaterialByClassTopicId(String classtopicId) async {
-      try {
-        List<LessonMaterial> loadedLessonMaterial = await Network.getLessonMaterialByClassTopicId(classtopicId);
-        setState(() {
-          moduleLessonMaterialMap = loadedLessonMaterial;
-        });
-      } catch (e) {
-        // Handle errors here
-        print('Error: $e');
-      }
-    }
 
-  Future<void> loadClassLessonId() async {
-    try {
-      // Load lessons for each module
-      for (final lesson in listClassModule) {
-        await loadClassTopicsByClassLessonId(lesson.classLesson?.id ?? '');
-        await loadLessonMaterial();
-      }
-      // After all lessons are loaded, proceed with building the UI
-      setState(() {});
-    } catch (e) {
-      // Handle errors here
-      print('Error loading class-lessons: $e');
-    }
+  void _showMultiSelect(String lessonId) async{
+    final List<String>? result = await showDialog(context: context, builder: (BuildContext context){
+      return MultiSelect(lessonId: lessonId);
+    });
   }
-  Future<void> loadLessonMaterial() async {
-    try {
-      // Load lessons for each module
-      for (final module in moduleClassLessonMap.values) {
-        for (final classTopic in module) {
-          await loadLessonMaterialByClassTopicId(classTopic.id.toString());
-        }
-      }
-      // After all lessons are loaded, proceed with building the UI
-      setState(() {});
-    } catch (e) {
-      // Handle errors here
-      print('Error loading lesson material: $e');
-    }
-  }
-
-  void downloadFile(String url, int index) async {
-    print(url);
-
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.storage,
-      //add more permission to request here.
-    ].request();
-
-    if (statuses[Permission.storage]!.isGranted) {
-      var dir = await DownloadsPathProvider.downloadsDirectory;
-      if (dir != null) {
-        String savename = "${moduleLessonMaterialMap[index].name.toString()}.pdf";
-        String savePath = dir.path + "/$savename";
-        print(savePath);
-        //output:  /storage/emulated/0/Download/banner.png
-        try {
-          await Dio().download(url, savePath,
-              onReceiveProgress: (received, total) {
-                if (total != -1) {
-                  print((received / total * 100).toStringAsFixed(0) + "%");
-                  //you can build progressbar feature too
-                }
-              });
-          ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Container(
-              height: 40.0, // Adjust the height as needed
-              alignment: Alignment.center,
-              child: Text(
-                'Download success',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16.0,
-                ),
-              ),
-            ),
-            backgroundColor: Color(0xffff9300), // Customize the background color
-            duration: Duration(seconds: 1), // Adjust the duration as needed
-            behavior: SnackBarBehavior.floating, // Makes the SnackBar float in the center
-          )
-          );
-        } on DioError catch (e) {
-          print(e.message);
-        }
-      }
-    } else {
-      print("No permission to read and write.");
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -207,8 +116,6 @@ class SingleCourseMeetDetailsCurriculcumPageState
                       itemCount: listClassModule.length,
                       itemBuilder: (context, index) {
                         final classModule = listClassModule[index];
-                        final lessonMaterials = moduleLessonMaterialMap;
-
                         // loadClassTopicsByClassLessonId();
                         return Row(
                           children: [
@@ -286,9 +193,10 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                               const EdgeInsets.only(left: 8.0),
                                           child: ElevatedButton(
                                             onPressed: () {
-                                              for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
-                                                downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
-                                              }
+                                              // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
+                                              //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
+                                              // }
+                                              _showMultiSelect(listClassModule[index].classLesson?.id ?? '');
                                             },
 
                                             style: ElevatedButton.styleFrom(
@@ -451,6 +359,138 @@ class lineGen extends StatelessWidget {
                 color: Color(0xffd02d8),
                 margin: EdgeInsets.symmetric(vertical: 14),
               )),
+    );
+  }
+}
+class MultiSelect extends StatefulWidget {
+  final String lessonId;
+  const MultiSelect({super.key, required this.lessonId});
+
+  @override
+  State<MultiSelect> createState() => _MultiSelectState();
+}
+
+class _MultiSelectState extends State<MultiSelect> {
+  List<ClassTopic> listClassTopic = [];
+  // List<LessonMaterial> listLessonMaterial = [];
+  Map<String, List<LessonMaterial>> moduleLessonsMaterialMap = {};
+
+  @override
+  void initState(){
+    super.initState();
+    loadClassModuleByCourseId();
+  }
+  void loadClassModuleByCourseId() async {
+    List<ClassTopic> loadedClassTopic = await Network.getClassTopicsByClassLessonId(widget.lessonId);
+    setState(() {
+      listClassTopic = loadedClassTopic;
+    });
+    loadLessonMaterial();
+  }
+
+
+  Future<void> loadLessonMaterialByClassTopicId(String classtopicId) async {
+    try {
+      List<LessonMaterial> loadedLessonMaterial = await Network.getListLessonMaterialByClassTopicId(classtopicId);
+      setState(() {
+        moduleLessonsMaterialMap[classtopicId] = loadedLessonMaterial;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+  Future<void> loadLessonMaterial() async {
+    try {
+        for (final classTopic in listClassTopic) {
+          await loadLessonMaterialByClassTopicId(classTopic.id.toString());
+        }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lesson material: $e');
+    }
+  }
+
+  void downloadFile(String url, name) async {
+
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.storage,
+      //add more permission to request here.
+    ].request();
+
+    if (statuses[Permission.storage]!.isGranted) {
+      var dir = await DownloadsPathProvider.downloadsDirectory;
+      if (dir != null) {
+        String savename = "${name}.pdf";
+        String savePath = dir.path + "/$savename";
+        print(savePath);
+        //output:  /storage/emulated/0/Download/banner.png
+        try {
+          await Dio().download(url, savePath,
+              onReceiveProgress: (received, total) {
+                if (total != -1) {
+                  print((received / total * 100).toStringAsFixed(0) + "%");
+                  //you can build progressbar feature too
+                }
+              });
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Container(
+                  height: 40.0, // Adjust the height as needed
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Download success',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                ),
+                backgroundColor: Color(0xffff9300), // Customize the background color
+                duration: Duration(seconds: 1), // Adjust the duration as needed
+                behavior: SnackBarBehavior.floating, // Makes the SnackBar float in the center
+              )
+          );
+        } on DioError catch (e) {
+          print(e.message);
+        }
+      }
+    } else {
+      print("No permission to read and write.");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Center(child: Text('Class Topic')),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [ // Adjust the height as needed
+          Center(child: Text('Choose Topic to Down')),
+          SingleChildScrollView(
+            child: ListBody(
+              children: listClassTopic.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+                return TextButton(
+                  onPressed: () {
+                    for (int lessonIndex = 0; lessonIndex < (moduleLessonsMaterialMap[listClassTopic[index].id]?.length ?? 0); lessonIndex++)
+                    downloadFile(moduleLessonsMaterialMap[listClassTopic[index].id]![lessonIndex].materialUrl.toString(),moduleLessonsMaterialMap[listClassTopic[index].id]![lessonIndex].name.toString());
+                  },
+                  child: Text(item.name.toString()),
+                );
+              }).toList(),
+            ),
+
+          ),
+        ],
+      ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/courses_list_screen/courses_list_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 
 class CoursesListFilterScreen extends StatefulWidget {
@@ -15,18 +16,33 @@ class CoursesListFilterScreen extends StatefulWidget {
 }
 class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
   late List<Category> listCategory = [];
+  final List<Category> _selectedItems = [];
+
   @override
   void initState() {
     super.initState();
     loadCategories();
   }
+
+
+
+  void _itemChange(Category itemValue, bool isSelected){
+    setState(() {
+      if(isSelected){
+        _selectedItems.add(itemValue);
+      }else{
+        _selectedItems.remove(itemValue);
+      }
+    });
+  }
+
+
   void loadCategories() async {
     List<Category> loadedCategories = await Network.getCategories();
     setState(() {
       listCategory = loadedCategories;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -68,15 +84,36 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Category'),
-                        MultiSelect(items: listCategory),
+                        ListBody(
+                          children: listCategory.map((item) => CheckboxListTile(
+                            value: _selectedItems.contains(item),
+                            title: Text(item.description.toString()),
+                            controlAffinity: ListTileControlAffinity.leading,
+                            onChanged: (isChecked) => _itemChange(item, isChecked!),
+                          )).toList(),
+                        ),
                         Divider(),
-                        Text('Category'),
-                        MultiSelect(items: listCategory),
-                        Divider(),
-                        Text('Category'),
-                        MultiSelect(items: listCategory),
-                        Divider(),
-                        SizedBox(height: 12),
+                        // Text('Category'),
+                        // ListBody(
+                        //   children: listCategory.map((item) => CheckboxListTile(
+                        //     value: _selectedItems.contains(item),
+                        //     title: Text(item.description.toString()),
+                        //     controlAffinity: ListTileControlAffinity.leading,
+                        //     onChanged: (isChecked) => _itemChange(item, isChecked!),
+                        //   )).toList(),
+                        // ),
+                        // Divider(),
+                        // Text('Category'),
+                        // ListBody(
+                        //   children: listCategory.map((item) => CheckboxListTile(
+                        //     value: _selectedItems.contains(item),
+                        //     title: Text(item.description.toString()),
+                        //     controlAffinity: ListTileControlAffinity.leading,
+                        //     onChanged: (isChecked) => _itemChange(item, isChecked!),
+                        //   )).toList(),
+                        // ),
+                        // Divider(),
+                        // SizedBox(height: 12),
                         _buildApplyButton(context),
                       ],
                     ),
@@ -99,44 +136,14 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
         right: 39.h,
         bottom: 60.v,
       ),
-    );
-  }
-}
-
-class MultiSelect extends StatefulWidget {
-  final List<Category> items;
-  const MultiSelect({super.key, required this.items});
-
-  @override
-  State<MultiSelect> createState() => _MultiSelectState();
-}
-
-class _MultiSelectState extends State<MultiSelect> {
-
-  final List<Category> _selectedItems = [];
-
-  void _itemChange(Category itemValue, bool isSelected){
-    setState(() {
-      if(isSelected){
-        _selectedItems.add(itemValue);
-      }else{
-        _selectedItems.remove(itemValue);
-      }
-    });
-  }
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: ListBody(
-          children: widget.items.map((item) => CheckboxListTile(
-              value: _selectedItems.contains(item),
-              title: Text(item.description.toString()),
-              controlAffinity: ListTileControlAffinity.leading,
-              onChanged: (isChecked) => _itemChange(item, isChecked!),
-          )).toList(),
-        ),
-      ),
+      onPressed: () {
+        for (var item in _selectedItems) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CoursesListScreen(categoryId: item.id)),
+          );
+        }
+      },
     );
   }
 }

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/courses_list_filter_screen/widgets/filter_result.dart';
 import 'package:meowlish/presentation/courses_list_screen/courses_list_screen.dart';
+import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 
 class CoursesListFilterScreen extends StatefulWidget {
@@ -17,7 +19,7 @@ class CoursesListFilterScreen extends StatefulWidget {
 class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
   late List<Category> listCategory = [];
   final List<Category> _selectedItems = [];
-
+  String cateId = '';
   @override
   void initState() {
     super.initState();
@@ -129,6 +131,7 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
 
   /// Section Widget
   Widget _buildApplyButton(BuildContext context) {
+
     return CustomElevatedButton(
       text: "Apply",
       margin: EdgeInsets.only(
@@ -137,12 +140,10 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
         bottom: 60.v,
       ),
       onPressed: () {
-        for (var item in _selectedItems) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CoursesListScreen(categoryId: item.id)),
-          );
-        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FilterResultScreen(category: _selectedItems)),
+        );
       },
     );
   }

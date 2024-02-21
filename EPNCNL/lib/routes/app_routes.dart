@@ -180,7 +180,7 @@ class AppRoutes {
     searchScreen: (context) => SearchScreen(),
     popularCoursesScreen: (context) => PopularCoursesScreen(),
     topMentorsScreen: (context) => TopMentorsScreen(),
-    coursesListScreen: (context) => CoursesListScreen(),
+    // coursesListScreen: (context) => CoursesListScreen(),
     coursesListFilterScreen: (context) => CoursesListFilterScreen(),
     mentorsListScreen: (context) => MentorsListScreen(),
     notificationsScreen: (context) => NotificationsScreen(),

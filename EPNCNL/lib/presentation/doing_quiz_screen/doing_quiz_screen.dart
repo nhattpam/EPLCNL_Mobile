@@ -471,13 +471,13 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                                 ),
                               ),
                               btnCancelColor: Colors.orange,
-                              btnCancelText: 'Re-attempt Quiz',
+                              btnCancelText: 'Re-attempt',
                               btnCancelOnPress: (){
                                 _timer?.cancel();
                                 _timer = null;
                                 resetQuiz();
                               },
-                              btnOkText: 'Return to Curriculum',
+                              btnOkText: 'Return',
                               btnOkOnPress: () {
                                 setState(() {
                                   Navigator.pop(context);
@@ -534,6 +534,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                     _startCooldownPopup();
                     print('Point of this question' + listquestion[_questionIndex].defaultGrade.toString());
                     totalScore += listquestion[_questionIndex].defaultGrade as int;
+                    int defaultGrade = listquestion[_questionIndex].defaultGrade as int;
                     // isPointed = true;
                     AwesomeDialog(
                       context: context,
@@ -541,7 +542,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                       dialogType: DialogType.success,
                       body: Center(
                         child: Text(
-                          '+ $totalScore point',
+                          '+ $defaultGrade point',
                           style: TextStyle(fontStyle: FontStyle.italic),
                         ),
                       ),
@@ -563,7 +564,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                       dialogType: DialogType.error,
                       body: Center(
                         child: Text(
-                          '+ $totalScore point',
+                          '+ 0 point',
                           style: TextStyle(fontStyle: FontStyle.italic),
                         ),
                       ),

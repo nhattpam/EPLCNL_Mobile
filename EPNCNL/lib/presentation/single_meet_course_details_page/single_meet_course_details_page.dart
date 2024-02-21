@@ -19,7 +19,6 @@ class SingleMeetCourseDetailsPage extends StatefulWidget {
   const SingleMeetCourseDetailsPage(
       {required this.courseID, required this.tutorID, Key? key})
       : super(key: key);
-
   @override
   SingleMeetCourseDetailsPageState createState() =>
       SingleMeetCourseDetailsPageState();

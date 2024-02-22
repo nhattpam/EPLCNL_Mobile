@@ -14,6 +14,7 @@ import 'package:meowlish/widgets/custom_search_view.dart';
 import '../../data/models/accounts.dart';
 import '../../data/models/tutors.dart';
 import '../single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
+
 // ignore_for_file: must_be_immutable
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -29,6 +30,7 @@ class HomePageState extends State<HomePage> {
   late List<Course> listCourse = [];
   late List<Tutor> listTutor = [];
   late Account? account = Account();
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +39,7 @@ class HomePageState extends State<HomePage> {
     loadTutor();
     fetchAccountData();
   }
+
   Future<void> fetchAccountData() async {
     Account acc = await Network.getAccount();
 
@@ -45,6 +48,7 @@ class HomePageState extends State<HomePage> {
       account = acc;
     });
   }
+
   void loadCategories() async {
     List<Category> loadedCategories = await Network.getCategories();
     setState(() {
@@ -58,6 +62,7 @@ class HomePageState extends State<HomePage> {
       listCourse = loadedCourse;
     });
   }
+
   void loadTutor() async {
     List<Tutor> loadedTutor = await Network.getTutor();
     setState(() {
@@ -110,7 +115,8 @@ class HomePageState extends State<HomePage> {
                                               ),
                                               child: CustomSearchView(
                                                   controller: searchController,
-                                                  hintText: "Search for.." ,context: context),
+                                                  hintText: "Search for..",
+                                                  context: context),
                                             )),
                                         SizedBox(height: 30.v),
                                         _buildDiscountTextSection(context),
@@ -143,7 +149,8 @@ class HomePageState extends State<HomePage> {
         child:
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Column(children: [
-            Text('Hi, ${account!.fullName ?? ""}', style: theme.textTheme.headlineSmall),
+            Text('Hi, ${account!.fullName ?? ""}',
+                style: theme.textTheme.headlineSmall),
             SizedBox(height: 3.v),
             SizedBox(
                 width: 229.h,
@@ -162,12 +169,13 @@ class HomePageState extends State<HomePage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => NotificationsScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => NotificationsScreen()),
                   );
                 },
                 child: Icon(
-                  Icons
-                      .notifications_none_outlined, // Replace with the desired icon
+                  Icons.notifications_none_outlined,
+                  // Replace with the desired icon
                   size: 18.v,
                   color: Color(0xFF168F71),
                 ),
@@ -211,7 +219,7 @@ class HomePageState extends State<HomePage> {
             itemBuilder: (context, index) {
               final categories = listCategory[index];
               return GestureDetector(
-                onTap: (){
+                onTap: () {
                   setState(() {
                     current = index;
                   });
@@ -220,8 +228,9 @@ class HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                   child: Chip(
                     label: Text(categories.description.toString()),
-                    backgroundColor:
-                    current == index ? Color(0xFFFF9300) : Color(0xFFFFF1DE),
+                    backgroundColor: current == index
+                        ? Color(0xFFFF9300)
+                        : Color(0xFFFFF1DE),
                   ),
                 ),
               );
@@ -293,13 +302,14 @@ class HomePageState extends State<HomePage> {
                           itemBuilder: (context, index) {
                             final course = listCourse[index];
                             return GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => SingleCourseDetailsTabContainerScreen(
+                                    builder: (context) =>
+                                        SingleCourseDetailsTabContainerScreen(
                                       courseID: course.id.toString(),
-                                      tutorID: course.tutorId.toString() ,
+                                      tutorID: course.tutorId.toString(),
                                     ),
                                   ),
                                 );
@@ -307,18 +317,20 @@ class HomePageState extends State<HomePage> {
                               child: SingleChildScrollView(
                                 physics: NeverScrollableScrollPhysics(),
                                 child: Container(
-                                  decoration: AppDecoration.outlineBlack.copyWith(
+                                  decoration:
+                                      AppDecoration.outlineBlack.copyWith(
                                     borderRadius:
                                         BorderRadiusStyle.roundedBorder22,
                                   ),
                                   width: 280.h,
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Image.network(
-                                        course.imageUrl
-                                            .toString(), // Replace 'path_to_your_image' with the actual path to your image asset
+                                        course.imageUrl.toString(),
+                                        // Replace 'path_to_your_image' with the actual path to your image asset
                                         height: 134.v,
                                         width: 280.h,
                                         fit: BoxFit
@@ -341,8 +353,8 @@ class HomePageState extends State<HomePage> {
                                               padding: const EdgeInsets.only(
                                                   left: 70.0),
                                               child: Icon(
-                                                Icons
-                                                    .bookmark_add_outlined, // Replace with the desired icon
+                                                Icons.bookmark_add_outlined,
+                                                // Replace with the desired icon
                                                 size: 30.v,
                                                 color: Color(
                                                     0xFF168F71), // Specify the desired color,
@@ -387,8 +399,8 @@ class HomePageState extends State<HomePage> {
                                               child: Row(
                                                 children: [
                                                   Icon(
-                                                    Icons
-                                                        .star, // Replace with the desired signal icon
+                                                    Icons.star,
+                                                    // Replace with the desired signal icon
                                                     size: 14.v,
                                                     color: Colors.yellow,
                                                   ),
@@ -398,8 +410,8 @@ class HomePageState extends State<HomePage> {
                                                     child: Text(
                                                       // course.rating.toString(),
                                                       course.rating.toString(),
-                                                      style: theme
-                                                          .textTheme.labelMedium,
+                                                      style: theme.textTheme
+                                                          .labelMedium,
                                                     ),
                                                   ),
                                                 ],

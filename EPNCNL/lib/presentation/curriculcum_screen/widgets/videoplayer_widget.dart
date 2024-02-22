@@ -77,33 +77,33 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       ),
       body: _isLoading
           ? Center(
-        child: CircularProgressIndicator(),
-      )
+              child: CircularProgressIndicator(),
+            )
           : SingleChildScrollView(
-        child: Column(
-          children: [
-            AspectRatio(
-              aspectRatio: _videoPlayerController.value.aspectRatio,
-              child: Chewie(controller: _chewieController),
-            ),
-            Container(
-              padding: EdgeInsets.all(16.0),
-              child: Html(
-                data: chosenLesson.reading ?? '',
-                style: {
-                  "body": Style(
-                    textAlign: TextAlign.center,
-                    fontSize: FontSize(20),
-                    fontWeight: FontWeight.w400,
-                    lineHeight: LineHeight(1.2125),
-                    color: Color(0xff6c6363),
+              child: Column(
+                children: [
+                  AspectRatio(
+                    aspectRatio: _videoPlayerController.value.aspectRatio,
+                    child: Chewie(controller: _chewieController),
                   ),
-                },
+                  Container(
+                    padding: EdgeInsets.all(16.0),
+                    child: Html(
+                      data: chosenLesson.reading ?? '',
+                      style: {
+                        "body": Style(
+                          textAlign: TextAlign.center,
+                          fontSize: FontSize(20),
+                          fontWeight: FontWeight.w400,
+                          lineHeight: LineHeight(1.2125),
+                          color: Color(0xff6c6363),
+                        ),
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }

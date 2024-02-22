@@ -51,7 +51,8 @@ class SearchScreen extends StatelessWidget {
               SizedBox(height: 16.v),
               CustomSearchView(
                 controller: searchController,
-                hintText: "Graphic Design", context: context,
+                hintText: "Graphic Design",
+                context: context,
               ),
               SizedBox(height: 29.v),
               _buildHeadingRow(context),

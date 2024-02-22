@@ -9,12 +9,12 @@ class Lesson {
 
   Lesson(
       {this.id,
-        this.name,
-        this.videoUrl,
-        this.reading,
-        this.moduleId,
-        this.createdDate,
-        this.updatedDate});
+      this.name,
+      this.videoUrl,
+      this.reading,
+      this.moduleId,
+      this.createdDate,
+      this.updatedDate});
 
   Lesson.fromJson(Map<String, dynamic> json) {
     id = json['id'];

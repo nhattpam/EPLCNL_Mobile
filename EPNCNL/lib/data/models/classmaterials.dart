@@ -8,11 +8,11 @@ class ClassMaterial {
 
   ClassMaterial(
       {this.id,
-        this.classHours,
-        this.classUrl,
-        this.classModuleId,
-        this.createdDate,
-        this.updatedDate});
+      this.classHours,
+      this.classUrl,
+      this.classModuleId,
+      this.createdDate,
+      this.updatedDate});
 
   ClassMaterial.fromJson(Map<String, dynamic> json) {
     id = json['id'];

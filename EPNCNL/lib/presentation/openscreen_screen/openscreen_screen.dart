@@ -9,7 +9,7 @@ class OpenscreenScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          resizeToAvoidBottomInset: false,
+            resizeToAvoidBottomInset: false,
             body: Container(
                 width: double.maxFinite,
                 padding: EdgeInsets.only(top: 67.v),

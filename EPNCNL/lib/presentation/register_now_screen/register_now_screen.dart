@@ -13,6 +13,7 @@ class RegisterNowScreen extends StatefulWidget {
   @override
   RegisterNowScreenState createState() => RegisterNowScreenState();
 }
+
 class RegisterNowScreenState extends State<RegisterNowScreen> {
   TextEditingController emailController = TextEditingController();
 
@@ -28,8 +29,8 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
   void initState() {
     super.initState();
   }
-  Future<void> _createAccount() async {
 
+  Future<void> _createAccount() async {
     final email = emailController.text;
     final password = passwordController.text;
 
@@ -37,10 +38,8 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => FillYourProfileScreen(
-              email: email,
-              password: password
-          ),
+          builder: (context) =>
+              FillYourProfileScreen(email: email, password: password),
         ),
       );
     } catch (e) {
@@ -74,14 +73,15 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                                      color: Colors.grey.withOpacity(0.5),
+                                      // Adjust the color and opacity as needed
                                       spreadRadius: 2,
                                       blurRadius: 5,
-                                      offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+                                      offset: Offset(0,
+                                          3), // Adjust the offset to control the shadow's position
                                     ),
                                   ],
                                 ),
-
                                 child: CustomTextFormField(
                                     controller: emailController,
                                     hintText: "Email",
@@ -107,26 +107,28 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                                      color: Colors.grey.withOpacity(0.5),
+                                      // Adjust the color and opacity as needed
                                       spreadRadius: 2,
                                       blurRadius: 5,
-                                      offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+                                      offset: Offset(0,
+                                          3), // Adjust the offset to control the shadow's position
                                     ),
                                   ],
                                 ),
-
                                 child: CustomTextFormField(
-
                                     controller: passwordController,
                                     hintText: "Password",
                                     hintStyle:
                                         CustomTextStyles.titleSmallGray80001,
-                                    textInputType: TextInputType.visiblePassword,
+                                    textInputType:
+                                        TextInputType.visiblePassword,
                                     prefix: Container(
                                         margin: EdgeInsets.fromLTRB(
                                             22.h, 20.v, 9.h, 20.v),
                                         child: CustomImageView(
-                                            imagePath: ImageConstant.imgLocation,
+                                            imagePath:
+                                                ImageConstant.imgLocation,
                                             height: 19.v,
                                             width: 14.h)),
                                     prefixConstraints:
@@ -135,7 +137,8 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                                         margin: EdgeInsets.fromLTRB(
                                             30.h, 21.v, 24.h, 21.v),
                                         child: CustomImageView(
-                                            imagePath: ImageConstant.imgThumbsup,
+                                            imagePath:
+                                                ImageConstant.imgThumbsup,
                                             height: 15.adaptSize,
                                             width: 15.adaptSize)),
                                     suffixConstraints:
@@ -151,26 +154,29 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                                      color: Colors.grey.withOpacity(0.5),
+                                      // Adjust the color and opacity as needed
                                       spreadRadius: 2,
                                       blurRadius: 5,
-                                      offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+                                      offset: Offset(0,
+                                          3), // Adjust the offset to control the shadow's position
                                     ),
                                   ],
                                 ),
-
                                 child: CustomTextFormField(
                                     controller: confirmpasswordController,
                                     hintText: "Confirm Password",
                                     hintStyle:
                                         CustomTextStyles.titleSmallGray80001,
                                     textInputAction: TextInputAction.done,
-                                    textInputType: TextInputType.visiblePassword,
+                                    textInputType:
+                                        TextInputType.visiblePassword,
                                     prefix: Container(
                                         margin: EdgeInsets.fromLTRB(
                                             22.h, 20.v, 9.h, 20.v),
                                         child: CustomImageView(
-                                            imagePath: ImageConstant.imgLocation,
+                                            imagePath:
+                                                ImageConstant.imgLocation,
                                             height: 19.v,
                                             width: 14.h)),
                                     prefixConstraints:
@@ -179,7 +185,8 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                                         margin: EdgeInsets.fromLTRB(
                                             30.h, 21.v, 24.h, 21.v),
                                         child: CustomImageView(
-                                            imagePath: ImageConstant.imgThumbsup,
+                                            imagePath:
+                                                ImageConstant.imgThumbsup,
                                             height: 15.adaptSize,
                                             width: 15.adaptSize)),
                                     suffixConstraints:
@@ -309,30 +316,31 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                       onTap: () {
                         _createAccount();
                       },
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                            padding: EdgeInsets.only(top: 12.v, bottom: 8.v),
-                            child: Text("Sign Up",
-                                style: CustomTextStyles
-                                    .titleMediumOnPrimaryContainer)),
-                        Padding(
-                            padding: EdgeInsets.only(left: 85.h),
-                            child: CustomIconButton(
-                                height: 48.adaptSize,
-                                width: 48.adaptSize,
-                                padding: EdgeInsets.all(13.h),
-                                child: CustomImageView(
-                                    imagePath: ImageConstant.imgFill1Primary)))
-                      ])))
-          )]));
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                                padding:
+                                    EdgeInsets.only(top: 12.v, bottom: 8.v),
+                                child: Text("Sign Up",
+                                    style: CustomTextStyles
+                                        .titleMediumOnPrimaryContainer)),
+                            Padding(
+                                padding: EdgeInsets.only(left: 85.h),
+                                child: CustomIconButton(
+                                    height: 48.adaptSize,
+                                    width: 48.adaptSize,
+                                    padding: EdgeInsets.all(13.h),
+                                    child: CustomImageView(
+                                        imagePath:
+                                            ImageConstant.imgFill1Primary)))
+                          ]))))
+        ]));
   }
 
   /// Navigates to the loginScreen when the action is triggered.
   onTapTxtAlreadyhavean2(BuildContext context) {
     Navigator.pushNamed(context, AppRoutes.loginScreen);
   }
-
 }

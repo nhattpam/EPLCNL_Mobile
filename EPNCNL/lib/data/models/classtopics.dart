@@ -9,12 +9,12 @@ class ClassTopic {
 
   ClassTopic(
       {this.id,
-        this.name,
-        this.description,
-        this.materialUrl,
-        this.createdDate,
-        this.updatedDate,
-        this.classLessonId});
+      this.name,
+      this.description,
+      this.materialUrl,
+      this.createdDate,
+      this.updatedDate,
+      this.classLessonId});
 
   ClassTopic.fromJson(Map<String, dynamic> json) {
     id = json['id'];

@@ -8,11 +8,11 @@ class RefundRequest {
 
   RefundRequest(
       {this.id,
-        this.transactionId,
-        this.requestedDate,
-        this.approvedDate,
-        this.status,
-        this.reason});
+      this.transactionId,
+      this.requestedDate,
+      this.approvedDate,
+      this.status,
+      this.reason});
 
   RefundRequest.fromJson(Map<String, dynamic> json) {
     id = json['id'];

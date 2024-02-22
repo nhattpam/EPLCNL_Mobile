@@ -28,10 +28,9 @@ class FillYourProfileScreen extends StatefulWidget {
 
   @override
   FillYourProfileScreenState createState() => FillYourProfileScreenState();
-
 }
-class FillYourProfileScreenState extends State<FillYourProfileScreen> {
 
+class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   String? selectedGender;
 
   DateTime? selectedDate;
@@ -82,6 +81,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   }
 
   Dio dio = Dio();
+
   Future<void> _registerUser() async {
     final email = widget.email;
     final password = widget.password;
@@ -91,7 +91,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
     final imageUrl = _image; // await the result
     bool genderValue = selectedGender == 'Male' ? true : false;
     final dateOfBirth =
-    selectedDate != null ? selectedDate!.toIso8601String() : "";
+        selectedDate != null ? selectedDate!.toIso8601String() : "";
 
     setState(() {
       isLoading = true;
@@ -112,7 +112,8 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
 
   Future<String> _uploadImage(File imageFile) async {
     try {
-      String url = "https://nhatpmse.twentytwo.asia/api/accounts/image"; // Replace with your API endpoint
+      String url =
+          "https://nhatpmse.twentytwo.asia/api/accounts/image"; // Replace with your API endpoint
       FormData formData = FormData.fromMap({
         "file": await MultipartFile.fromFile(imageFile.path),
       });
@@ -130,7 +131,6 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
         // Handle error
         print("Error uploading image. StatusCode: ${response.statusCode}");
       }
-
     } catch (error) {
       // Handle error
       print("Error uploading image: $error");
@@ -185,7 +185,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) => OTPScreen(
-                  email : widget.email,
+                  email: widget.email,
                   myauth: myauth,
                 ),
               ),
@@ -199,7 +199,6 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -279,7 +278,8 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
                                       fit: BoxFit.fill,
                                     ),
                                     shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20)),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
                                   ),
                                 )
                               else
@@ -293,7 +293,6 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
                             ],
                           ),
                         ),
-
                       ),
                     ),
                     SizedBox(height: 30.v),
@@ -311,10 +310,12 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+                            color: Colors.grey.withOpacity(0.5),
+                            // Adjust the color and opacity as needed
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+                            offset: Offset(0,
+                                3), // Adjust the offset to control the shadow's position
                           ),
                         ],
                       ),
@@ -322,9 +323,9 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
                         hintText: "Gender",
                         items: dropdownItemList,
                         onChanged: (String? newValue) {
-                        setState(() {
-                        selectedGender = newValue;
-                        });
+                          setState(() {
+                            selectedGender = newValue;
+                          });
                         },
                       ),
                     ),
@@ -347,10 +348,12 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+            color: Colors.grey.withOpacity(0.5),
+            // Adjust the color and opacity as needed
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+            offset: Offset(
+                0, 3), // Adjust the offset to control the shadow's position
           ),
         ],
       ),
@@ -373,10 +376,12 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+            color: Colors.grey.withOpacity(0.5),
+            // Adjust the color and opacity as needed
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+            offset: Offset(
+                0, 3), // Adjust the offset to control the shadow's position
           ),
         ],
       ),
@@ -392,15 +397,18 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
       ),
     );
   }
-Widget _buildAddress(BuildContext context) {
+
+  Widget _buildAddress(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+            color: Colors.grey.withOpacity(0.5),
+            // Adjust the color and opacity as needed
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+            offset: Offset(
+                0, 3), // Adjust the offset to control the shadow's position
           ),
         ],
       ),
@@ -423,10 +431,12 @@ Widget _buildAddress(BuildContext context) {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+            color: Colors.grey.withOpacity(0.5),
+            // Adjust the color and opacity as needed
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+            offset: Offset(
+                0, 3), // Adjust the offset to control the shadow's position
           ),
         ],
       ),
@@ -444,7 +454,10 @@ Widget _buildAddress(BuildContext context) {
                   borderSide: BorderSide(color: Colors.blue, width: 2.0),
                 ),
                 prefixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today,size: 20.v,),
+                  icon: Icon(
+                    Icons.calendar_today,
+                    size: 20.v,
+                  ),
                   onPressed: () {
                     _selectDate(context);
                   },
@@ -469,10 +482,8 @@ Widget _buildAddress(BuildContext context) {
           ),
         ],
       ),
-
     );
   }
-
 
   /// Section Widget
   Widget _buildPhoneNumber(BuildContext context) {
@@ -480,10 +491,12 @@ Widget _buildAddress(BuildContext context) {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5), // Adjust the color and opacity as needed
+            color: Colors.grey.withOpacity(0.5),
+            // Adjust the color and opacity as needed
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 3), // Adjust the offset to control the shadow's position
+            offset: Offset(
+                0, 3), // Adjust the offset to control the shadow's position
           ),
         ],
       ),
@@ -500,10 +513,10 @@ Widget _buildAddress(BuildContext context) {
   /// Section Widget
   Widget _buildButton(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          onContinue();
-          // _registerUser();
-        },
+      onTap: () {
+        onContinue();
+        // _registerUser();
+      },
       child: SizedBox(
         height: 60.v,
         width: 350.h,

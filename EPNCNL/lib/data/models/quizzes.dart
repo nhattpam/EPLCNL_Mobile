@@ -10,13 +10,13 @@ class Quiz {
 
   Quiz(
       {this.id,
-        this.moduleId,
-        this.classPracticeId,
-        this.name,
-        this.gradeToPass,
-        this.deadline,
-        this.createdDate,
-        this.updatedDate});
+      this.moduleId,
+      this.classPracticeId,
+      this.name,
+      this.gradeToPass,
+      this.deadline,
+      this.createdDate,
+      this.updatedDate});
 
   Quiz.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -58,16 +58,16 @@ class Deadline {
 
   Deadline(
       {this.ticks,
-        this.days,
-        this.hours,
-        this.milliseconds,
-        this.minutes,
-        this.seconds,
-        this.totalDays,
-        this.totalHours,
-        this.totalMilliseconds,
-        this.totalMinutes,
-        this.totalSeconds});
+      this.days,
+      this.hours,
+      this.milliseconds,
+      this.minutes,
+      this.seconds,
+      this.totalDays,
+      this.totalHours,
+      this.totalMilliseconds,
+      this.totalMinutes,
+      this.totalSeconds});
 
   Deadline.fromJson(Map<String, dynamic> json) {
     ticks = json['ticks'];

@@ -4,6 +4,7 @@ import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
+
 class PopularCoursesScreen extends StatefulWidget {
   const PopularCoursesScreen({Key? key})
       : super(
@@ -114,13 +115,13 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
         switch (cateid) {
           case '5bc12c1a-f6e7-4de8-bb42-2cd727cffe69':
             return GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
-                      tutorID: courses.tutorId.toString() ,
+                      tutorID: courses.tutorId.toString(),
                     ),
                   ),
                 );
@@ -176,7 +177,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             children: [
                               Text(
                                 '\$${courses.stockPrice.toString()}',
-                                style: CustomTextStyles.titleMediumMulishPrimary,
+                                style:
+                                    CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -199,9 +201,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                     Text(
                                       '${courses.rating?.toDouble() ?? "N/A"}',
                                       style: theme.textTheme.labelMedium,
-                                    )
-
-                                    ,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -233,7 +233,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
             );
           case '7b433f46-9f3a-46eb-9124-3c85c0ee017a':
             return GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -251,7 +251,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                 child: Row(
                   children: [
                     Image.network(
-                      courses.imageUrl.toString(), // Replace with your actual image URL
+                      courses.imageUrl.toString(),
+                      // Replace with your actual image URL
                       height: 130.adaptSize,
                       width: 130.adaptSize,
                       fit: BoxFit.cover,
@@ -275,8 +276,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                   style: CustomTextStyles.labelLargeOrangeA700,
                                 ),
                                 Icon(
-                                  Icons.bookmark_add, // Replace with the desired icon
-                                  size: 30.0,    // Specify the size
+                                  Icons.bookmark_add,
+                                  // Replace with the desired icon
+                                  size: 30.0, // Specify the size
                                   color: Color(0xFF168F71), // Specify the color
                                   // Add any additional styling properties if needed
                                 )
@@ -293,7 +295,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             children: [
                               Text(
                                 '\$${courses.stockPrice.toString()}',
-                                style: CustomTextStyles.titleMediumMulishPrimary,
+                                style:
+                                    CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -304,11 +307,12 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                 width: 32.h,
                                 margin: EdgeInsets.only(top: 3.v),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
-                                      Icons
-                                          .star, // Replace with the desired signal icon
+                                      Icons.star,
+                                      // Replace with the desired signal icon
                                       size: 14.v,
                                       color: Colors.yellow,
                                     ),
@@ -347,14 +351,13 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
             );
           case '881bc11f-fabe-40ae-bc2e-a896a9ce9075':
             return GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
                       tutorID: courses.tutorId.toString(),
-
                     ),
                   ),
                 );
@@ -366,7 +369,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                 child: Row(
                   children: [
                     Image.network(
-                      courses.imageUrl.toString(), // Replace with your actual image URL
+                      courses.imageUrl.toString(),
+                      // Replace with your actual image URL
                       height: 130.adaptSize,
                       width: 130.adaptSize,
                       fit: BoxFit.cover,
@@ -390,8 +394,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                   style: CustomTextStyles.labelLargeOrangeA700,
                                 ),
                                 Icon(
-                                  Icons.bookmark_add, // Replace with the desired icon
-                                  size: 30.0,    // Specify the size
+                                  Icons.bookmark_add,
+                                  // Replace with the desired icon
+                                  size: 30.0, // Specify the size
                                   color: Color(0xFF168F71), // Specify the color
                                   // Add any additional styling properties if needed
                                 )
@@ -408,7 +413,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             children: [
                               Text(
                                 '\$${courses.stockPrice.toString()}',
-                                style: CustomTextStyles.titleMediumMulishPrimary,
+                                style:
+                                    CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -419,11 +425,12 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                 width: 32.h,
                                 margin: EdgeInsets.only(top: 3.v),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
-                                      Icons
-                                          .star, // Replace with the desired signal icon
+                                      Icons.star,
+                                      // Replace with the desired signal icon
                                       size: 14.v,
                                       color: Colors.yellow,
                                     ),
@@ -462,14 +469,13 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
             );
           case '7b0aa823-f310-4427-b604-a95c08e0f23a':
             return GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
                       tutorID: courses.tutorId.toString(),
-
                     ),
                   ),
                 );
@@ -481,7 +487,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                 child: Row(
                   children: [
                     Image.network(
-                      courses.imageUrl.toString(), // Replace with your actual image URL
+                      courses.imageUrl.toString(),
+                      // Replace with your actual image URL
                       height: 130.adaptSize,
                       width: 130.adaptSize,
                       fit: BoxFit.cover,
@@ -505,8 +512,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                   style: CustomTextStyles.labelLargeOrangeA700,
                                 ),
                                 Icon(
-                                  Icons.bookmark_add, // Replace with the desired icon
-                                  size: 30.0,    // Specify the size
+                                  Icons.bookmark_add,
+                                  // Replace with the desired icon
+                                  size: 30.0, // Specify the size
                                   color: Color(0xFF168F71), // Specify the color
                                   // Add any additional styling properties if needed
                                 )
@@ -523,7 +531,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             children: [
                               Text(
                                 '\$${courses.stockPrice.toString()}',
-                                style: CustomTextStyles.titleMediumMulishPrimary,
+                                style:
+                                    CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -534,11 +543,12 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                 width: 32.h,
                                 margin: EdgeInsets.only(top: 3.v),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
-                                      Icons
-                                          .star, // Replace with the desired signal icon
+                                      Icons.star,
+                                      // Replace with the desired signal icon
                                       size: 14.v,
                                       color: Colors.yellow,
                                     ),
@@ -577,14 +587,13 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
             );
           case '444925cf-4df0-4193-9158-bbdb9a28ed02':
             return GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
                       tutorID: courses.tutorId.toString(),
-
                     ),
                   ),
                 );
@@ -596,7 +605,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                 child: Row(
                   children: [
                     Image.network(
-                      courses.imageUrl.toString(), // Replace with your actual image URL
+                      courses.imageUrl.toString(),
+                      // Replace with your actual image URL
                       height: 130.adaptSize,
                       width: 130.adaptSize,
                       fit: BoxFit.cover,
@@ -620,8 +630,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                   style: CustomTextStyles.labelLargeOrangeA700,
                                 ),
                                 Icon(
-                                  Icons.bookmark_add, // Replace with the desired icon
-                                  size: 30.0,    // Specify the size
+                                  Icons.bookmark_add,
+                                  // Replace with the desired icon
+                                  size: 30.0, // Specify the size
                                   color: Color(0xFF168F71), // Specify the color
                                   // Add any additional styling properties if needed
                                 )
@@ -638,7 +649,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             children: [
                               Text(
                                 '\$${courses.stockPrice.toString()}',
-                                style: CustomTextStyles.titleMediumMulishPrimary,
+                                style:
+                                    CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -649,11 +661,12 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                 width: 32.h,
                                 margin: EdgeInsets.only(top: 3.v),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
-                                      Icons
-                                          .star, // Replace with the desired signal icon
+                                      Icons.star,
+                                      // Replace with the desired signal icon
                                       size: 14.v,
                                       color: Colors.yellow,
                                     ),
@@ -692,14 +705,13 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
             );
           case 'b763589b-81c9-4341-aae5-cd9719084724':
             return GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
                       tutorID: courses.tutorId.toString(),
-
                     ),
                   ),
                 );
@@ -711,7 +723,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                 child: Row(
                   children: [
                     Image.network(
-                      courses.imageUrl.toString(), // Replace with your actual image URL
+                      courses.imageUrl.toString(),
+                      // Replace with your actual image URL
                       height: 130.adaptSize,
                       width: 130.adaptSize,
                       fit: BoxFit.cover,
@@ -735,8 +748,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                   style: CustomTextStyles.labelLargeOrangeA700,
                                 ),
                                 Icon(
-                                  Icons.bookmark_add, // Replace with the desired icon
-                                  size: 30.0,    // Specify the size
+                                  Icons.bookmark_add,
+                                  // Replace with the desired icon
+                                  size: 30.0, // Specify the size
                                   color: Color(0xFF168F71), // Specify the color
                                   // Add any additional styling properties if needed
                                 )
@@ -753,7 +767,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             children: [
                               Text(
                                 '\$${courses.stockPrice.toString()}',
-                                style: CustomTextStyles.titleMediumMulishPrimary,
+                                style:
+                                    CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -764,11 +779,12 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                 width: 32.h,
                                 margin: EdgeInsets.only(top: 3.v),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
-                                      Icons
-                                          .star, // Replace with the desired signal icon
+                                      Icons.star,
+                                      // Replace with the desired signal icon
                                       size: 14.v,
                                       color: Colors.yellow,
                                     ),
@@ -807,14 +823,13 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
             );
           default:
             return GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => SingleCourseDetailsTabContainerScreen(
                       courseID: courses.id.toString(),
                       tutorID: courses.tutorId.toString(),
-
                     ),
                   ),
                 );
@@ -826,7 +841,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                 child: Row(
                   children: [
                     Image.network(
-                      courses.imageUrl.toString(), // Replace with your actual image URL
+                      courses.imageUrl.toString(),
+                      // Replace with your actual image URL
                       height: 130.adaptSize,
                       width: 130.adaptSize,
                       fit: BoxFit.cover,
@@ -850,8 +866,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                   style: CustomTextStyles.labelLargeOrangeA700,
                                 ),
                                 Icon(
-                                  Icons.bookmark_add, // Replace with the desired icon
-                                  size: 30.0,    // Specify the size
+                                  Icons.bookmark_add,
+                                  // Replace with the desired icon
+                                  size: 30.0, // Specify the size
                                   color: Color(0xFF168F71), // Specify the color
                                   // Add any additional styling properties if needed
                                 )
@@ -868,7 +885,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             children: [
                               Text(
                                 '\$${courses.stockPrice.toString()}',
-                                style: CustomTextStyles.titleMediumMulishPrimary,
+                                style:
+                                    CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -879,11 +897,12 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                 width: 32.h,
                                 margin: EdgeInsets.only(top: 3.v),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
-                                      Icons
-                                          .star, // Replace with the desired signal icon
+                                      Icons.star,
+                                      // Replace with the desired signal icon
                                       size: 14.v,
                                       color: Colors.yellow,
                                     ),
@@ -957,7 +976,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                           case 4:
                             cateid = '444925cf-4df0-4193-9158-bbdb9a28ed02';
                             break;
-                            case 5:
+                          case 5:
                             cateid = 'b763589b-81c9-4341-aae5-cd9719084724';
                             break;
                           default:

@@ -563,7 +563,8 @@ class Network {
   //class topic
   static Future<List<ClassTopic>> getClassTopicsByClassLessonId(
       String classLessonId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/class-lessons/$classLessonId/class-topics'; // Replace with your API URL
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/class-lessons/$classLessonId/class-topics'; // Replace with your API URL
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -677,9 +678,12 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
- //lesson-material
-  static Future<List<LessonMaterial>> getListLessonMaterialByClassTopicId(String classtopicId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/class-topics/$classtopicId/lesson-materials';
+
+  //lesson-material
+  static Future<List<LessonMaterial>> getListLessonMaterialByClassTopicId(
+      String classtopicId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/class-topics/$classtopicId/lesson-materials';
     print(apiUrl);
     try {
       final response = await http.get(
@@ -692,7 +696,9 @@ class Network {
       if (response.statusCode == 200) {
         final List<dynamic> lessonmaterialListJson = jsonDecode(response.body);
 
-        return lessonmaterialListJson.map((json) => LessonMaterial.fromJson(json)).toList();
+        return lessonmaterialListJson
+            .map((json) => LessonMaterial.fromJson(json))
+            .toList();
       } else {
         // If the request fails, throw an exception or return null
         throw Exception(
@@ -703,8 +709,11 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
-  static Future<LessonMaterial> getLessonMaterialByClassTopicId(String classtopicId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/class-topics/$classtopicId/lesson-materials';
+
+  static Future<LessonMaterial> getLessonMaterialByClassTopicId(
+      String classtopicId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/class-topics/$classtopicId/lesson-materials';
     print(apiUrl);
     try {
       final response = await http.get(
@@ -922,7 +931,8 @@ class Network {
 
   //Question
   static Future<List<Question>> getQuestionByQuizId(String quizId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/quizzes/$quizId/questions'; // Replace with your API URL
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/quizzes/$quizId/questions'; // Replace with your API URL
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -945,8 +955,10 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
   //Question Answer
-  static Future<List<QuestionAnswer>> getQuestionAnswerByQuestionId(String questionId) async {
+  static Future<List<QuestionAnswer>> getQuestionAnswerByQuestionId(
+      String questionId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/questions/$questionId/question-answers'; // Replace with your API URL
     print(apiUrl);
@@ -961,7 +973,9 @@ class Network {
       if (response.statusCode == 200) {
         final List<dynamic> questionanswerListJson = jsonDecode(response.body);
 
-        return questionanswerListJson.map((json) => QuestionAnswer.fromJson(json)).toList();
+        return questionanswerListJson
+            .map((json) => QuestionAnswer.fromJson(json))
+            .toList();
       } else {
         // If the request fails, throw an exception or return null
         throw Exception(
@@ -972,6 +986,7 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
   //class module
   static Future<ClassModule> getClassModule(String classModuleId) async {
     final apiUrl =

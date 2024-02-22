@@ -7,10 +7,10 @@ class QuestionAnswer {
 
   QuestionAnswer(
       {this.id,
-        this.questionId,
-        this.answerText,
-        this.position,
-        this.isAnswer});
+      this.questionId,
+      this.answerText,
+      this.position,
+      this.isAnswer});
 
   QuestionAnswer.fromJson(Map<String, dynamic> json) {
     id = json['id'];

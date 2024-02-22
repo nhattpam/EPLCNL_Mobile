@@ -21,8 +21,8 @@ class SingleCourseDetailsTabContainerScreen extends StatefulWidget {
   const SingleCourseDetailsTabContainerScreen(
       {required this.courseID, Key? key, required this.tutorID})
       : super(
-    key: key,
-  );
+          key: key,
+        );
 
   @override
   SingleCourseDetailsTabContainerScreenState createState() =>
@@ -78,30 +78,29 @@ class SingleCourseDetailsTabContainerScreenState
           width: double.maxFinite,
           child: SingleChildScrollView(
             child: Column(
-                children: [
+              children: [
                 _buildArrowDown(context),
-            SizedBox(
-              height: 881.v,
-              // child: Navigator(
-              //   key: _navKey,
-              //   onGenerateRoute: (_) => MaterialPageRoute(
-              //     builder: (_) =>
-              child: TabBarView(
-                controller: tabviewController,
-                children: [
-                  SingleMeetCourseDetailsPage(
-                      courseID: widget.courseID,
-                      tutorID: widget.tutorID),
-                  SingleCourseDetailsCurriculumPage(
-                      courseID: widget.courseID)
-                ],
-              ),
+                SizedBox(
+                  height: 881.v,
+                  // child: Navigator(
+                  //   key: _navKey,
+                  //   onGenerateRoute: (_) => MaterialPageRoute(
+                  //     builder: (_) =>
+                  child: TabBarView(
+                    controller: tabviewController,
+                    children: [
+                      SingleMeetCourseDetailsPage(
+                          courseID: widget.courseID, tutorID: widget.tutorID),
+                      SingleCourseDetailsCurriculumPage(
+                          courseID: widget.courseID)
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-    ),)
-    ,
     );
   }
 
@@ -147,8 +146,8 @@ class SingleCourseDetailsTabContainerScreenState
               margin: EdgeInsets.symmetric(horizontal: 34.h),
               decoration: AppDecoration.outlineBlack.copyWith(
                   borderRadius: BorderRadius.circular(
-                    15.h,
-                  )),
+                15.h,
+              )),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -368,8 +367,8 @@ class SingleCourseDetailsCurriculumPageState
 
   Future<void> loadModuleByCourseId() async {
     try {
-      List<Module> loadedModule = await Network.getModulesByCourseId(
-          widget.courseID);
+      List<Module> loadedModule =
+          await Network.getModulesByCourseId(widget.courseID);
       setState(() {
         listModuleByCourseId = loadedModule;
       });
@@ -394,8 +393,8 @@ class SingleCourseDetailsCurriculumPageState
   }
 
   Future<void> loadClassModuleByCourseId() async {
-    List<ClassModule> loadedModule = await Network.getClassModulesByCourseId(
-        widget.courseID);
+    List<ClassModule> loadedModule =
+        await Network.getClassModulesByCourseId(widget.courseID);
     setState(() {
       listClassModuleByCourseId = loadedModule;
     });
@@ -425,7 +424,6 @@ class SingleCourseDetailsCurriculumPageState
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -444,7 +442,6 @@ class SingleCourseDetailsCurriculumPageState
                     children: [
                       if (chosenCourse.isOnlineClass == false)
                         _buildVideoCourseListView(),
-
                       if (chosenCourse.isOnlineClass == true)
                         _buildClassCourseListView(),
                       SizedBox(height: 21.v),
@@ -482,18 +479,18 @@ class SingleCourseDetailsCurriculumPageState
               padding: EdgeInsets.only(left: 1.h),
               child: Row(
                 children: [
-                  Text(
-                      "Session $number - ", style: theme.textTheme.labelMedium),
+                  Text("Session $number - ",
+                      style: theme.textTheme.labelMedium),
                   Text(module.name.toString(),
                       style: CustomTextStyles.labelLargeOrangeA700),
                 ],
               ),
             ),
             // Print lessons for this module
-            for (int lessonIndex = 0; lessonIndex <
-                (moduleLessonsMap[module.id.toString()]?.length ??
-                    0); lessonIndex++)
-
+            for (int lessonIndex = 0;
+                lessonIndex <
+                    (moduleLessonsMap[module.id.toString()]?.length ?? 0);
+                lessonIndex++)
               GestureDetector(
                 onTap: () {
                   // Handle the onTap action for each video session
@@ -503,13 +500,16 @@ class SingleCourseDetailsCurriculumPageState
                   children: [
                     CircleWithNumber(number: lessonIndex + 1),
                     Padding(
-                      padding: EdgeInsets.only(
-                          left: 12.h, top: 7.v, bottom: 5.v),
+                      padding:
+                          EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(moduleLessonsMap[module.id
-                              .toString()]![lessonIndex].name.toString(),
+                          Text(
+                              moduleLessonsMap[module.id.toString()]![
+                                      lessonIndex]
+                                  .name
+                                  .toString(),
                               style: CustomTextStyles.titleMedium17),
                           // Add other information about the video session here
                         ],
@@ -532,7 +532,6 @@ class SingleCourseDetailsCurriculumPageState
     );
   }
 
-
   Widget _buildClassCourseListView() {
     return ListView.builder(
       shrinkWrap: true,
@@ -547,8 +546,8 @@ class SingleCourseDetailsCurriculumPageState
               padding: EdgeInsets.only(left: 1.h),
               child: Row(
                 children: [
-                  Text(
-                      "Session $number - ", style: theme.textTheme.labelMedium),
+                  Text("Session $number - ",
+                      style: theme.textTheme.labelMedium),
                   Text(module.startDate.toString(),
                       style: CustomTextStyles.labelLargeOrangeA700),
                 ],
@@ -562,7 +561,6 @@ class SingleCourseDetailsCurriculumPageState
     );
   }
 }
-
 
 class CircleWithNumber extends StatelessWidget {
   final int number;

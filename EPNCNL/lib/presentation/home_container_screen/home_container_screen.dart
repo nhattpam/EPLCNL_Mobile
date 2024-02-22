@@ -16,7 +16,6 @@ class HomeContainerScreen extends StatefulWidget {
 
 // ignore_for_file: must_be_immutable
 class HomeContainerScreenState extends State<HomeContainerScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -43,7 +42,7 @@ class HomeContainerScreenState extends State<HomeContainerScreen> {
                         // Customize the button's background color
                         backgroundColor: Color(0xffff9300),
                         minimumSize:
-                        Size(100, 48), // Change to your desired color
+                            Size(100, 48), // Change to your desired color
                       ),
                       child: const Text('No'),
                     ),
@@ -56,7 +55,7 @@ class HomeContainerScreenState extends State<HomeContainerScreen> {
                           // Customize the button's background color
                           backgroundColor: Color(0xffff9300),
                           minimumSize:
-                          Size(100, 48), // Change to your desired color
+                              Size(100, 48), // Change to your desired color
                         ),
                         child: const Text('Yes')),
                   )
@@ -116,7 +115,7 @@ class HomeContainerScreenState extends State<HomeContainerScreen> {
                   child: IndoxChatsPage(),
                 );
               });
-             case 3:
+            case 3:
               return CupertinoTabView(builder: (context) {
                 return CupertinoPageScaffold(
                   child: TransactionsPage(),

@@ -47,10 +47,12 @@ class MyCourseOngoingScreen extends StatelessWidget {
                           ]),
                       SizedBox(height: 16.v),
                       CustomSearchView(
-                          controller: searchController,
-                          hintText: "Search for …",
-                          contentPadding: EdgeInsets.only(
-                              left: 15.h, top: 21.v, bottom: 21.v), context: context,),
+                        controller: searchController,
+                        hintText: "Search for …",
+                        contentPadding: EdgeInsets.only(
+                            left: 15.h, top: 21.v, bottom: 21.v),
+                        context: context,
+                      ),
                       SizedBox(height: 20.v),
                       _buildCategory(context),
                       SizedBox(height: 20.v),

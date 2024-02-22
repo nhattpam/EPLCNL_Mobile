@@ -8,11 +8,11 @@ class ClassLesson {
 
   ClassLesson(
       {this.id,
-        this.classHours,
-        this.classUrl,
-        this.classModuleId,
-        this.createdDate,
-        this.updatedDate});
+      this.classHours,
+      this.classUrl,
+      this.classModuleId,
+      this.createdDate,
+      this.updatedDate});
 
   ClassLesson.fromJson(Map<String, dynamic> json) {
     id = json['id'];

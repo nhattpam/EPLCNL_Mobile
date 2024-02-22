@@ -34,8 +34,8 @@ class MyCourseCompletedPage extends StatelessWidget {
                                           ImageConstant.imgArrowDownBlueGray900,
                                       height: 20.v,
                                       width: 26.h,
-                                      margin:
-                                          EdgeInsets.only(top: 3.v, bottom: 5.v)),
+                                      margin: EdgeInsets.only(
+                                          top: 3.v, bottom: 5.v)),
                                   Padding(
                                       padding: EdgeInsets.only(left: 11.h),
                                       child: Text("My Courses",
@@ -43,14 +43,12 @@ class MyCourseCompletedPage extends StatelessWidget {
                                 ]),
                             SizedBox(height: 16.v),
                             Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 14.h),
+                                padding: EdgeInsets.symmetric(horizontal: 14.h),
                                 child: Container(
                                   decoration: BoxDecoration(
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey
-                                            .withOpacity(0.5),
+                                        color: Colors.grey.withOpacity(0.5),
                                         // Adjust the color and opacity as needed
                                         spreadRadius: 2,
                                         blurRadius: 5,
@@ -60,15 +58,16 @@ class MyCourseCompletedPage extends StatelessWidget {
                                     ],
                                   ),
                                   child: CustomSearchView(
-                                      controller: searchController,
-                                      hintText: "Search for..", context: context,),
+                                    controller: searchController,
+                                    hintText: "Search for..",
+                                    context: context,
+                                  ),
                                 )),
                             SizedBox(height: 20.v),
                             _buildCategory(context),
                             SizedBox(height: 16.v),
                             _buildUserProfile(context),
                             SizedBox(height: 16.v),
-
                           ]),
                     )))));
   }

@@ -3,7 +3,7 @@ import 'package:meowlish/data/models/tutors.dart';
 import 'classlessons.dart';
 import 'courses.dart';
 
-class ClassModule{
+class ClassModule {
   String? id;
   String? startDate;
   String? courseId;
@@ -19,13 +19,11 @@ class ClassModule{
     startDate = json['startDate'];
     courseId = json['courseId'];
     course =
-    json['course'] != null ? new Course.fromJson(json['course']) : null;
+        json['course'] != null ? new Course.fromJson(json['course']) : null;
     classLesson = json['classLesson'] != null
         ? new ClassLesson.fromJson(json['classLesson'])
         : null;
-    tutor = json['tutor'] != null
-        ? new Tutor.fromJson(json['tutor'])
-        : null;
+    tutor = json['tutor'] != null ? new Tutor.fromJson(json['tutor']) : null;
   }
 
   Map<String, dynamic> toJson() {

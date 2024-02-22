@@ -44,10 +44,12 @@ class MyCourseLessonsScreen extends StatelessWidget {
                   Padding(
                       padding: EdgeInsets.symmetric(horizontal: 34.h),
                       child: CustomSearchView(
-                          controller: searchController,
-                          hintText: "3D Design Illustration",
-                          contentPadding: EdgeInsets.only(
-                              left: 21.h, top: 21.v, bottom: 21.v), context: context,)),
+                        controller: searchController,
+                        hintText: "3D Design Illustration",
+                        contentPadding: EdgeInsets.only(
+                            left: 21.h, top: 21.v, bottom: 21.v),
+                        context: context,
+                      )),
                   SizedBox(height: 20.v),
                   SizedBox(
                       height: 727.v,

@@ -8,11 +8,11 @@ class AssignmentAttempt {
 
   AssignmentAttempt(
       {this.id,
-        this.assignmentId,
-        this.learnerId,
-        this.answerText,
-        this.attemptedDate,
-        this.totalGrade});
+      this.assignmentId,
+      this.learnerId,
+      this.answerText,
+      this.attemptedDate,
+      this.totalGrade});
 
   AssignmentAttempt.fromJson(Map<String, dynamic> json) {
     id = json['id'];

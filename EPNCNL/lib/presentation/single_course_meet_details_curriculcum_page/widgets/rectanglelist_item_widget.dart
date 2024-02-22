@@ -5,8 +5,8 @@ import 'package:meowlish/core/app_export.dart';
 class RectanglelistItemWidget extends StatelessWidget {
   const RectanglelistItemWidget({Key? key})
       : super(
-    key: key,
-  );
+          key: key,
+        );
 
   @override
   Widget build(BuildContext context) {

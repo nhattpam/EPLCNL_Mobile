@@ -9,6 +9,7 @@ class SurveyscreenFourScreen extends StatefulWidget {
   @override
   SurveyscreenFourScreenState createState() => SurveyscreenFourScreenState();
 }
+
 class SurveyscreenFourScreenState extends State<SurveyscreenFourScreen> {
   bool isClicked = false;
 
@@ -31,7 +32,8 @@ class SurveyscreenFourScreenState extends State<SurveyscreenFourScreen> {
                       color: Colors.black, // Set border color
                       width: 0.0, // Set border width
                     ),
-                    borderRadius: BorderRadius.circular(20.0), // Set border radius
+                    borderRadius:
+                        BorderRadius.circular(20.0), // Set border radius
                   ),
                 ),
               ),
@@ -40,7 +42,8 @@ class SurveyscreenFourScreenState extends State<SurveyscreenFourScreen> {
             body: SingleChildScrollView(
               child: Container(
                   width: double.maxFinite,
-                  padding: EdgeInsets.symmetric(horizontal: 19.h, vertical: 45.v),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 19.h, vertical: 45.v),
                   child: Column(children: [
                     SizedBox(
                         width: 270.h,
@@ -57,10 +60,9 @@ class SurveyscreenFourScreenState extends State<SurveyscreenFourScreen> {
             bottomNavigationBar: _buildNextButton(context)));
   }
 
-
   /// Section Widget
   Widget _buildDurationEditText1(BuildContext context) {
-     return Padding(
+    return Padding(
         padding: EdgeInsets.only(left: 11.h, right: 10.h),
         child: ElevatedButton(
           onPressed: () {
@@ -78,14 +80,13 @@ class SurveyscreenFourScreenState extends State<SurveyscreenFourScreen> {
               backgroundColor: isClicked
                   ? Colors.orange
                   : Colors.white // Set your button color
-          ),
+              ),
           child: Text(
             "5 minutes a day",
             maxLines: 1,
             style: CustomTextStyles.headlineSmallJuaBlack900,
           ), // Set your button text
         ));
-
   }
 
   /// Section Widget

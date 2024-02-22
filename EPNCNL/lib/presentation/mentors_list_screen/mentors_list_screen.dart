@@ -56,8 +56,10 @@ class MentorsListScreen extends StatelessWidget {
                                     Padding(
                                         padding: EdgeInsets.only(left: 2.h),
                                         child: CustomSearchView(
-                                            controller: searchController,
-                                            hintText: "3D Design", context: context,)),
+                                          controller: searchController,
+                                          hintText: "3D Design",
+                                          context: context,
+                                        )),
                                     SizedBox(height: 25.v),
                                     _buildCategory(context),
                                     SizedBox(height: 15.v),

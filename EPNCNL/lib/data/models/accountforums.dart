@@ -8,11 +8,11 @@ class AccountForum {
 
   AccountForum(
       {this.id,
-        this.learnerId,
-        this.tutorId,
-        this.forumId,
-        this.message,
-        this.messagedDate});
+      this.learnerId,
+      this.tutorId,
+      this.forumId,
+      this.message,
+      this.messagedDate});
 
   AccountForum.fromJson(Map<String, dynamic> json) {
     id = json['id'];

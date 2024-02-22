@@ -8,11 +8,11 @@ class Enrollment {
 
   Enrollment(
       {this.id,
-        this.learnerId,
-        this.courseId,
-        this.enrolledDate,
-        this.status,
-        this.totalGrade});
+      this.learnerId,
+      this.courseId,
+      this.enrolledDate,
+      this.status,
+      this.totalGrade});
 
   Enrollment.fromJson(Map<String, dynamic> json) {
     id = json['id'];

@@ -13,7 +13,9 @@ class DoingAssignmentScreen extends StatefulWidget {
   final String assignmentID;
   final Duration cooldownTime;
 
-  const DoingAssignmentScreen({Key? key, required this.assignmentID, required this.cooldownTime}) : super(key: key);
+  const DoingAssignmentScreen(
+      {Key? key, required this.assignmentID, required this.cooldownTime})
+      : super(key: key);
 
   @override
   DoingAssignmentScreenState createState() => DoingAssignmentScreenState();
@@ -26,7 +28,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
   int _remainingSeconds = 0;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     loadAssignmentByAssignmentId();
     _startCooldownTimer();
@@ -38,10 +40,10 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
     super.dispose();
   }
 
-
   Future<void> loadAssignmentByAssignmentId() async {
     try {
-      final assignment = await Network.getAssignmentByAssignmentId(widget.assignmentID);
+      final assignment =
+          await Network.getAssignmentByAssignmentId(widget.assignmentID);
       setState(() {
         chosenAssignment = assignment;
       });
@@ -52,7 +54,6 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
   }
 
   void _startCooldownTimer() {
-
     if (_timer != null && _timer!.isActive) {
       return;
     }
@@ -75,8 +76,8 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
         _timer = null;
       }
     });
-
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -111,7 +112,8 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
               vertical: 69.v,
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch, // Ensure children stretch horizontally
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              // Ensure children stretch horizontally
               children: [
                 Center(
                   child: Html(
@@ -130,20 +132,18 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Time remaining: " ,
-                        style:  theme.textTheme.titleSmall!.copyWith(
-                          fontSize: 15.fSize,
-                          fontWeight: FontWeight.w800,
-                        )
-                        ),
-                        Text(
-                          '${(_remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(_remainingSeconds % 60).toString().padLeft(2, '0')}',
-                          style: CustomTextStyles.titleSmallPrimary,
-                        ),
-                      ],
-                    ),
+                    children: [
+                      Text("Time remaining: ",
+                          style: theme.textTheme.titleSmall!.copyWith(
+                            fontSize: 15.fSize,
+                            fontWeight: FontWeight.w800,
+                          )),
+                      Text(
+                        '${(_remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(_remainingSeconds % 60).toString().padLeft(2, '0')}',
+                        style: CustomTextStyles.titleSmallPrimary,
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(height: 73.v),
                 Align(
@@ -170,8 +170,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                   ),
                   child: CustomTextFormField(
                     controller: additionalInfoController,
-                    hintText:
-                    "Your Answer",
+                    hintText: "Your Answer",
                     hintStyle: CustomTextStyles.titleSmallGray80001,
                     textInputAction: TextInputAction.done,
                     maxLines: 14,
@@ -213,7 +212,6 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                   },
                   text: "Submit Assignment",
                 )
-
               ],
             ),
           ),
@@ -221,5 +219,4 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
       ),
     );
   }
-
 }

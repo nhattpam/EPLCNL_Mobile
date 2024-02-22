@@ -29,8 +29,8 @@ class CustomSearchView extends StatelessWidget {
     this.onChanged,
     required this.context, // 1. Add BuildContext parameter
   }) : super(
-    key: key,
-  );
+          key: key,
+        );
 
   final Alignment? alignment;
   final BuildContext context; // 2. Define BuildContext parameter
@@ -60,95 +60,96 @@ class CustomSearchView extends StatelessWidget {
   Widget build(BuildContext context) {
     return alignment != null
         ? Align(
-      alignment: alignment ?? Alignment.center,
-      child: searchViewWidget(context),
-    )
+            alignment: alignment ?? Alignment.center,
+            child: searchViewWidget(context),
+          )
         : searchViewWidget(context);
   }
 
   Widget searchViewWidget(BuildContext context) => SizedBox(
-    width: width ?? double.maxFinite,
-    child: TextFormField(
-      scrollPadding:
-      EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      controller: controller,
-      focusNode: focusNode ?? FocusNode(),
-      // autofocus: autofocus!,
-      style: textStyle ?? CustomTextStyles.titleMediumMulishBluegray200,
-      keyboardType: textInputType,
-      maxLines: maxLines ?? 1,
-      decoration: decoration,
-      validator: validator,
-      onTap: () {
-        controller?.clear();
-        showSearch(context: context, delegate: SearchCourse());
-      },
-    ),
-  );
+        width: width ?? double.maxFinite,
+        child: TextFormField(
+          scrollPadding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          controller: controller,
+          focusNode: focusNode ?? FocusNode(),
+          // autofocus: autofocus!,
+          style: textStyle ?? CustomTextStyles.titleMediumMulishBluegray200,
+          keyboardType: textInputType,
+          maxLines: maxLines ?? 1,
+          decoration: decoration,
+          validator: validator,
+          onTap: () {
+            controller?.clear();
+            showSearch(context: context, delegate: SearchCourse());
+          },
+        ),
+      );
 
   InputDecoration get decoration => InputDecoration(
-    hintText: hintText ?? "",
-    hintStyle: hintStyle ?? CustomTextStyles.titleMediumMulishBluegray200,
-    prefixIcon: prefix ??
-        Container(
-          margin: EdgeInsets.fromLTRB(13.h, 22.v, 9.h, 22.v),
-          child: Icon(
-            Icons.search,
-            size: 20.adaptSize,
-          ),
-        ),
-    prefixIconConstraints: prefixConstraints ??
-        BoxConstraints(
-          maxHeight: 64.v,
-        ),
-    suffixIcon: suffix ??
-        GestureDetector(
-          onTap: () {
-            // Navigate to another screen here
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CoursesListFilterScreen()),
-            );
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 9.h,
-              vertical: 10.v,
+        hintText: hintText ?? "",
+        hintStyle: hintStyle ?? CustomTextStyles.titleMediumMulishBluegray200,
+        prefixIcon: prefix ??
+            Container(
+              margin: EdgeInsets.fromLTRB(13.h, 22.v, 9.h, 22.v),
+              child: Icon(
+                Icons.search,
+                size: 20.adaptSize,
+              ),
             ),
-            margin: EdgeInsets.fromLTRB(30.h, 13.v, 10.h, 13.v),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primary,
-              borderRadius: BorderRadius.circular(10.h),
+        prefixIconConstraints: prefixConstraints ??
+            BoxConstraints(
+              maxHeight: 64.v,
             ),
-            child: Icon(
-              Icons.filter_list, // Replace with the desired icon
-              size: 18.v,
-              color: Colors.white, // Specify the desired color,
+        suffixIcon: suffix ??
+            GestureDetector(
+              onTap: () {
+                // Navigate to another screen here
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => CoursesListFilterScreen()),
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 9.h,
+                  vertical: 10.v,
+                ),
+                margin: EdgeInsets.fromLTRB(30.h, 13.v, 10.h, 13.v),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  borderRadius: BorderRadius.circular(10.h),
+                ),
+                child: Icon(
+                  Icons.filter_list, // Replace with the desired icon
+                  size: 18.v,
+                  color: Colors.white, // Specify the desired color,
+                ),
+              ),
             ),
-          ),
-        ),
-    suffixIconConstraints: suffixConstraints ??
-        BoxConstraints(
-          maxHeight: 64.v,
-        ),
-    isDense: true,
-    contentPadding: contentPadding ?? EdgeInsets.symmetric(vertical: 21.v),
-    fillColor: fillColor ?? theme.colorScheme.onPrimaryContainer,
-    filled: filled,
-    border: borderDecoration ??
-        OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15.h),
-          borderSide: BorderSide.none,
-        ),
-    enabledBorder: borderDecoration ??
-        OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15.h),
-          borderSide: BorderSide.none,
-        ),
-    focusedBorder: borderDecoration ??
-        OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15.h),
-          borderSide: BorderSide.none,
-        ),
-  );
+        suffixIconConstraints: suffixConstraints ??
+            BoxConstraints(
+              maxHeight: 64.v,
+            ),
+        isDense: true,
+        contentPadding: contentPadding ?? EdgeInsets.symmetric(vertical: 21.v),
+        fillColor: fillColor ?? theme.colorScheme.onPrimaryContainer,
+        filled: filled,
+        border: borderDecoration ??
+            OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15.h),
+              borderSide: BorderSide.none,
+            ),
+        enabledBorder: borderDecoration ??
+            OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15.h),
+              borderSide: BorderSide.none,
+            ),
+        focusedBorder: borderDecoration ??
+            OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15.h),
+              borderSide: BorderSide.none,
+            ),
+      );
 }

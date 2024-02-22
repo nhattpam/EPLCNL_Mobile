@@ -19,6 +19,7 @@ class SingleMeetCourseDetailsPage extends StatefulWidget {
   const SingleMeetCourseDetailsPage(
       {required this.courseID, required this.tutorID, Key? key})
       : super(key: key);
+
   @override
   SingleMeetCourseDetailsPageState createState() =>
       SingleMeetCourseDetailsPageState();
@@ -36,8 +37,6 @@ class SingleMeetCourseDetailsPageState
     super.initState();
     loadTutorByTutorID();
     loadCourseByCourseID();
-    print("this is learnerId in pl: " +
-        SessionManager().getLearnerId().toString());
     loadEnrollmentByLearnerAndCourseId();
   }
 
@@ -87,7 +86,6 @@ class SingleMeetCourseDetailsPageState
   Widget build(BuildContext context) {
     bool isEnrolled =
         enrollment.learnerId != null && enrollment.courseId != null;
-
     return SafeArea(
         child: Scaffold(
             body: SizedBox(

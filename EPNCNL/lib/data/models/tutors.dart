@@ -12,13 +12,13 @@ class Tutor {
 
   Tutor(
       {this.id,
-        this.accountId,
-        this.isFreelancer,
-        this.centerId,
-        this.staffId,
-        this.account,
-        this.center,
-        this.staff});
+      this.accountId,
+      this.isFreelancer,
+      this.centerId,
+      this.staffId,
+      this.account,
+      this.center,
+      this.staff});
 
   Tutor.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -27,8 +27,7 @@ class Tutor {
     centerId = json['centerId'];
     staffId = json['staffId'];
     account =
-    json['account'] != null ? new Account.fromJson(json['account']) : null;
-
+        json['account'] != null ? new Account.fromJson(json['account']) : null;
   }
 
   Map<String, dynamic> toJson() {

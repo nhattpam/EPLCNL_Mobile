@@ -10,19 +10,22 @@ import 'package:meowlish/session/session.dart';
 class ProfilesPage extends StatefulWidget {
   const ProfilesPage({Key? key})
       : super(
-    key: key,
-  );
+          key: key,
+        );
 
   @override
   ProfilesPageState createState() => ProfilesPageState();
 }
+
 class ProfilesPageState extends State<ProfilesPage> {
   late Account? account = Account();
+
   @override
   void initState() {
     super.initState();
     fetchAccountData();
   }
+
   Future<void> fetchAccountData() async {
     Account acc = await Network.getAccount();
 
@@ -31,6 +34,7 @@ class ProfilesPageState extends State<ProfilesPage> {
       account = acc;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -47,7 +51,7 @@ class ProfilesPageState extends State<ProfilesPage> {
                           Padding(
                               padding: EdgeInsets.only(left: 1.h),
                               child: GestureDetector(
-                                onTap: (){
+                                onTap: () {
                                   SessionManager().clearSession();
                                   Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => LoginScreen(),
@@ -59,17 +63,21 @@ class ProfilesPageState extends State<ProfilesPage> {
                                   //     child: Text("Profile",
                                   //         style: theme.textTheme.titleLarge)),
                                   Padding(
-                                      padding: EdgeInsets.only(left: 220.h),
-                                      child: Row(
-                                        children: [
-                                          Text("Logout", style: theme.textTheme.titleLarge),
-                                          SizedBox(width: 8.h), // Adjust the spacing between text and icon
-                                          Icon(
-                                            Icons.exit_to_app, // Replace with the desired icon
-                                            size: 24.h, // Adjust the size of the icon as needed
-                                          ),
-                                        ],
-                                      ),
+                                    padding: EdgeInsets.only(left: 220.h),
+                                    child: Row(
+                                      children: [
+                                        Text("Logout",
+                                            style: theme.textTheme.titleLarge),
+                                        SizedBox(width: 8.h),
+                                        // Adjust the spacing between text and icon
+                                        Icon(
+                                          Icons.exit_to_app,
+                                          // Replace with the desired icon
+                                          size: 24
+                                              .h, // Adjust the size of the icon as needed
+                                        ),
+                                      ],
+                                    ),
                                   )
                                 ]),
                               )),
@@ -90,14 +98,15 @@ class ProfilesPageState extends State<ProfilesPage> {
                                             decoration: AppDecoration
                                                 .outlineBlack
                                                 .copyWith(
-                                                borderRadius:
-                                                BorderRadiusStyle
-                                                    .circleBorder15),
+                                                    borderRadius:
+                                                        BorderRadiusStyle
+                                                            .circleBorder15),
                                             child: Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   SizedBox(height: 64.v),
-                                                  Text('Hi, ${account!.fullName ?? ""}',
+                                                  Text(
+                                                      'Hi, ${account!.fullName ?? ""}',
                                                       style: theme.textTheme
                                                           .headlineSmall),
                                                   SizedBox(height: 3.v),
@@ -112,16 +121,17 @@ class ProfilesPageState extends State<ProfilesPage> {
                                                       },
                                                       child: Padding(
                                                           padding:
-                                                          EdgeInsets.only(
-                                                              left: 1.h),
+                                                              EdgeInsets.only(
+                                                                  left: 1.h),
                                                           child: Row(
                                                               mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
+                                                                  MainAxisAlignment
+                                                                      .center,
                                                               children: [
-                                                                 Icon(
+                                                                Icon(
                                                                   Icons.person,
-                                                                  size: 17.v, // Adjust the size according to your needs
+                                                                  size: 17
+                                                                      .v, // Adjust the size according to your needs
                                                                 ),
                                                                 Padding(
                                                                     padding: EdgeInsets.only(
@@ -132,9 +142,11 @@ class ProfilesPageState extends State<ProfilesPage> {
                                                                         style: CustomTextStyles
                                                                             .titleSmallBluegray90015)),
                                                                 Spacer(),
-                                                                 Icon(
-                                                                  Icons.arrow_forward,
-                                                                  size: 17.v, // Adjust the size according to your needs
+                                                                Icon(
+                                                                  Icons
+                                                                      .arrow_forward,
+                                                                  size: 17
+                                                                      .v, // Adjust the size according to your needs
                                                                 ),
                                                               ]))),
                                                   SizedBox(height: 33.v),
@@ -143,25 +155,30 @@ class ProfilesPageState extends State<ProfilesPage> {
                                                           left: 1.h),
                                                       child: Row(
                                                           mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
+                                                              MainAxisAlignment
+                                                                  .center,
                                                           children: [
                                                             Icon(
-                                                              Icons.notifications_none_outlined,
-                                                              size: 17.v, // Adjust the size according to your needs
+                                                              Icons
+                                                                  .notifications_none_outlined,
+                                                              size: 17
+                                                                  .v, // Adjust the size according to your needs
                                                             ),
                                                             Padding(
-                                                                padding: EdgeInsets.only(
-                                                                    left: 14
-                                                                        .h),
+                                                                padding: EdgeInsets
+                                                                    .only(
+                                                                        left: 14
+                                                                            .h),
                                                                 child: Text(
                                                                     "Notifications",
                                                                     style: CustomTextStyles
                                                                         .titleSmallBluegray90015)),
                                                             Spacer(),
                                                             Icon(
-                                                              Icons.arrow_forward,
-                                                              size: 17.v, // Adjust the size according to your needs
+                                                              Icons
+                                                                  .arrow_forward,
+                                                              size: 17
+                                                                  .v, // Adjust the size according to your needs
                                                             ),
                                                           ])),
                                                   SizedBox(height: 33.v),
@@ -170,59 +187,67 @@ class ProfilesPageState extends State<ProfilesPage> {
                                                           left: 1.h),
                                                       child: GestureDetector(
                                                         onTap: () {
-                                                          onTapTermsCondition(context);
+                                                          onTapTermsCondition(
+                                                              context);
                                                         },
                                                         child: Row(
                                                             mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
+                                                                MainAxisAlignment
+                                                                    .center,
                                                             children: [
                                                               Icon(
-                                                                Icons.health_and_safety_outlined,
-                                                                size: 17.v, // Adjust the size according to your needs
+                                                                Icons
+                                                                    .health_and_safety_outlined,
+                                                                size: 17
+                                                                    .v, // Adjust the size according to your needs
                                                               ),
                                                               Padding(
                                                                   padding: EdgeInsets
                                                                       .only(
-                                                                      left: 12
-                                                                          .h),
+                                                                          left: 12
+                                                                              .h),
                                                                   child: Text(
                                                                       "Terms & Conditions",
                                                                       style: CustomTextStyles
                                                                           .titleSmallBluegray90015)),
                                                               Spacer(),
-                                                               Icon(
-                                                                Icons.arrow_forward,
-                                                                size: 17.v, // Adjust the size according to your needs
+                                                              Icon(
+                                                                Icons
+                                                                    .arrow_forward,
+                                                                size: 17
+                                                                    .v, // Adjust the size according to your needs
                                                               ),
                                                             ]),
                                                       )),
                                                   Spacer(),
                                                 ]))),
-                              Align(
-                                alignment: Alignment.topCenter,
-                                child: Container(
-                                  height: 110.adaptSize,
-                                  width: 110.adaptSize,
-                                  decoration: BoxDecoration(
-                                    color: appTheme.blueGray10001,
-                                    borderRadius: BorderRadius.circular(55.h),
-                                    border: Border.all(
-                                      color: theme.colorScheme.primary,
-                                      width: 4.h,
-                                      strokeAlign: strokeAlignOutside,
+                                    Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Container(
+                                        height: 110.adaptSize,
+                                        width: 110.adaptSize,
+                                        decoration: BoxDecoration(
+                                          color: appTheme.blueGray10001,
+                                          borderRadius:
+                                              BorderRadius.circular(55.h),
+                                          border: Border.all(
+                                            color: theme.colorScheme.primary,
+                                            width: 4.h,
+                                            strokeAlign: strokeAlignOutside,
+                                          ),
+                                        ),
+                                        child: ClipOval(
+                                          child: Image.network(
+                                            '${account!.imageUrl ?? ""}',
+                                            // Replace with your image URL
+                                            height: 110.adaptSize,
+                                            width: 110.adaptSize,
+                                            fit: BoxFit
+                                                .cover, // You can adjust the fit based on your needs
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  child: ClipOval(
-                                    child: Image.network(
-                                      '${account!.imageUrl ?? ""}', // Replace with your image URL
-                                      height: 110.adaptSize,
-                                      width: 110.adaptSize,
-                                      fit: BoxFit.cover, // You can adjust the fit based on your needs
-                                    ),
-                                  ),
-                                ),
-                              ),
                                   ]))
                         ])))));
   }

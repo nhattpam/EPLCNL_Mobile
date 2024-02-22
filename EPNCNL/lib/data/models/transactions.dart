@@ -10,13 +10,13 @@ class Transaction {
 
   Transaction(
       {this.id,
-        this.paymentMethodId,
-        this.amount,
-        this.status,
-        this.transactionDate,
-        this.learnerId,
-        this.courseId,
-        this.refundStatus});
+      this.paymentMethodId,
+      this.amount,
+      this.status,
+      this.transactionDate,
+      this.learnerId,
+      this.courseId,
+      this.refundStatus});
 
   Transaction.fromJson(Map<String, dynamic> json) {
     id = json['id'];

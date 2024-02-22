@@ -10,13 +10,13 @@ class Question {
 
   Question(
       {this.id,
-        this.questionText,
-        this.questionImageUrl,
-        this.questionAudioUrl,
-        this.defaultGrade,
-        this.createdDate,
-        this.updatedDate,
-        this.quizId});
+      this.questionText,
+      this.questionImageUrl,
+      this.questionAudioUrl,
+      this.defaultGrade,
+      this.createdDate,
+      this.updatedDate,
+      this.quizId});
 
   Question.fromJson(Map<String, dynamic> json) {
     id = json['id'];

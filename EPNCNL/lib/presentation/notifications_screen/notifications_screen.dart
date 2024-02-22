@@ -7,12 +7,13 @@ import '../notifications_screen/widgets/playlist_item_widget.dart';
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({Key? key})
       : super(
-    key: key,
-  );
+          key: key,
+        );
 
   @override
   NotificationsScreenState createState() => NotificationsScreenState();
 }
+
 class NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {

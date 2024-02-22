@@ -65,48 +65,51 @@ class CoursesListScreenState extends State<CoursesListScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0.0,
-            toolbarHeight: 65,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Container(
-                margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                width: 300,
-                height: 100, // Add margin
-                child: Text(
-                  'Online Courses',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 25,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0.0,
+        toolbarHeight: 65,
+        flexibleSpace: FlexibleSpaceBar(
+          title: Container(
+            margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+            width: 300,
+            height: 100, // Add margin
+            child: Text(
+              'Online Courses',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 25,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Container(
-                width: double.maxFinite,
-                padding: EdgeInsets.symmetric(horizontal: 34.h),
-                child:
+        ),
+      ),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Container(
+            width: double.maxFinite,
+            padding: EdgeInsets.symmetric(horizontal: 34.h),
+            child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  SizedBox(height: 16.v),
-                  CustomSearchView(
-                    controller: searchController, hintText: "Search for....", context: context,),
-                  SizedBox(height: 25.v),
-                  _buildCategory(context),
-                  SizedBox(height: 15.v),
-                  _buildHeading(context),
-                  SizedBox(height: 19.v),
-                  _buildProductCard(context),
-                  SizedBox(height: 16.v),
-                ])),
-          ),
-        ));
+              SizedBox(height: 16.v),
+              CustomSearchView(
+                controller: searchController,
+                hintText: "Search for....",
+                context: context,
+              ),
+              SizedBox(height: 25.v),
+              _buildCategory(context),
+              SizedBox(height: 15.v),
+              _buildHeading(context),
+              SizedBox(height: 19.v),
+              _buildProductCard(context),
+              SizedBox(height: 16.v),
+            ])),
+      ),
+    ));
   }
 
   /// Section Widget
@@ -126,7 +129,7 @@ class CoursesListScreenState extends State<CoursesListScreen> {
               margin: EdgeInsets.only(left: 10.h),
               buttonStyle: CustomButtonStyles.fillOnPrimaryContainerTL24,
               buttonTextStyle:
-              CustomTextStyles.titleSmallBluegray900ExtraBold15,
+                  CustomTextStyles.titleSmallBluegray900ExtraBold15,
               onPressed: () {
                 onTapTutors(context);
               }))

@@ -12,6 +12,7 @@ import '../../network/network.dart';
 class OTPScreen extends StatefulWidget {
   final EmailOTP myauth;
   final String email;
+
   const OTPScreen({Key? key, required this.myauth, required this.email})
       : super(
           key: key,
@@ -83,10 +84,10 @@ class OTPScreenState extends State<OTPScreen> {
         });
     if (!isResent) {
       if (await widget.myauth.verifyOTP(
-          otp: otp1Controller.text +
-              otp2Controller.text +
-              otp3Controller.text +
-              otp4Controller.text) ==
+              otp: otp1Controller.text +
+                  otp2Controller.text +
+                  otp3Controller.text +
+                  otp4Controller.text) ==
           true) {
         Network.activeAccount(widget.email);
         AwesomeDialog(
@@ -127,10 +128,10 @@ class OTPScreenState extends State<OTPScreen> {
     }
     if (isResent) {
       if (resend.verifyOTP(
-          otp: otp1Controller.text +
-              otp2Controller.text +
-              otp3Controller.text +
-              otp4Controller.text) ==
+              otp: otp1Controller.text +
+                  otp2Controller.text +
+                  otp3Controller.text +
+                  otp4Controller.text) ==
           true) {
         Network.activeAccount(widget.email);
         AwesomeDialog(
@@ -171,11 +172,11 @@ class OTPScreenState extends State<OTPScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
+
       ///Change color to circle logo # white
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -206,18 +207,17 @@ class OTPScreenState extends State<OTPScreen> {
             child: Column(
               children: [
                 Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: CustomImageView(
-                      imagePath: ImageConstant.imgImage1349x345,
-                      height: 349.v,
-                      width: 345.h,
-                      alignment: Alignment.center)
-                ),
+                    width: 200,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: CustomImageView(
+                        imagePath: ImageConstant.imgImage1349x345,
+                        height: 349.v,
+                        width: 345.h,
+                        alignment: Alignment.center)),
                 SizedBox(
                   height: 24,
                 ),
@@ -280,7 +280,7 @@ class OTPScreenState extends State<OTPScreen> {
                           },
                           style: ButtonStyle(
                             foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
+                                MaterialStateProperty.all<Color>(Colors.white),
                             backgroundColor: MaterialStateProperty.all<Color>(
                                 Color(0xFFFF9300)),
                             shape: MaterialStateProperty.all<
@@ -326,6 +326,7 @@ class OTPScreenState extends State<OTPScreen> {
     );
   }
 }
+
 class Otp extends StatelessWidget {
   const Otp({
     Key? key,
@@ -427,11 +428,11 @@ class _ResendCodeButtonState extends State<ResendCodeButton> {
       onPressed: _onResendCodeClick,
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.pressed)) {
-              return Color(0xff8e8e8e);
-            }
-            return Color(0xffff9300);
-          })),
+        if (states.contains(MaterialState.pressed)) {
+          return Color(0xff8e8e8e);
+        }
+        return Color(0xffff9300);
+      })),
       child: _timer == null
           ? Text('Resend Code')
           : Text('$_remainingSeconds seconds'),

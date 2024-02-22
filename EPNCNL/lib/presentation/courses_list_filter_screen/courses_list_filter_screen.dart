@@ -3,41 +3,38 @@ import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/courses_list_filter_screen/widgets/filter_result.dart';
-import 'package:meowlish/presentation/courses_list_screen/courses_list_screen.dart';
-import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 
 class CoursesListFilterScreen extends StatefulWidget {
   CoursesListFilterScreen({Key? key})
       : super(
-    key: key,
-  );
+          key: key,
+        );
 
   @override
   CoursesListFilterScreenState createState() => CoursesListFilterScreenState();
 }
+
 class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
   late List<Category> listCategory = [];
   final List<Category> _selectedItems = [];
   String cateId = '';
+
   @override
   void initState() {
     super.initState();
     loadCategories();
   }
 
-
-
-  void _itemChange(Category itemValue, bool isSelected){
+  void _itemChange(Category itemValue, bool isSelected) {
     setState(() {
-      if(isSelected){
+      if (isSelected) {
         _selectedItems.add(itemValue);
-      }else{
+      } else {
         _selectedItems.remove(itemValue);
       }
     });
   }
-
 
   void loadCategories() async {
     List<Category> loadedCategories = await Network.getCategories();
@@ -71,7 +68,7 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
             ),
           ),
         ),
-          backgroundColor: Colors.white,
+        backgroundColor: Colors.white,
         body: Container(
           width: double.maxFinite,
           child: Column(
@@ -87,12 +84,16 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
                       children: [
                         Text('Category'),
                         ListBody(
-                          children: listCategory.map((item) => CheckboxListTile(
-                            value: _selectedItems.contains(item),
-                            title: Text(item.description.toString()),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            onChanged: (isChecked) => _itemChange(item, isChecked!),
-                          )).toList(),
+                          children: listCategory
+                              .map((item) => CheckboxListTile(
+                                    value: _selectedItems.contains(item),
+                                    title: Text(item.description.toString()),
+                                    controlAffinity:
+                                        ListTileControlAffinity.leading,
+                                    onChanged: (isChecked) =>
+                                        _itemChange(item, isChecked!),
+                                  ))
+                              .toList(),
                         ),
                         Divider(),
                         // Text('Category'),
@@ -131,7 +132,6 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
 
   /// Section Widget
   Widget _buildApplyButton(BuildContext context) {
-
     return CustomElevatedButton(
       text: "Apply",
       margin: EdgeInsets.only(
@@ -142,7 +142,9 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => FilterResultScreen(category: _selectedItems)),
+          MaterialPageRoute(
+              builder: (context) =>
+                  FilterResultScreen(category: _selectedItems)),
         );
       },
     );

@@ -24,6 +24,7 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
     super.initState();
     loadTutor();
   }
+
   void loadTutor() async {
     List<Tutor> loadedTutor = await Network.getTutor();
     setState(() {
@@ -75,14 +76,12 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 14.h),
+                            padding: EdgeInsets.symmetric(horizontal: 14.h),
                             child: Container(
                               decoration: BoxDecoration(
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.grey
-                                        .withOpacity(0.5),
+                                    color: Colors.grey.withOpacity(0.5),
                                     // Adjust the color and opacity as needed
                                     spreadRadius: 2,
                                     blurRadius: 5,
@@ -92,8 +91,10 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
                                 ],
                               ),
                               child: CustomSearchView(
-                                  controller: searchController,
-                                  hintText: "Search for..", context: context,),
+                                controller: searchController,
+                                hintText: "Search for..",
+                                context: context,
+                              ),
                             )),
                         SizedBox(height: 30.v),
                         _buildUserProfile(context),

@@ -1,4 +1,5 @@
 import 'categories.dart';
+
 class Course {
   String? id;
   String? name;
@@ -16,23 +17,23 @@ class Course {
   String? updatedDate;
   Category? category;
 
-  Course(
-      {this.id,
-        this.name,
-        this.description,
-        this.code,
-        this.imageUrl,
-        this.tutorId,
-        this.stockPrice,
-        this.isActive,
-        this.isOnlineClass,
-        this.rating,
-        this.categoryId,
-        this.tags,
-        this.createdDate,
-        this.updatedDate,
-        this.category,
-        });
+  Course({
+    this.id,
+    this.name,
+    this.description,
+    this.code,
+    this.imageUrl,
+    this.tutorId,
+    this.stockPrice,
+    this.isActive,
+    this.isOnlineClass,
+    this.rating,
+    this.categoryId,
+    this.tags,
+    this.createdDate,
+    this.updatedDate,
+    this.category,
+  });
 
   Course.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -76,10 +77,3 @@ class Course {
     return data;
   }
 }
-
-
-
-
-
-
-

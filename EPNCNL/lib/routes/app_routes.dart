@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/presentation/app_navigation_screen/app_navigation_screen.dart';
 import 'package:meowlish/presentation/category_screen/category_screen.dart';
 import 'package:meowlish/presentation/courses_list_filter_screen/courses_list_filter_screen.dart';
-import 'package:meowlish/presentation/courses_list_screen/courses_list_screen.dart';
 import 'package:meowlish/presentation/create_new_password_screen/create_new_password_screen.dart';
 import 'package:meowlish/presentation/e_receipt_edit_screen/e_receipt_edit_screen.dart';
 import 'package:meowlish/presentation/e_receipt_screen/e_receipt_screen.dart';

@@ -8,11 +8,11 @@ class LessonMaterial {
 
   LessonMaterial(
       {this.id,
-        this.name,
-        this.materialUrl,
-        this.lessonId,
-        this.createdDate,
-        this.updatedDate});
+      this.name,
+      this.materialUrl,
+      this.lessonId,
+      this.createdDate,
+      this.updatedDate});
 
   LessonMaterial.fromJson(Map<String, dynamic> json) {
     id = json['id'];

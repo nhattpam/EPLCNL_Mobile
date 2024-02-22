@@ -11,7 +11,7 @@ import 'package:meowlish/widgets/custom_search_view.dart';
 class FilterResultScreen extends StatefulWidget {
   final List<Category> category;
 
-  FilterResultScreen({Key? key, required this.category }) : super(key: key);
+  FilterResultScreen({Key? key, required this.category}) : super(key: key);
 
   @override
   FilterResultState createState() => FilterResultState();
@@ -23,6 +23,7 @@ class FilterResultState extends State<FilterResultScreen> {
   late List<Course> chosenCategory = [];
   FetchCourseList _userList = FetchCourseList();
   int found = 0;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +36,7 @@ class FilterResultState extends State<FilterResultScreen> {
       listCourse = loadedCourse;
     });
   }
+
   void loadResult() async {
     List<Course> loadedCourse = await _userList.getCourseListById();
     setState(() {
@@ -46,49 +48,52 @@ class FilterResultState extends State<FilterResultScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0.0,
-            toolbarHeight: 65,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Container(
-                margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                width: 300,
-                height: 100, // Add margin
-                child: Text(
-                  'Online Courses',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 25,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0.0,
+        toolbarHeight: 65,
+        flexibleSpace: FlexibleSpaceBar(
+          title: Container(
+            margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+            width: 300,
+            height: 100, // Add margin
+            child: Text(
+              'Online Courses',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 25,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Container(
-                width: double.maxFinite,
-                padding: EdgeInsets.symmetric(horizontal: 34.h),
-                child:
+        ),
+      ),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Container(
+            width: double.maxFinite,
+            padding: EdgeInsets.symmetric(horizontal: 34.h),
+            child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  SizedBox(height: 16.v),
-                  CustomSearchView(
-                    controller: searchController, hintText: "Search for....", context: context,),
-                  SizedBox(height: 25.v),
-                  _buildCategory(context),
-                  SizedBox(height: 15.v),
-                  _buildHeading(context),
-                  SizedBox(height: 19.v),
-                  buildResults(context),
-                  // _buildProductCard(context),
-                  SizedBox(height: 16.v),
-                ])),
-          ),
-        ));
+              SizedBox(height: 16.v),
+              CustomSearchView(
+                controller: searchController,
+                hintText: "Search for....",
+                context: context,
+              ),
+              SizedBox(height: 25.v),
+              _buildCategory(context),
+              SizedBox(height: 15.v),
+              _buildHeading(context),
+              SizedBox(height: 19.v),
+              buildResults(context),
+              // _buildProductCard(context),
+              SizedBox(height: 16.v),
+            ])),
+      ),
+    ));
   }
 
   /// Section Widget
@@ -108,7 +113,7 @@ class FilterResultState extends State<FilterResultScreen> {
               margin: EdgeInsets.only(left: 10.h),
               buttonStyle: CustomButtonStyles.fillOnPrimaryContainerTL24,
               buttonTextStyle:
-              CustomTextStyles.titleSmallBluegray900ExtraBold15,
+                  CustomTextStyles.titleSmallBluegray900ExtraBold15,
               onPressed: () {
                 onTapTutors(context);
               }))
@@ -135,7 +140,8 @@ class FilterResultState extends State<FilterResultScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        widget.category.length.toString() + " Founds".toUpperCase(),
+                        widget.category.length.toString() +
+                            " Founds".toUpperCase(),
                         style: CustomTextStyles.labelLargePrimary),
                   ]))
         ]);
@@ -154,7 +160,8 @@ class FilterResultState extends State<FilterResultScreen> {
 
   Widget buildResults(BuildContext context) {
     // Extracting category IDs
-    List<String> categoryIds = widget.category.map((category) => category.id.toString()).toList();
+    List<String> categoryIds =
+        widget.category.map((category) => category.id.toString()).toList();
     return FutureBuilder<List<Course>>(
       future: _userList.getCourseListById(query: categoryIds),
       builder: (context, snapshot) {
@@ -245,7 +252,8 @@ class FilterResultState extends State<FilterResultScreen> {
                               width: 32.h,
                               margin: EdgeInsets.only(top: 3.v),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Icon(
                                     Icons.star,

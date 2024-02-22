@@ -34,8 +34,8 @@ class AppNavigationScreen extends StatelessWidget {
                         _buildScreenTitle(
                           context,
                           screenTitle: "16_HOME",
-                          onTapScreenTitle: () => onTapScreenTitle(
-                              context, AppRoutes.homePage),
+                          onTapScreenTitle: () =>
+                              onTapScreenTitle(context, AppRoutes.homePage),
                         ),
                         _buildScreenTitle(
                           context,

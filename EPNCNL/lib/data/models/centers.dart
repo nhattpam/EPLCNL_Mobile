@@ -14,17 +14,17 @@ class Center {
 
   Center(
       {this.id,
-        this.accountId,
-        this.name,
-        this.description,
-        this.address,
-        this.email,
-        this.isActive,
-        this.staffId,
-        this.createdDate,
-        this.updatedDate,
-        this.account,
-        this.staff});
+      this.accountId,
+      this.name,
+      this.description,
+      this.address,
+      this.email,
+      this.isActive,
+      this.staffId,
+      this.createdDate,
+      this.updatedDate,
+      this.account,
+      this.staff});
 
   Center.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -38,7 +38,7 @@ class Center {
     createdDate = json['createdDate'];
     updatedDate = json['updatedDate'];
     account =
-    json['account'] != null ? new Account.fromJson(json['account']) : null;
+        json['account'] != null ? new Account.fromJson(json['account']) : null;
     staff = json['staff'] != null ? new Staff.fromJson(json['staff']) : null;
   }
 
@@ -86,23 +86,23 @@ class Account {
 
   Account(
       {this.id,
-        this.email,
-        this.password,
-        this.fullName,
-        this.phoneNumber,
-        this.imageUrl,
-        this.dateOfBirth,
-        this.gender,
-        this.address,
-        this.isActive,
-        this.isDeleted,
-        this.roleId,
-        this.createdDate,
-        this.createdBy,
-        this.updatedDate,
-        this.updatedBy,
-        this.role,
-        this.centers});
+      this.email,
+      this.password,
+      this.fullName,
+      this.phoneNumber,
+      this.imageUrl,
+      this.dateOfBirth,
+      this.gender,
+      this.address,
+      this.isActive,
+      this.isDeleted,
+      this.roleId,
+      this.createdDate,
+      this.createdBy,
+      this.updatedDate,
+      this.updatedBy,
+      this.role,
+      this.centers});
 
   Account.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -181,7 +181,7 @@ class Staff {
     id = json['id'];
     accountId = json['accountId'];
     account =
-    json['account'] != null ? new Account.fromJson(json['account']) : null;
+        json['account'] != null ? new Account.fromJson(json['account']) : null;
   }
 
   Map<String, dynamic> toJson() {

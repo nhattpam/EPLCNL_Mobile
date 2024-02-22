@@ -11,7 +11,7 @@ class Leaner {
     id = json['id'];
     accountId = json['accountId'];
     account =
-    json['account'] != null ? new Account.fromJson(json['account']) : null;
+        json['account'] != null ? new Account.fromJson(json['account']) : null;
   }
 
   Map<String, dynamic> toJson() {

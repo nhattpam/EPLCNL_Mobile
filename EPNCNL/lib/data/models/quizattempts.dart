@@ -7,10 +7,10 @@ class QuizAttempt {
 
   QuizAttempt(
       {this.id,
-        this.quizId,
-        this.learnerId,
-        this.attemptedDate,
-        this.totalGrade});
+      this.quizId,
+      this.learnerId,
+      this.attemptedDate,
+      this.totalGrade});
 
   QuizAttempt.fromJson(Map<String, dynamic> json) {
     id = json['id'];

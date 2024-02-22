@@ -230,9 +230,11 @@ class BorderRadiusStyle {
   static BorderRadius get circleBorder30 => BorderRadius.circular(
         30.h,
       );
+
   static BorderRadius get roundedBorder11 => BorderRadius.circular(
-    11.h,
-  );
+        11.h,
+      );
+
   // Custom borders
   static BorderRadius get customBorderLR14 => BorderRadius.horizontal(
         right: Radius.circular(14.h),

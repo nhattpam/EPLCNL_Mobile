@@ -8,10 +8,11 @@ class SurveyscreenThreeScreen extends StatefulWidget {
 
   @override
   SurveyscreenThreeScreenState createState() => SurveyscreenThreeScreenState();
-
 }
+
 class SurveyscreenThreeScreenState extends State<SurveyscreenThreeScreen> {
   bool isClicked = false;
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -42,8 +43,7 @@ class SurveyscreenThreeScreenState extends State<SurveyscreenThreeScreen> {
                               decoration: BoxDecoration(
                                   color: theme.colorScheme.primary,
                                   borderRadius: BorderRadius.circular(11.h))))
-                    ]))
-                ,
+                    ])),
               ),
             ),
             backgroundColor: Colors.white,
@@ -58,7 +58,6 @@ class SurveyscreenThreeScreenState extends State<SurveyscreenThreeScreen> {
                 ])),
             bottomNavigationBar: _buildNextButton(context)));
   }
-
 
   /// Section Widget
   Widget _buildForWorkEditText(BuildContext context) {
@@ -80,16 +79,14 @@ class SurveyscreenThreeScreenState extends State<SurveyscreenThreeScreen> {
               backgroundColor: isClicked
                   ? Colors.orange
                   : Colors.white // Set your button color
-          ),
+              ),
           child: Text(
             "For work",
             maxLines: 1,
             style: CustomTextStyles.headlineSmallJuaBlack900,
           ), // Set your button text
         ));
-
   }
-
 
   /// Section Widget
   Widget _buildNextButton(BuildContext context) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/learners.dart';
 import 'package:meowlish/widgets/custom_checkbox_button.dart';
@@ -29,6 +28,7 @@ class LoginScreenState extends State<LoginScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late Leaner? _leaner = Leaner();
+
   @override
   void initState() {
     super.initState();

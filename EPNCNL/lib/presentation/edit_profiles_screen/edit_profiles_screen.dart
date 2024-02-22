@@ -17,6 +17,7 @@ class EditProfilesScreen extends StatefulWidget {
   @override
   EditProfilesScreenState createState() => EditProfilesScreenState();
 }
+
 class EditProfilesScreenState extends State<EditProfilesScreen> {
   TextEditingController fullNameController = TextEditingController();
 
@@ -202,7 +203,6 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
       borderDecoration: TextFormFieldStyleHelper.outlineBlack,
     );
   }
-
 
   /// Section Widget
   Widget _buildPhoneNumber(BuildContext context) {

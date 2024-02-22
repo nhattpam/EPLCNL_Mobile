@@ -8,7 +8,7 @@ import 'core/app_export.dart';
 
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -33,7 +33,9 @@ class MyApp extends StatelessWidget {
                 theme: theme,
                 title: 'MeowLish',
                 debugShowCheckedModeBanner: false,
-                home: SessionManager().getUserId() != null ? HomeContainerScreen() : OpenscreenScreen(),
+                home: SessionManager().getUserId() != null
+                    ? HomeContainerScreen()
+                    : OpenscreenScreen(),
                 // initialRoute: AppRoutes.openscreenScreen,
                 routes: AppRoutes.routes,
               );

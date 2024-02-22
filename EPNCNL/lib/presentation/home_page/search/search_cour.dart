@@ -51,111 +51,110 @@ class SearchCourse extends SearchDelegate {
           }
           List<Course>? data = snapshot.data;
           return ListView.builder(
-              itemCount: data?.length,
-              itemBuilder: (context, index) {
-                String courseName = '${data?[index].name}';
-                String courseImage = '${data?[index].imageUrl}';
-                List<String> words =
-                    courseName.split(' '); // Split the text into words
-                int wordLimit = 5; // Set the word limit
-                String limitedText = words.take(wordLimit).join(' ');
-                return ListTile(
-                  title: Row(
-                    children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.deepPurpleAccent,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              3 * MediaQuery.of(context).size.width / 428),
-                          child: Image.network(
-                            courseImage,
-                            fit: BoxFit.cover,
-                          ),
+            itemCount: data?.length,
+            itemBuilder: (context, index) {
+              String courseName = '${data?[index].name}';
+              String courseImage = '${data?[index].imageUrl}';
+              List<String> words =
+                  courseName.split(' '); // Split the text into words
+              int wordLimit = 5; // Set the word limit
+              String limitedText = words.take(wordLimit).join(' ');
+              return ListTile(
+                title: Row(
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurpleAccent,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                            3 * MediaQuery.of(context).size.width / 428),
+                        child: Image.network(
+                          courseImage,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(limitedText,
-                                  style: CustomTextStyles.labelLargeOrangeA700),
-                              SizedBox(height: 10),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '\$${data?[index].stockPrice.toString()}',
-                                    style: CustomTextStyles.titleSmallPrimary,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(limitedText,
+                                style: CustomTextStyles.labelLargeOrangeA700),
+                            SizedBox(height: 10),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '\$${data?[index].stockPrice.toString()}',
+                                  style: CustomTextStyles.titleSmallPrimary,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 17.h),
+                                  child: Text(
+                                    "|",
+                                    style: CustomTextStyles.titleSmallBlack900,
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 17.h),
-                                    child: Text(
-                                      "|",
-                                      style: CustomTextStyles.titleSmallBlack900,
-                                    ),
+                                ),
+                                Container(
+                                  width: 32.h,
+                                  margin: EdgeInsets.only(
+                                    left: 16.h,
+                                    top: 3.v,
                                   ),
-                                  Container(
-                                    width: 32.h,
-                                    margin: EdgeInsets.only(
-                                      left: 16.h,
-                                      top: 3.v,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.star,
-                                          // Replace with the desired signal icon
-                                          size: 14.v,
-                                          color: Colors.yellow,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.star,
+                                        // Replace with the desired signal icon
+                                        size: 14.v,
+                                        color: Colors.yellow,
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 3.h),
+                                        child: Text(
+                                          // course.rating.toString(),
+                                          "${data?[index].rating.toString()}",
+                                          style: theme.textTheme.labelMedium,
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.only(left: 3.h),
-                                          child: Text(
-                                            // course.rating.toString(),
-                                            "${data?[index].rating.toString()}",
-                                            style: theme.textTheme.labelMedium,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 16.h),
-                                    child: Text(
-                                      "|",
-                                      style: CustomTextStyles.titleSmallBlack900,
-                                    ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 16.h),
+                                  child: Text(
+                                    "|",
+                                    style: CustomTextStyles.titleSmallBlack900,
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      left: 16.h,
-                                      top: 3.v,
-                                    ),
-                                    child: Text(
-                                      "7830 Enroll",
-                                      style: theme.textTheme.labelMedium,
-                                    ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: 16.h,
+                                    top: 3.v,
                                   ),
-                                ],
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                '${data?[index].description}',
-                                style: theme.textTheme.titleMedium,
-                              ),
-
-                            ]),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                                  child: Text(
+                                    "7830 Enroll",
+                                    style: theme.textTheme.labelMedium,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              '${data?[index].description}',
+                              style: theme.textTheme.titleMedium,
+                            ),
+                          ]),
+                    ),
+                  ],
+                ),
+              );
+            },
           );
         });
   }

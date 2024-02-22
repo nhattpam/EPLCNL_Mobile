@@ -17,11 +17,13 @@ class CategoryScreen extends StatefulWidget {
 class CategoryScreenState extends State<CategoryScreen> {
   TextEditingController searchController = TextEditingController();
   late List<Category> listCategory = [];
+
   @override
   void initState() {
     super.initState();
     loadCategories();
   }
+
   void loadCategories() async {
     List<Category> loadedCategories = await Network.getCategories();
     setState(() {
@@ -62,15 +64,16 @@ class CategoryScreenState extends State<CategoryScreen> {
                   padding: EdgeInsets.only(left: 34.h, top: 69.v, right: 34.h),
                   child: Column(children: [
                     CustomSearchView(
-                        controller: searchController,
-                        hintText: "Search for..",
-                        contentPadding:
-                            EdgeInsets.only(left: 20.h, top: 21.v, bottom: 21.v), context: context,),
+                      controller: searchController,
+                      hintText: "Search for..",
+                      contentPadding:
+                          EdgeInsets.only(left: 20.h, top: 21.v, bottom: 21.v),
+                      context: context,
+                    ),
                     SizedBox(height: 58.v),
                     Container(
                       // frame15ZFo (365:101)
-                      padding: EdgeInsets.fromLTRB(
-                          0 , 0 , 0 , 50 ),
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 50),
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: Color(0xffffffff),
@@ -82,7 +85,7 @@ class CategoryScreenState extends State<CategoryScreen> {
                             shrinkWrap: true,
                             // Ensure the GridView doesn't try to expand infinitely
                             gridDelegate:
-                            SliverGridDelegateWithFixedCrossAxisCount(
+                                SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               childAspectRatio: 3 / 2,
                             ),
@@ -97,13 +100,16 @@ class CategoryScreenState extends State<CategoryScreen> {
                                     children: [
                                       Container(
                                         // frame24poB (377:562)
-                                        margin: EdgeInsets.fromLTRB(
-                                            0 , 0 , 0 , 0 ),
+                                        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                         child: TextButton(
                                             onPressed: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => CoursesListScreen(categoryId: categorys.id)),
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CoursesListScreen(
+                                                            categoryId:
+                                                                categorys.id)),
                                               );
                                             },
                                             style: TextButton.styleFrom(
@@ -114,8 +120,7 @@ class CategoryScreenState extends State<CategoryScreen> {
                                               // You can adjust the elevation as needed
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(
-                                                    10 ),
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: Container(
                                                 width: 120,
@@ -123,12 +128,11 @@ class CategoryScreenState extends State<CategoryScreen> {
                                                 decoration: BoxDecoration(
                                                   color: Color(0x8ca7d3e5),
                                                   borderRadius:
-                                                  BorderRadius.circular(
-                                                      10 ),
+                                                      BorderRadius.circular(10),
                                                 ),
                                                 child: Column(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                                      MainAxisAlignment.center,
                                                   children: [
                                                     Text(
                                                       categoryName,
@@ -149,13 +153,16 @@ class CategoryScreenState extends State<CategoryScreen> {
                                     children: [
                                       Container(
                                         // frame24poB (377:562)
-                                        margin: EdgeInsets.fromLTRB(
-                                            0 , 0 , 0 , 0 ),
+                                        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                         child: TextButton(
                                             onPressed: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => CoursesListScreen(categoryId: categorys.id)),
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CoursesListScreen(
+                                                            categoryId:
+                                                                categorys.id)),
                                               );
                                             },
                                             style: TextButton.styleFrom(
@@ -166,8 +173,7 @@ class CategoryScreenState extends State<CategoryScreen> {
                                               // You can adjust the elevation as needed
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(
-                                                    10 ),
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: Container(
                                                 width: 120,
@@ -175,17 +181,15 @@ class CategoryScreenState extends State<CategoryScreen> {
                                                 decoration: BoxDecoration(
                                                   color: Color(0x7fb174ff),
                                                   borderRadius:
-                                                  BorderRadius.circular(
-                                                      10 ),
+                                                      BorderRadius.circular(10),
                                                 ),
                                                 child: Column(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                                      MainAxisAlignment.center,
                                                   children: [
                                                     Text(
                                                       categoryName,
                                                       maxLines: 1,
-
                                                     ),
                                                   ],
                                                 ),
@@ -202,13 +206,16 @@ class CategoryScreenState extends State<CategoryScreen> {
                                     children: [
                                       Container(
                                         // frame24poB (377:562)
-                                        margin: EdgeInsets.fromLTRB(
-                                            0 , 0 , 0 , 0 ),
+                                        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                         child: TextButton(
                                             onPressed: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => CoursesListScreen(categoryId: categorys.id)),
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CoursesListScreen(
+                                                            categoryId:
+                                                                categorys.id)),
                                               );
                                             },
                                             style: TextButton.styleFrom(
@@ -219,8 +226,7 @@ class CategoryScreenState extends State<CategoryScreen> {
                                               // You can adjust the elevation as needed
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(
-                                                    10 ),
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: Container(
                                                 width: 120,
@@ -228,12 +234,11 @@ class CategoryScreenState extends State<CategoryScreen> {
                                                 decoration: BoxDecoration(
                                                   color: Color(0x7ff08585),
                                                   borderRadius:
-                                                  BorderRadius.circular(
-                                                      10 ),
+                                                      BorderRadius.circular(10),
                                                 ),
                                                 child: Column(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                                      MainAxisAlignment.center,
                                                   children: [
                                                     Text(
                                                       categoryName,
@@ -254,13 +259,16 @@ class CategoryScreenState extends State<CategoryScreen> {
                                     children: [
                                       Container(
                                         // frame24poB (377:562)
-                                        margin: EdgeInsets.fromLTRB(
-                                            0 , 0 , 0 , 0 ),
+                                        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                         child: TextButton(
                                             onPressed: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => CoursesListScreen(categoryId: categorys.id)),
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CoursesListScreen(
+                                                            categoryId:
+                                                                categorys.id)),
                                               );
                                             },
                                             style: TextButton.styleFrom(
@@ -271,8 +279,7 @@ class CategoryScreenState extends State<CategoryScreen> {
                                               // You can adjust the elevation as needed
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(
-                                                    10 ),
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: Container(
                                                 width: 120,
@@ -280,12 +287,11 @@ class CategoryScreenState extends State<CategoryScreen> {
                                                 decoration: BoxDecoration(
                                                   color: Color(0x7ffff490),
                                                   borderRadius:
-                                                  BorderRadius.circular(
-                                                      10 ),
+                                                      BorderRadius.circular(10),
                                                 ),
                                                 child: Column(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                                      MainAxisAlignment.center,
                                                   children: [
                                                     Text(
                                                       categoryName,
@@ -306,13 +312,16 @@ class CategoryScreenState extends State<CategoryScreen> {
                                     children: [
                                       Container(
                                         // frame24poB (377:562)
-                                        margin: EdgeInsets.fromLTRB(
-                                            0 , 0 , 0 , 0 ),
+                                        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                         child: TextButton(
                                             onPressed: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => CoursesListScreen(categoryId: categorys.id)),
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CoursesListScreen(
+                                                            categoryId:
+                                                                categorys.id)),
                                               );
                                             },
                                             style: TextButton.styleFrom(
@@ -323,8 +332,7 @@ class CategoryScreenState extends State<CategoryScreen> {
                                               // You can adjust the elevation as needed
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(
-                                                    10 ),
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: Container(
                                                 width: 120,
@@ -332,12 +340,11 @@ class CategoryScreenState extends State<CategoryScreen> {
                                                 decoration: BoxDecoration(
                                                   color: Color(0x7f7efa99),
                                                   borderRadius:
-                                                  BorderRadius.circular(
-                                                      10 ),
+                                                      BorderRadius.circular(10),
                                                 ),
                                                 child: Column(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                                      MainAxisAlignment.center,
                                                   children: [
                                                     Text(
                                                       categoryName,
@@ -358,13 +365,16 @@ class CategoryScreenState extends State<CategoryScreen> {
                                     children: [
                                       Container(
                                         // frame24poB (377:562)
-                                        margin: EdgeInsets.fromLTRB(
-                                            0 , 0 , 0 , 0 ),
+                                        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                         child: TextButton(
                                             onPressed: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => CoursesListScreen(categoryId: categorys.id)),
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CoursesListScreen(
+                                                            categoryId:
+                                                                categorys.id)),
                                               );
                                             },
                                             style: TextButton.styleFrom(
@@ -375,8 +385,7 @@ class CategoryScreenState extends State<CategoryScreen> {
                                               // You can adjust the elevation as needed
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(
-                                                    10 ),
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: Container(
                                                 width: 120,
@@ -384,12 +393,11 @@ class CategoryScreenState extends State<CategoryScreen> {
                                                 decoration: BoxDecoration(
                                                   color: Color(0x7f788cf8),
                                                   borderRadius:
-                                                  BorderRadius.circular(
-                                                      10 ),
+                                                      BorderRadius.circular(10),
                                                 ),
                                                 child: Column(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                                      MainAxisAlignment.center,
                                                   children: [
                                                     Text(
                                                       categoryName,
@@ -410,13 +418,16 @@ class CategoryScreenState extends State<CategoryScreen> {
                                     children: [
                                       Container(
                                         // frame24poB (377:562)
-                                        margin: EdgeInsets.fromLTRB(
-                                            0 , 0 , 0 , 0 ),
+                                        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                         child: TextButton(
                                             onPressed: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => CoursesListScreen(categoryId: categorys.id)),
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CoursesListScreen(
+                                                            categoryId:
+                                                                categorys.id)),
                                               );
                                             },
                                             style: TextButton.styleFrom(
@@ -427,8 +438,7 @@ class CategoryScreenState extends State<CategoryScreen> {
                                               // You can adjust the elevation as needed
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(
-                                                    10 ),
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: Container(
                                                 width: 120,
@@ -436,12 +446,11 @@ class CategoryScreenState extends State<CategoryScreen> {
                                                 decoration: BoxDecoration(
                                                   color: Color(0x7ffa94f0),
                                                   borderRadius:
-                                                  BorderRadius.circular(
-                                                      10 ),
+                                                      BorderRadius.circular(10),
                                                 ),
                                                 child: Column(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                                      MainAxisAlignment.center,
                                                   children: [
                                                     Text(
                                                       categoryName,
@@ -462,13 +471,16 @@ class CategoryScreenState extends State<CategoryScreen> {
                                     children: [
                                       Container(
                                         // frame24poB (377:562)
-                                        margin: EdgeInsets.fromLTRB(
-                                            0 , 0 , 0 , 0 ),
+                                        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                         child: TextButton(
                                             onPressed: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => CoursesListScreen(categoryId: categorys.id)),
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CoursesListScreen(
+                                                            categoryId:
+                                                                categorys.id)),
                                               );
                                             },
                                             style: TextButton.styleFrom(
@@ -479,8 +491,7 @@ class CategoryScreenState extends State<CategoryScreen> {
                                               // You can adjust the elevation as needed
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(
-                                                    10 ),
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: Container(
                                                 width: 120,
@@ -488,12 +499,11 @@ class CategoryScreenState extends State<CategoryScreen> {
                                                 decoration: BoxDecoration(
                                                   color: Color(0x7f99d4ff),
                                                   borderRadius:
-                                                  BorderRadius.circular(
-                                                      10 ),
+                                                      BorderRadius.circular(10),
                                                 ),
                                                 child: Column(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                                      MainAxisAlignment.center,
                                                   children: [
                                                     Text(
                                                       categoryName,
@@ -513,13 +523,16 @@ class CategoryScreenState extends State<CategoryScreen> {
                                   children: [
                                     Container(
                                       // frame24poB (377:562)
-                                      margin: EdgeInsets.fromLTRB(
-                                          0 , 0 , 0 , 0 ),
+                                      margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                       child: TextButton(
                                           onPressed: () {
                                             Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => CoursesListScreen(categoryId: categorys.id)),
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CoursesListScreen(
+                                                          categoryId:
+                                                              categorys.id)),
                                             );
                                           },
                                           style: TextButton.styleFrom(
@@ -530,7 +543,7 @@ class CategoryScreenState extends State<CategoryScreen> {
                                             // You can adjust the elevation as needed
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
-                                              BorderRadius.circular(10 ),
+                                                  BorderRadius.circular(10),
                                             ),
                                             child: Container(
                                               width: 120,
@@ -538,12 +551,11 @@ class CategoryScreenState extends State<CategoryScreen> {
                                               decoration: BoxDecoration(
                                                 color: Color(0x7ff08585),
                                                 borderRadius:
-                                                BorderRadius.circular(
-                                                    10 ),
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: Column(
                                                 mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                                    MainAxisAlignment.center,
                                                 children: [
                                                   Text(
                                                     categoryName,
@@ -560,9 +572,7 @@ class CategoryScreenState extends State<CategoryScreen> {
                             }),
                       ),
                     ),
-
                   ])),
             )));
   }
-
 }

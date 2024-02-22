@@ -8,11 +8,11 @@ class Feedback {
 
   Feedback(
       {this.id,
-        this.feedbackContent,
-        this.imageUrl,
-        this.createdDate,
-        this.learnerId,
-        this.courseId});
+      this.feedbackContent,
+      this.imageUrl,
+      this.createdDate,
+      this.learnerId,
+      this.courseId});
 
   Feedback.fromJson(Map<String, dynamic> json) {
     id = json['id'];

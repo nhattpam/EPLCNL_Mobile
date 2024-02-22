@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+
 import 'package:http/http.dart' as http;
+
 import '../../../data/models/courses.dart';
 
-class FetchCourseList{
+class FetchCourseList {
   Future<List<Course>> getCourseList({String? query}) async {
     var data = [];
     List<Course> results = [];
@@ -21,7 +22,9 @@ class FetchCourseList{
                 element.name!.toLowerCase().contains(query.toLowerCase());
 
             final descriptionMatches = element.description != null &&
-                element.description!.toLowerCase().contains(query.toLowerCase());
+                element.description!
+                    .toLowerCase()
+                    .contains(query.toLowerCase());
 
             return courseNameMatches || descriptionMatches;
           }).toList();
@@ -34,6 +37,7 @@ class FetchCourseList{
     }
     return results;
   }
+
   Future<List<Course>> getCourseListById({List<String>? query}) async {
     var data = [];
     List<Course> results = [];
@@ -49,10 +53,10 @@ class FetchCourseList{
           var response = await http.get(url);
           if (response.statusCode == 200) {
             data = json.decode(response.body);
-            if(data.isEmpty){
+            if (data.isEmpty) {
               print('');
-            }else{
-            results.addAll(data.map((e) => Course.fromJson(e)));
+            } else {
+              results.addAll(data.map((e) => Course.fromJson(e)));
             }
           } else {
             print("fetch error");
@@ -80,5 +84,4 @@ class FetchCourseList{
     }
     return results;
   }
-
 }

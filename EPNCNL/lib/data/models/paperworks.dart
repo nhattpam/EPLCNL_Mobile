@@ -8,11 +8,11 @@ class PaperWork {
 
   PaperWork(
       {this.id,
-        this.name,
-        this.description,
-        this.paperWorkUrl,
-        this.paperWorkTypeId,
-        this.tutorId});
+      this.name,
+      this.description,
+      this.paperWorkUrl,
+      this.paperWorkTypeId,
+      this.tutorId});
 
   PaperWork.fromJson(Map<String, dynamic> json) {
     id = json['id'];

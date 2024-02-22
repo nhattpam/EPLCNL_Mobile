@@ -6,10 +6,10 @@ import 'package:meowlish/widgets/custom_elevated_button.dart';
 class SurveyscreenTwoScreen extends StatefulWidget {
   const SurveyscreenTwoScreen({Key? key}) : super(key: key);
 
-
   @override
   SurveyscreenTwoScreenState createState() => SurveyscreenTwoScreenState();
 }
+
 class SurveyscreenTwoScreenState extends State<SurveyscreenTwoScreen> {
   bool isClicked = false;
 
@@ -43,15 +43,15 @@ class SurveyscreenTwoScreenState extends State<SurveyscreenTwoScreen> {
                               decoration: BoxDecoration(
                                   color: theme.colorScheme.primary,
                                   borderRadius: BorderRadius.circular(11.h))))
-                    ]))
-                ,
+                    ])),
               ),
             ),
             backgroundColor: Colors.white,
             body: SingleChildScrollView(
               child: Container(
                   width: double.maxFinite,
-                  padding: EdgeInsets.symmetric(horizontal: 19.h, vertical: 45.v),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 19.h, vertical: 45.v),
                   child: Column(children: [
                     Text("What are your level ?",
                         style: CustomTextStyles.headlineSmallJuaBlack900),
@@ -61,7 +61,6 @@ class SurveyscreenTwoScreenState extends State<SurveyscreenTwoScreen> {
             ),
             bottomNavigationBar: _buildNext(context)));
   }
-
 
   /// Section Widget
   Widget _buildAbsoluteNew(BuildContext context) {
@@ -83,14 +82,13 @@ class SurveyscreenTwoScreenState extends State<SurveyscreenTwoScreen> {
               backgroundColor: isClicked
                   ? Colors.orange
                   : Colors.white // Set your button color
-          ),
+              ),
           child: Text(
             "I am absolute new",
             maxLines: 1,
             style: CustomTextStyles.headlineSmallJuaBlack900,
           ), // Set your button text
         ));
-
   }
 
   /// Section Widget

@@ -13,18 +13,17 @@ import '../single_course_details_tab_container_screen/single_course_details_tab_
 
 class PaymentMethodsScreen extends StatefulWidget {
   final String courseID;
+
   const PaymentMethodsScreen({Key? key, required this.courseID})
       : super(
-    key: key,
-  );
+          key: key,
+        );
 
   @override
-  PaymentMethodsScreenState createState() =>
-      PaymentMethodsScreenState();
+  PaymentMethodsScreenState createState() => PaymentMethodsScreenState();
 }
 
-class PaymentMethodsScreenState
-    extends State<PaymentMethodsScreen> {
+class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   late Course chosenCourse = Course();
 
   late String? transactionId = "";
@@ -90,10 +89,7 @@ class PaymentMethodsScreenState
         backgroundColor: Colors.white,
         body: Container(
           width: double.maxFinite,
-          padding: EdgeInsets.symmetric(
-              horizontal: 31.h,
-              vertical: 5.v
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 31.h, vertical: 5.v),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -214,7 +210,9 @@ class PaymentMethodsScreenState
 
   Future<String?> _createTransaction() async {
     try {
-      transactionId = await Network.createTransaction(courseId: widget.courseID, amount: chosenCourse.stockPrice!.toDouble() * 24000);
+      transactionId = await Network.createTransaction(
+          courseId: widget.courseID,
+          amount: chosenCourse.stockPrice!.toDouble() * 24000);
       // orderId now contains the order ID returned from the API
       print('Transaction ID pro : $transactionId');
       return transactionId;
@@ -237,7 +235,8 @@ class PaymentMethodsScreenState
           });
 
           try {
-            Transaction transaction = await Network.getTransactionByTransactionId(transactionId);
+            Transaction transaction =
+                await Network.getTransactionByTransactionId(transactionId);
 
             // Start the periodic timer to check transaction status every 5 seconds
             _timer = Timer.periodic(Duration(seconds: 5), (timer) {
@@ -283,14 +282,15 @@ class PaymentMethodsScreenState
         left: 39.h,
         right: 39.h,
         bottom: 53.v,
-      ), text: isLoading ? "Processing..." : "Pay",
+      ),
+      text: isLoading ? "Processing..." : "Pay",
     );
   }
 
-
   Future<void> _checkTransactionStatus() async {
     try {
-      Transaction transaction = await Network.getTransactionByTransactionId(transactionId);
+      Transaction transaction =
+          await Network.getTransactionByTransactionId(transactionId);
 
       // Status is "DONE", proceed with payment
       if (transaction.status == "DONE") {
@@ -304,8 +304,7 @@ class PaymentMethodsScreenState
             courseId: chosenCourse.id,
             status: "0",
             enrolledDate: transaction.transactionDate,
-            totalGrade: 0
-        );
+            totalGrade: 0);
         await Network.createEnrollment(enrollment);
         Navigator.push(
           context,
@@ -316,9 +315,6 @@ class PaymentMethodsScreenState
             ),
           ),
         );
-
-
-
       } else {
         print("NOT DONE YET");
         // If status is not "DONE", show loading indicator or perform other actions
@@ -341,9 +337,4 @@ class PaymentMethodsScreenState
       });
     }
   }
-
-
-
-
-
 }

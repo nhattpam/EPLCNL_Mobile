@@ -97,10 +97,10 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
       setState(() {
         // Store the lessons for this module in the map
         moduleQuestionAnswerMap[questionId] = loadedQuestionAnswer;
-        _startCooldownTimer();
       });
     }
   }
+
 
   Future<void> loadAllQuestionAnswer() async {
     try {
@@ -112,6 +112,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
         }
       }
       // After all lessons are loaded, proceed with building the UI
+      _startCooldownTimer();
       setState(() {});
     } catch (e) {
       // Handle errors here

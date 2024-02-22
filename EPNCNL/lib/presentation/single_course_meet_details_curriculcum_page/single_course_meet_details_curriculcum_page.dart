@@ -4,10 +4,12 @@ import 'package:dio/dio.dart';
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_file/internet_file.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
+import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -372,9 +374,7 @@ class MultiSelect extends StatefulWidget {
 
 class _MultiSelectState extends State<MultiSelect> {
   List<ClassTopic> listClassTopic = [];
-  // List<LessonMaterial> listLessonMaterial = [];
   Map<String, List<LessonMaterial>> moduleLessonsMaterialMap = {};
-
   @override
   void initState(){
     super.initState();
@@ -387,8 +387,7 @@ class _MultiSelectState extends State<MultiSelect> {
     });
     loadLessonMaterial();
   }
-
-
+  
   Future<void> loadLessonMaterialByClassTopicId(String classtopicId) async {
     try {
       List<LessonMaterial> loadedLessonMaterial = await Network.getListLessonMaterialByClassTopicId(classtopicId);
@@ -483,7 +482,21 @@ class _MultiSelectState extends State<MultiSelect> {
                     for (int lessonIndex = 0; lessonIndex < (moduleLessonsMaterialMap[listClassTopic[index].id]?.length ?? 0); lessonIndex++)
                     downloadFile(moduleLessonsMaterialMap[listClassTopic[index].id]![lessonIndex].materialUrl.toString(),moduleLessonsMaterialMap[listClassTopic[index].id]![lessonIndex].name.toString());
                   },
-                  child: Text(item.name.toString()),
+                  child: Row(
+                    children: [
+                      Text(item.name.toString()),
+                      IconButton(
+                        onPressed: () {
+                          for (int lessonIndex = 0; lessonIndex < (moduleLessonsMaterialMap[listClassTopic[index].id]?.length ?? 0); lessonIndex++)
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => MaterialView(url: moduleLessonsMaterialMap[listClassTopic[index].id]![lessonIndex].materialUrl.toString())),
+                            );
+                            },
+                        icon: Icon(Icons.remove_red_eye_outlined),
+                      ),
+                    ],
+                  ),
                 );
               }).toList(),
             ),
@@ -491,6 +504,87 @@ class _MultiSelectState extends State<MultiSelect> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class MaterialView extends StatefulWidget {
+  final String url;
+  const MaterialView({super.key, required this.url});
+
+  @override
+  State<MaterialView> createState() => _MaterialViewState();
+}
+
+class _MaterialViewState extends State<MaterialView> {
+  late PdfControllerPinch pdfControllerPinch;
+  int totalPageCount= 0, currentPage = 1;
+  @override
+  void initState() {
+    openPdf();
+    super.initState();
+  }
+  void openPdf() {
+    final document =  PdfDocument.openData(InternetFile.get(widget.url));
+    pdfControllerPinch = PdfControllerPinch(document: document);
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'PDF Viewer',
+            style: TextStyle(
+                color:  Colors.white
+            ),
+          ),
+          backgroundColor: Colors.red,
+        ),
+        body: Column(
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('Total Pages: ${totalPageCount}'),
+                IconButton(
+                    onPressed: (){
+                      pdfControllerPinch.previousPage(duration: Duration(milliseconds: 500), curve: Curves.linear);
+                    },
+                    icon: Icon(
+                        Icons.arrow_back
+                    )
+                ),
+                Text('Current Page: ${currentPage}'),
+                IconButton(
+                    onPressed: (){
+                      pdfControllerPinch.nextPage(duration: Duration(milliseconds: 500), curve: Curves.linear);
+                    },
+                    icon: Icon(
+                        Icons.arrow_forward
+                    )
+                )
+              ],
+            ),
+            Expanded(child:
+            PdfViewPinch(
+              scrollDirection: Axis.vertical,
+              controller: pdfControllerPinch,
+              onDocumentLoaded: (doc){
+                setState(() {
+                  totalPageCount = doc.pagesCount;
+                });
+              },
+              onPageChanged: (page){
+                setState(() {
+                  currentPage = page;
+                });
+              },
+            )
+            )
+          ],
+        )
     );
   }
 }

@@ -48,7 +48,6 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
     super.initState();
     loadQuizByQuizId();
     loadQuestion();
-    _startCooldownTimer();
   }
 
   Future<void> _initializeVideoPlayer(String audioUrl) async {
@@ -94,6 +93,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
       setState(() {
         // Store the lessons for this module in the map
         moduleQuestionAnswerMap[questionId] = loadedQuestionAnswer;
+        _startCooldownTimer();
       });
     }
   }

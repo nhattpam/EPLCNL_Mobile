@@ -12,7 +12,6 @@ import '../../data/models/modules.dart';
 import '../../network/network.dart';
 import '../../widgets/custom_elevated_button.dart';
 
-final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
 class SingleCourseDetailsTabContainerScreen extends StatefulWidget {
   final String courseID;
@@ -106,6 +105,7 @@ class SingleCourseDetailsTabContainerScreenState
 
   /// Section Widget
   Widget _buildArrowDown(BuildContext context) {
+    String? imageUrl = chosenCourse.imageUrl;
     return SizedBox(
       height: 595.v,
       width: double.maxFinite,
@@ -128,16 +128,18 @@ class SingleCourseDetailsTabContainerScreenState
                   backgroundColor: Colors.white.withOpacity(0.1),
                 ),
               ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Image.network(
-                  "${chosenCourse.imageUrl}",
-                  // Replace with the actual URL of your image
-                  height: 595.v,
-                  fit: BoxFit.cover, // Adjust the fit based on your needs
-                ),
-              ),
+              if(imageUrl != null && imageUrl.isNotEmpty)
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Image.network(
+                    "${chosenCourse.imageUrl}",
+                    // Replace with the actual URL of your image
+                    height: 595.v,
+                    fit: BoxFit.cover, // Adjust the fit based on your needs
+                  ),
+                )
+              else Center(child: CircularProgressIndicator())
             ],
           ),
           Align(

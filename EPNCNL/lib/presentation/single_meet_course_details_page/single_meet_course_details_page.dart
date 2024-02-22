@@ -84,8 +84,7 @@ class SingleMeetCourseDetailsPageState
 
   @override
   Widget build(BuildContext context) {
-    bool isEnrolled =
-        enrollment.learnerId != null && enrollment.courseId != null;
+    bool isEnrolled = enrollment.learnerId != null && enrollment.courseId != null;
     return SafeArea(
         child: Scaffold(
             body: SizedBox(
@@ -296,33 +295,42 @@ class SingleMeetCourseDetailsPageState
                           ]))
                 ])))));
   }
-
-  /// Section Widget
   Widget _buildWilliamSCunningham(BuildContext context) {
-    return Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-      CustomImageView(
-          imagePath: "${chosenTutor.account?.imageUrl ?? ""}",
-          fit: BoxFit.cover,
-          height: 54.adaptSize,
-          width: 54.adaptSize,
-          radius: BorderRadius.circular(27.h)),
-      Padding(
+    String? imageUrl = chosenTutor.account?.imageUrl;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        if (imageUrl != null && imageUrl.isNotEmpty) // Check if imageUrl is not null or empty
+          CustomImageView(
+            imagePath: imageUrl,
+            fit: BoxFit.cover,
+            height: 54.adaptSize,
+            width: 54.adaptSize,
+            radius: BorderRadius.circular(27.h),
+          )
+        else Center(child: CircularProgressIndicator()),
+        Padding(
           padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text("${chosenTutor.account?.fullName ?? ""}",
-                style: CustomTextStyles.titleMedium17),
-            Text("${chosenCourse.category?.description ?? ""}",
-                style: theme.textTheme.labelLarge)
-          ])),
-      Spacer(),
-      Icon(
-        Icons.chat_outlined, // Replace with the desired icon
-        size: 17.0, // Adjust the size as needed
-        color: Colors.black, // Adjust the color as needed
-      ),
-    ]);
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("${chosenTutor.account?.fullName ?? ""}",
+                  style: CustomTextStyles.titleMedium17),
+              Text("${chosenCourse.category?.description ?? ""}",
+                  style: theme.textTheme.labelLarge)
+            ],
+          ),
+        ),
+        Spacer(),
+        Icon(
+          Icons.chat_outlined,
+          size: 17.0,
+          color: Colors.black,
+        ),
+      ],
+    );
   }
+
 
   /// Navigates to the indoxChatsMessagesScreen when the action is triggered.
   onTapImgSettings(BuildContext context) {

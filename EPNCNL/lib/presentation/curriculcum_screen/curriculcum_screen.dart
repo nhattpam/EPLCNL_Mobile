@@ -329,20 +329,14 @@ class CurriculumScreenState extends State<CurriculumScreen> {
           ),
           // Only show the assignments if the module is not minimized
           if (!(minimizedAssignmentsMap[module.id.toString()] ?? false))
-            for (int assignmentIndex = 0;
-                assignmentIndex <
-                    (moduleAssignmentMap[module.id.toString()]?.length ?? 0);
-                assignmentIndex++)
+            for (int assignmentIndex = 0; assignmentIndex < (moduleAssignmentMap[module.id.toString()]?.length ?? 0); assignmentIndex++)
               TextButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => DoingAssignmentScreen(
-                            assignmentID: moduleAssignmentMap[
-                                    module.id.toString()]![assignmentIndex]
-                                .id
-                                .toString(),
+                            assignmentID: moduleAssignmentMap[module.id.toString()]![assignmentIndex].id.toString(),
                             cooldownTime: Duration(
                                 minutes: moduleAssignmentMap[
                                         module.id.toString()]![assignmentIndex]
@@ -350,8 +344,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                   );
                 },
                 child: Text(
-                    moduleAssignmentMap[module.id.toString()]![assignmentIndex]
-                        .questionText
+                    moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText
                         .toString(),
                     style: TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.black)),

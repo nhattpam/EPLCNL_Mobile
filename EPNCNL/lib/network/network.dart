@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:meowlish/data/models/accountforums.dart';
 import 'package:meowlish/data/models/accounts.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/classtopics.dart';
 import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/forums.dart';
 import 'package:meowlish/data/models/learners.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/data/models/lessons.dart';
@@ -1204,6 +1206,63 @@ class Network {
 
         return enrollmentListJson
             .map((json) => Enrollment.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+////Forum
+  static Future<List<Forum>> getForumByLearner() async {
+    String lid = SessionManager().getLearnerId().toString();
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/learners/$lid/forums'; // Replace with your API URL
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> forumListJson = jsonDecode(response.body);
+
+        return forumListJson
+            .map((json) => Forum.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+////Account-Forum
+  static Future<List<AccountForum>> getAccountForumByForum(String forumId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/forums/$forumId/account-forums'; // Replace with your API URL
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> accountforumListJson = jsonDecode(response.body);
+
+        return accountforumListJson
+            .map((json) => AccountForum.fromJson(json))
             .toList();
       } else {
         // If the request fails, throw an exception or return null

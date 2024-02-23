@@ -37,18 +37,14 @@ class FetchCourseList {
     }
     return results;
   }
-
-  Future<List<Course>> getCourseListById({List<String>? query}) async {
+  Future<List<Course>> getCourseListById({List<String>? query, int? minPrice, int? maxPrice}) async {
     var data = [];
     List<Course> results = [];
     String urlList = 'https://nhatpmse.twentytwo.asia/api/categories/';
 
-    // Check if query is provided and construct the URL accordingly
     if (query != null && query.isNotEmpty) {
-      // Construct URL for each query
       for (var courseId in query) {
         var url = Uri.parse('$urlList$courseId/courses');
-        print(url); // Print the URL for debugging
         try {
           var response = await http.get(url);
           if (response.statusCode == 200) {
@@ -56,7 +52,10 @@ class FetchCourseList {
             if (data.isEmpty) {
               print('');
             } else {
-              results.addAll(data.map((e) => Course.fromJson(e)));
+              results.addAll(data.map((e) => Course.fromJson(e)).where((course) {
+                int price = course.stockPrice as int; // Assuming 'price' is a property of the Course class
+                return (minPrice == null || price >= minPrice) && (maxPrice == null || price <= maxPrice);
+              }));
             }
           } else {
             print("fetch error");
@@ -66,15 +65,17 @@ class FetchCourseList {
         }
       }
     } else {
-      // If no query is provided, fetch all courses
       urlList += 'courses';
       var url = Uri.parse(urlList);
-      print(url); // Print the URL for debugging
+      print(url);
       try {
         var response = await http.get(url);
         if (response.statusCode == 200) {
           data = json.decode(response.body);
-          results = data.map((e) => Course.fromJson(e)).toList();
+          results = data.map((e) => Course.fromJson(e)).where((course) {
+            int price = course.stockPrice as int; // Assuming 'price' is a property of the Course class
+            return (minPrice == null || price >= minPrice) && (maxPrice == null || price <= maxPrice);
+          }).toList();
         } else {
           print("fetch error");
         }
@@ -84,4 +85,6 @@ class FetchCourseList {
     }
     return results;
   }
+
+
 }

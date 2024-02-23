@@ -211,6 +211,7 @@ class HomePageState extends State<HomePage> {
 
   /// Section Widget
   Widget _buildDDesignSection(BuildContext context) {
+    List<bool> isLoadingList = List.generate(listCategory.length, (index) => false);
     return SizedBox(
         height: 40,
         child: ListView.builder(
@@ -226,7 +227,9 @@ class HomePageState extends State<HomePage> {
                 },
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: Chip(
+                  child:  isLoadingList[index]
+                      ? CircularProgressIndicator() // Show loading indicator
+                      : Chip(
                     label: Text(categories.description.toString()),
                     backgroundColor: current == index
                         ? Color(0xFFFF9300)

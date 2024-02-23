@@ -5,6 +5,8 @@ import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/courses_list_filter_screen/widgets/filter_result.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 
+import '../../data/models/courses.dart';
+
 class CoursesListFilterScreen extends StatefulWidget {
   CoursesListFilterScreen({Key? key})
       : super(
@@ -17,13 +19,16 @@ class CoursesListFilterScreen extends StatefulWidget {
 
 class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
   late List<Category> listCategory = [];
+  late List<Course> listCourse = [];
   final List<Category> _selectedItems = [];
   String cateId = '';
-
+  RangeValues values = RangeValues(10, 200);
+  RangeLabels labels = RangeLabels('10\$', '200\$');
   @override
   void initState() {
     super.initState();
     loadCategories();
+    loadCourse();
   }
 
   void _itemChange(Category itemValue, bool isSelected) {
@@ -40,6 +45,13 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
     List<Category> loadedCategories = await Network.getCategories();
     setState(() {
       listCategory = loadedCategories;
+    });
+  }
+
+  void loadCourse() async {
+    List<Course> loadedCourse = await Network.getCourse();
+    setState(() {
+      listCourse = loadedCourse;
     });
   }
 
@@ -96,25 +108,19 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
                               .toList(),
                         ),
                         Divider(),
-                        // Text('Category'),
-                        // ListBody(
-                        //   children: listCategory.map((item) => CheckboxListTile(
-                        //     value: _selectedItems.contains(item),
-                        //     title: Text(item.description.toString()),
-                        //     controlAffinity: ListTileControlAffinity.leading,
-                        //     onChanged: (isChecked) => _itemChange(item, isChecked!),
-                        //   )).toList(),
-                        // ),
-                        // Divider(),
-                        // Text('Category'),
-                        // ListBody(
-                        //   children: listCategory.map((item) => CheckboxListTile(
-                        //     value: _selectedItems.contains(item),
-                        //     title: Text(item.description.toString()),
-                        //     controlAffinity: ListTileControlAffinity.leading,
-                        //     onChanged: (isChecked) => _itemChange(item, isChecked!),
-                        //   )).toList(),
-                        // ),
+                        Text('Price'),
+                        RangeSlider(
+                            min: 10,
+                            max: 200,
+                            values: values,
+                            divisions: 10,
+                            labels: labels,
+                            onChanged: (value){
+                              setState(() {
+                                values = value;
+                                labels = RangeLabels('${value.start.toInt().toString()}\$', '${value.end.toInt().toString()}\$');
+                              });
+                            }),
                         Divider(),
                         SizedBox(height: 12),
                         _buildApplyButton(context),
@@ -144,7 +150,7 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  FilterResultScreen(category: _selectedItems)),
+                  FilterResultScreen(category: _selectedItems, values: values,)),
         );
       },
     );

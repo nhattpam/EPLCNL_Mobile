@@ -10,8 +10,8 @@ import 'package:meowlish/widgets/custom_search_view.dart';
 // ignore_for_file: must_be_immutable
 class FilterResultScreen extends StatefulWidget {
   final List<Category> category;
-
-  FilterResultScreen({Key? key, required this.category}) : super(key: key);
+  final RangeValues values;
+  FilterResultScreen({Key? key, required this.category, required this.values}) : super(key: key);
 
   @override
   FilterResultState createState() => FilterResultState();
@@ -160,10 +160,10 @@ class FilterResultState extends State<FilterResultScreen> {
 
   Widget buildResults(BuildContext context) {
     // Extracting category IDs
-    List<String> categoryIds =
-        widget.category.map((category) => category.id.toString()).toList();
+    List<String> categoryIds = widget.category.map((category) => category.id.toString()).toList();
+    print(categoryIds);
     return FutureBuilder<List<Course>>(
-      future: _userList.getCourseListById(query: categoryIds),
+      future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt()),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Center(

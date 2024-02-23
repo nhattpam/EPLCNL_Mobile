@@ -20,7 +20,7 @@ class IndoxChatsMessagesScreen extends StatefulWidget {
 
 class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
   late List<AccountForum> listForum = [];
-
+  String chat = '';
   @override
   void initState() {
     loadAccountForumByForumId();
@@ -69,7 +69,7 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                   child: GroupedListView<AccountForum, DateTime>(
                 padding: EdgeInsets.all(8),
                 reverse: true,
-                order: GroupedListOrder.DESC,
+                order: GroupedListOrder.ASC,
                 elements: listForum,
                 groupBy: (message) => DateTime(2024),
                 groupHeaderBuilder: (AccountForum message) => SizedBox(
@@ -134,7 +134,7 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                               margin: EdgeInsets.only(bottom: 10),
                               child: Padding(
                                 padding: EdgeInsets.all(12),
-                                child: Text(message.message.toString()),
+                                child: Flexible(child: Text(message.message.toString())),
                               ),
                             ),
                           ],
@@ -165,9 +165,18 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.all(12),
                     hintText: 'Message',
-                    suffixIcon:
-                        Icon(Icons.send), // Icon you want to add as suffix
+                    suffixIcon: GestureDetector(
+                      onTap: (){
+                        Network.createAccountForum(forumId: widget.forumId, message: chat);
+                      },
+                        child: Icon(Icons.send)
+                    ), // Icon you want to add as suffix
                   ),
+                  onSubmitted: (text){
+                    setState(() {
+                      chat = text.toString();
+                    });
+                  },
                 ),
               ),
               SizedBox(height: 20)

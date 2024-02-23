@@ -160,8 +160,8 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                   margin: EdgeInsets.only(bottom: 21.v),
                   child: Image.network(
                     moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                        ? moduleAccountForumsMap[forums.id]!.last.tutor?.account?.imageUrl ??
-                        moduleAccountForumsMap[forums.id]!.last.learner?.account?.imageUrl ??
+                        ? moduleAccountForumsMap[forums.id]!.first.tutor?.account?.imageUrl ??
+                        moduleAccountForumsMap[forums.id]!.first.learner?.account?.imageUrl ??
                         ''
                         : '',
                     fit: BoxFit.cover,
@@ -182,7 +182,7 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                       ),
                         Text(
                           moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                              ? moduleAccountForumsMap[forums.id]!.last.message ?? ''
+                              ? moduleAccountForumsMap[forums.id]!.first.message ?? ''
                               : '',
                           style: theme.textTheme.labelLarge,
                         ),
@@ -222,7 +222,7 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                           alignment: Alignment.center,
                           child: Text(
                             moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                                ? DateFormat('HH:mm').format(DateTime.parse(moduleAccountForumsMap[forums.id]!.last.messagedDate ?? ''))
+                                ? DateFormat('HH:mm').format(DateTime.parse(moduleAccountForumsMap[forums.id]!.first.messagedDate ?? ''))
                                 : '',
                             style: CustomTextStyles.labelMediumGray700,
                           ),

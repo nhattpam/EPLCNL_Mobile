@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/presentation/my_course_ongoing_screen/my_course_ongoing_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 
 import '../../widgets/custom_search_view.dart';
@@ -112,6 +113,11 @@ class MyCourseCompletedPage extends StatelessWidget {
 
   /// Navigates to the myCourseOngoingScreen when the action is triggered.
   onTapOngoing(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.myCourseOngoingScreen);
+    Navigator.push(
+      context,
+      new MaterialPageRoute(
+        builder: (context) => new MyCourseOngoingScreen(),
+      ),
+    );
   }
 }

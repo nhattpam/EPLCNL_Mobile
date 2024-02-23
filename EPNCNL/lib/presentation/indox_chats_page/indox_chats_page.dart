@@ -154,18 +154,17 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
+
                   height: 50.adaptSize,
                   width: 50.adaptSize,
                   margin: EdgeInsets.only(bottom: 21.v),
-                  decoration: BoxDecoration(
-                    color: appTheme.black900,
-                    borderRadius: BorderRadius.circular(
-                      25.h,
-                    ),
-                    border: Border.all(
-                      color: theme.colorScheme.onPrimaryContainer,
-                      width: 2.h,
-                    ),
+                  child: Image.network(
+                    moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
+                        ? moduleAccountForumsMap[forums.id]!.last.tutor?.account?.imageUrl ??
+                        moduleAccountForumsMap[forums.id]!.last.learner?.account?.imageUrl ??
+                        ''
+                        : '',
+                    fit: BoxFit.cover,
                   ),
                 ),
                 Padding(
@@ -181,12 +180,10 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                         forums.course?.name ?? '',
                         style: theme.textTheme.titleMedium,
                       ),
-                      for (int accountforumIndex = 0; accountforumIndex <
-                          (moduleAccountForumsMap[forums.id]?.length ??
-                              0); accountforumIndex++)
                         Text(
-                          moduleAccountForumsMap[forums.id]![accountforumIndex]
-                              .message.toString(),
+                          moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
+                              ? moduleAccountForumsMap[forums.id]!.last.message ?? ''
+                              : '',
                           style: theme.textTheme.labelLarge,
                         ),
                     ],
@@ -221,11 +218,12 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                         ),
                       ),
                       SizedBox(height: 5.v),
-                      for (int accountforumIndex = 0; accountforumIndex < (moduleAccountForumsMap[forums.id]?.length ?? 0); accountforumIndex++)
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                            DateFormat('HH:mm').format(DateTime.parse(moduleAccountForumsMap[forums.id]![accountforumIndex].messagedDate ?? '')),
+                            moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
+                                ? DateFormat('HH:mm').format(DateTime.parse(moduleAccountForumsMap[forums.id]!.last.messagedDate ?? ''))
+                                : '',
                             style: CustomTextStyles.labelMediumGray700,
                           ),
                         ),

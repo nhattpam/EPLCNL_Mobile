@@ -1275,4 +1275,38 @@ class Network {
     }
   }
 
+  static Future<void> createAccountForum({
+    required String forumId,
+    required String message,
+  }) async {
+    final leanerId = SessionManager().getLearnerId() ?? 0;
+    final learnerData = {
+      "forumId": forumId,
+      "learnerId": leanerId,
+      "message": message,
+      "messageDate": DateTime.now().toString(),
+    };
+
+    final jsonData = jsonEncode(learnerData);
+
+    // Print the JSON data before making the API call
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/account-forums'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+    } else {
+      print('Create assignment failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
+    }
+  }
+
 }

@@ -8,6 +8,7 @@ import 'package:meowlish/presentation/home_page/carousel/landing.dart';
 import 'package:meowlish/presentation/notifications_screen/notifications_screen.dart';
 import 'package:meowlish/presentation/popular_courses_screen/popular_courses_screen.dart';
 import 'package:meowlish/presentation/single_mentor_details_page/single_mentor_details_page.dart';
+import 'package:meowlish/presentation/single_mentor_details_rating_tab_container_screen/single_mentor_details_rating_tab_container_screen.dart';
 import 'package:meowlish/presentation/top_mentors_screen/top_mentors_screen.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
@@ -259,7 +260,7 @@ class HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => SingleMentorDetailsPage(),
+                        builder: (context) => SingleMentorDetailsRatingTabContainerScreen(tutorID: tutors.id.toString()),
                   ));
                 },
                 child: SizedBox(

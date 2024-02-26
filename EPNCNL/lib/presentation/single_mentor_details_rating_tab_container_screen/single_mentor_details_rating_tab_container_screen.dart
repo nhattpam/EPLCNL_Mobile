@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/tutors.dart';
+import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/single_mentor_details_page/single_mentor_details_page.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_outlined_button.dart';
 
 class SingleMentorDetailsRatingTabContainerScreen extends StatefulWidget {
-  const SingleMentorDetailsRatingTabContainerScreen({Key? key})
+   final String tutorID;
+  const SingleMentorDetailsRatingTabContainerScreen({Key? key, required this.tutorID})
       : super(
           key: key,
         );
@@ -19,28 +22,62 @@ class SingleMentorDetailsRatingTabContainerScreenState
     extends State<SingleMentorDetailsRatingTabContainerScreen>
     with TickerProviderStateMixin {
   late TabController tabviewController;
-
+  late Tutor chosenTutor = Tutor();
   @override
   void initState() {
     super.initState();
+    loadTutorByTutorID();
     tabviewController = TabController(length: 2, vsync: this);
+  }
+  void loadTutorByTutorID() async {
+    try {
+      final tutor = await Network.getTutorByTutorID(widget.tutorID);
+      setState(() {
+        chosenTutor = tutor;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          toolbarHeight: 65,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              width: 300,
+              height: 100, // Add margin
+              child: Text(
+                'Tutor',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
         body: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
             child: SizedBox(
-              height: SizeUtils.height,
+              height: SizeUtils.height * 0.8,
               width: double.maxFinite,
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: [
                   Align(
-                    alignment: Alignment.center,
+                    alignment: Alignment.topCenter,
                     child: Container(
                       decoration: AppDecoration.fillYellow,
                       child: _buildUserProfileSection(context),
@@ -58,6 +95,8 @@ class SingleMentorDetailsRatingTabContainerScreenState
 
   /// Section Widget
   Widget _buildUserProfileSection(BuildContext context) {
+    String? tutorImageUrl = chosenTutor.account?.imageUrl;
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 34.h,
@@ -67,7 +106,6 @@ class SingleMentorDetailsRatingTabContainerScreenState
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(height: 44.v),
           CustomImageView(
             imagePath: ImageConstant.imgArrowDownBlueGray900,
             height: 20.v,
@@ -79,16 +117,16 @@ class SingleMentorDetailsRatingTabContainerScreenState
           Container(
             height: 120.adaptSize,
             width: 120.adaptSize,
-            decoration: BoxDecoration(
-              color: appTheme.black900,
-              borderRadius: BorderRadius.circular(
-                60.h,
-              ),
-            ),
+            child: tutorImageUrl != null && tutorImageUrl.isNotEmpty
+                ? Image.network(
+              tutorImageUrl,
+              fit: BoxFit.cover,
+            )
+                : Center(child: Container(child: CircularProgressIndicator())), // Placeholder widget when tutorImageUrl is empty or null
           ),
           SizedBox(height: 8.v),
           Text(
-            "Christopher J. Levine",
+            chosenTutor.account?.fullName ?? '',
             style: theme.textTheme.titleLarge,
           ),
           Text(

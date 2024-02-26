@@ -183,8 +183,6 @@ class AppRoutes {
     coursesListFilterScreen: (context) => CoursesListFilterScreen(),
     mentorsListScreen: (context) => MentorsListScreen(),
     notificationsScreen: (context) => NotificationsScreen(),
-    singleMentorDetailsRatingTabContainerScreen: (context) =>
-        SingleMentorDetailsRatingTabContainerScreen(),
     paymentMethods1Screen: (context) => PaymentMethods1Screen(),
     myCourseLessonsScreen: (context) => MyCourseLessonsScreen(),
     myCourseCertificateScreen: (context) => MyCourseCertificateScreen(),

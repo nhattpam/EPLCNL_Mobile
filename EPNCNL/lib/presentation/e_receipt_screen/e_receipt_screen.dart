@@ -1,18 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/transactions.dart';
+import 'package:meowlish/network/network.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_outlined_button.dart';
 
-class EReceiptScreen extends StatelessWidget {
-  const EReceiptScreen({Key? key})
-      : super(
-          key: key,
-        );
+import '../../data/models/accounts.dart';
+
+class EReceiptScreen extends StatefulWidget {
+  final String transactionID;
+  const EReceiptScreen({super.key, required this.transactionID});
 
   @override
+  State<EReceiptScreen> createState() => _EReceiptScreenState();
+}
+
+class _EReceiptScreenState extends State<EReceiptScreen> {
+  late Transaction chosenTransaction = Transaction();
+  late Account? account = Account();
+  double result = 0;
+  @override
+  void initState() {
+    loadTransactionByTransactionID();
+    fetchAccountData();
+    super.initState();
+  }
+  void loadTransactionByTransactionID() async {
+    try {
+      final transaction = await Network.getTransactionByTransactionId(widget.transactionID);
+      setState(() {
+        chosenTransaction = transaction;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+  Future<void> fetchAccountData() async {
+    Account acc = await Network.getAccount();
+
+    setState(() {
+      // Set the list of pet containers in your state
+      account = acc;
+    });
+  }
+  @override
   Widget build(BuildContext context) {
+    final amount = chosenTransaction.amount?.toDouble(); // Converting to double if necessary
+    if(amount != null){
+      double divide = amount / 24000;
+      setState(() {
+        result = divide;
+      });
+    }
+    print(chosenTransaction.course?.category);
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          toolbarHeight: 65,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              width: 300,
+              height: 100, // Add margin
+              child: Text(
+                'Transaction Detail',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
         body: Container(
           width: double.maxFinite,
           padding: EdgeInsets.only(
@@ -71,7 +137,7 @@ class EReceiptScreen extends StatelessWidget {
                 child: _buildEmailSection(
                   context,
                   emailLabel: "Name",
-                  emailText: "Scott R. Shoemake",
+                  emailText: account?.fullName ?? '',
                 ),
               ),
               SizedBox(height: 11.v),
@@ -80,7 +146,7 @@ class EReceiptScreen extends StatelessWidget {
                 child: _buildEmailSection(
                   context,
                   emailLabel: "Email ID",
-                  emailText: "shoemake.redial@gmail.com",
+                  emailText: account?.email ?? '',
                 ),
               ),
               SizedBox(height: 12.v),
@@ -89,47 +155,24 @@ class EReceiptScreen extends StatelessWidget {
                 child: _buildEmailSection(
                   context,
                   emailLabel: "Course",
-                  emailText: "3d Character Illustration Cre..",
+                  emailText: chosenTransaction.course?.name ?? '',
                 ),
               ),
               SizedBox(height: 13.v),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 9.h),
+              //   child: _buildEmailSection(
+              //     context,
+              //     emailLabel: "TransactionID",
+              //     emailText: chosenTransaction.id.toString(),
+              //   ),
+              // ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 9.h),
                 child: _buildEmailSection(
                   context,
                   emailLabel: "Category",
-                  emailText: "Web Development",
-                ),
-              ),
-              SizedBox(height: 38.v),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 9.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "TransactionID",
-                      style: CustomTextStyles.titleSmallJostBluegray900,
-                    ),
-                    Spacer(),
-                    Padding(
-                      padding: EdgeInsets.only(top: 2.v),
-                      child: Text(
-                        "SK345680976",
-                        style: theme.textTheme.titleSmall,
-                      ),
-                    ),
-                    CustomImageView(
-                      imagePath: ImageConstant.imgThumbsUpBlueGray90016x13,
-                      height: 16.v,
-                      width: 13.h,
-                      margin: EdgeInsets.only(
-                        left: 10.h,
-                        top: 3.v,
-                        bottom: 2.v,
-                      ),
-                    ),
-                  ],
+                  emailText: chosenTransaction.course?.category?.description ?? '',
                 ),
               ),
               SizedBox(height: 11.v),
@@ -138,7 +181,7 @@ class EReceiptScreen extends StatelessWidget {
                 child: _buildEmailSection(
                   context,
                   emailLabel: "Price",
-                  emailText: "55.00",
+                  emailText: '$result\$',
                 ),
               ),
               SizedBox(height: 12.v),
@@ -166,7 +209,7 @@ class EReceiptScreen extends StatelessWidget {
                     CustomOutlinedButton(
                       height: 22.v,
                       width: 60.h,
-                      text: "Paid",
+                      text: chosenTransaction.status.toString(),
                       margin: EdgeInsets.only(top: 2.v),
                       buttonStyle: CustomButtonStyles.outlinePrimaryTL4,
                       buttonTextStyle:

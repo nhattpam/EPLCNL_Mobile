@@ -1,3 +1,5 @@
+import 'package:meowlish/data/models/courses.dart';
+
 class Transaction {
   String? id;
   String? paymentMethodId;
@@ -7,6 +9,7 @@ class Transaction {
   String? learnerId;
   String? courseId;
   bool? refundStatus;
+  Course? course;
 
   Transaction(
       {this.id,
@@ -16,6 +19,7 @@ class Transaction {
       this.transactionDate,
       this.learnerId,
       this.courseId,
+      this.course,
       this.refundStatus});
 
   Transaction.fromJson(Map<String, dynamic> json) {
@@ -27,6 +31,8 @@ class Transaction {
     learnerId = json['learnerId'];
     courseId = json['courseId'];
     refundStatus = json['refundStatus'];
+    course = json['course'] != null ? new Course.fromJson(json['course']) : null;
+
   }
 
   Map<String, dynamic> toJson() {
@@ -39,6 +45,9 @@ class Transaction {
     data['learnerId'] = this.learnerId;
     data['courseId'] = this.courseId;
     data['refundStatus'] = this.refundStatus;
+    if (this.course != null) {
+      data['course'] = this.course!.toJson();
+    }
     return data;
   }
 }

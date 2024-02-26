@@ -1,15 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/transactions.dart';
+import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/e_receipt_screen/e_receipt_screen.dart';
+import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 
 import '../transactions_page/widgets/userprofile8_item_widget.dart';
 
 // ignore_for_file: must_be_immutable
-class TransactionsPage extends StatelessWidget {
-  const TransactionsPage({Key? key})
-      : super(
-          key: key,
-        );
+class TransactionsPage extends StatefulWidget {
+  const TransactionsPage({super.key});
 
+  @override
+  State<TransactionsPage> createState() => _TransactionsPageState();
+}
+
+class _TransactionsPageState extends State<TransactionsPage> {
+  late List<Transaction> listTransactions = [];
+
+  @override
+  void initState() {
+    loadTransactions();
+    super.initState();
+  }
+
+  void loadTransactions() async {
+    List<Transaction> loadedTransaction = await Network.getTransactionByLearnerId();
+    setState(() {
+      listTransactions = loadedTransaction;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -19,7 +39,7 @@ class TransactionsPage extends StatelessWidget {
           decoration: AppDecoration.fillOnPrimaryContainer,
           child: SingleChildScrollView(
             child: SizedBox(
-              height: SizeUtils.height,
+              height: SizeUtils.height * 0.8,
               width: double.maxFinite,
               child: Stack(
                 alignment: Alignment.bottomCenter,
@@ -29,7 +49,6 @@ class TransactionsPage extends StatelessWidget {
                     child: Container(
                       padding: EdgeInsets.only(
                         left: 34.h,
-                        top: 68.v,
                         right: 34.h,
                       ),
                       child: Column(
@@ -43,7 +62,6 @@ class TransactionsPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  _buildSix(context),
                 ],
               ),
             ),
@@ -63,12 +81,6 @@ class TransactionsPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomImageView(
-                imagePath: ImageConstant.imgArrowDownBlueGray900,
-                height: 20.v,
-                width: 26.h,
-                margin: EdgeInsets.symmetric(vertical: 5.v),
-              ),
               Padding(
                 padding: EdgeInsets.only(left: 11.h),
                 child: Text(
@@ -77,15 +89,6 @@ class TransactionsPage extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-          CustomImageView(
-            imagePath: ImageConstant.imgQrcodeBlueGray900,
-            height: 20.adaptSize,
-            width: 20.adaptSize,
-            margin: EdgeInsets.only(
-              top: 7.v,
-              bottom: 3.v,
-            ),
           ),
         ],
       ),
@@ -98,9 +101,9 @@ class TransactionsPage extends StatelessWidget {
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       separatorBuilder: (
-        context,
-        index,
-      ) {
+          context,
+          index,
+          ) {
         return Padding(
           padding: EdgeInsets.symmetric(vertical: 12.5.v),
           child: SizedBox(
@@ -113,82 +116,78 @@ class TransactionsPage extends StatelessWidget {
           ),
         );
       },
-      itemCount: 5,
+      itemCount: listTransactions.length,
       itemBuilder: (context, index) {
-        return Userprofile8ItemWidget();
-      },
-    );
-  }
-
-  /// Section Widget
-  Widget _buildSix(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 34.h),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 1.h),
-              child: Row(
-                children: [
-                  Container(
-                    height: 92.adaptSize,
-                    width: 92.adaptSize,
-                    decoration: BoxDecoration(
-                      color: appTheme.black900,
-                      borderRadius: BorderRadius.circular(
-                        18.h,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: 14.h,
-                      top: 5.v,
-                      bottom: 3.v,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Exporting Assets",
-                          style: CustomTextStyles.titleMedium18,
-                        ),
-                        SizedBox(height: 4.v),
-                        Text(
-                          "SEO & Marketing",
-                          style: theme.textTheme.labelLarge,
-                        ),
-                        SizedBox(height: 12.v),
-                        Container(
-                          width: 60.h,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 17.h,
-                            vertical: 2.v,
-                          ),
-                          decoration: AppDecoration.outlineTeal700.copyWith(
-                            borderRadius: BorderRadiusStyle.roundedBorder4,
-                          ),
-                          child: Text(
-                            "Paid",
-                            style:
-                                CustomTextStyles.labelLargeOnPrimaryContainer,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+        final transactions = listTransactions[index];
+        String? courseImageUrl = transactions.course?.imageUrl;
+        return GestureDetector(
+          onTap: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EReceiptScreen(transactionID: transactions.id.toString())
               ),
+            );
+
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 1.h),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 92.adaptSize,
+                  width: 92.adaptSize,
+                  margin: EdgeInsets.only(bottom: 25.v),
+                  child: courseImageUrl != null && courseImageUrl.isNotEmpty
+                      ? Image.network(
+                    courseImageUrl,
+                    fit: BoxFit.cover,
+                  )
+                      : Center(child: Container(child: CircularProgressIndicator())), // Placeholder widget when courseImageUrl is empty or null
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 14.h,
+                    top: 5.v,
+                    bottom: 28.v,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        transactions.course?.name ?? '',
+                        style: CustomTextStyles.titleMedium18,
+                      ),
+                      SizedBox(height: 4.v),
+                      Text(
+                        transactions.course?.category?.description ?? '',
+                        style: theme.textTheme.labelLarge,
+                      ),
+                      SizedBox(height: 12.v),
+                      Container(
+                        width: 70.h,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 17.h,
+                          vertical: 2.v,
+                        ),
+                        decoration: AppDecoration.fillPrimary.copyWith(
+                          borderRadius: BorderRadiusStyle.roundedBorder4,
+                        ),
+                        child: Text(
+                          transactions.status.toString(),
+                          maxLines: 1,
+                          style: CustomTextStyles.labelLargeOnPrimaryContainer,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 24.v),
-            Divider(),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

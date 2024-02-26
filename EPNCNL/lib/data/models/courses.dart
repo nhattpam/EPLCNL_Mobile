@@ -50,9 +50,7 @@ class Course {
     tags = json['tags'];
     createdDate = json['createdDate'];
     updatedDate = json['updatedDate'];
-    category = json['category'] != null
-        ? new Category.fromJson(json['category'])
-        : null;
+    category = json['category'] != null ? new Category.fromJson(json['category']) : null;
   }
 
   Map<String, dynamic> toJson() {

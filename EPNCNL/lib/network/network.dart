@@ -530,8 +530,7 @@ class Network {
   }
 
   ////// Put Api for Module here
-  static Future<List<ClassModule>> getClassModulesByCourseId(
-      String courseId) async {
+  static Future<List<ClassModule>> getClassModulesByCourseId(String courseId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/courses/$courseId/class-modules';
     print(apiUrl);
@@ -1109,6 +1108,38 @@ class Network {
         // If the request fails, throw an exception or return null
         throw Exception(
             'Failed to fetch transaction by id. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<List<Transaction>> getTransactionByLearnerId() async {
+    final leanerId = SessionManager().getLearnerId() ?? 0;
+
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/transactions/learners/$leanerId';
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final List<dynamic> transactionListJson = jsonDecode(response.body);
+        // Map each JSON object to a Pet object and return a list of pets
+        final List<Transaction> transactionList = transactionListJson
+            .map((json) => Transaction.fromJson(json as Map<String, dynamic>))
+            .toList();
+
+        return transactionList;
+      } else {
+        // If the request fails, throw an exception or return an empty list
+        throw Exception(
+            'Failed to fetch class modules. Status code: ${response.statusCode}');
       }
     } catch (e) {
       // Handle any exceptions that may occur during the request

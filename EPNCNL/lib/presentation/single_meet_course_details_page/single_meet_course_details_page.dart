@@ -91,14 +91,6 @@ class SingleMeetCourseDetailsPageState
   }
 
 
-  void _showMultiSelect() async {
-    final List<String>? result = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return ReportPopUp(courseId: widget.courseID);
-        });
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -313,12 +305,14 @@ class SingleMeetCourseDetailsPageState
                           ]))
                 ])))));
   }
+
   Widget _buildWilliamSCunningham(BuildContext context) {
     String? imageUrl = chosenTutor.account?.imageUrl;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        if (imageUrl != null && imageUrl.isNotEmpty) // Check if imageUrl is not null or empty
+        if (imageUrl != null &&
+            imageUrl.isNotEmpty) // Check if imageUrl is not null or empty
           CustomImageView(
             imagePath: imageUrl,
             fit: BoxFit.cover,
@@ -326,7 +320,8 @@ class SingleMeetCourseDetailsPageState
             width: 54.adaptSize,
             radius: BorderRadius.circular(27.h),
           )
-        else Center(child: CircularProgressIndicator()),
+        else
+          Center(child: CircularProgressIndicator()),
         Padding(
           padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
           child: Column(
@@ -340,38 +335,24 @@ class SingleMeetCourseDetailsPageState
           ),
         ),
         Spacer(),
-        Column(
-          children: [
-            GestureDetector(
-              onTap: (){
-                _showMultiSelect();
-              },
-              child: Icon(
-                Icons.flag,
-                size: 17.0,
-                color: Colors.red,
-              ),
-            ),
-            SizedBox(height: 4),
-            Icon(
-              Icons.chat_outlined,
-              size: 17.0,
-              color: Colors.black,
-            ),
-          ],
+        Icon(
+          Icons.chat_outlined,
+          size: 17.0,
+          color: Colors.black,
         ),
       ],
     );
   }
-
 
   /// Navigates to the indoxChatsMessagesScreen when the action is triggered.
   onTapImgSettings(BuildContext context) {
     Navigator.pushNamed(context, AppRoutes.indoxChatsMessagesScreen);
   }
 }
+
 class ReportPopUp extends StatefulWidget {
   final courseId;
+
   const ReportPopUp({super.key, this.courseId});
 
   @override
@@ -389,6 +370,7 @@ class _ReportPopUpState extends State<ReportPopUp> {
   void initState() {
     super.initState();
   }
+
   Future<String> _uploadImage(File imageFile) async {
     try {
       String url =
@@ -526,14 +508,16 @@ class _ReportPopUpState extends State<ReportPopUp> {
       ),
       actions: [
         TextButton(
-            onPressed: (){
+            onPressed: () {
               Navigator.pop(context);
             },
-            child: Text('Cancel')
-        ),
+            child: Text('Cancel')),
         TextButton(
-            onPressed: (){
-              Network.createReport(courseId: widget.courseId, reason: additionalInfoController.text, imageUrl: _image);
+            onPressed: () {
+              Network.createReport(
+                  courseId: widget.courseId,
+                  reason: additionalInfoController.text,
+                  imageUrl: _image);
               AwesomeDialog(
                 context: context,
                 animType: AnimType.scale,
@@ -551,10 +535,8 @@ class _ReportPopUpState extends State<ReportPopUp> {
                 },
               )..show();
             },
-            child: Text('Report')
-        )
+            child: Text('Report'))
       ],
     );
   }
-
 }

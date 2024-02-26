@@ -9,6 +9,7 @@ import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/classtopics.dart';
 import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/feedbacks.dart';
 import 'package:meowlish/data/models/forums.dart';
 import 'package:meowlish/data/models/learners.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
@@ -1344,5 +1345,67 @@ class Network {
       print('JSON Data: $jsonData');
     }
   }
+/////Feedback
+  static Future<List<FedBack>> getFeedbackByCourse(String feedbackId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/courses/$feedbackId/feedbacks'; // Replace with your API URL
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
 
+      if (response.statusCode == 200) {
+        final List<dynamic> feedbackListJson = jsonDecode(response.body);
+
+        return feedbackListJson
+            .map((json) => FedBack.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<void> createFeedback({
+    required String feedbackContent,
+    required String courseId,
+    required String rating,
+
+  }) async {
+    final leanerId = SessionManager().getLearnerId() ?? 0;
+    final learnerData = {
+      "courseId": courseId,
+      "learnerId": leanerId,
+      "feedbackContent": feedbackContent,
+      "rating": rating,
+    };
+
+    final jsonData = jsonEncode(learnerData);
+
+    // Print the JSON data before making the API call
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/feedbacks'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+    } else {
+      print('Create report failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
+    }
+  }
 }

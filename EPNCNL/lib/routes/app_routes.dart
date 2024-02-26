@@ -185,8 +185,6 @@ class AppRoutes {
     notificationsScreen: (context) => NotificationsScreen(),
     singleMentorDetailsRatingTabContainerScreen: (context) =>
         SingleMentorDetailsRatingTabContainerScreen(),
-    reviewsScreen: (context) => ReviewsScreen(),
-    writeAReviewsScreen: (context) => WriteAReviewsScreen(),
     paymentMethods1Screen: (context) => PaymentMethods1Screen(),
     myCourseLessonsScreen: (context) => MyCourseLessonsScreen(),
     myCourseCertificateScreen: (context) => MyCourseCertificateScreen(),

@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/enrollments.dart';
+import 'package:meowlish/presentation/reviews_screen/reviews_screen.dart';
 import 'package:meowlish/presentation/single_meet_course_details_page/single_meet_course_details_page.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 
 import '../../data/models/lessons.dart';
@@ -33,12 +36,14 @@ class SingleCourseDetailsTabContainerScreenState
     with TickerProviderStateMixin {
   late TabController tabviewController;
   late Course chosenCourse = Course();
+  late Enrollment enrollment = Enrollment();
 
   @override
   void initState() {
     super.initState();
-    tabviewController = TabController(length: 2, vsync: this);
+    tabviewController = TabController(length: 3, vsync: this);
     loadCourseByCourseID();
+    loadEnrollmentByLearnerAndCourseId();
   }
 
   @override
@@ -52,6 +57,32 @@ class SingleCourseDetailsTabContainerScreenState
       final course = await Network.getCourseByCourseID(widget.courseID);
       setState(() {
         chosenCourse = course;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+  void _showMultiSelect() async {
+    final List<String>? result = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ReportPopUp(courseId: widget.courseID);
+        });
+  }
+
+  Future<void> loadEnrollmentByLearnerAndCourseId() async {
+    try {
+      final enrollmentResponse =
+      await Network.getEnrollmentByLearnerAndCourseId(
+        SessionManager().getLearnerId().toString(),
+        widget.courseID,
+      );
+
+      setState(() {
+        enrollment = enrollmentResponse;
+        // Add more print statements for other properties if needed
       });
     } catch (e) {
       // Handle errors here
@@ -91,7 +122,8 @@ class SingleCourseDetailsTabContainerScreenState
                       SingleMeetCourseDetailsPage(
                           courseID: widget.courseID, tutorID: widget.tutorID),
                       SingleCourseDetailsCurriculumPage(
-                          courseID: widget.courseID)
+                          courseID: widget.courseID),
+                      ReviewsScreen(courseID: widget.courseID)
                     ],
                   ),
                 ),
@@ -106,6 +138,7 @@ class SingleCourseDetailsTabContainerScreenState
   /// Section Widget
   Widget _buildArrowDown(BuildContext context) {
     String? imageUrl = chosenCourse.imageUrl;
+    bool isEnrolled = enrollment.learnerId != null && enrollment.courseId != null;
     return SizedBox(
       height: 595.v,
       width: double.maxFinite,
@@ -305,6 +338,11 @@ class SingleCourseDetailsTabContainerScreenState
                             "Curriculum",
                           ),
                         ),
+                        Tab(
+                          child: Text(
+                            "Feedback",
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -312,22 +350,31 @@ class SingleCourseDetailsTabContainerScreenState
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(
-              right: 49.h,
-              bottom: 167.v,
-            ),
-            child: CustomIconButton(
-              height: 63.adaptSize,
-              width: 63.adaptSize,
-              padding: EdgeInsets.all(18.h),
-              decoration: IconButtonStyleHelper.outlineBlack,
-              alignment: Alignment.bottomRight,
-              child: CustomImageView(
-                imagePath: ImageConstant.imgGroup6,
+          if (isEnrolled || chosenCourse.id == enrollment.courseId && SessionManager().getLearnerId() == enrollment.learnerId)
+            Padding(
+              padding: EdgeInsets.only(
+                right: 49.h,
+                bottom: 167.v,
+              ),
+              child: CustomIconButton(
+                height: 63.adaptSize,
+                width: 63.adaptSize,
+                padding: EdgeInsets.all(18.h),
+                decoration: IconButtonStyleHelper.outlineBlack,
+                alignment: Alignment.bottomRight,
+                child: GestureDetector(
+                  onTap: (){
+                    _showMultiSelect();
+                  },
+                  child: Icon(
+                    Icons.flag,
+                    size: 17.0,
+                    color: Colors.white,
+                  ),
+                ),
+
               ),
             ),
-          ),
         ],
       ),
     );

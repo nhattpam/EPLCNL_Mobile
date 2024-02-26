@@ -7,6 +7,7 @@ import 'package:meowlish/presentation/category_screen/category_screen.dart';
 import 'package:meowlish/presentation/home_page/carousel/landing.dart';
 import 'package:meowlish/presentation/notifications_screen/notifications_screen.dart';
 import 'package:meowlish/presentation/popular_courses_screen/popular_courses_screen.dart';
+import 'package:meowlish/presentation/single_mentor_details_page/single_mentor_details_page.dart';
 import 'package:meowlish/presentation/top_mentors_screen/top_mentors_screen.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
@@ -253,23 +254,32 @@ class HomePageState extends State<HomePage> {
             itemCount: listTutor.length,
             itemBuilder: (context, index) {
               final tutors = listTutor[index];
-              return SizedBox(
-                width: 80.h,
-                child: Column(
-                  children: [
-                    CustomImageView(
-                        imagePath: "${tutors.account!.imageUrl ?? ''}",
-                        fit: BoxFit.cover,
-                        height: 66.adaptSize,
-                        width: 66.adaptSize,
-                        radius: BorderRadius.circular(27.h)),
-                    SizedBox(height: 8.v),
-                    Text(
-                      tutors.account!.fullName ?? 'MC',
-                      style: CustomTextStyles.labelLargeJostBluegray900,
-                      maxLines: 1,
-                    ),
-                  ],
+              return GestureDetector(
+                onTap: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SingleMentorDetailsPage(),
+                  ));
+                },
+                child: SizedBox(
+                  width: 80.h,
+                  child: Column(
+                    children: [
+                      CustomImageView(
+                          imagePath: "${tutors.account!.imageUrl ?? ''}",
+                          fit: BoxFit.cover,
+                          height: 66.adaptSize,
+                          width: 66.adaptSize,
+                          radius: BorderRadius.circular(27.h)),
+                      SizedBox(height: 8.v),
+                      Text(
+                        tutors.account!.fullName ?? 'MC',
+                        style: CustomTextStyles.labelLargeJostBluegray900,
+                        maxLines: 1,
+                      ),
+                    ],
+                  ),
                 ),
               );
             }));

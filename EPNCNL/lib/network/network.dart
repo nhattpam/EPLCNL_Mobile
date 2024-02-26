@@ -1308,5 +1308,41 @@ class Network {
       print('JSON Data: $jsonData');
     }
   }
+  ////Report
+  static Future<void> createReport({
+    required String courseId,
+    required String reason,
+    required String imageUrl,
+
+  }) async {
+    final leanerId = SessionManager().getLearnerId() ?? 0;
+    final learnerData = {
+      "courseId": courseId,
+      "learnerId": leanerId,
+      "imageUrl": imageUrl,
+      "reason": reason,
+    };
+
+    final jsonData = jsonEncode(learnerData);
+
+    // Print the JSON data before making the API call
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/reports'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+    } else {
+      print('Create report failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
+    }
+  }
 
 }

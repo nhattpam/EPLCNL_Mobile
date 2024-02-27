@@ -132,9 +132,13 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                                 vertical: 6,
                               ),
                               margin: EdgeInsets.only(bottom: 10),
-                              child: Padding(
-                                padding: EdgeInsets.all(12),
-                                child: Flexible(child: Text(message.message.toString())),
+                              child: Flexible(
+                                child: Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child:  Text(message.message.toString(),
+                                    softWrap: true,
+                                  ),
+                                ),
                               ),
                             ),
                           ],

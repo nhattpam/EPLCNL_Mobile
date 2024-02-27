@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/classmodules.dart';
@@ -343,11 +344,15 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                                     .deadline as int))),
                   );
                 },
-                child: Text(
-                    moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText
-                        .toString(),
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.black)),
+                child: Html(
+                  data: moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText
+                      .toString(),
+                  style: {
+                    "body": Style(
+                        fontWeight: FontWeight.bold, color: Colors.black
+                    ),
+                  },
+                ),
               ),
         ],
       ),

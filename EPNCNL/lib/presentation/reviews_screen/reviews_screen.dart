@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/write_a_reviews_screen/write_a_reviews_screen.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_outlined_button.dart';
 import 'package:meowlish/widgets/custom_rating_bar.dart';
@@ -21,11 +23,13 @@ class ReviewsScreen extends StatefulWidget {
 class _ReviewsScreenState extends State<ReviewsScreen> {
   late List<FedBack> listFedback = [];
   late Course chosenCourse = Course();
+  late Enrollment enrollment = Enrollment();
 
   @override
   void initState() {
     loadFeedback();
     loadCourseByCourseID();
+    loadEnrollmentByLearnerAndCourseId();
     super.initState();
   }
   void loadFeedback() async {
@@ -45,9 +49,27 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       print('Error: $e');
     }
   }
+  Future<void> loadEnrollmentByLearnerAndCourseId() async {
+    try {
+      final enrollmentResponse =
+      await Network.getEnrollmentByLearnerAndCourseId(
+        SessionManager().getLearnerId().toString(),
+        widget.courseID,
+      );
+
+      setState(() {
+        enrollment = enrollmentResponse;
+        // Add more print statements for other properties if needed
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    bool isEnrolled = enrollment.learnerId != null && enrollment.courseId != null;
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -124,7 +146,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         SizedBox(height: 12),
                         Divider(),
                         SizedBox(height: 30.v),
-                        CustomElevatedButton(
+                        if (isEnrolled || chosenCourse.id == enrollment.courseId && SessionManager().getLearnerId() == enrollment.learnerId)
+                          CustomElevatedButton(
                           onPressed: (){
                             Navigator.push(
                               context,

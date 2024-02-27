@@ -44,6 +44,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     await _videoPlayerController.initialize();
     setState(() {
       _chewieController = ChewieController(
+        allowFullScreen: true,
         videoPlayerController: _videoPlayerController,
         aspectRatio: _videoPlayerController.value.aspectRatio,
         autoPlay: true,

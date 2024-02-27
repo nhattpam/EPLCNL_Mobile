@@ -116,7 +116,8 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
               // Ensure children stretch horizontally
               children: [
                 Center(
-                  child: Html(
+                  child:
+                  Html(
                     data: chosenAssignment.questionText.toString(),
                     style: {
                       "body": Style(

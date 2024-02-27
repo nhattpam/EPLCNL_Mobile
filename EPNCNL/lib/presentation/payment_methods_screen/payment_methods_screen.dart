@@ -128,12 +128,14 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Image.network(
-            chosenCourse?.imageUrl ?? '', // Replace with your actual image URL
+          chosenCourse?.imageUrl != null && chosenCourse!.imageUrl!.isNotEmpty
+              ? Image.network(
+            chosenCourse!.imageUrl!,
             height: 100.adaptSize,
             width: 100.adaptSize,
             fit: BoxFit.cover,
-          ),
+          )
+              : Center(child: Container(child: CircularProgressIndicator())), // Placeholder widget when chosenCourse.imageUrl is empty or null
           Padding(
             padding: EdgeInsets.only(
               top: 33.v,
@@ -251,6 +253,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               // Do something with paymentUrl if needed
               // Change the button text to "Enroll Course" and show the button
             } else {
+
               print("NOT DONE YET");
               // If status is not "DONE", show loading indicator or perform other actions
               showDialog(

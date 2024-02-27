@@ -500,7 +500,6 @@ class Network {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/accounts/$accountId'; // Replace with your API URL
     try {
       final Map<String, dynamic> updateData = {
-        'accountId': accountId,
         'email': email,
         'password': password,
         'fullName': fullName,
@@ -513,12 +512,13 @@ class Network {
         'isActive': isActive,
         'isDeleted': isDeleted,
         'createdDate': createdDate,
-        'createdBy': createdBy,
-        'updatedBy': accountId,
+        // 'createdBy': createdBy,
+        // 'updateDate': null,
+        // 'updatedBy': accountId,
         'note' : note
 
       };
-
+      print(updateData);
       final response = await http.put(
         Uri.parse(apiUrl),
         headers: {

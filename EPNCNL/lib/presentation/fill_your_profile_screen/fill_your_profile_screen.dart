@@ -505,7 +505,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
         controller: phoneNumberController,
         onTap: (Country value) {
           selectedCountry = value;
-        },
+        }, text: '0774966XXX',
       ),
     );
   }

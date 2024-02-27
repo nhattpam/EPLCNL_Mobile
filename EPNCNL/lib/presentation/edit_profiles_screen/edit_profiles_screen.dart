@@ -1,12 +1,20 @@
+import 'dart:io';
+
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/widgets/custom_drop_down.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_phone_number.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
+
+import '../../data/models/accounts.dart';
+import '../../network/network.dart';
 
 class EditProfilesScreen extends StatefulWidget {
   EditProfilesScreen({Key? key})
@@ -19,6 +27,10 @@ class EditProfilesScreen extends StatefulWidget {
 }
 
 class EditProfilesScreenState extends State<EditProfilesScreen> {
+  late Account? account = Account();
+
+  DateTime? selectedDate;
+
   TextEditingController fullNameController = TextEditingController();
 
   TextEditingController nameController = TextEditingController();
@@ -30,17 +42,111 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
   TextEditingController phoneNumberController = TextEditingController();
 
   List<String> dropdownItemList = [
-    "Item One",
-    "Item Two",
-    "Item Three",
+    "Male",
+    "Female",
   ];
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String _imagePath = "";
+  String _image = "";
+  final picker = ImagePicker();
+  Dio dio = Dio();
 
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAccountData();
+  }
+
+  Future<void> fetchAccountData() async {
+    Account acc = await Network.getAccount();
+
+    setState(() {
+      // Set the list of pet containers in your state
+      account = acc;
+    });
+  }
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+  Future<String> _uploadImage(File imageFile) async {
+    try {
+      String url =
+          "https://nhatpmse.twentytwo.asia/api/accounts/image"; // Replace with your API endpoint
+      FormData formData = FormData.fromMap({
+        "file": await MultipartFile.fromFile(imageFile.path),
+      });
+
+      Response response = await dio.post(url, data: formData);
+
+      if (response.statusCode == 200) {
+        // Image uploaded successfully, you can handle the response here
+        print("Image uploaded successfully. Link: ${response.data}");
+        setState(() {
+          _image = response.data;
+        });
+        return response.data;
+      } else {
+        // Handle error
+        print("Error uploading image. StatusCode: ${response.statusCode}");
+      }
+    } catch (error) {
+      // Handle error
+      print("Error uploading image: $error");
+    }
+    return "";
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imagePath = pickedFile.path;
+      });
+
+      await _uploadImage(File(_imagePath));
+    }
+  }
+
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          toolbarHeight: 65,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              width: 300,
+              height: 100, // Add margin
+              child: Text(
+                'Edit Profile',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         body: SizedBox(
           width: SizeUtils.width,
@@ -58,30 +164,6 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
                 ),
                 child: Column(
                   children: [
-                    SizedBox(height: 29.v),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        children: [
-                          CustomImageView(
-                            imagePath: ImageConstant.imgArrowDownBlueGray900,
-                            height: 20.v,
-                            width: 26.h,
-                            margin: EdgeInsets.only(
-                              top: 5.v,
-                              bottom: 4.v,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 11.h),
-                            child: Text(
-                              "Edit Profile",
-                              style: theme.textTheme.titleLarge,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                     SizedBox(height: 26.v),
                     SizedBox(
                       height: 91.v,
@@ -94,49 +176,58 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
                             child: Container(
                               height: 90.adaptSize,
                               width: 90.adaptSize,
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.onPrimaryContainer,
-                                borderRadius: BorderRadius.circular(
-                                  45.h,
-                                ),
-                                border: Border.all(
-                                  color: theme.colorScheme.primary,
-                                  width: 3.h,
-                                  strokeAlign: strokeAlignOutside,
-                                ),
+                              child: _image == ''
+                                  ? (account?.imageUrl != null && account!.imageUrl!.isNotEmpty
+                                  ? Image.network(
+                                account!.imageUrl!,
+                                fit: BoxFit.cover,
+                              )
+                                  : Center(child: CircularProgressIndicator()))
+                                  : Image.network(
+                                _image,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
                           Padding(
                             padding: EdgeInsets.only(right: 3.h),
                             child: CustomIconButton(
-                              height: 32.adaptSize,
-                              width: 32.adaptSize,
-                              padding: EdgeInsets.all(7.h),
-                              decoration: IconButtonStyleHelper.outlinePrimary,
-                              alignment: Alignment.bottomRight,
-                              child: CustomImageView(
-                                imagePath: ImageConstant.imgTelevisionPrimary,
-                              ),
+                                onTap: (){
+                                  _pickImage();
+                                },
+                                height: 32.adaptSize,
+                                width: 32.adaptSize,
+                                padding: EdgeInsets.all(7.h),
+                                decoration: IconButtonStyleHelper.outlinePrimary,
+                                alignment: Alignment.bottomRight,
+                                child: Icon(
+                                  Icons.add_photo_alternate_outlined,
+                                  size: 12.v,
+                                )
                             ),
                           ),
                         ],
                       ),
                     ),
                     SizedBox(height: 40.v),
+                    _buildEmail(context),
+                    SizedBox(height: 18.v),
+                    _buildPassword(context),
+                    SizedBox(height: 18.v),
                     _buildFullName(context),
-                    SizedBox(height: 18.v),
-                    _buildName(context),
-                    SizedBox(height: 18.v),
-                    _buildDateOfBirth(context),
                     SizedBox(height: 18.v),
                     _buildPhoneNumber(context),
                     SizedBox(height: 18.v),
-                    CustomDropDown(
-                      hintText: "Gender",
-                      items: dropdownItemList,
-                      onChanged: (value) {},
-                    ),
+                    _buildAddress(context),
+                    SizedBox(height: 18.v),
+                    _buildDateOfBirth(context),
+                    SizedBox(height: 18.v),
+                    _buildGender(context),
+                    // CustomDropDown(
+                    //   hintText: account?.gender != null ? 'Male' : 'Female',
+                    //   items: dropdownItemList,
+                    //   onChanged: (value) {},
+                    // ),
                     SizedBox(height: 18.v),
                     _buildSeven(context),
                   ],
@@ -150,11 +241,12 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
     );
   }
 
+
   /// Section Widget
   Widget _buildFullName(BuildContext context) {
     return CustomTextFormField(
       controller: fullNameController,
-      hintText: "Full Name",
+      hintText: account?.fullName ?? '',
       hintStyle: CustomTextStyles.titleSmallGray80001,
       contentPadding: EdgeInsets.symmetric(
         horizontal: 20.h,
@@ -163,55 +255,150 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
       borderDecoration: TextFormFieldStyleHelper.outlineBlack,
     );
   }
-
-  /// Section Widget
-  Widget _buildName(BuildContext context) {
-    return CustomTextFormField(
-      controller: nameController,
-      hintText: "Nick Name",
-      hintStyle: CustomTextStyles.titleSmallGray80001,
-      contentPadding: EdgeInsets.symmetric(
+  Widget _buildEmail(BuildContext context) {
+    return Container(
+      width: 360.h,
+      padding: EdgeInsets.symmetric(
         horizontal: 22.h,
-        vertical: 21.v,
+        vertical: 20.v,
       ),
-      borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+      decoration: AppDecoration.outlineBlack9001.copyWith(
+        borderRadius: BorderRadiusStyle.roundedBorder10,
+      ),
+      child: Text(
+        account?.email ?? '',
+        style: CustomTextStyles.titleSmallGray80001,
+      ),
+    );
+  }
+  Widget _buildAddress(BuildContext context) {
+    return Container(
+      width: 360.h,
+      padding: EdgeInsets.symmetric(
+        horizontal: 22.h,
+        vertical: 20.v,
+      ),
+      decoration: AppDecoration.outlineBlack9001.copyWith(
+        borderRadius: BorderRadiusStyle.roundedBorder10,
+      ),
+      child: Text(
+        account?.address ?? '',
+        style: CustomTextStyles.titleSmallGray80001,
+      ),
+    );
+  }
+  // ////Update Password
+  // Widget _buildPassword(BuildContext context) {
+  //   String passwordHint = account?.password != null ? '*' * (account?.password?.length as int) : '';
+  //   return CustomTextFormField(
+  //     obscureText: true,
+  //     textInputType: TextInputType.visiblePassword,
+  //     controller: nameController,
+  //     hintText: passwordHint,
+  //     hintStyle: CustomTextStyles.titleSmallGray80001,
+  //     contentPadding: EdgeInsets.symmetric(
+  //       horizontal: 22.h,
+  //       vertical: 21.v,
+  //     ),
+  //     borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+  //   );
+  // }
+  Widget _buildPassword(BuildContext context) {
+    String passwordHint = account?.password != null ? '*' * (account?.password?.length as int) : '';
+
+    return Container(
+      width: 360.h,
+      padding: EdgeInsets.symmetric(
+        horizontal: 22.h,
+        vertical: 20.v,
+      ),
+      decoration: AppDecoration.outlineBlack9001.copyWith(
+        borderRadius: BorderRadiusStyle.roundedBorder10,
+      ),
+      child: Text(
+      passwordHint,
+      style: TextStyle(
+        color: Colors.grey[800],
+        fontSize: 16,
+      ),
+    ),
+
+    );
+  }
+  Widget _buildGender(BuildContext context) {
+    return Container(
+      width: 360.h,
+      padding: EdgeInsets.symmetric(
+        horizontal: 22.h,
+        vertical: 20.v,
+      ),
+      decoration: AppDecoration.outlineBlack9001.copyWith(
+        borderRadius: BorderRadiusStyle.roundedBorder10,
+      ),
+      child: Text(
+        account?.gender != null ? 'Male' : 'Female',
+        style: CustomTextStyles.titleSmallGray80001,
+      ),
     );
   }
 
   /// Section Widget
   Widget _buildDateOfBirth(BuildContext context) {
-    return CustomTextFormField(
-      controller: dateOfBirthController,
-      hintText: "Date of Birth",
-      hintStyle: CustomTextStyles.titleSmallGray80001,
-      prefix: Container(
-        margin: EdgeInsets.fromLTRB(21.h, 20.v, 8.h, 20.v),
-        child: CustomImageView(
-          imagePath: ImageConstant.imgCalendar,
-          height: 20.v,
-          width: 18.h,
-        ),
+    String formattedDate = '';
+    if (account?.dateOfBirth != null && account!.dateOfBirth!.isNotEmpty) {
+      DateTime parsedDate = DateTime.parse(account?.dateOfBirth ?? '');
+      formattedDate = "${parsedDate.day.toString().padLeft(2, '0')}-${parsedDate.month.toString().padLeft(2, '0')}-${parsedDate.year}";
+    }
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                decoration: AppDecoration.outlineBlack9001.copyWith(
+                  borderRadius: BorderRadiusStyle.roundedBorder10,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      size: 20,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(width: 4.v),
+                    Text(
+                      formattedDate.isNotEmpty ? formattedDate : 'Select Date of Birth',
+                      style: CustomTextStyles.titleSmallGray80001,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
-      prefixConstraints: BoxConstraints(
-        maxHeight: 60.v,
-      ),
-      contentPadding: EdgeInsets.only(
-        top: 21.v,
-        right: 30.h,
-        bottom: 21.v,
-      ),
-      borderDecoration: TextFormFieldStyleHelper.outlineBlack,
     );
   }
 
   /// Section Widget
   Widget _buildPhoneNumber(BuildContext context) {
-    return CustomPhoneNumber(
-      country: selectedCountry,
-      controller: phoneNumberController,
-      onTap: (Country value) {
-        selectedCountry = value;
-      },
+    return Container(
+      width: 360.h,
+      padding: EdgeInsets.symmetric(
+        horizontal: 22.h,
+        vertical: 20.v,
+      ),
+      decoration: AppDecoration.outlineBlack9001.copyWith(
+        borderRadius: BorderRadiusStyle.roundedBorder10,
+      ),
+      child: Text(
+        account?.phoneNumber ?? '',
+        style: CustomTextStyles.titleSmallGray80001,
+      ),
     );
   }
 
@@ -227,7 +414,7 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
         borderRadius: BorderRadiusStyle.roundedBorder10,
       ),
       child: Text(
-        "Student",
+        account?.role?.name ?? '',
         style: CustomTextStyles.titleSmallGray80001,
       ),
     );
@@ -236,6 +423,34 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
   /// Section Widget
   Widget _buildUpdate(BuildContext context) {
     return CustomElevatedButton(
+      onPressed: (){
+        Network.updateProfile(
+            account?.email ?? '',
+            account?.password ?? '',
+            fullNameController.text,
+            account?.phoneNumber ?? '',
+            _image,
+            account?.dateOfBirth ?? '',
+            account?.gender ?? false,
+            account?.address ?? '');
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.scale,
+          dialogType: DialogType.success,
+          body: Center(
+            child: Text(
+              'Edit Success!!!!!',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+          btnOkOnPress: () {
+            setState(() {
+              Navigator.pop(context);
+            });
+          },
+        )..show();
+
+      },
       text: "Update",
       margin: EdgeInsets.only(
         left: 39.h,

@@ -11,6 +11,7 @@ class CustomPhoneNumber extends StatelessWidget {
     required this.country,
     required this.onTap,
     required this.controller,
+    required this.text,
   }) : super(
           key: key,
         );
@@ -21,6 +22,7 @@ class CustomPhoneNumber extends StatelessWidget {
 
   TextEditingController? controller;
 
+  final String text;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -81,7 +83,7 @@ class CustomPhoneNumber extends StatelessWidget {
               child: CustomTextFormField(
                 width: 272.h,
                 controller: controller,
-                hintText: "090-XXX-XXX-XXX",
+                hintText: text,
                 hintStyle: CustomTextStyles.titleSmallBlack900,
               ),
             ),

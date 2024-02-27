@@ -439,8 +439,7 @@ class Network {
 ////// Put Api for Account here
   static Future<Account> getAccount() async {
     final accountId = SessionManager().getUserId() ?? 0;
-    final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/accounts/$accountId'; // Replace with your API URL
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/accounts/$accountId'; // Replace with your API URL
 
     try {
       final response = await http.get(
@@ -496,7 +495,45 @@ class Network {
     }
   }
 
-////// Put Api for Module here
+  static Future<bool> updateProfile(String email,String password,String fullName,String phoneNumber,String imageUrl, String dateOfBirth, bool gender, String address) async {
+    String accountId = SessionManager().getUserId().toString();
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/accounts/$accountId'; // Replace with your API URL
+    try {
+      final Map<String, dynamic> updateData = {
+        'accountId': accountId,
+        'email': email,
+        'password': password,
+        'fullName': fullName,
+        'phoneNumber': phoneNumber,
+        'imageUrl': imageUrl,
+        'dateOfBirth': dateOfBirth,
+        'gender': gender,
+        'address': address
+      };
+
+      final response = await http.put(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any authentication headers here
+        },
+        body: jsonEncode(updateData),
+      );
+
+      if (response.statusCode == 200) {
+        print('Profile updated successfully.');
+        return true; // Password updated successfully, return true.
+      } else {
+        print('Failed to profile. Status code: ${response.statusCode}');
+        return false; // Password update failed, return false.
+      }
+    } catch (e) {
+      print('An error occurred: $e');
+      return false; // Handle any exceptions and return false.
+    }
+  }
+
+//// Put Api for Module here
   static Future<List<Module>> getModulesByCourseId(String courseId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/courses/$courseId/modules';

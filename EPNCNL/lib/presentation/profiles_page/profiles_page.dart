@@ -40,6 +40,7 @@ class ProfilesPageState extends State<ProfilesPage> {
     String? imageUrl = account?.imageUrl;
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Container(
           width: double.maxFinite,
           decoration: AppDecoration.fillOnPrimaryContainer,

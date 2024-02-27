@@ -302,7 +302,7 @@ class LoginScreenState extends State<LoginScreen> {
   onTapBtnSignin(BuildContext context) {
     Navigator.pushNamed(
       context,
-      AppRoutes.homeContainerScreen,
+      AppRoutes.homePage,
     );
   }
 }

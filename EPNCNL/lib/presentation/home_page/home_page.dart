@@ -5,11 +5,15 @@ import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/category_screen/category_screen.dart';
 import 'package:meowlish/presentation/home_page/carousel/landing.dart';
+import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
+import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/notifications_screen/notifications_screen.dart';
 import 'package:meowlish/presentation/popular_courses_screen/popular_courses_screen.dart';
+import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/single_mentor_details_page/single_mentor_details_page.dart';
 import 'package:meowlish/presentation/single_mentor_details_rating_tab_container_screen/single_mentor_details_rating_tab_container_screen.dart';
 import 'package:meowlish/presentation/top_mentors_screen/top_mentors_screen.dart';
+import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
 
@@ -27,7 +31,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   int current = 0;
-
+  int _currentIndex = 0;
   late List<Category> listCategory = [];
   late List<Course> listCourse = [];
   late List<Tutor> listTutor = [];
@@ -78,70 +82,127 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: Container(
-                width: double.maxFinite,
-                decoration: AppDecoration.fillOnPrimaryContainer,
-                child: SingleChildScrollView(
-                    child: SizedBox(
-                        height: 1183.v,
-                        width: double.maxFinite,
-                        child:
-                            Stack(alignment: Alignment.bottomRight, children: [
-                          Align(
-                              alignment: Alignment.center,
-                              child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 20.h, vertical: 53.v),
-                                  child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        _buildHiRonaldAMartinSection(context),
-                                        SizedBox(height: 43.v),
-                                        Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 14.h),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.grey
-                                                        .withOpacity(0.5),
-                                                    // Adjust the color and opacity as needed
-                                                    spreadRadius: 2,
-                                                    blurRadius: 5,
-                                                    offset: Offset(0,
-                                                        3), // Adjust the offset to control the shadow's position
-                                                  ),
-                                                ],
-                                              ),
-                                              child: CustomSearchView(
-                                                  controller: searchController,
-                                                  hintText: "Search for..",
-                                                  context: context),
-                                            )),
-                                        SizedBox(height: 30.v),
-                                        _buildDiscountTextSection(context),
-                                        SizedBox(height: 32.v),
-                                        _buildHeadingSection1(context),
-                                        SizedBox(height: 12.v),
-                                        _buildDDesignSection(context),
-                                        SizedBox(height: 350.v),
-                                        Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 14.h),
-                                            child: _buildHeadingSection(context,
-                                                title: "Top Mentor",
-                                                seeAllText: "See All",
-                                                onTapHeadingSection: () {
-                                              onTapHeadingSection1(context);
-                                            })),
-                                        SizedBox(height: 13.v),
-                                        _buildColumnSection(context),
-                                      ]))),
-                          _buildPopularCourseSection(context),
-                          SizedBox(height: 12.v)
-                        ]))))));
+      resizeToAvoidBottomInset: false,
+      body: Container(
+          width: double.maxFinite,
+          decoration: AppDecoration.fillOnPrimaryContainer,
+          child: SingleChildScrollView(
+              child: SizedBox(
+                  height: 1183.v,
+                  width: double.maxFinite,
+                  child: Stack(alignment: Alignment.bottomRight, children: [
+                    Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20.h, vertical: 53.v),
+                            child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildHiRonaldAMartinSection(context),
+                                  SizedBox(height: 43.v),
+                                  Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 14.h),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.5),
+                                              // Adjust the color and opacity as needed
+                                              spreadRadius: 2,
+                                              blurRadius: 5,
+                                              offset: Offset(0,
+                                                  3), // Adjust the offset to control the shadow's position
+                                            ),
+                                          ],
+                                        ),
+                                        child: CustomSearchView(
+                                            controller: searchController,
+                                            hintText: "Search for..",
+                                            context: context),
+                                      )),
+                                  SizedBox(height: 30.v),
+                                  _buildDiscountTextSection(context),
+                                  SizedBox(height: 32.v),
+                                  _buildHeadingSection1(context),
+                                  SizedBox(height: 12.v),
+                                  _buildDDesignSection(context),
+                                  SizedBox(height: 350.v),
+                                  Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 14.h),
+                                      child: _buildHeadingSection(context,
+                                          title: "Top Mentor",
+                                          seeAllText: "See All",
+                                          onTapHeadingSection: () {
+                                        onTapHeadingSection1(context);
+                                      })),
+                                  SizedBox(height: 13.v),
+                                  _buildColumnSection(context),
+                                ]))),
+                    _buildPopularCourseSection(context),
+                    SizedBox(height: 12.v)
+                  ])))),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+          if (index == 0) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          }
+          if (index == 1) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+            );
+          }
+          if (index == 2) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+            );
+          }
+          if (index == 3) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => TransactionsPage()),
+            );
+          }
+          if (index == 4) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => ProfilesPage()),
+            );
+          }
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'My Courses',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Inbox',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.wallet),
+            label: 'Transaction',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        selectedItemColor: Color(0xbbff9300),
+        unselectedItemColor: Color(0xffff9300),
+      ),
+    ));
   }
 
   /// Section Widget
@@ -213,7 +274,8 @@ class HomePageState extends State<HomePage> {
 
   /// Section Widget
   Widget _buildDDesignSection(BuildContext context) {
-    List<bool> isLoadingList = List.generate(listCategory.length, (index) => false);
+    List<bool> isLoadingList =
+        List.generate(listCategory.length, (index) => false);
     return SizedBox(
         height: 40,
         child: ListView.builder(
@@ -229,14 +291,14 @@ class HomePageState extends State<HomePage> {
                 },
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child:  isLoadingList[index]
+                  child: isLoadingList[index]
                       ? CircularProgressIndicator() // Show loading indicator
                       : Chip(
-                    label: Text(categories.description.toString()),
-                    backgroundColor: current == index
-                        ? Color(0xFFFF9300)
-                        : Color(0xFFFFF1DE),
-                  ),
+                          label: Text(categories.description.toString()),
+                          backgroundColor: current == index
+                              ? Color(0xFFFF9300)
+                              : Color(0xFFFFF1DE),
+                        ),
                 ),
               );
             }));
@@ -256,12 +318,14 @@ class HomePageState extends State<HomePage> {
             itemBuilder: (context, index) {
               final tutors = listTutor[index];
               return GestureDetector(
-                onTap: (){
+                onTap: () {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SingleMentorDetailsRatingTabContainerScreen(tutorID: tutors.id.toString()),
-                  ));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            SingleMentorDetailsRatingTabContainerScreen(
+                                tutorID: tutors.id.toString()),
+                      ));
                 },
                 child: SizedBox(
                   width: 80.h,

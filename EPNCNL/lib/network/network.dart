@@ -495,7 +495,7 @@ class Network {
     }
   }
 
-  static Future<bool> updateProfile(String email,String password,String fullName,String phoneNumber,String imageUrl, String dateOfBirth, bool gender, String address) async {
+  static Future<bool> updateProfile(String email,String password,String fullName,String phoneNumber,String imageUrl, String dateOfBirth, bool gender, String address, bool isActive, bool isDeleted, String createdDate, String createdBy, String note) async {
     String accountId = SessionManager().getUserId().toString();
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/accounts/$accountId'; // Replace with your API URL
     try {
@@ -508,7 +508,15 @@ class Network {
         'imageUrl': imageUrl,
         'dateOfBirth': dateOfBirth,
         'gender': gender,
-        'address': address
+        'address': address,
+        "roleId": "f3db0ef2-7f03-4728-a868-aacbe76891a8",
+        'isActive': isActive,
+        'isDeleted': isDeleted,
+        'createdDate': createdDate,
+        'createdBy': createdBy,
+        'updatedBy': accountId,
+        'note' : note
+
       };
 
       final response = await http.put(

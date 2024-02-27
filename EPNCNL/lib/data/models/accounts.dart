@@ -15,6 +15,7 @@ class Account {
   String? createdBy;
   String? updatedDate;
   String? updatedBy;
+  String? note;
   Role? role;
   List<Centers>? centers;
 
@@ -35,6 +36,7 @@ class Account {
       this.createdBy,
       this.updatedDate,
       this.updatedBy,
+      this.note,
       this.role,
       this.centers});
 
@@ -55,6 +57,7 @@ class Account {
     createdBy = json['createdBy'];
     updatedDate = json['updatedDate'];
     updatedBy = json['updatedBy'];
+    note = json['note'];
     role = json['role'] != null ? new Role.fromJson(json['role']) : null;
     if (json['centers'] != null) {
       centers = <Centers>[];
@@ -81,6 +84,7 @@ class Account {
     data['createdDate'] = this.createdDate;
     data['createdBy'] = this.createdBy;
     data['updatedDate'] = this.updatedDate;
+    data['note'] = this.note;
     data['updatedBy'] = this.updatedBy;
     if (this.role != null) {
       data['role'] = this.role!.toJson();

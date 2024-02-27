@@ -432,7 +432,12 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
             _image,
             account?.dateOfBirth ?? '',
             account?.gender ?? false,
-            account?.address ?? '');
+            account?.address ?? '',
+            account?.isActive ?? true,
+            account?.isDeleted ?? false,
+            account?.createdDate ?? '',
+            account?.createdBy ?? '',
+            account?.note ?? '');
         AwesomeDialog(
           context: context,
           animType: AnimType.scale,
@@ -445,7 +450,7 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
           ),
           btnOkOnPress: () {
             setState(() {
-              Navigator.pop(context);
+              Navigator.pop(context,true);
             });
           },
         )..show();

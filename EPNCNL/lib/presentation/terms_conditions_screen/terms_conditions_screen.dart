@@ -11,6 +11,29 @@ class TermsConditionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          toolbarHeight: 65,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              width: 300,
+              height: 100, // Add margin
+              child: Text(
+                'Terms & Conditions',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
         body: Container(
           width: double.maxFinite,
           padding: EdgeInsets.only(
@@ -21,30 +44,6 @@ class TermsConditionsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: EdgeInsets.only(left: 1.h),
-                child: Row(
-                  children: [
-                    CustomImageView(
-                      imagePath: ImageConstant.imgArrowDownBlueGray900,
-                      height: 20.v,
-                      width: 26.h,
-                      margin: EdgeInsets.only(
-                        top: 5.v,
-                        bottom: 4.v,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 11.h),
-                      child: Text(
-                        "Terms & Conditions",
-                        style: theme.textTheme.titleLarge,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 38.v),
               Text(
                 "Condition & Attending",
                 style: CustomTextStyles.titleLarge20,

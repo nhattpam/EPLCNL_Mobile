@@ -69,9 +69,13 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                   child: GroupedListView<AccountForum, DateTime>(
                 padding: EdgeInsets.all(8),
                 reverse: true,
-                order: GroupedListOrder.ASC,
+                order: GroupedListOrder.DESC,
                 elements: listForum,
-                groupBy: (message) => DateTime(2024),
+                groupBy: (message) => DateTime(
+                    DateTime.parse(message.messagedDate.toString()).year,
+                    DateTime.parse(message.messagedDate.toString()).month,
+                    DateTime.parse(message.messagedDate.toString()).day
+                ),
                 groupHeaderBuilder: (AccountForum message) => SizedBox(
                   height: 40,
                   child: Center(
@@ -132,7 +136,8 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                                 vertical: 6,
                               ),
                               margin: EdgeInsets.only(bottom: 10),
-                              child: Flexible(
+                              child: Card(
+                                elevation: 8,
                                 child: Padding(
                                   padding: EdgeInsets.all(12),
                                   child:  Text(message.message.toString(),

@@ -256,9 +256,9 @@ class Network {
     }
   }
 
-  static Future<Category> getCategoryByCategoryId(String courseId) async {
+  static Future<Category> getCategoryByCategoryId(String categoryId) async {
     final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/categories/$courseId'; // Replace with your API URL
+        'https://nhatpmse.twentytwo.asia/api/categories/$categoryId'; // Replace with your API URL
 
     try {
       final response = await http.get(
@@ -1089,7 +1089,6 @@ class Network {
       String? transactionId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/transactions/$transactionId'; // Replace with your API URL
-
     try {
       final response = await http.get(
         Uri.parse(apiUrl),

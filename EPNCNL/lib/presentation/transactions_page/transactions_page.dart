@@ -39,37 +39,37 @@ class _TransactionsPageState extends State<TransactionsPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          width: double.maxFinite,
-          decoration: AppDecoration.fillOnPrimaryContainer,
-          child: SingleChildScrollView(
+        resizeToAvoidBottomInset: false,
+        body: SingleChildScrollView(
+          child: Container(
+            width: double.maxFinite,
+            decoration: AppDecoration.fillOnPrimaryContainer,
             child: SizedBox(
-              height: SizeUtils.height * 0.8,
-              width: double.maxFinite,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      padding: EdgeInsets.only(
-                        left: 34.h,
-                        right: 34.h,
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildNovbar(context),
-                          SizedBox(height: 29.v),
-                          _buildUserProfile(context),
-                          SizedBox(height: 39.v),
-                        ],
+                width: double.maxFinite,
+                child: Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        padding: EdgeInsets.only(
+                          left: 34.h,
+                          right: 34.h,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildNovbar(context),
+                            SizedBox(height: 29.v),
+                            _buildUserProfile(context),
+                            SizedBox(height: 39.v),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(

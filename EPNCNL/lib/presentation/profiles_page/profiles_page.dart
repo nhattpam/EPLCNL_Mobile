@@ -9,6 +9,7 @@ import 'package:meowlish/presentation/login_screen/login_screen.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/terms_conditions_screen/terms_conditions_screen.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
+import 'package:meowlish/presentation/wallet_screen/wallet_screen.dart';
 import 'package:meowlish/session/session.dart';
 
 class ProfilesPage extends StatefulWidget {
@@ -137,6 +138,37 @@ class ProfilesPageState extends State<ProfilesPage> {
                                           padding: EdgeInsets.only(left: 14.h),
                                           child: Text(
                                             "Edit Profile",
+                                            style: CustomTextStyles
+                                                .titleSmallBluegray90015,
+                                          ),
+                                        ),
+                                        Spacer(),
+                                        Icon(
+                                          Icons.arrow_forward,
+                                          size: 17.v,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 33.v),
+                                GestureDetector(
+                                  onTap: (){
+                                    onTapTwo(context);
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.only(left: 1.h),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.account_balance_wallet_outlined,
+                                          size: 17.v,
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 14.h),
+                                          child: Text(
+                                            "Wallets",
                                             style: CustomTextStyles
                                                 .titleSmallBluegray90015,
                                           ),
@@ -318,6 +350,13 @@ class ProfilesPageState extends State<ProfilesPage> {
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => EditProfilesScreen()),
+    );
+    fetchAccountData(); // Reload data after returning from EditProfilesScreen
+  }
+  onTapTwo(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => WalletScreen()),
     );
     fetchAccountData(); // Reload data after returning from EditProfilesScreen
   }

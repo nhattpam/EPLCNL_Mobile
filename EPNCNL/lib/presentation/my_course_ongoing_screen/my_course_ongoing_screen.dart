@@ -4,6 +4,7 @@ import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/indox_calls_page/indox_calls_page.dart';
+import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
@@ -29,6 +30,9 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
   GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
   late List<Enrollment> listEnrollment = [];
+
+  int _currentIndex = 1;
+
   @override
   void initState() {
     loadEnrollments();
@@ -96,8 +100,68 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                         SizedBox(height: 20.v),
                         _buildUserProfile(context)
                       ]),
-                )),
-            ));
+                )
+            ),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+              if (index == 0) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => HomePage()),
+                );
+              }
+              if (index == 1) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+                );
+              }
+              if (index == 2) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+                );
+              }
+              if (index == 3) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => TransactionsPage()),
+                );
+              }
+              if (index == 4) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => ProfilesPage()),
+                );
+              }
+            },
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.book),
+                label: 'My Courses',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.chat),
+                label: 'Inbox',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.wallet),
+                label: 'Transaction',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
+            selectedItemColor: Color(0xbbff9300),
+            unselectedItemColor: Color(0xffff9300),
+          ),
+
+        )
+    );
   }
 
   /// Section Widget

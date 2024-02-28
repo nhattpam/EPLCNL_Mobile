@@ -259,8 +259,8 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return AlertDialog(
-                    content: CircularProgressIndicator(),
+                  return Center(
+                    child: CircularProgressIndicator(),
                   );
                 },
               );

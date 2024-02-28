@@ -199,14 +199,7 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
         final forums = listForum[index];
         return GestureDetector(
           onTap: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    IndoxChatsMessagesScreen(forumId: forums.id),
-              ),
-            );
-
+            onTapOne(context,forums.id.toString());
           },
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 25.h),
@@ -221,8 +214,8 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                   margin: EdgeInsets.only(bottom: 21.v),
                   child: Image.network(
                     moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                        ? moduleAccountForumsMap[forums.id]!.first.tutor?.account?.imageUrl ??
-                        moduleAccountForumsMap[forums.id]!.first.learner?.account?.imageUrl ??
+                        ? moduleAccountForumsMap[forums.id]!.last.tutor?.account?.imageUrl ??
+                        moduleAccountForumsMap[forums.id]!.last.learner?.account?.imageUrl ??
                         ''
                         : '',
                     fit: BoxFit.cover,
@@ -243,7 +236,7 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                       ),
                         Text(
                           moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                              ? moduleAccountForumsMap[forums.id]!.first.message ?? ''
+                              ? moduleAccountForumsMap[forums.id]!.last.message ?? ''
                               : '',
                           style: theme.textTheme.labelLarge,
                         ),
@@ -283,7 +276,7 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                           alignment: Alignment.center,
                           child: Text(
                             moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                                ? DateFormat('HH:mm').format(DateTime.parse(moduleAccountForumsMap[forums.id]!.first.messagedDate ?? ''))
+                                ? DateFormat('HH:mm').format(DateTime.parse(moduleAccountForumsMap[forums.id]!.last.messagedDate ?? ''))
                                 : '',
                             style: CustomTextStyles.labelMediumGray700,
                           ),
@@ -297,5 +290,12 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
         );
       },
     );
+  }
+  onTapOne(BuildContext context, String forumId) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => IndoxChatsMessagesScreen(forumId: forumId)),
+    );
+    loadForums(); // Reload data after returning from EditProfilesScreen
   }
 }

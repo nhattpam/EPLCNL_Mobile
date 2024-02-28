@@ -244,7 +244,8 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
 
   /// Section Widget
   Widget _buildFullName(BuildContext context) {
-    return CustomTextFormField(
+    return
+      CustomTextFormField(
       controller: fullNameController,
       hintText: account?.fullName ?? '',
       hintStyle: CustomTextStyles.titleSmallGray80001,

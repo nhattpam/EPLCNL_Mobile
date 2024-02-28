@@ -4,9 +4,11 @@ import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/accountforums.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_outlined_button.dart';
 import 'package:meowlish/widgets/custom_rating_bar.dart';
+import 'package:meowlish/widgets/custom_text_form_field.dart';
 
 class IndoxChatsMessagesScreen extends StatefulWidget {
   final forumId;
@@ -20,7 +22,8 @@ class IndoxChatsMessagesScreen extends StatefulWidget {
 
 class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
   late List<AccountForum> listForum = [];
-  String chat = '';
+  TextEditingController messageController = TextEditingController();
+
   @override
   void initState() {
     loadAccountForumByForumId();
@@ -38,6 +41,7 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final lid = SessionManager().getUserId().toString();
     return SafeArea(
       child: Scaffold(
           resizeToAvoidBottomInset: true,
@@ -61,6 +65,14 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                 ),
               ),
             ),
+            leading: GestureDetector(
+              onTap: (){
+                setState(() {
+                  Navigator.pop(context,true);
+                });
+              },
+              child: Icon(Icons.arrow_back, color: Colors.black),
+            ),
           ),
           backgroundColor: Colors.white,
           body: Column(
@@ -74,8 +86,7 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                 groupBy: (message) => DateTime(
                     DateTime.parse(message.messagedDate.toString()).year,
                     DateTime.parse(message.messagedDate.toString()).month,
-                    DateTime.parse(message.messagedDate.toString()).day
-                ),
+                    DateTime.parse(message.messagedDate.toString()).day),
                 groupHeaderBuilder: (AccountForum message) => SizedBox(
                   height: 40,
                   child: Center(
@@ -94,13 +105,12 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                 ),
                 itemBuilder: (context, AccountForum message) {
                   return Row(
-                    mainAxisAlignment:
-                        message.tutor?.account?.role?.name == "Tutor"
-                            ? MainAxisAlignment.start
-                            : MainAxisAlignment.end,
+                    mainAxisAlignment: message.learner?.account?.id == lid
+                            ? MainAxisAlignment.end
+                            : MainAxisAlignment.start,
                     children: [
-                      if(message.tutor?.account?.role?.name == 'Tutor')
-                         Container(
+                      if (message.learner?.account?.id != lid)
+                        Container(
                           height: 50.adaptSize,
                           width: 50.adaptSize,
                           margin: EdgeInsets.only(bottom: 21.v),
@@ -114,43 +124,46 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                               radius: BorderRadius.circular(27.h)),
                         ),
                       Align(
-                        alignment: message.tutor?.account?.role?.name == "Tutor"
+                        alignment: message.learner?.account?.id != lid
                             ? Alignment.centerLeft
                             : Alignment.centerRight,
-                        child: Column(
-                          children: [
-                            if(message.tutor?.account?.role?.name == 'Tutor')
-                              Center(child: Text(message.tutor?.account?.fullName ?? '')),
-                            if(message.learner?.account?.role?.name == 'Learner')
-                              Center(child: Text(message.learner?.account?.fullName ?? '')),
-                                Container(
-                              decoration: BoxDecoration(
-                                color: message.tutor?.account?.role?.name == "Tutor"
-                                    ? Colors.orange
-                                    : Colors.grey.shade300,
-                                borderRadius: BorderRadius.circular(
-                                    14), // Use your desired border radius
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
-                              ),
-                              margin: EdgeInsets.only(bottom: 10),
-                              child: Card(
-                                elevation: 8,
+                          child: Column(
+                            children: [
+                              if (message.learner?.account?.id == lid)
+                                Center(child: Text(message.learner?.account?.fullName ?? '')),
+                              if (message.learner?.account?.id != lid)
+                                Center(child: Text(message.learner?.account?.fullName ?? '')),
+                              // if (message.learner?.account?.role?.name == 'Learner')
+                              //   Center(
+                              //       child: Text(
+                              //           message.learner?.account?.fullName ??
+                              //               '')),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: message.learner?.account?.id != lid
+                                      ? Colors.orange
+                                      : Colors.grey.shade300,
+                                  borderRadius: BorderRadius.circular(
+                                      14), // Use your desired border radius
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                margin: EdgeInsets.only(bottom: 10),
                                 child: Padding(
                                   padding: EdgeInsets.all(12),
-                                  child:  Text(message.message.toString(),
-                                    softWrap: true,
-                                  ),
+                                    child: Text(
+                                      message.message.toString(),
+                                      softWrap: true,
+                                    ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
                       ),
                       SizedBox(height: 8),
-                      if(message.learner?.account?.role?.name == 'Learner')
+                      if (message.learner?.account?.id == lid)
                         Container(
                           height: 50.adaptSize,
                           width: 50.adaptSize,
@@ -170,22 +183,30 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
               )),
               Container(
                 color: Colors.white,
-                child: TextField(
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(12),
-                    hintText: 'Message',
-                    suffixIcon: GestureDetector(
-                      onTap: (){
-                        Network.createAccountForum(forumId: widget.forumId, message: chat);
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextFormField(
+                        controller: messageController,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 20.h,
+                          vertical: 21.v,
+                        ),
+                        borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.send),
+                      onPressed: () {
+                        Network.createAccountForum(forumId: widget.forumId, message: messageController.text)
+                            .then((_) {
+                          messageController.clear();
+                          loadAccountForumByForumId();
+                        });
                       },
-                        child: Icon(Icons.send)
-                    ), // Icon you want to add as suffix
-                  ),
-                  onSubmitted: (text){
-                    setState(() {
-                      chat = text.toString();
-                    });
-                  },
+
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: 20)

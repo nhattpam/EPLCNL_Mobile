@@ -436,6 +436,38 @@ class Network {
     }
   }
 
+  static Future<List<Course>> getCourseByTutorId(String tutorId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/tutors/$tutorId/courses';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final List<dynamic> courseListJson = jsonDecode(response.body);
+        // Map each JSON object to a Pet object and return a list of pets
+        final List<Course> courseList = courseListJson
+            .map((json) => Course.fromJson(json as Map<String, dynamic>))
+            .toList();
+
+        return courseList;
+      } else {
+        // If the request fails, throw an exception or return an empty list
+        throw Exception(
+            'Failed to fetch modules. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
 ////// Put Api for Account here
   static Future<Account> getAccount() async {
     final accountId = SessionManager().getUserId() ?? 0;

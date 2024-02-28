@@ -253,7 +253,7 @@ class SingleMentorDetailsRatingTabContainerScreenState
                 tabs: [
                   Tab(
                     child: Text(
-                      "Couses",
+                      "Courses",
                     ),
                   ),
                   Tab(
@@ -269,8 +269,8 @@ class SingleMentorDetailsRatingTabContainerScreenState
               child: TabBarView(
                 controller: tabviewController,
                 children: [
-                  SingleMentorDetailsPage(),
-                  SingleMentorDetailsPage(),
+                  SingleMentorDetailsPage(tutorId: widget.tutorID),
+                  SingleMentorDetailsPage(tutorId: widget.tutorID),
                 ],
               ),
             ),

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/network/network.dart';
 
 import '../single_mentor_details_page/widgets/productcard2_item_widget.dart';
 
 // ignore_for_file: must_be_immutable
 class SingleMentorDetailsPage extends StatefulWidget {
-  const SingleMentorDetailsPage({Key? key})
+  final String tutorId;
+  const SingleMentorDetailsPage({Key? key, required this.tutorId})
       : super(
           key: key,
         );
@@ -18,48 +21,166 @@ class SingleMentorDetailsPageState extends State<SingleMentorDetailsPage>
     with AutomaticKeepAliveClientMixin<SingleMentorDetailsPage> {
   @override
   bool get wantKeepAlive => true;
+  late List<Course> chosenTutor = [];
 
+  @override
+  void initState() {
+    loadCourseByTutorId();
+    super.initState();
+  }
+  void loadCourseByTutorId() async {
+    try {
+      final tutors = await Network.getCourseByTutorId(widget.tutorId);
+      setState(() {
+        chosenTutor = tutors;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          width: double.maxFinite,
-          decoration: AppDecoration.fillOnPrimaryContainer,
-          child: Column(
-            children: [
-              SizedBox(height: 20.v),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 14.h,
-                  right: 22.h,
-                ),
-                child: ListView.separated(
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  separatorBuilder: (
-                    context,
-                    index,
-                  ) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(vertical: 9.5.v),
-                      child: SizedBox(
-                        width: 320.h,
-                        child: Divider(
-                          height: 1.v,
-                          thickness: 1.v,
-                          color: appTheme.blueGray200,
+        body: SingleChildScrollView(
+          child: Container(
+            width: double.maxFinite,
+            decoration: AppDecoration.fillOnPrimaryContainer,
+            child: Column(
+              children: [
+                SizedBox(height: 20.v),
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 14.h,
+                    right: 22.h,
+                  ),
+                  child: ListView.separated(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    separatorBuilder: (
+                      context,
+                      index,
+                    ) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 9.5.v),
+                        child: SizedBox(
+                          width: 320.h,
+                          child: Divider(
+                            height: 1.v,
+                            thickness: 1.v,
+                            color: appTheme.blueGray200,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  itemCount: 2,
-                  itemBuilder: (context, index) {
-                    return Productcard2ItemWidget();
-                  },
+                      );
+                    },
+                    itemCount: chosenTutor.length,
+                    itemBuilder: (context, index) {
+                      final courses = chosenTutor[index];
+                      return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: 130.adaptSize,
+                              width: 130.adaptSize,
+                              decoration: BoxDecoration(
+                                color: appTheme.black900,
+                                borderRadius: BorderRadius.circular(
+                                  16.h,
+                                ),
+                              ),
+                              child: Image.network(
+                                courses.imageUrl.toString(),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: 15.v,
+                                bottom: 18.v,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 176.h,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          courses.category?.description ?? '',
+                                          style: CustomTextStyles.labelLargeOrangeA700,
+                                        ),
+                                        CustomImageView(
+                                          imagePath: ImageConstant.imgBookmark,
+                                          height: 16.v,
+                                          width: 12.h,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 9.v),
+                                  Text(
+                                    courses.name.toString(),
+                                    style: theme.textTheme.titleMedium,
+                                  ),
+                                  SizedBox(height: 2.v),
+                                  Row(
+                                    children: [
+                                      Text(
+                                      '\$' + courses.stockPrice.toString(),
+                                        style: CustomTextStyles.titleMediumMulishPrimary,
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 5.v),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.yellow,
+                                        size: 12.v,
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          left: 3.h,
+                                          top: 3.v,
+                                        ),
+                                        child: Text(
+                                          courses.rating.toString(),
+                                          style: theme.textTheme.labelMedium,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 16.h),
+                                        child: Text(
+                                          "|",
+                                          style: CustomTextStyles.titleSmallBlack900,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          left: 16.h,
+                                          top: 3.v,
+                                        ),
+                                        child: Text(
+                                          "7830 Std",
+                                          style: theme.textTheme.labelMedium,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

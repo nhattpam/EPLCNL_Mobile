@@ -493,10 +493,6 @@ class SingleCourseDetailsCurriculumPageState
                         _buildVideoCourseListView(),
                       if (chosenCourse.isOnlineClass == true)
                         _buildClassCourseListView(),
-                      SizedBox(height: 21.v),
-                      CustomElevatedButton(
-                        text: "Enroll Course",
-                      )
                     ],
                   ),
                 ),

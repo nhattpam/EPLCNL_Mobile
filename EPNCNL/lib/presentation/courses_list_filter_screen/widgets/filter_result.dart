@@ -123,29 +123,36 @@ class FilterResultState extends State<FilterResultScreen> {
 
   /// Section Widget
   Widget _buildHeading(BuildContext context) {
-    return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-              text: TextSpan(children: [
-                TextSpan(
-                    text: "Result: ",
-                    style: CustomTextStyles.titleSmallJostff202244),
-              ]),
-              textAlign: TextAlign.left),
-          Padding(
-              padding: EdgeInsets.only(top: 7.v),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                        widget.category.length.toString() +
-                            " Founds".toUpperCase(),
-                        style: CustomTextStyles.labelLargePrimary),
-                  ]))
-        ]);
+    List<String> categoryIds = widget.category.map((category) => category.id.toString()).toList();
+    return FutureBuilder<List<Course>>(
+      future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt()),
+      builder: (context, snapshot) {
+        List<Course>? data = snapshot.data;
+        return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                  text: TextSpan(children: [
+                    TextSpan(
+                        text: "Result: ",
+                        style: CustomTextStyles.titleSmallJostff202244),
+                  ]),
+                  textAlign: TextAlign.left),
+              Padding(
+                  padding: EdgeInsets.only(top: 7.v),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                            (data?.length ?? '').toString() + " Founds".toUpperCase(),
+                            style: CustomTextStyles.labelLargePrimary),
+                      ]))
+            ]);
+      },
+    );
+
   }
 
   /// Navigates to the singleCourseDetailsTabContainerScreen when the action is triggered.
@@ -162,7 +169,6 @@ class FilterResultState extends State<FilterResultScreen> {
   Widget buildResults(BuildContext context) {
     // Extracting category IDs
     List<String> categoryIds = widget.category.map((category) => category.id.toString()).toList();
-    print(categoryIds);
     return FutureBuilder<List<Course>>(
       future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt()),
       builder: (context, snapshot) {

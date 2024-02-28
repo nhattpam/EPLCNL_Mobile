@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/tutors.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/single_mentor_details_page/single_mentor_details_page.dart';
+import 'package:meowlish/presentation/single_mentor_details_rating_page/single_mentor_details_rating_page.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_outlined_button.dart';
 
@@ -23,10 +25,13 @@ class SingleMentorDetailsRatingTabContainerScreenState
     with TickerProviderStateMixin {
   late TabController tabviewController;
   late Tutor chosenTutor = Tutor();
+  late List<Course> _chosenTutor = [];
+
   @override
   void initState() {
     super.initState();
     loadTutorByTutorID();
+    loadCourseByTutorId();
     tabviewController = TabController(length: 2, vsync: this);
   }
   void loadTutorByTutorID() async {
@@ -40,7 +45,17 @@ class SingleMentorDetailsRatingTabContainerScreenState
       print('Error: $e');
     }
   }
-
+  void loadCourseByTutorId() async {
+    try {
+      final tutors = await Network.getCourseByTutorId(widget.tutorID);
+      setState(() {
+        _chosenTutor = tutors;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -142,7 +157,7 @@ class SingleMentorDetailsRatingTabContainerScreenState
                 Column(
                   children: [
                     Text(
-                      "26",
+                      _chosenTutor.length.toString(),
                       style: CustomTextStyles.titleMedium17,
                     ),
                     Text(
@@ -258,7 +273,7 @@ class SingleMentorDetailsRatingTabContainerScreenState
                   ),
                   Tab(
                     child: Text(
-                      "Ratings",
+                      "Reviews",
                     ),
                   ),
                 ],
@@ -270,7 +285,7 @@ class SingleMentorDetailsRatingTabContainerScreenState
                 controller: tabviewController,
                 children: [
                   SingleMentorDetailsPage(tutorId: widget.tutorID),
-                  SingleMentorDetailsPage(tutorId: widget.tutorID),
+                  SingleMentorDetailsRatingPage(tutorId: widget.tutorID),
                 ],
               ),
             ),

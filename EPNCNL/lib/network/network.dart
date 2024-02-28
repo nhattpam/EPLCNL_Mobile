@@ -15,6 +15,7 @@ import 'package:meowlish/data/models/learners.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
+import 'package:meowlish/data/models/paperworks.dart';
 import 'package:meowlish/data/models/questionanswers.dart';
 import 'package:meowlish/data/models/questions.dart';
 import 'package:meowlish/data/models/quizzes.dart';
@@ -457,6 +458,38 @@ class Network {
             .toList();
 
         return courseList;
+      } else {
+        // If the request fails, throw an exception or return an empty list
+        throw Exception(
+            'Failed to fetch modules. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+  static Future<List<PaperWork>> getPaperWorkByTutorId(String tutorId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/tutors/$tutorId/paper-works';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final List<dynamic> paperworkListJson = jsonDecode(response.body);
+        // Map each JSON object to a Pet object and return a list of pets
+        final List<PaperWork> paperworkList = paperworkListJson
+            .map((json) => PaperWork.fromJson(json as Map<String, dynamic>))
+            .toList();
+
+        return paperworkList;
       } else {
         // If the request fails, throw an exception or return an empty list
         throw Exception(

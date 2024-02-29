@@ -6,6 +6,8 @@ import 'package:internet_file/internet_file.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
+import 'package:meowlish/data/models/quizzes.dart';
+import 'package:meowlish/presentation/doing_quiz_screen/doing_quiz_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -71,6 +73,14 @@ class SingleCourseMeetDetailsCurriculcumPageState
         context: context,
         builder: (BuildContext context) {
           return MultiSelect(lessonId: lessonId);
+        });
+  }
+
+  void _showTopic(String lessonId) async {
+    final List<String>? result = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return MultiTopic(lessonId: lessonId);
         });
   }
 
@@ -169,56 +179,83 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                               .toString()
                                           : "", // Assuming 'name' is the property you want to display
                                     ),
-                                    Row(
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            launch(classModule
-                                                    .classLesson?.classUrl ??
-                                                "");
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            minimumSize: Size(100, 50),
-                                            primary: Color(0xffbfe25c),
-                                            // Background color
-                                            onPrimary: Colors.white,
-                                            // Text color
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
-                                            ),
-                                          ),
-                                          child: Text('Meet URL'),
-                                        ),
-                                        VerticalDivider(),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8.0),
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
-                                              //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
-                                              // }
-                                              _showMultiSelect(
-                                                  listClassModule[index]
-                                                          .classLesson
-                                                          ?.id ??
-                                                      '');
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              minimumSize: Size(100, 50),
-                                              primary: Color(0xffefc83c),
-                                              // Background color
-                                              onPrimary: Colors.white,
-                                              // Text color
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
+                                        Row(
+                                          children: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                launch(classModule
+                                                        .classLesson?.classUrl ??
+                                                    "");
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                minimumSize: Size(100, 50),
+                                                primary: Color(0xffbfe25c),
+                                                // Background color
+                                                onPrimary: Colors.white,
+                                                // Text color
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10.0),
+                                                ),
                                               ),
+                                              child: Text('Meet URL'),
                                             ),
-                                            child: Text('Materials'),
-                                          ),
-                                        )
+                                            VerticalDivider(),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.only(left: 8.0),
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
+                                                  //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
+                                                  // }
+                                                  _showMultiSelect(
+                                                      listClassModule[index]
+                                                              .classLesson
+                                                              ?.id ??
+                                                          '');
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  minimumSize: Size(100, 50),
+                                                  primary: Color(0xffefc83c),
+                                                  // Background color
+                                                  onPrimary: Colors.white,
+                                                  // Text color
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(10.0),
+                                                  ),
+                                                ),
+                                                child: Text('Materials'),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        SizedBox(height: 5.v),
+                                        Row(
+                                          children: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                _showTopic(classModule.classLesson?.id ?? '');
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                minimumSize: Size(100, 50),
+                                                primary: Color(0xFFF887A8),
+                                                // Background color
+                                                onPrimary: Colors.white,
+                                                // Text color
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10.0),
+                                                ),
+                                              ),
+                                              child: Text('Topic'),
+                                            ),
+                                          ],
+                                        ),
                                       ],
                                     ),
                                   ],
@@ -534,6 +571,129 @@ class _MultiSelectState extends State<MultiSelect> {
                     ],
                   ),
                 );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MultiTopic extends StatefulWidget {
+  final String lessonId;
+  const MultiTopic({super.key, required this.lessonId});
+
+  @override
+  State<MultiTopic> createState() => _MultiTopicState();
+}
+
+class _MultiTopicState extends State<MultiTopic> {
+
+  List<ClassTopic> listClassTopic = [];
+  Map<String, List<Quiz>> moduleQuizMap = {};
+
+  @override
+  void initState() {
+    super.initState();
+    loadClassModuleByCourseId();
+  }
+
+  void loadClassModuleByCourseId() async {
+    List<ClassTopic> loadedClassTopic =
+        await Network.getClassTopicsByClassLessonId(widget.lessonId);
+    setState(() {
+      listClassTopic = loadedClassTopic;
+    });
+    loadQuiz();
+  }
+
+  Future<void> loadQuizByClassTopicId(String classtopicId) async {
+    try {
+      List<Quiz> loadedQuiz =
+          await Network.getQuizByClassTopicId(classtopicId);
+      setState(() {
+        moduleQuizMap[classtopicId] = loadedQuiz;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+  Future<void> loadQuiz() async {
+    try {
+      for (final classTopic in listClassTopic) {
+        await loadQuizByClassTopicId(classTopic.id.toString());
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lesson material: $e');
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Center(child: Text('Class Topic')),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Adjust the height as needed
+          Center(child: Text('Choose quiz to do')),
+          SingleChildScrollView(
+            child: ListBody(
+              children: listClassTopic.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+                return Visibility(
+                  visible: moduleQuizMap[listClassTopic[index].id] != null &&
+                      moduleQuizMap[listClassTopic[index].id]!.isNotEmpty,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Topic:" +" "+ listClassTopic[index].name.toString(),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary),
+                          ),
+                        ],
+                      ),
+                      // Only show the assignments if the module is not minimized
+                        for (int assignmentIndex = 0; assignmentIndex < (moduleQuizMap[listClassTopic[index].id]?.length ?? 0); assignmentIndex++)
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DoingQuizScreen(
+                                      quizId: moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id.toString(),
+                                        cooldownTime: Duration(
+                                            minutes: moduleQuizMap[
+                                            listClassTopic[index].id]![assignmentIndex]
+                                                .deadline as int))),
+                              );
+                            },
+                            child: Text(
+                                moduleQuizMap[listClassTopic[index].id]![assignmentIndex]
+                                    .name
+                                    .toString(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, color: Colors.black)),
+
+                          ),
+                    ],
+                  ),
+                );
+
               }).toList(),
             ),
           ),

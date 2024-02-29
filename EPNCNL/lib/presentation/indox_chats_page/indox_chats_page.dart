@@ -213,11 +213,12 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                   width: 50.adaptSize,
                   margin: EdgeInsets.only(bottom: 21.v),
                   child: Image.network(
-                    moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                        ? moduleAccountForumsMap[forums.id]!.last.tutor?.account?.imageUrl ??
-                        moduleAccountForumsMap[forums.id]!.last.learner?.account?.imageUrl ??
-                        ''
-                        : '',
+                    // moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
+                    //     ? moduleAccountForumsMap[forums.id]!.last.tutor?.account?.imageUrl ??
+                    //     moduleAccountForumsMap[forums.id]!.last.learner?.account?.imageUrl ??
+                    //     ''
+                    //     : ''
+                    forums.course?.imageUrl ?? '',
                     fit: BoxFit.cover,
                   ),
                 ),

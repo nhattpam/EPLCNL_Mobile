@@ -178,7 +178,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
               __timer = null;
               resetQuiz();
             },
-            btnOkText: 'Return to Curriculum',
+            btnOkText: 'Return',
             btnOkOnPress: () {
               setState(() {
                 Navigator.pop(context);

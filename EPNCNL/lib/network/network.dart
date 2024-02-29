@@ -702,6 +702,36 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+  static Future<List<Quiz>> getQuizByClassTopicId(
+      String classLessonId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/class-topics/$classLessonId/quizzes';
+    print(apiUrl);// Replace with your API URL
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> quizListJson = jsonDecode(response.body);
+
+        // Map each JSON object to a Pet object and return a list of pets
+        return quizListJson
+            .map((json) => Quiz.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch class topics. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
 
   //lesson
   static Future<List<Lesson>> getLessonsByModuleId(String moduleId) async {

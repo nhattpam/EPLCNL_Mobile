@@ -3,11 +3,13 @@ import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_file/internet_file.dart';
+import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/presentation/doing_quiz_screen/doing_quiz_screen.dart';
+import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -35,10 +37,11 @@ class SingleCourseMeetDetailsCurriculcumPageState
     extends State<SingleCourseMeetDetailsCurriculcumPage>
     with AutomaticKeepAliveClientMixin<SingleCourseMeetDetailsCurriculcumPage> {
   DateTime selectedDatesFromCalendar1 = DateTime.now();
-  late List<ClassModule> listClassModule = [];
+  FetchCourseList _classmoduleList = FetchCourseList();
   late List<ClassTopic> listClassTopic = [];
   Map<String, List<ClassTopic>> moduleClassLessonMap = {};
   late ClassModule chosenCourse = ClassModule();
+  String query = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   @override
   bool get wantKeepAlive => true;
@@ -46,15 +49,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
   @override
   void initState() {
     super.initState();
-    loadClassModuleByCourseId();
-  }
-
-  void loadClassModuleByCourseId() async {
-    List<ClassModule> loadedClassModules =
-        await Network.getClassModulesByCourseId(widget.courseID);
-    setState(() {
-      listClassModule = loadedClassModules;
-    });
+    // loadClassModuleByCourseId();
   }
 
   Future<void> loadClassTopicsByClassLessonId(String classlessonId) async {
@@ -123,148 +118,160 @@ class SingleCourseMeetDetailsCurriculcumPageState
                     Divider(
                       color: appTheme.gray50,
                     ),
-                    ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: listClassModule.length,
-                      itemBuilder: (context, index) {
-                        final classModule = listClassModule[index];
-                        // loadClassTopicsByClassLessonId();
-                        return Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    classModule.classLesson?.classHours ?? "",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  lineGen(
-                                    lines: [20.0, 30.0, 40.0, 10.0],
-                                  )
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.only(left: 16, top: 8),
-                                height: 150,
-                                decoration: BoxDecoration(
-                                  color: Color(0xfff6f6f5),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0)),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                    FutureBuilder<List<ClassModule>>(
+                        future: _classmoduleList.getClassModule(query: query, courseId: widget.courseID),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          List<ClassModule>? data = snapshot.data;
+                          return ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              // itemCount: listClassModule.length,
+                              itemCount: data?.length?? 0,
+                              itemBuilder: (context, index) {
+                                final classModule = data?[index];
+                                // loadClassTopicsByClassLessonId();
+                                return Row(
                                   children: [
-                                    Container(
-                                      height: 21,
-                                      child: Row(
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
                                         children: [
-                                          Text(classModule.course?.name ?? "",
-                                              style: TextStyle(
-                                                fontSize: 21,
-                                                fontWeight: FontWeight.bold,
-                                              ))
+                                          Text(
+                                            classModule?.classLesson?.classHours ?? "",
+                                            style:
+                                            TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          lineGen(
+                                            lines: [20.0, 30.0, 40.0, 10.0],
+                                          )
                                         ],
                                       ),
                                     ),
-                                    Text(
-                                      listClassTopic.isNotEmpty
-                                          ? listClassTopic[index]
-                                              .name
-                                              .toString()
-                                          : "", // Assuming 'name' is the property you want to display
-                                    ),
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
+                                    SizedBox(width: 12),
+                                    Expanded(
+                                      child: Container(
+                                        padding: EdgeInsets.only(left: 16, top: 8),
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          color: Color(0xfff6f6f5),
+                                          borderRadius:
+                                          BorderRadius.all(Radius.circular(20.0)),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                launch(classModule
-                                                        .classLesson?.classUrl ??
-                                                    "");
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                minimumSize: Size(100, 50),
-                                                primary: Color(0xffbfe25c),
-                                                // Background color
-                                                onPrimary: Colors.white,
-                                                // Text color
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10.0),
-                                                ),
+                                            Container(
+                                              height: 21,
+                                              child: Row(
+                                                children: [
+                                                  Text(classModule?.course?.name ?? "",
+                                                      style: TextStyle(
+                                                        fontSize: 21,
+                                                        fontWeight: FontWeight.bold,
+                                                      ))
+                                                ],
                                               ),
-                                              child: Text('Meet URL'),
                                             ),
-                                            VerticalDivider(),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.only(left: 8.0),
-                                              child: ElevatedButton(
-                                                onPressed: () {
-                                                  // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
-                                                  //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
-                                                  // }
-                                                  _showMultiSelect(
-                                                      listClassModule[index]
-                                                              .classLesson
-                                                              ?.id ??
-                                                          '');
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  minimumSize: Size(100, 50),
-                                                  primary: Color(0xffefc83c),
-                                                  // Background color
-                                                  onPrimary: Colors.white,
-                                                  // Text color
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(10.0),
-                                                  ),
+                                            Text(
+                                              listClassTopic.isNotEmpty
+                                                  ? listClassTopic[index]
+                                                  .name
+                                                  .toString()
+                                                  : "", // Assuming 'name' is the property you want to display
+                                            ),
+                                            Column(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        launch(classModule
+                                                            ?.classLesson?.classUrl ??
+                                                            "");
+                                                      },
+                                                      style: ElevatedButton.styleFrom(
+                                                        minimumSize: Size(100, 50),
+                                                        primary: Color(0xffbfe25c),
+                                                        // Background color
+                                                        onPrimary: Colors.white,
+                                                        // Text color
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                          BorderRadius.circular(10.0),
+                                                        ),
+                                                      ),
+                                                      child: Text('Meet URL'),
+                                                    ),
+                                                    VerticalDivider(),
+                                                    Padding(
+                                                      padding:
+                                                      const EdgeInsets.only(left: 8.0),
+                                                      child: ElevatedButton(
+                                                        onPressed: () {
+                                                          // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
+                                                          //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
+                                                          // }
+                                                          _showMultiSelect(
+                                                              data?[index]
+                                                                  .classLesson
+                                                                  ?.id ??
+                                                                  '');
+                                                        },
+                                                        style: ElevatedButton.styleFrom(
+                                                          minimumSize: Size(100, 50),
+                                                          primary: Color(0xffefc83c),
+                                                          // Background color
+                                                          onPrimary: Colors.white,
+                                                          // Text color
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                            BorderRadius.circular(10.0),
+                                                          ),
+                                                        ),
+                                                        child: Text('Materials'),
+                                                      ),
+                                                    )
+                                                  ],
                                                 ),
-                                                child: Text('Materials'),
-                                              ),
-                                            )
+                                                SizedBox(height: 5.v),
+                                                Row(
+                                                  children: [
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        _showTopic(classModule?.classLesson?.id ?? '');
+                                                      },
+                                                      style: ElevatedButton.styleFrom(
+                                                        minimumSize: Size(100, 50),
+                                                        primary: Color(0xFFF887A8),
+                                                        // Background color
+                                                        onPrimary: Colors.white,
+                                                        // Text color
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                          BorderRadius.circular(10.0),
+                                                        ),
+                                                      ),
+                                                      child: Text('Topic'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ],
                                         ),
-                                        SizedBox(height: 5.v),
-                                        Row(
-                                          children: [
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                _showTopic(classModule.classLesson?.id ?? '');
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                minimumSize: Size(100, 50),
-                                                primary: Color(0xFFF887A8),
-                                                // Background color
-                                                onPrimary: Colors.white,
-                                                // Text color
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10.0),
-                                                ),
-                                              ),
-                                              child: Text('Topic'),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    )
                                   ],
-                                ),
-                              ),
-                            )
-                          ],
-                        );
-                      },
+                                );
+                              },
+                            );
+                        },
                     ),
                     SizedBox(height: 50.v),
                     CustomElevatedButton(
@@ -300,7 +307,13 @@ class SingleCourseMeetDetailsCurriculcumPageState
           width: 46.h,
           height: 64.v,
         ),
-        onDateChange: (selectedDate) {},
+          onDateChange: (selectedDate) {
+            print(selectedDate);
+            setState(() {
+              String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+              query = formattedDate;
+            });
+          },
         itemBuilder:
             (context, dayNumber, dayName, monthName, fullDate, isSelected) {
           return isSelected

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:meowlish/data/models/classmodules.dart';
 
 import '../../../data/models/courses.dart';
 
@@ -27,6 +28,40 @@ class FetchCourseList {
                     .contains(query.toLowerCase());
 
             return courseNameMatches || descriptionMatches;
+          }).toList();
+        }
+      } else {
+        print("fetch error");
+      }
+    } on Exception catch (e) {
+      print('error: $e');
+    }
+    return results;
+  }
+  Future<List<ClassModule>> getClassModule({String? query, String? courseId}) async {
+    var data = [];
+    List<ClassModule> results = [];
+    String urlList = 'https://nhatpmse.twentytwo.asia/api/courses/$courseId/class-modules';
+    var url = Uri.parse(urlList);
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        data = json.decode(response.body);
+        results = data.map((e) => ClassModule.fromJson(e)).toList();
+        if (query != null) {
+          results = results.where((element) {
+            if (element.startDate != null) {
+              // Convert startDate to DateTime object
+              DateTime startDate = DateTime.parse(element.startDate!);
+              // Convert query to DateTime object
+              DateTime queryDate = DateTime.parse(query);
+              // Check if startDate matches the query date
+              return startDate.year == queryDate.year &&
+                  startDate.month == queryDate.month &&
+                  startDate.day == queryDate.day;
+            } else {
+              return false;
+            }
           }).toList();
         }
       } else {

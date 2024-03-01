@@ -127,39 +127,45 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                         alignment: message.learner?.account?.id != lid
                             ? Alignment.centerLeft
                             : Alignment.centerRight,
-                          child: Column(
-                            children: [
-                              if (message.learner?.account?.id == lid)
-                                Center(child: Text(message.learner?.account?.fullName ?? '')),
-                              if (message.learner?.account?.id != lid)
-                                Center(child: Text(message.learner?.account?.fullName ?? '')),
-                              // if (message.learner?.account?.role?.name == 'Learner')
-                              //   Center(
-                              //       child: Text(
-                              //           message.learner?.account?.fullName ??
-                              //               '')),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: message.learner?.account?.id != lid
-                                      ? Colors.orange
-                                      : Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(
-                                      14), // Use your desired border radius
+                          child: IntrinsicWidth(
+                            child: Column(
+                              children: [
+                                if (message.learner?.account?.id == lid)
+                                  Center(child: Text(message.learner?.account?.fullName ?? '')),
+                                if (message.learner?.account?.id != lid)
+                                  Center(child: Text(message.learner?.account?.fullName ?? '')),
+                                // if (message.learner?.account?.role?.name == 'Learner')
+                                //   Center(
+                                //       child: Text(
+                                //           message.learner?.account?.fullName ??
+                                //               '')),
+                                Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 330,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: message.learner?.account?.id != lid
+                                        ? Colors.orange
+                                        : Colors.grey.shade300,
+                                    borderRadius: BorderRadius.circular(
+                                        14), // Use your desired border radius
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  margin: EdgeInsets.only(bottom: 10),
+                                  child: Padding(
+                                    padding: EdgeInsets.all(12),
+                                      child: Text(
+                                        message.message.toString(),
+                                        softWrap: true,
+                                        overflow: TextOverflow.fade,
+                                      ),
+                                  ),
                                 ),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 6,
-                                ),
-                                margin: EdgeInsets.only(bottom: 10),
-                                child: Padding(
-                                  padding: EdgeInsets.all(12),
-                                    child: Text(
-                                      message.message.toString(),
-                                      softWrap: true,
-                                    ),
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                       ),
                       SizedBox(height: 8),
@@ -197,8 +203,8 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                     ),
                     IconButton(
                       icon: Icon(Icons.send),
-                      onPressed: () {
-                        Network.createAccountForum(forumId: widget.forumId, message: messageController.text)
+                      onPressed: ()  async{
+                        await Network.createAccountForum(forumId: widget.forumId, message: messageController.text)
                             .then((_) {
                           messageController.clear();
                           loadAccountForumByForumId();

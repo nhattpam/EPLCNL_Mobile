@@ -228,20 +228,38 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                     top: 7.v,
                     bottom: 23.v,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        forums.course?.name ?? '',
-                        style: theme.textTheme.titleMedium,
-                      ),
-                        Text(
-                          moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                              ? moduleAccountForumsMap[forums.id]!.last.message ?? ''
-                              : '',
-                          style: theme.textTheme.labelLarge,
+                  child: IntrinsicWidth(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          constraints: const BoxConstraints(
+                            maxWidth: 150,
+                          ),
+                          child: Text(
+                            forums.course?.name ?? '',
+                            style: theme.textTheme.titleMedium,
+                            overflow: TextOverflow.fade,
+                            softWrap: true,
+                            maxLines: 2,
+                          ),
                         ),
-                    ],
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 150,
+                            ),
+                            child: Text(
+                              moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
+                                  ? moduleAccountForumsMap[forums.id]!.last.message ?? ''
+                                  : '',
+                              style: theme.textTheme.labelLarge,
+                              overflow: TextOverflow.fade,
+                              softWrap: true,
+                              maxLines: 2,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
                 Spacer(),

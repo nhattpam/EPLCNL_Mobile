@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/utils/size_utils.dart';
+import 'package:meowlish/data/models/wallets.dart';
 import 'package:meowlish/network/network.dart';
 
 import '../../data/models/accounts.dart';
@@ -13,11 +14,13 @@ class WalletScreen extends StatefulWidget {
 
 class _WalletScreenState extends State<WalletScreen> {
   late Account? account = Account();
+  late Wallet? wallet = Wallet();
 
   @override
   void initState() {
     super.initState();
     fetchAccountData();
+    fetchWalletData();
   }
 
   Future<void> fetchAccountData() async {
@@ -26,6 +29,14 @@ class _WalletScreenState extends State<WalletScreen> {
     setState(() {
       // Set the list of pet containers in your state
       account = acc;
+    });
+  }
+  Future<void> fetchWalletData() async {
+    Wallet wlet = await Network.getWalletByAccountId();
+
+    setState(() {
+      // Set the list of pet containers in your state
+      wallet = wlet;
     });
   }
 
@@ -78,7 +89,7 @@ class _WalletScreenState extends State<WalletScreen> {
                               fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          '11111\$',
+                          (wallet?.balance ?? '').toString() + '\$',
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 15,

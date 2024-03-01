@@ -165,17 +165,14 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Container(
-                                              height: 21,
-                                              child: Row(
-                                                children: [
-                                                  Text(classModule?.course?.name ?? "",
+                                            Expanded(
+                                                  child: Text(classModule?.course?.name ?? "",
                                                       style: TextStyle(
-                                                        fontSize: 21,
+                                                        fontSize: 15,
                                                         fontWeight: FontWeight.bold,
-                                                      ))
-                                                ],
-                                              ),
+                                                      ),
+                                                  overflow: TextOverflow.fade,
+                                                  softWrap: true)
                                             ),
                                             Text(
                                               listClassTopic.isNotEmpty
@@ -293,7 +290,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
     // DateTime dateTime = DateTime.parse(timestamp);
     // int day = dateTime.day;
     return SizedBox(
-      height: 64.v,
+      height: 130.v,
       width: 368.h,
       child: EasyDateTimeLine(
         initialDate: selectedDatesFromCalendar1,
@@ -301,8 +298,9 @@ class SingleCourseMeetDetailsCurriculcumPageState
         headerProps: EasyHeaderProps(
           selectedDateFormat: SelectedDateFormat.fullDateDMY,
           monthPickerType: MonthPickerType.switcher,
-          showHeader: false,
+          showHeader: true,
         ),
+
         dayProps: EasyDayProps(
           width: 46.h,
           height: 64.v,

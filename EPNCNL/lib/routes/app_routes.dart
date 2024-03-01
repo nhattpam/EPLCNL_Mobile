@@ -190,7 +190,6 @@ class AppRoutes {
     myCourseOngoingVideoScreen: (context) => MyCourseOngoingVideoScreen(),
     myCourseCourseCompletedScreen: (context) => MyCourseCourseCompletedScreen(),
     indoxChatsTabContainerScreen: (context) => IndoxChatsTabContainerScreen(),
-    indoxChatsMessagesScreen: (context) => IndoxChatsMessagesScreen(),
     eReceiptEditScreen: (context) => EReceiptEditScreen(),
     editProfilesScreen: (context) => EditProfilesScreen(),
     termsConditionsScreen: (context) => TermsConditionsScreen(),

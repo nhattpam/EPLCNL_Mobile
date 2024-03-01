@@ -21,6 +21,7 @@ import 'package:meowlish/data/models/questions.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/tutors.dart';
+import 'package:meowlish/data/models/wallets.dart';
 
 import '../data/models/enrollments.dart';
 import '../session/session.dart';
@@ -1256,7 +1257,7 @@ class Network {
   static Future<List<Transaction>> getTransactionByLearnerId() async {
     final leanerId = SessionManager().getLearnerId() ?? 0;
 
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/transactions/learners/$leanerId';
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/learners/$leanerId/transactions';
     print(apiUrl);
     try {
       final response = await http.get(
@@ -1324,10 +1325,9 @@ class Network {
     }
   }
 
-  static Future<Enrollment> getEnrollmentByLearnerAndCourseId(
-      String learnerId, String courseId) async {
+  static Future<Enrollment> getEnrollmentByLearnerAndCourseId(String learnerId, String courseId) async {
     final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/enrollments/learner-course?learnerId=$learnerId&courseId=$courseId';
+        'https://nhatpmse.twentytwo.asia/api/enrollments/learners/$learnerId/courses/$courseId';
 
     try {
       final response = await http.get(
@@ -1578,4 +1578,42 @@ class Network {
       print('JSON Data: $jsonData');
     }
   }
+  ////Wallets
+  static Future<Wallet> getWalletByAccountId() async {
+    final lid = SessionManager().getUserId();
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/accounts/$lid/wallets';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print(
+          'API Response: ${response
+              .body}'); // Add this line to print the response
+
+      if (response.statusCode == 200) {
+        final dynamic walletJson = jsonDecode(response.body);
+        if (walletJson is List) {
+          // If it's a list, extract the first element (assuming it's the desired object)
+          return Wallet.fromJson(walletJson.first);
+        } else if (walletJson is Map<String, dynamic>) {
+          // If it's a map, decode directly
+          return Wallet.fromJson(walletJson);
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else {
+        throw Exception(
+            'Failed to fetch enrollment. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('An error occurred: $e');
+    }
+  }
+
 }

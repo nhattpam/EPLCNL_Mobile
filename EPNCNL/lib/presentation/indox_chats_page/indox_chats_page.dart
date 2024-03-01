@@ -315,11 +315,12 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
       },
     );
   }
-  onTapOne(BuildContext context, String forumId) async {
-    await Navigator.push(
+  onTapOne(BuildContext context, String forumId)  {
+     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => IndoxChatsMessagesScreen(forumId: forumId)),
-    );
-    loadForums(); // Reload data after returning from EditProfilesScreen
+    ).then((value) {setState(() {
+      loadForums(); // Reload data after returning from EditProfilesScreen
+    });});
   }
 }

@@ -83,6 +83,7 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                 reverse: true,
                 order: GroupedListOrder.DESC,
                 elements: listForum,
+                itemComparator: (message1, message2) => (message1.messagedDate ?? "").compareTo(message2.messagedDate ?? ""),
                 groupBy: (message) => DateTime(
                     DateTime.parse(message.messagedDate.toString()).year,
                     DateTime.parse(message.messagedDate.toString()).month,

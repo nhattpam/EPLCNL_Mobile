@@ -250,7 +250,12 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                             ),
                             child: Text(
                               moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                                  ? moduleAccountForumsMap[forums.id]!.last.message ?? ''
+                                  ? (moduleAccountForumsMap[forums.id]!
+                                  .where((element) => element.messagedDate != null) // Filter out elements with null messagedDate
+                                  .toList() // Convert to list to use sorting
+                                ..sort((a, b) => b.messagedDate!.compareTo(a.messagedDate!))) // Sort in descending order based on messagedDate
+                                  .firstWhere((element) => true) // Get the first element or null if the list is empty
+                                  ?.message ?? '' // Get the message of the first element, or '' if it's null
                                   : '',
                               style: theme.textTheme.labelLarge,
                               overflow: TextOverflow.fade,
@@ -295,7 +300,7 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                           alignment: Alignment.center,
                           child: Text(
                             moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                                ? DateFormat('HH:mm').format(DateTime.parse(moduleAccountForumsMap[forums.id]!.last.messagedDate ?? ''))
+                                ? DateFormat('HH:mm').format(DateTime.parse(moduleAccountForumsMap[forums.id]!.first.messagedDate ?? ''))
                                 : '',
                             style: CustomTextStyles.labelMediumGray700,
                           ),

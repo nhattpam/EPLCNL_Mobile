@@ -47,7 +47,7 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
               width: 300,
               height: 100, // Add margin
               child: Text(
-                'Popular Course',
+                'All Tutor',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 25,
@@ -155,9 +155,16 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      tutors.account?.fullName ?? '',
-                      style: CustomTextStyles.titleMedium17,
+                    Container(
+                      constraints: const BoxConstraints(
+                        maxWidth: 250,
+                      ),
+                      child: Text(
+                        tutors.account?.fullName ?? '',
+                        style: CustomTextStyles.titleMedium17,
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     SizedBox(height: 1.v),
                     Text(

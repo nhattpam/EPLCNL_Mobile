@@ -246,14 +246,28 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        enrolls.course?.category?.description ?? '',
-                        style: CustomTextStyles.labelLargeOrangeA700,
+                      Container(
+                        constraints: const BoxConstraints(
+                          maxWidth: 190,
+                        ),
+                        child: Text(
+                          enrolls.course?.category?.description ?? '',
+                          style: CustomTextStyles.labelLargeOrangeA700,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       SizedBox(height: 4.v),
-                      Text(
-                        enrolls.course?.name ?? '',
-                        style: theme.textTheme.titleMedium,
+                      Container(
+                        constraints: const BoxConstraints(
+                          maxWidth: 190,
+                        ),
+                        child: Text(
+                          enrolls.course?.name ?? '',
+                          style: theme.textTheme.titleMedium,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       SizedBox(height: 9.v),
                       Row(

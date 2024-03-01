@@ -153,9 +153,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  courses.category!.description ?? '',
-                                  style: CustomTextStyles.labelLargeOrangeA700,
+                                Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 140,
+                                  ),
+                                  child: Text(
+                                    courses.category!.description ?? '',
+                                    style: CustomTextStyles.labelLargeOrangeA700,
+                                    softWrap: true,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                                 Icon(
                                   Icons.bookmark_add,
@@ -168,9 +175,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             ),
                           ),
                           SizedBox(height: 9.v),
-                          Text(
-                            courses.name.toString(),
-                            style: theme.textTheme.titleMedium,
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 250,
+                            ),
+                            child: Text(
+                              courses.name.toString(),
+                              style: theme.textTheme.titleMedium,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           SizedBox(height: 2.v),
                           Row(
@@ -178,7 +192,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                               Text(
                                 '\$${courses.stockPrice.toString()}',
                                 style:
-                                    CustomTextStyles.titleMediumMulishPrimary,
+                                CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -190,7 +204,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                 margin: EdgeInsets.only(top: 3.v),
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
                                       Icons.star,
@@ -199,7 +213,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       color: Colors.yellow,
                                     ),
                                     Text(
-                                      '${courses.rating?.toDouble() ?? "N/A"}',
+                                      courses.rating.toString(),
                                       style: theme.textTheme.labelMedium,
                                     ),
                                   ],
@@ -271,9 +285,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  courses.category!.description ?? '',
-                                  style: CustomTextStyles.labelLargeOrangeA700,
+                                Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 140,
+                                  ),
+                                  child: Text(
+                                    courses.category!.description ?? '',
+                                    style: CustomTextStyles.labelLargeOrangeA700,
+                                    softWrap: true,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                                 Icon(
                                   Icons.bookmark_add,
@@ -286,9 +307,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             ),
                           ),
                           SizedBox(height: 9.v),
-                          Text(
-                            courses.name.toString(),
-                            style: theme.textTheme.titleMedium,
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 250,
+                            ),
+                            child: Text(
+                              courses.name.toString(),
+                              style: theme.textTheme.titleMedium,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           SizedBox(height: 2.v),
                           Row(
@@ -296,7 +324,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                               Text(
                                 '\$${courses.stockPrice.toString()}',
                                 style:
-                                    CustomTextStyles.titleMediumMulishPrimary,
+                                CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -308,7 +336,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                 margin: EdgeInsets.only(top: 3.v),
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
                                       Icons.star,
@@ -389,9 +417,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  courses.category!.description ?? '',
-                                  style: CustomTextStyles.labelLargeOrangeA700,
+                                Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 140,
+                                  ),
+                                  child: Text(
+                                    courses.category!.description ?? '',
+                                    style: CustomTextStyles.labelLargeOrangeA700,
+                                    softWrap: true,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                                 Icon(
                                   Icons.bookmark_add,
@@ -404,9 +439,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             ),
                           ),
                           SizedBox(height: 9.v),
-                          Text(
-                            courses.name.toString(),
-                            style: theme.textTheme.titleMedium,
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 250,
+                            ),
+                            child: Text(
+                              courses.name.toString(),
+                              style: theme.textTheme.titleMedium,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           SizedBox(height: 2.v),
                           Row(
@@ -414,7 +456,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                               Text(
                                 '\$${courses.stockPrice.toString()}',
                                 style:
-                                    CustomTextStyles.titleMediumMulishPrimary,
+                                CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -426,7 +468,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                 margin: EdgeInsets.only(top: 3.v),
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
                                       Icons.star,
@@ -507,9 +549,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  courses.category!.description ?? '',
-                                  style: CustomTextStyles.labelLargeOrangeA700,
+                                Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 140,
+                                  ),
+                                  child: Text(
+                                    courses.category!.description ?? '',
+                                    style: CustomTextStyles.labelLargeOrangeA700,
+                                    softWrap: true,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                                 Icon(
                                   Icons.bookmark_add,
@@ -522,9 +571,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             ),
                           ),
                           SizedBox(height: 9.v),
-                          Text(
-                            courses.name.toString(),
-                            style: theme.textTheme.titleMedium,
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 250,
+                            ),
+                            child: Text(
+                              courses.name.toString(),
+                              style: theme.textTheme.titleMedium,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           SizedBox(height: 2.v),
                           Row(
@@ -625,9 +681,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  courses.category!.description ?? '',
-                                  style: CustomTextStyles.labelLargeOrangeA700,
+                                Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 140,
+                                  ),
+                                  child: Text(
+                                    courses.category!.description ?? '',
+                                    style: CustomTextStyles.labelLargeOrangeA700,
+                                    softWrap: true,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                                 Icon(
                                   Icons.bookmark_add,
@@ -640,9 +703,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             ),
                           ),
                           SizedBox(height: 9.v),
-                          Text(
-                            courses.name.toString(),
-                            style: theme.textTheme.titleMedium,
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 250,
+                            ),
+                            child: Text(
+                              courses.name.toString(),
+                              style: theme.textTheme.titleMedium,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           SizedBox(height: 2.v),
                           Row(
@@ -650,7 +720,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                               Text(
                                 '\$${courses.stockPrice.toString()}',
                                 style:
-                                    CustomTextStyles.titleMediumMulishPrimary,
+                                CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -662,7 +732,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                 margin: EdgeInsets.only(top: 3.v),
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
                                       Icons.star,
@@ -743,9 +813,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  courses.category!.description ?? '',
-                                  style: CustomTextStyles.labelLargeOrangeA700,
+                                Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 140,
+                                  ),
+                                  child: Text(
+                                    courses.category!.description ?? '',
+                                    style: CustomTextStyles.labelLargeOrangeA700,
+                                    softWrap: true,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                                 Icon(
                                   Icons.bookmark_add,
@@ -758,9 +835,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             ),
                           ),
                           SizedBox(height: 9.v),
-                          Text(
-                            courses.name.toString(),
-                            style: theme.textTheme.titleMedium,
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 250,
+                            ),
+                            child: Text(
+                              courses.name.toString(),
+                              style: theme.textTheme.titleMedium,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           SizedBox(height: 2.v),
                           Row(
@@ -768,7 +852,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                               Text(
                                 '\$${courses.stockPrice.toString()}',
                                 style:
-                                    CustomTextStyles.titleMediumMulishPrimary,
+                                CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -780,7 +864,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                 margin: EdgeInsets.only(top: 3.v),
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
                                       Icons.star,
@@ -861,9 +945,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  courses.category!.description ?? '',
-                                  style: CustomTextStyles.labelLargeOrangeA700,
+                                Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 140,
+                                  ),
+                                  child: Text(
+                                    courses.category!.description ?? '',
+                                    style: CustomTextStyles.labelLargeOrangeA700,
+                                    softWrap: true,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                                 Icon(
                                   Icons.bookmark_add,
@@ -876,9 +967,16 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                             ),
                           ),
                           SizedBox(height: 9.v),
-                          Text(
-                            courses.name.toString(),
-                            style: theme.textTheme.titleMedium,
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 250,
+                            ),
+                            child: Text(
+                              courses.name.toString(),
+                              style: theme.textTheme.titleMedium,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           SizedBox(height: 2.v),
                           Row(
@@ -886,7 +984,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                               Text(
                                 '\$${courses.stockPrice.toString()}',
                                 style:
-                                    CustomTextStyles.titleMediumMulishPrimary,
+                                CustomTextStyles.titleMediumMulishPrimary,
                               ),
                             ],
                           ),
@@ -898,7 +996,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                 margin: EdgeInsets.only(top: 3.v),
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
                                       Icons.star,

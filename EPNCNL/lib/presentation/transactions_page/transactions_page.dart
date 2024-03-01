@@ -218,14 +218,28 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        transactions.course?.name ?? '',
-                        style: CustomTextStyles.titleMedium18,
+                      Container(
+                        constraints: const BoxConstraints(
+                          maxWidth: 230,
+                        ),
+                        child: Text(
+                          transactions.course?.name ?? '',
+                          style: CustomTextStyles.titleMedium18,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       SizedBox(height: 4.v),
-                      Text(
-                        transactions.course?.category?.description ?? '',
-                        style: theme.textTheme.labelLarge,
+                      Container(
+                        constraints: const BoxConstraints(
+                          maxWidth: 230,
+                        ),
+                        child: Text(
+                          transactions.course?.category?.description ?? '',
+                          style: theme.textTheme.labelLarge,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       SizedBox(height: 12.v),
                       Container(

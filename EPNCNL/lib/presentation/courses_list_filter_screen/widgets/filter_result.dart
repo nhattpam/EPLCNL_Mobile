@@ -235,28 +235,44 @@ class FilterResultState extends State<FilterResultScreen> {
                         children: [
                           SizedBox(
                             width: 195.h,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "${data?[index].description.toString()}",
-                                  style: CustomTextStyles.labelLargeOrangeA700,
-                                ),
-                                Icon(
-                                  Icons.bookmark_add_outlined,
-                                  // Replace with the desired icon
-                                  size: 30.v,
-                                  color: Color(
-                                    0xFF168F71,
-                                  ), // Specify the desired color,
-                                ),
-                              ],
+                            child: IntrinsicWidth(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 150,
+                                    ),
+                                    child: Text(
+                                      "${data?[index].description.toString()}",
+                                      style: CustomTextStyles.labelLargeOrangeA700,
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: true,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.bookmark_add_outlined,
+                                    // Replace with the desired icon
+                                    size: 30.v,
+                                    color: Color(
+                                      0xFF168F71,
+                                    ), // Specify the desired color,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           SizedBox(height: 9.v),
-                          Text(
-                            courseName,
-                            style: theme.textTheme.titleMedium,
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 180,
+                            ),
+                            child: Text(
+                              courseName,
+                              style: theme.textTheme.titleMedium,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: true,
+                            ),
                           ),
                           SizedBox(height: 2.v),
                           Row(

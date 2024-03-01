@@ -294,7 +294,9 @@ class HomePageState extends State<HomePage> {
                   child: isLoadingList[index]
                       ? CircularProgressIndicator() // Show loading indicator
                       : Chip(
-                          label: Text(categories.description.toString()),
+                          label: Text(
+                              categories.description.toString()
+                          ),
                           backgroundColor: current == index
                               ? Color(0xFFFF9300)
                               : Color(0xFFFFF1DE),
@@ -417,28 +419,36 @@ class HomePageState extends State<HomePage> {
                                       SizedBox(height: 10.v),
                                       Align(
                                         alignment: Alignment.center,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              course.category!.description
-                                                  .toString(),
-                                              style: CustomTextStyles
-                                                  .labelLargeOrangeA700,
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 70.0),
-                                              child: Icon(
-                                                Icons.bookmark_add_outlined,
-                                                // Replace with the desired icon
-                                                size: 30.v,
-                                                color: Color(
-                                                    0xFF168F71), // Specify the desired color,
+                                        child: IntrinsicWidth(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                constraints: const BoxConstraints(
+                                                  maxWidth: 160,
+                                                ),
+                                                child: Text(
+                                                  course.category!.description.toString(),
+                                                  style: CustomTextStyles
+                                                      .labelLargeOrangeA700,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  softWrap: true,
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 70.0),
+                                                child: Icon(
+                                                  Icons.bookmark_add_outlined,
+                                                  // Replace with the desired icon
+                                                  size: 30.v,
+                                                  color: Color(
+                                                      0xFF168F71), // Specify the desired color,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       SizedBox(height: 4.v),
@@ -447,6 +457,7 @@ class HomePageState extends State<HomePage> {
                                         child: Text(
                                           course.name.toString(),
                                           style: theme.textTheme.titleMedium,
+                                          maxLines: 1,
                                         ),
                                       ),
                                       SizedBox(height: 9.v),

@@ -58,10 +58,6 @@ class SearchCourse extends SearchDelegate {
               String courseId = '${data?[index].id}';
               String courseTutorId = '${data?[index].tutorId}';
               String courseImage = '${data?[index].imageUrl}';
-              List<String> words =
-                  courseName.split(' '); // Split the text into words
-              int wordLimit = 5; // Set the word limit
-              String limitedText = words.take(wordLimit).join(' ');
               return GestureDetector(
                 onTap: (){
                   Navigator.push(
@@ -99,8 +95,17 @@ class SearchCourse extends SearchDelegate {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(limitedText,
-                                  style: CustomTextStyles.labelLargeOrangeA700),
+                              Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 240,
+                                ),
+                                child: Text(
+                                    courseName,
+                                    style: CustomTextStyles.labelLargeOrangeA700,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: true,
+                                ),
+                              ),
                               SizedBox(height: 10),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,9 +166,16 @@ class SearchCourse extends SearchDelegate {
                                 ],
                               ),
                               SizedBox(height: 10),
-                              Text(
-                                '${data?[index].description}',
-                                style: theme.textTheme.titleMedium,
+                              Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 230,
+                                ),
+                                child: Text(
+                                  '${data?[index].description}',
+                                  style: theme.textTheme.titleMedium,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: true,
+                                ),
                               ),
                             ]),
                       ),

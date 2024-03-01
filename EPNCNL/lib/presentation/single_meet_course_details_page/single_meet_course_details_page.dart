@@ -111,29 +111,30 @@ class SingleMeetCourseDetailsPageState
                                 width: 307.h,
                                 margin:
                                     EdgeInsets.only(left: 21.h, right: 32.h),
-                                child: Text("${chosenCourse.description ?? ''}",
+                                child: Text(
+                                    "${chosenCourse.description ?? ''}",
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,
                                     style: CustomTextStyles.labelLargeGray50001
                                         .copyWith(height: 1.46))),
-                            SizedBox(height: 18.v),
-                            Align(
-                                alignment: Alignment.center,
-                                child: SizedBox(
-                                    width: 313.h,
-                                    child: ReadMoreText(
-                                        "${chosenCourse.description ?? ''}",
-                                        trimLines: 4,
-                                        colorClickableText:
-                                            theme.colorScheme.primary,
-                                        trimMode: TrimMode.Line,
-                                        trimCollapsedText: "Read More",
-                                        moreStyle: CustomTextStyles
-                                            .labelLargeGray50001
-                                            .copyWith(height: 1.46),
-                                        lessStyle: CustomTextStyles
-                                            .labelLargeGray50001
-                                            .copyWith(height: 1.46)))),
+                            // SizedBox(height: 18.v),
+                            // Align(
+                            //     alignment: Alignment.center,
+                            //     child: SizedBox(
+                            //         width: 313.h,
+                            //         child: ReadMoreText(
+                            //             "${chosenCourse.description ?? ''}",
+                            //             trimLines: 4,
+                            //             colorClickableText:
+                            //                 theme.colorScheme.primary,
+                            //             trimMode: TrimMode.Line,
+                            //             trimCollapsedText: "Read More",
+                            //             moreStyle: CustomTextStyles
+                            //                 .labelLargeGray50001
+                            //                 .copyWith(height: 1.46),
+                            //             lessStyle: CustomTextStyles
+                            //                 .labelLargeGray50001
+                            //                 .copyWith(height: 1.46)))),
                             SizedBox(height: 50.v),
                             Padding(
                                 padding: EdgeInsets.only(left: 1.h),
@@ -327,8 +328,16 @@ class SingleMeetCourseDetailsPageState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("${chosenTutor.account?.fullName ?? ""}",
-                  style: CustomTextStyles.titleMedium17),
+              Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 250,
+                ),
+                child: Text(
+                    "${chosenTutor.account?.fullName ?? ""}",
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                    style: CustomTextStyles.titleMedium17),
+              ),
               Text("${chosenCourse.category?.description ?? ""}",
                   style: theme.textTheme.labelLarge)
             ],

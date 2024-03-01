@@ -190,7 +190,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           String originalDateString = feedback.createdDate.toString();
           DateTime originalDate = DateTime.parse(originalDateString.split('T')[0]);
           String formattedDate = DateFormat('dd-MM-yyyy').format(originalDate);
-          return  SingleChildScrollView(
+          return SingleChildScrollView(
             child: Container(
               margin: EdgeInsets.all(0),
               color: theme.colorScheme.onPrimaryContainer,
@@ -206,19 +206,6 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                 child: Stack(
                   alignment: Alignment.centerLeft,
                   children: [
-                    CustomOutlinedButton(
-                      width: 60.h,
-                      text: feedback.rating.toString(),
-                      leftIcon: Container(
-                        margin: EdgeInsets.only(right: 2.h),
-                        child: Icon(
-                          Icons.star,
-                          color: Colors.yellow,
-                          size: 12,
-                        ),
-                      ),
-                      alignment: Alignment.topRight,
-                    ),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
@@ -229,83 +216,117 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                           alignment: Alignment.centerLeft,
                           children: [
                             Align(
-                              alignment: Alignment.bottomRight,
-                              child: Container(
-                                width: 244.h,
-                                margin: EdgeInsets.only(bottom: 28.v),
-                                child: Text(
-                                  feedback.feedbackContent.toString(),
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.labelLarge,
+                              alignment: Alignment.center,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        height: 46.adaptSize,
+                                        width: 46.adaptSize,
+                                        margin: EdgeInsets.only(top: 2.v),
+                                        child: Image.network(
+                                          feedback.learner?.account?.imageUrl ?? '',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          left: 12.h,
+                                          bottom: 23.v,
+                                        ),
+                                        child: Text(
+                                          feedback.learner?.account?.fullName ?? '',
+                                          style: CustomTextStyles.titleMedium17,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 48.v),
+                                  Align(
+                                    alignment: Alignment.bottomLeft,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right: 10.h),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Icon(
+                                            Icons.favorite,
+                                            color: Colors.red,
+                                            size: 12.v,
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 8.h),
+                                            child: Text(
+                                              "760",
+                                              style: CustomTextStyles.labelLargeBluegray900,
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding:
+                                            EdgeInsets.only(left: 17.h),
+                                            child: Text(
+                                              "|",
+                                              style: CustomTextStyles
+                                                  .titleSmallBlack900,
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.calendar_month_outlined,
+                                            color: Colors.black,
+                                            size: 12.v,
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10.h),
+                                            child: Text(
+                                              formattedDate,
+                                              style: CustomTextStyles.labelLargeBluegray900,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomLeft, // Adjust alignment as per your requirement
+                              child: Padding(
+                                padding: EdgeInsets.only(right: 81.h),
+                                child: IntrinsicWidth(
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 700,
+                                    ),
+                                    margin: EdgeInsets.only(bottom: 28.v),
+                                    child: Text(
+                                      feedback.feedbackContent.toString(),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.fade,
+                                      softWrap: true,
+                                      style: theme.textTheme.labelLarge,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                             Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 81.h),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Container(
-                                          height: 46.adaptSize,
-                                          width: 46.adaptSize,
-                                          margin: EdgeInsets.only(top: 2.v),
-                                          child: Image.network(
-                                            feedback.learner?.account?.imageUrl ?? '',
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                            left: 12.h,
-                                            bottom: 23.v,
-                                          ),
-                                          child: Text(
-                                            feedback.learner?.account?.fullName ?? '',
-                                            style: CustomTextStyles.titleMedium17,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 48.v),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(right: 10.h),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          children: [
-                                            CustomImageView(
-                                              imagePath: ImageConstant.imgFavorite,
-                                              height: 16.v,
-                                              width: 17.h,
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(left: 8.h),
-                                              child: Text(
-                                                "760",
-                                                style: CustomTextStyles
-                                                    .labelLargeBluegray900,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(left: 22.h),
-                                              child: Text(
-                                                formattedDate,
-                                                style: CustomTextStyles
-                                                    .labelLargeBluegray900,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                              alignment: Alignment.centerRight,
+                              child: CustomOutlinedButton(
+                                width: 60.h,
+                                text: feedback.rating.toString(),
+                                leftIcon: Container(
+                                  margin: EdgeInsets.only(right: 2.h),
+                                  child: Icon(
+                                    Icons.star,
+                                    color: Colors.yellow,
+                                    size: 12,
+                                  ),
                                 ),
+                                alignment: Alignment.topRight,
                               ),
                             ),
                           ],

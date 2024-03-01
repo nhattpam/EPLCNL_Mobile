@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
@@ -194,9 +195,16 @@ class SingleCourseDetailsTabContainerScreenState
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          "${chosenCourse.category?.description ?? ''}",
-                          style: CustomTextStyles.labelLargeOrangeA700,
+                        Container(
+                          constraints: const BoxConstraints(
+                            maxWidth: 260,
+                          ),
+                          child: Text(
+                            "${chosenCourse.category?.description ?? ''}",
+                            style: CustomTextStyles.labelLargeOrangeA700,
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -585,6 +593,13 @@ class SingleCourseDetailsCurriculumPageState
       itemBuilder: (context, index) {
         final module = listClassModuleByCourseId[index];
         final number = index + 1;
+
+        // Parse the startDate string into a DateTime object
+        DateTime startDate = DateTime.parse(module.startDate.toString());
+
+        // Format the DateTime object into the desired format
+        String formattedDate = DateFormat('dd-MM-yyyy').format(startDate);
+
         return Column(
           children: [
             Padding(
@@ -593,7 +608,7 @@ class SingleCourseDetailsCurriculumPageState
                 children: [
                   Text("Session $number - ",
                       style: theme.textTheme.labelMedium),
-                  Text(module.startDate.toString(),
+                  Text(formattedDate,
                       style: CustomTextStyles.labelLargeOrangeA700),
                 ],
               ),
@@ -604,8 +619,7 @@ class SingleCourseDetailsCurriculumPageState
         );
       },
     );
-  }
-}
+  }}
 
 class CircleWithNumber extends StatelessWidget {
   final int number;

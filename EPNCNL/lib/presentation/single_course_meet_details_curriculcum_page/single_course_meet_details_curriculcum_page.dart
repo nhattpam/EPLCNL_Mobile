@@ -270,10 +270,10 @@ class SingleCourseMeetDetailsCurriculcumPageState
                             );
                         },
                     ),
-                    SizedBox(height: 50.v),
-                    CustomElevatedButton(
-                      text: "Enroll Course",
-                    ),
+                    // SizedBox(height: 50.v),
+                    // CustomElevatedButton(
+                    //   text: "Enroll Course",
+                    // ),
                   ],
                 ),
               ],

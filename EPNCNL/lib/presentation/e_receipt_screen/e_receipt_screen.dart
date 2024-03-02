@@ -61,7 +61,6 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
         result = divide;
       });
     }
-    print(chosenTransaction.course?.category);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -146,6 +145,7 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
                 context,
                 emailLabel: "Course",
                 emailText: chosenTransaction.course?.name ?? '',
+
               ),
             ),
             SizedBox(height: 13.v),
@@ -280,10 +280,17 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
         ),
         Padding(
           padding: EdgeInsets.only(top: 4.v),
-          child: Text(
-            emailText,
-            style: theme.textTheme.titleSmall!.copyWith(
-              color: appTheme.gray700,
+          child: Container(
+            constraints: const BoxConstraints(
+              maxWidth: 160,
+            ),
+            child: Text(
+              emailText,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleSmall!.copyWith(
+                color: appTheme.gray700,
+              ),
             ),
           ),
         ),

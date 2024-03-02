@@ -1,3 +1,5 @@
+import 'package:meowlish/data/models/tutors.dart';
+
 import 'categories.dart';
 
 class Course {
@@ -16,6 +18,7 @@ class Course {
   String? createdDate;
   String? updatedDate;
   Category? category;
+  Tutor? tutor;
 
   Course({
     this.id,
@@ -33,6 +36,7 @@ class Course {
     this.createdDate,
     this.updatedDate,
     this.category,
+    this.tutor,
   });
 
   Course.fromJson(Map<String, dynamic> json) {
@@ -51,6 +55,7 @@ class Course {
     createdDate = json['createdDate'];
     updatedDate = json['updatedDate'];
     category = json['category'] != null ? new Category.fromJson(json['category']) : null;
+    tutor = json['tutor'] != null ? new Tutor.fromJson(json['tutor']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -71,6 +76,9 @@ class Course {
     data['updatedDate'] = this.updatedDate;
     if (this.category != null) {
       data['category'] = this.category!.toJson();
+    }
+    if (this.tutor != null) {
+      data['tutor'] = this.tutor!.toJson();
     }
     return data;
   }

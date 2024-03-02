@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 
 import '../single_mentor_details_page/widgets/productcard2_item_widget.dart';
 
@@ -77,105 +78,133 @@ class SingleMentorDetailsPageState extends State<SingleMentorDetailsPage>
                     itemCount: chosenTutor.length,
                     itemBuilder: (context, index) {
                       final courses = chosenTutor[index];
-                      return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              height: 130.adaptSize,
-                              width: 130.adaptSize,
-                              decoration: BoxDecoration(
-                                color: appTheme.black900,
-                                borderRadius: BorderRadius.circular(
-                                  16.h,
+                      return GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  SingleCourseDetailsTabContainerScreen(
+                                    courseID: courses.id.toString(),
+                                    tutorID: courses.tutorId.toString(),
+                                  ),
+                            ),
+                          );
+                        },
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                height: 130.adaptSize,
+                                width: 130.adaptSize,
+                                decoration: BoxDecoration(
+                                  color: appTheme.black900,
+                                  borderRadius: BorderRadius.circular(
+                                    16.h,
+                                  ),
+                                ),
+                                child: Image.network(
+                                  courses.imageUrl.toString(),
+                                  fit: BoxFit.cover,
                                 ),
                               ),
-                              child: Image.network(
-                                courses.imageUrl.toString(),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                top: 15.v,
-                                bottom: 18.v,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: 176.h,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: 15.v,
+                                  bottom: 18.v,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: 176.h,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            constraints: const BoxConstraints(
+                                              maxWidth: 148,
+                                            ),
+                                            child: Text(
+                                              courses.category?.description ?? "",
+                                              style: CustomTextStyles.labelLargeOrangeA700,
+                                              softWrap: true,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          CustomImageView(
+                                            imagePath: ImageConstant.imgBookmark,
+                                            height: 16.v,
+                                            width: 12.h,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 9.v),
+                                    Container(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 160,
+                                      ),
+                                      child: Text(
+                                        courses.name.toString(),
+                                        style: theme.textTheme.titleMedium,
+                                        softWrap: true,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2.v),
+                                    Row(
                                       children: [
                                         Text(
-                                          courses.category?.description ?? '',
-                                          style: CustomTextStyles.labelLargeOrangeA700,
-                                        ),
-                                        CustomImageView(
-                                          imagePath: ImageConstant.imgBookmark,
-                                          height: 16.v,
-                                          width: 12.h,
+                                        '\$' + courses.stockPrice.toString(),
+                                          style: CustomTextStyles.titleMediumMulishPrimary,
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  SizedBox(height: 9.v),
-                                  Text(
-                                    courses.name.toString(),
-                                    style: theme.textTheme.titleMedium,
-                                  ),
-                                  SizedBox(height: 2.v),
-                                  Row(
-                                    children: [
-                                      Text(
-                                      '\$' + courses.stockPrice.toString(),
-                                        style: CustomTextStyles.titleMediumMulishPrimary,
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 5.v),
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        color: Colors.yellow,
-                                        size: 12.v,
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                          left: 3.h,
-                                          top: 3.v,
+                                    SizedBox(height: 5.v),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Icon(
+                                          Icons.star,
+                                          color: Colors.yellow,
+                                          size: 12.v,
                                         ),
-                                        child: Text(
-                                          courses.rating.toString(),
-                                          style: theme.textTheme.labelMedium,
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                            left: 3.h,
+                                            top: 3.v,
+                                          ),
+                                          child: Text(
+                                            courses.rating.toString(),
+                                            style: theme.textTheme.labelMedium,
+                                          ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 16.h),
-                                        child: Text(
-                                          "|",
-                                          style: CustomTextStyles.titleSmallBlack900,
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 16.h),
+                                          child: Text(
+                                            "|",
+                                            style: CustomTextStyles.titleSmallBlack900,
+                                          ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                          left: 16.h,
-                                          top: 3.v,
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                            left: 16.h,
+                                            top: 3.v,
+                                          ),
+                                          child: Text(
+                                            "7830 Std",
+                                            style: theme.textTheme.labelMedium,
+                                          ),
                                         ),
-                                        child: Text(
-                                          "7830 Std",
-                                          style: theme.textTheme.labelMedium,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        );
+                            ],
+                          ),
+                      );
                     },
                   ),
                 ),

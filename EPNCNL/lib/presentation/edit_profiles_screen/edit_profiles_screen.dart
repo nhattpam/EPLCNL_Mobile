@@ -425,20 +425,37 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
   Widget _buildUpdate(BuildContext context) {
     return CustomElevatedButton(
       onPressed: (){
-        Network.updateProfile(
-            account?.email ?? '',
-            account?.password ?? '',
-            fullNameController.text,
-            account?.phoneNumber ?? '',
-            _image,
-            account?.dateOfBirth ?? '',
-            account?.gender ?? false,
-            account?.address ?? '',
-            account?.isActive ?? true,
-            account?.isDeleted ?? false,
-            account?.createdDate ?? '',
-            account?.createdBy ?? '',
-            account?.note ?? '');
+        if(_image.isEmpty){
+          Network.updateProfile(
+              account?.email ?? '',
+              account?.password ?? '',
+              fullNameController.text,
+              account?.phoneNumber ?? '',
+              account?.imageUrl ?? '',
+              account?.dateOfBirth ?? '',
+              account?.gender ?? false,
+              account?.address ?? '',
+              account?.isActive ?? true,
+              account?.isDeleted ?? false,
+              account?.createdDate ?? '',
+              account?.createdBy ?? '',
+              account?.note ?? '');
+        }else{
+          Network.updateProfile(
+              account?.email ?? '',
+              account?.password ?? '',
+              fullNameController.text,
+              account?.phoneNumber ?? '',
+              _image,
+              account?.dateOfBirth ?? '',
+              account?.gender ?? false,
+              account?.address ?? '',
+              account?.isActive ?? true,
+              account?.isDeleted ?? false,
+              account?.createdDate ?? '',
+              account?.createdBy ?? '',
+              account?.note ?? '');
+        }
         AwesomeDialog(
           context: context,
           animType: AnimType.scale,

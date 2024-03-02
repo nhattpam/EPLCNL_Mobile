@@ -145,9 +145,16 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  chosenCourse.category?.description ?? '',
-                  style: CustomTextStyles.labelLargeOrangeA700,
+                Container(
+                  constraints: const BoxConstraints(
+                    maxWidth: 160,
+                  ),
+                  child: Text(
+                    chosenCourse.category?.description ?? '',
+                    style: CustomTextStyles.labelLargeOrangeA700,
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 SizedBox(height: 7.v),
                 Text(
@@ -308,7 +315,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
             status: "0",
             enrolledDate: transaction.transactionDate,
             totalGrade: 0);
-        await Network.createEnrollment(enrollment);
+        // await Network.createEnrollment(enrollment);
         Navigator.push(
           context,
           MaterialPageRoute(

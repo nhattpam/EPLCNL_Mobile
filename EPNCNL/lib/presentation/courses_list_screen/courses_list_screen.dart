@@ -3,6 +3,7 @@ import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
 
@@ -179,114 +180,142 @@ class CoursesListScreenState extends State<CoursesListScreen> {
         itemCount: chosenCategory.length,
         itemBuilder: (context, index) {
           final course = chosenCategory[index];
-          return Container(
-            decoration: AppDecoration.outlineBlack.copyWith(
-              borderRadius: BorderRadiusStyle.circleBorder15,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.horizontal(
-                      left: Radius.circular(16.h),
+          return GestureDetector(
+            onTap: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      SingleCourseDetailsTabContainerScreen(
+                        courseID: course.id.toString(),
+                        tutorID: course.tutorId.toString(),
+                      ),
+                ),
+              );
+            },
+            child: Container(
+              decoration: AppDecoration.outlineBlack.copyWith(
+                borderRadius: BorderRadiusStyle.circleBorder15,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.horizontal(
+                        left: Radius.circular(16.h),
+                      ),
+                    ),
+                    child: Image.network(
+                      course.imageUrl.toString(),
+                      // Replace 'path_to_your_image' with the actual path to your image asset
+                      height: 130.adaptSize,
+                      width: 130.adaptSize,
+                      fit: BoxFit
+                          .cover, // Adjust the BoxFit property based on your image requirements
                     ),
                   ),
-                  child: Image.network(
-                    course.imageUrl.toString(),
-                    // Replace 'path_to_your_image' with the actual path to your image asset
-                    height: 130.adaptSize,
-                    width: 130.adaptSize,
-                    fit: BoxFit
-                        .cover, // Adjust the BoxFit property based on your image requirements
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 14.h,
-                    top: 15.v,
-                    bottom: 18.v,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 195.h,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: 14.h,
+                      top: 15.v,
+                      bottom: 18.v,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 195.h,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 150,
+                                ),
+                                child: Text(
+                                  _category?.description ?? '',
+                                  style: CustomTextStyles.labelLargeOrangeA700,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: true,
+                                ),
+                              ),
+                              Icon(
+                                Icons.bookmark_add_outlined,
+                                // Replace with the desired icon
+                                size: 30.v,
+                                color: Color(
+                                    0xFF168F71), // Specify the desired color,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 9.v),
+                        Container(
+                          constraints: const BoxConstraints(
+                            maxWidth: 200,
+                          ),
+                          child: Text(
+                            course.name.toString(),
+                            style: theme.textTheme.titleMedium,
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(height: 2.v),
+                        Row(
                           children: [
                             Text(
-                              _category?.description ?? '',
-                              style: CustomTextStyles.labelLargeOrangeA700,
-                            ),
-                            Icon(
-                              Icons.bookmark_add_outlined,
-                              // Replace with the desired icon
-                              size: 30.v,
-                              color: Color(
-                                  0xFF168F71), // Specify the desired color,
+                              '\$${course.stockPrice.toString()}',
+                              style: CustomTextStyles.titleMediumMulishPrimary,
                             ),
                           ],
                         ),
-                      ),
-                      SizedBox(height: 9.v),
-                      Text(
-                        course.name.toString(),
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      SizedBox(height: 2.v),
-                      Row(
-                        children: [
-                          Text(
-                            '\$${course.stockPrice.toString()}',
-                            style: CustomTextStyles.titleMediumMulishPrimary,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 5.v),
-                      Row(
-                        children: [
-                          Container(
-                            width: 32.h,
-                            margin: EdgeInsets.only(top: 3.v),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Icon(
-                                  Icons.star,
-                                  // Replace with the desired signal icon
-                                  size: 14.v,
-                                  color: Colors.yellow,
-                                ),
-                                Text(
-                                  course.rating.toString(),
-                                  style: theme.textTheme.labelMedium,
-                                ),
-                              ],
+                        SizedBox(height: 5.v),
+                        Row(
+                          children: [
+                            Container(
+                              width: 32.h,
+                              margin: EdgeInsets.only(top: 3.v),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Icon(
+                                    Icons.star,
+                                    // Replace with the desired signal icon
+                                    size: 14.v,
+                                    color: Colors.yellow,
+                                  ),
+                                  Text(
+                                    course.rating.toString(),
+                                    style: theme.textTheme.labelMedium,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 16.h),
-                            child: Text(
-                              "|",
-                              style: CustomTextStyles.titleSmallBlack900,
+                            Padding(
+                              padding: EdgeInsets.only(left: 16.h),
+                              child: Text(
+                                "|",
+                                style: CustomTextStyles.titleSmallBlack900,
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              left: 16.h,
-                              top: 3.v,
+                            Padding(
+                              padding: EdgeInsets.only(
+                                left: 16.h,
+                                top: 3.v,
+                              ),
+                              child: Text(
+                                "7830 Enroll",
+                                style: theme.textTheme.labelMedium,
+                              ),
                             ),
-                            child: Text(
-                              "7830 Enroll",
-                              style: theme.textTheme.labelMedium,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         });

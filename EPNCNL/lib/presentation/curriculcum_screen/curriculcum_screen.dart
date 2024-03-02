@@ -173,9 +173,6 @@ class CurriculumScreenState extends State<CurriculumScreen> {
               children: [
                 SizedBox(height: 21.v),
                 _buildVideoCourseListView(),
-                CustomElevatedButton(
-                  text: "Enroll Course",
-                )
               ],
             ),
           ),

@@ -1288,42 +1288,42 @@ class Network {
   }
 
   //enrollment
-  static Future<String> createEnrollment(Enrollment enrollment) async {
-    final userData = {
-      "status": enrollment.status,
-      "learnerId": SessionManager().getLearnerId(),
-      "courseId": enrollment.courseId,
-      "enrolledDate": enrollment.enrolledDate
-    };
-
-    final jsonData = jsonEncode(userData);
-
-    // Print the JSON data before making the API call
-    print('JSON Data: $jsonData');
-
-    final response = await http.post(
-      Uri.parse('https://nhatpmse.twentytwo.asia/api/enrollments'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonData,
-    );
-
-    if (response.statusCode == 201) {
-      // Parse the JSON response
-      final jsonResponse = jsonDecode(response.body);
-      // Extract the authCode
-      final enrollmentId = jsonResponse['id'];
-      //set accountId to create learner
-      print("After create enrollment:  " + enrollmentId.toString());
-      return enrollmentId;
-    } else {
-      print('Create enrollment failed');
-      // Print the JSON data before making the API call
-      print('JSON Data: $jsonData');
-      return "null transactionId";
-    }
-  }
+  // static Future<String> createEnrollment(Enrollment enrollment) async {
+  //   final userData = {
+  //     "status": enrollment.status,
+  //     "learnerId": SessionManager().getLearnerId(),
+  //     "courseId": enrollment.courseId,
+  //     "enrolledDate": enrollment.enrolledDate
+  //   };
+  //
+  //   final jsonData = jsonEncode(userData);
+  //
+  //   // Print the JSON data before making the API call
+  //   print('JSON Data: $jsonData');
+  //
+  //   final response = await http.post(
+  //     Uri.parse('https://nhatpmse.twentytwo.asia/api/enrollments'),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: jsonData,
+  //   );
+  //
+  //   if (response.statusCode == 201) {
+  //     // Parse the JSON response
+  //     final jsonResponse = jsonDecode(response.body);
+  //     // Extract the authCode
+  //     final enrollmentId = jsonResponse['id'];
+  //     //set accountId to create learner
+  //     print("After create enrollment:  " + enrollmentId.toString());
+  //     return enrollmentId;
+  //   } else {
+  //     print('Create enrollment failed');
+  //     // Print the JSON data before making the API call
+  //     print('JSON Data: $jsonData');
+  //     return "null transactionId";
+  //   }
+  // }
 
   static Future<Enrollment> getEnrollmentByLearnerAndCourseId(String learnerId, String courseId) async {
     final apiUrl =

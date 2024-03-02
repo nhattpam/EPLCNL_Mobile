@@ -22,12 +22,15 @@ class FetchCourseList {
             final courseNameMatches = element.name != null &&
                 element.name!.toLowerCase().contains(query.toLowerCase());
 
+            final tutorNameMatches = element.tutor?.account?.fullName != null &&
+                (element.tutor?.account?.fullName)!.toLowerCase().contains(query.toLowerCase());
+
             final descriptionMatches = element.description != null &&
                 element.description!
                     .toLowerCase()
                     .contains(query.toLowerCase());
 
-            return courseNameMatches || descriptionMatches;
+            return courseNameMatches || descriptionMatches || tutorNameMatches;
           }).toList();
         }
       } else {

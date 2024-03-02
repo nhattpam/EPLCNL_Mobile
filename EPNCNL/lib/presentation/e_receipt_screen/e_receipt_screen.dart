@@ -158,7 +158,6 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
                 ),
               ),
               SizedBox(height: 13.v),
-
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 9.h),
                 child: _buildEmailSection(
@@ -214,12 +213,13 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
               SizedBox(height: 15.v),
               Divider(),
               SizedBox(height: 15.v),
-              CustomElevatedButton(
-                onPressed: () {
-                  _showMultiSelect();
-                },
-                text: "Request refund",
-              )
+              if (chosenTransaction.transactionDate != null && DateTime.parse(chosenTransaction.transactionDate.toString()).isAfter(DateTime.now().subtract(Duration(days: 7))))
+                CustomElevatedButton(
+                  onPressed: () {
+                    _showMultiSelect();
+                  },
+                  text: "Refund request",
+                )
             ],
           ),
         ),
@@ -309,8 +309,10 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
     );
   }
 }
+
 class RequestRefund extends StatefulWidget {
   final String transactionId;
+
   const RequestRefund({super.key, required this.transactionId});
 
   @override
@@ -318,14 +320,12 @@ class RequestRefund extends StatefulWidget {
 }
 
 class _RequestRefundState extends State<RequestRefund> {
-
   TextEditingController additionalInfoController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -378,7 +378,9 @@ class _RequestRefundState extends State<RequestRefund> {
             child: Text('Cancel')),
         TextButton(
             onPressed: () {
-              Network.createRefundRequest(transactionId: widget.transactionId, reason: additionalInfoController.text);
+              Network.createRefundRequest(
+                  transactionId: widget.transactionId,
+                  reason: additionalInfoController.text);
               AwesomeDialog(
                 context: context,
                 animType: AnimType.scale,

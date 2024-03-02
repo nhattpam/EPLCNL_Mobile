@@ -300,7 +300,7 @@ class FilterResultState extends State<FilterResultScreen> {
                                       color: Colors.yellow,
                                     ),
                                     Text(
-                                      "${data?[index].rating.toString()}",
+                                      "${data?[index].rating?.toStringAsFixed(1) ?? ''}",
                                       style: theme.textTheme.labelMedium,
                                     ),
                                   ],

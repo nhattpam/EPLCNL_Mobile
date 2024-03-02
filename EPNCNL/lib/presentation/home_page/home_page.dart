@@ -497,8 +497,7 @@ class HomePageState extends State<HomePage> {
                                                     padding: EdgeInsets.only(
                                                         left: 3.h),
                                                     child: Text(
-                                                      // course.rating.toString(),
-                                                      course.rating.toString(),
+                                                      course.rating?.toStringAsFixed(1) ?? '',
                                                       style: theme.textTheme
                                                           .labelMedium,
                                                     ),

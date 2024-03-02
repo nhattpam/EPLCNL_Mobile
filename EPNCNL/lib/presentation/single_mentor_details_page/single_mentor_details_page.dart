@@ -176,7 +176,7 @@ class SingleMentorDetailsPageState extends State<SingleMentorDetailsPage>
                                             top: 3.v,
                                           ),
                                           child: Text(
-                                            courses.rating.toString(),
+                                            courses.rating?.toStringAsFixed(1) ?? '',
                                             style: theme.textTheme.labelMedium,
                                           ),
                                         ),

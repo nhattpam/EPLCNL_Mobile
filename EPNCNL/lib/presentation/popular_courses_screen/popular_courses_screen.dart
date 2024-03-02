@@ -213,7 +213,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       color: Colors.yellow,
                                     ),
                                     Text(
-                                      courses.rating.toString(),
+                                      courses.rating?.toStringAsFixed(1) ?? '',
                                       style: theme.textTheme.labelMedium,
                                     ),
                                   ],
@@ -345,7 +345,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       color: Colors.yellow,
                                     ),
                                     Text(
-                                      courses.rating.toString(),
+                                      courses.rating?.toStringAsFixed(1) ?? '',
                                       style: theme.textTheme.labelMedium,
                                     ),
                                   ],
@@ -477,7 +477,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       color: Colors.yellow,
                                     ),
                                     Text(
-                                      courses.rating.toString(),
+                                      courses.rating?.toStringAsFixed(1) ?? '',
                                       style: theme.textTheme.labelMedium,
                                     ),
                                   ],
@@ -609,7 +609,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       color: Colors.yellow,
                                     ),
                                     Text(
-                                      courses.rating.toString(),
+                                      courses.rating?.toStringAsFixed(1) ?? '',
                                       style: theme.textTheme.labelMedium,
                                     ),
                                   ],
@@ -741,7 +741,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       color: Colors.yellow,
                                     ),
                                     Text(
-                                      courses.rating.toString(),
+                                      courses.rating?.toStringAsFixed(1) ?? '',
                                       style: theme.textTheme.labelMedium,
                                     ),
                                   ],
@@ -873,7 +873,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       color: Colors.yellow,
                                     ),
                                     Text(
-                                      courses.rating.toString(),
+                                      courses.rating?.toStringAsFixed(1) ?? '',
                                       style: theme.textTheme.labelMedium,
                                     ),
                                   ],
@@ -1005,7 +1005,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       color: Colors.yellow,
                                     ),
                                     Text(
-                                      courses.rating.toString(),
+                                      courses.rating?.toStringAsFixed(1) ?? '',
                                       style: theme.textTheme.labelMedium,
                                     ),
                                   ],

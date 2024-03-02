@@ -284,7 +284,7 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                                   size: 14.v,
                                 ),
                                 Text(
-                                  enrolls.course?.rating.toString() ?? '',
+                                  enrolls.course?.rating?.toStringAsFixed(1) ?? '' ?? '',
                                   style: theme.textTheme.labelMedium,
                                 ),
                               ],

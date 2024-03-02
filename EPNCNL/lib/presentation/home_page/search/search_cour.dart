@@ -139,7 +139,7 @@ class SearchCourse extends SearchDelegate {
                                           padding: EdgeInsets.only(left: 3.h),
                                           child: Text(
                                             // course.rating.toString(),
-                                            "${data?[index].rating.toString()}",
+                                            "${data?[index].rating?.toStringAsFixed(1) ?? ''}",
                                             style: theme.textTheme.labelMedium,
                                           ),
                                         ),

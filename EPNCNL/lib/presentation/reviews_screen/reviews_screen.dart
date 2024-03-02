@@ -122,7 +122,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                               Align(
                                 alignment: Alignment.topCenter,
                                 child: Text(
-                                  chosenCourse.rating.toString(),
+                                  chosenCourse.rating?.toStringAsFixed(1) ?? '',
                                   style: theme.textTheme.displaySmall,
                                 ),
                               ),

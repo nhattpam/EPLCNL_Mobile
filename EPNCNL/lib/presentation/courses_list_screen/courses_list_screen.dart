@@ -286,7 +286,7 @@ class CoursesListScreenState extends State<CoursesListScreen> {
                                     color: Colors.yellow,
                                   ),
                                   Text(
-                                    course.rating.toString(),
+                                    course.rating?.toStringAsFixed(1) ?? '',
                                     style: theme.textTheme.labelMedium,
                                   ),
                                 ],

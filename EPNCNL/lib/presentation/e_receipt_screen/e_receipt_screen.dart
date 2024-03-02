@@ -1,10 +1,13 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_outlined_button.dart';
+import 'package:meowlish/widgets/custom_text_form_field.dart';
 
 import '../../data/models/accounts.dart';
 
@@ -31,8 +34,8 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
 
   void loadTransactionByTransactionID() async {
     try {
-      final transaction = await Network.getTransactionByTransactionId(
-          widget.transactionID);
+      final transaction =
+          await Network.getTransactionByTransactionId(widget.transactionID);
       setState(() {
         chosenTransaction = transaction;
       });
@@ -51,6 +54,14 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
     });
   }
 
+  void _showMultiSelect() async {
+    final List<String>? result = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return RequestRefund(transactionId: chosenTransaction.id.toString());
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final amount = chosenTransaction.amount
@@ -63,6 +74,7 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
     }
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0.0,
@@ -93,123 +105,121 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
             right: 35.h,
           ),
           child: Column(
-              children: [
+            children: [
               _buildNavigationBar(context),
-          SizedBox(height: 42.v),
-          Container(
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(21),
-                    bottomLeft: Radius.circular(21)
-                )
-            ),
-            margin: EdgeInsets.only(left: 15, right: 15),
-            padding: EdgeInsets.only( bottom: 20),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: BarcodeWidget(
-                  barcode: Barcode.code128(),
-                  data: chosenTransaction.id.toString(),
-                  drawText: false,
-                  color: Colors.black,
-                  width: double.infinity,
-                  height: 70,
-                ),
-              ),
-            ),
-          ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 9.h),
-              child: _buildEmailSection(
-                context,
-                emailLabel: "Name",
-                emailText: account?.fullName ?? '',
-              ),
-            ),
-            SizedBox(height: 11.v),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 9.h),
-              child: _buildEmailSection(
-                context,
-                emailLabel: "Email ID",
-                emailText: account?.email ?? '',
-              ),
-            ),
-            SizedBox(height: 12.v),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 9.h),
-              child: _buildEmailSection(
-                context,
-                emailLabel: "Course",
-                emailText: chosenTransaction.course?.name ?? '',
-
-              ),
-            ),
-            SizedBox(height: 13.v),
-            // Padding(
-            //   padding: EdgeInsets.symmetric(horizontal: 9.h),
-            //   child: _buildEmailSection(
-            //     context,
-            //     emailLabel: "TransactionID",
-            //     emailText: chosenTransaction.id.toString(),
-            //   ),
-            // ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 9.h),
-              child: _buildEmailSection(
-                context,
-                emailLabel: "Category",
-                emailText: chosenTransaction.course?.category?.description ??
-                    '',
-              ),
-            ),
-            SizedBox(height: 11.v),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 9.h),
-              child: _buildEmailSection(
-                context,
-                emailLabel: "Price",
-                emailText: '$result\$',
-              ),
-            ),
-            SizedBox(height: 12.v),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 9.h),
-              child: _buildEmailSection(
-                context,
-                emailLabel: "Date",
-                emailText: "Nov 20, 202X   /   15:45",
-              ),
-            ),
-            SizedBox(height: 11.v),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 9.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 2.v),
-                    child: Text(
-                      "Status",
-                      style: CustomTextStyles.titleSmallJostBluegray900,
+              SizedBox(height: 42.v),
+              Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(21),
+                        bottomLeft: Radius.circular(21))),
+                margin: EdgeInsets.only(left: 15, right: 15),
+                padding: EdgeInsets.only(bottom: 20),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: BarcodeWidget(
+                      barcode: Barcode.code128(),
+                      data: chosenTransaction.id.toString(),
+                      drawText: false,
+                      color: Colors.black,
+                      width: double.infinity,
+                      height: 70,
                     ),
                   ),
-                  CustomOutlinedButton(
-                    height: 22.v,
-                    width: 60.h,
-                    text: chosenTransaction.status.toString(),
-                    margin: EdgeInsets.only(top: 2.v),
-                    buttonStyle: CustomButtonStyles.outlinePrimaryTL4,
-                    buttonTextStyle:
-                    CustomTextStyles.labelLargeOnPrimaryContainer,
-                  ),
-                ],
+                ),
               ),
-            ),
-            SizedBox(height: 5.v),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 9.h),
+                child: _buildEmailSection(
+                  context,
+                  emailLabel: "Name",
+                  emailText: account?.fullName ?? '',
+                ),
+              ),
+              SizedBox(height: 11.v),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 9.h),
+                child: _buildEmailSection(
+                  context,
+                  emailLabel: "Email ID",
+                  emailText: account?.email ?? '',
+                ),
+              ),
+              SizedBox(height: 12.v),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 9.h),
+                child: _buildEmailSection(
+                  context,
+                  emailLabel: "Course",
+                  emailText: chosenTransaction.course?.name ?? '',
+                ),
+              ),
+              SizedBox(height: 13.v),
+
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 9.h),
+                child: _buildEmailSection(
+                  context,
+                  emailLabel: "Category",
+                  emailText:
+                      chosenTransaction.course?.category?.description ?? '',
+                ),
+              ),
+              SizedBox(height: 11.v),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 9.h),
+                child: _buildEmailSection(
+                  context,
+                  emailLabel: "Price",
+                  emailText: '$result\$',
+                ),
+              ),
+              SizedBox(height: 12.v),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 9.h),
+                child: _buildEmailSection(
+                  context,
+                  emailLabel: "Date",
+                  emailText: chosenTransaction.transactionDate.toString(),
+                ),
+              ),
+              SizedBox(height: 11.v),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 9.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 2.v),
+                      child: Text(
+                        "Status",
+                        style: CustomTextStyles.titleSmallJostBluegray900,
+                      ),
+                    ),
+                    CustomOutlinedButton(
+                      height: 22.v,
+                      width: 60.h,
+                      text: chosenTransaction.status.toString(),
+                      margin: EdgeInsets.only(top: 2.v),
+                      buttonStyle: CustomButtonStyles.outlinePrimaryTL4,
+                      buttonTextStyle:
+                          CustomTextStyles.labelLargeOnPrimaryContainer,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 15.v),
+              Divider(),
+              SizedBox(height: 15.v),
+              CustomElevatedButton(
+                onPressed: () {
+                  _showMultiSelect();
+                },
+                text: "Request refund",
+              )
             ],
           ),
         ),
@@ -265,7 +275,8 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
   }
 
   /// Common widget
-  Widget _buildEmailSection(BuildContext context, {
+  Widget _buildEmailSection(
+    BuildContext context, {
     required String emailLabel,
     required String emailText,
   }) {
@@ -294,6 +305,98 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
             ),
           ),
         ),
+      ],
+    );
+  }
+}
+class RequestRefund extends StatefulWidget {
+  final String transactionId;
+  const RequestRefund({super.key, required this.transactionId});
+
+  @override
+  State<RequestRefund> createState() => _RequestRefundState();
+}
+
+class _RequestRefundState extends State<RequestRefund> {
+
+  TextEditingController additionalInfoController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Center(child: Text('Report')),
+      content: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Adjust the height as needed
+              Center(child: Text('Your Reason:')),
+              SizedBox(height: 24.v),
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: CustomTextFormField(
+                  controller: additionalInfoController,
+                  hintText: "Your Reason",
+                  hintStyle: CustomTextStyles.titleSmallGray80001,
+                  textInputAction: TextInputAction.done,
+                  maxLines: 14,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 15.h,
+                    vertical: 28.v,
+                  ),
+                  borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
+                ),
+              ),
+              SizedBox(height: 24.v),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Cancel')),
+        TextButton(
+            onPressed: () {
+              Network.createRefundRequest(transactionId: widget.transactionId, reason: additionalInfoController.text);
+              AwesomeDialog(
+                context: context,
+                animType: AnimType.scale,
+                dialogType: DialogType.success,
+                body: Center(
+                  child: Text(
+                    'Report success!!!',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+                btnOkOnPress: () {
+                  setState(() {
+                    Navigator.pop(context);
+                  });
+                },
+              )..show();
+            },
+            child: Text('Report'))
       ],
     );
   }

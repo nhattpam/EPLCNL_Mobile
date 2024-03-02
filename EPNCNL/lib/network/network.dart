@@ -1615,5 +1615,36 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+  static Future<void> createRefundRequest({
+    required String transactionId,
+    required String reason,
 
+  }) async {
+    final leanerId = SessionManager().getLearnerId() ?? 0;
+    final learnerData = {
+      "transactionId": transactionId,
+      "reason": reason,
+    };
+
+    final jsonData = jsonEncode(learnerData);
+
+    // Print the JSON data before making the API call
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/refund-requests'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+    } else {
+      print('Create report failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
+    }
+  }
 }

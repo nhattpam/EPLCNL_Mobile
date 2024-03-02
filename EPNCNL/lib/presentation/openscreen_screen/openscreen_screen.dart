@@ -85,7 +85,7 @@ class OpenscreenScreen extends StatelessWidget {
 
   /// Navigates to the surveyscreenOneScreen when the action is triggered.
   onTapGETSTARTED(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.surveyscreenOneScreen);
+    Navigator.pushNamed(context, AppRoutes.registerNowScreen);
   }
 
   /// Navigates to the loginScreen when the action is triggered.

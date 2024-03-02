@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 
@@ -22,6 +23,7 @@ class SingleMentorDetailsPageState extends State<SingleMentorDetailsPage>
     with AutomaticKeepAliveClientMixin<SingleMentorDetailsPage> {
   @override
   bool get wantKeepAlive => true;
+  Map<String, List<Enrollment>> moduleEnrollmentMap = {};
   late List<Course> chosenTutor = [];
 
   @override
@@ -39,7 +41,33 @@ class SingleMentorDetailsPageState extends State<SingleMentorDetailsPage>
       // Handle errors here
       print('Error: $e');
     }
+    loadEnrollments();
   }
+
+  Future<void> loadEnrollmentByCourseId(String courseId) async {
+    List<Enrollment> loadedAssignment =
+    await Network.getEnrollmentByCourseId(courseId);
+    if (mounted) {
+      setState(() {
+        moduleEnrollmentMap[courseId] = loadedAssignment;
+      });
+    }
+  }
+
+  Future<void> loadEnrollments() async {
+    try {
+      // Load lessons for each module
+      for (final module in chosenTutor) {
+        await loadEnrollmentByCourseId(module.id.toString());
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lessons: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -193,7 +221,7 @@ class SingleMentorDetailsPageState extends State<SingleMentorDetailsPage>
                                             top: 3.v,
                                           ),
                                           child: Text(
-                                            "7830 Std",
+                                            (moduleEnrollmentMap[courses.id]?.length).toString() + " Enroll",
                                             style: theme.textTheme.labelMedium,
                                           ),
                                         ),

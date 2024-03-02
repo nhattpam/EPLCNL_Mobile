@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/category_screen/category_screen.dart';
 import 'package:meowlish/presentation/home_page/carousel/landing.dart';
@@ -36,6 +37,7 @@ class HomePageState extends State<HomePage> {
   late List<Course> listCourse = [];
   late List<Tutor> listTutor = [];
   late Account? account = Account();
+  Map<String, List<Enrollment>> moduleEnrollmentMap = {};
 
   @override
   void initState() {
@@ -67,6 +69,7 @@ class HomePageState extends State<HomePage> {
     setState(() {
       listCourse = loadedCourse;
     });
+    loadEnrollments();
   }
 
   void loadTutor() async {
@@ -75,6 +78,31 @@ class HomePageState extends State<HomePage> {
       listTutor = loadedTutor;
     });
   }
+
+  Future<void> loadEnrollmentByCourseId(String courseId) async {
+    List<Enrollment> loadedAssignment =
+    await Network.getEnrollmentByCourseId(courseId);
+    if (mounted) {
+      setState(() {
+        moduleEnrollmentMap[courseId] = loadedAssignment;
+      });
+    }
+  }
+
+  Future<void> loadEnrollments() async {
+    try {
+      // Load lessons for each module
+      for (final module in listCourse) {
+        await loadEnrollmentByCourseId(module.id.toString());
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lessons: $e');
+    }
+  }
+
 
   TextEditingController searchController = TextEditingController();
 
@@ -520,7 +548,7 @@ class HomePageState extends State<HomePage> {
                                                 top: 3.v,
                                               ),
                                               child: Text(
-                                                "7830 Enroll",
+                                                (moduleEnrollmentMap[course.id]?.length).toString() + " Enroll",
                                                 style:
                                                     theme.textTheme.labelMedium,
                                               ),

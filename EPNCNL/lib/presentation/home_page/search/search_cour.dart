@@ -146,23 +146,23 @@ class SearchCourse extends SearchDelegate {
                                       ],
                                     ),
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 16.h),
-                                    child: Text(
-                                      "|",
-                                      style: CustomTextStyles.titleSmallBlack900,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      left: 16.h,
-                                      top: 3.v,
-                                    ),
-                                    child: Text(
-                                      "7830 Enroll",
-                                      style: theme.textTheme.labelMedium,
-                                    ),
-                                  ),
+                                  // Padding(
+                                  //   padding: EdgeInsets.only(left: 16.h),
+                                  //   child: Text(
+                                  //     "|",
+                                  //     style: CustomTextStyles.titleSmallBlack900,
+                                  //   ),
+                                  // ),
+                                  // Padding(
+                                  //   padding: EdgeInsets.only(
+                                  //     left: 16.h,
+                                  //     top: 3.v,
+                                  //   ),
+                                  //   child: Text(
+                                  //     "7830 Enroll",
+                                  //     style: theme.textTheme.labelMedium,
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                               SizedBox(height: 10),

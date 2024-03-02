@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/presentation/mentors_list_screen/mentors_list_screen.dart';
@@ -20,6 +21,7 @@ class FilterResultScreen extends StatefulWidget {
 }
 
 class FilterResultState extends State<FilterResultScreen> {
+  Map<String, List<Enrollment>> moduleEnrollmentMap = {};
   TextEditingController searchController = TextEditingController();
   late List<Course> listCourse = [];
   late List<Course> chosenCategory = [];
@@ -37,6 +39,7 @@ class FilterResultState extends State<FilterResultScreen> {
     setState(() {
       listCourse = loadedCourse;
     });
+    loadEnrollments();
   }
 
   void loadResult() async {
@@ -44,6 +47,30 @@ class FilterResultState extends State<FilterResultScreen> {
     setState(() {
       listCourse = loadedCourse;
     });
+  }
+
+  Future<void> loadEnrollmentByCourseId(String courseId) async {
+    List<Enrollment> loadedAssignment =
+    await Network.getEnrollmentByCourseId(courseId);
+    if (mounted) {
+      setState(() {
+        moduleEnrollmentMap[courseId] = loadedAssignment;
+      });
+    }
+  }
+
+  Future<void> loadEnrollments() async {
+    try {
+      // Load lessons for each module
+      for (final module in listCourse) {
+        await loadEnrollmentByCourseId(module.id.toString());
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lessons: $e');
+    }
   }
 
   @override
@@ -325,7 +352,7 @@ class FilterResultState extends State<FilterResultScreen> {
                                   top: 3.v,
                                 ),
                                 child: Text(
-                                  "7830 Enroll",
+                                  (moduleEnrollmentMap[data?[index].id]?.length).toString() + " Enroll",
                                   style: theme.textTheme.labelMedium,
                                 ),
                               ),

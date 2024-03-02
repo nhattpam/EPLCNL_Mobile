@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/categories.dart';
+import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/courses_list_filter_screen/widgets/filter_result.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
+import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/presentation/indox_calls_page/indox_calls_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
+import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/widgets/custom_bottom_bar.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
@@ -12,18 +18,68 @@ import 'package:meowlish/widgets/custom_search_view.dart';
 import '../mentors_list_screen/widgets/userprofile2_item_widget.dart';
 
 // ignore_for_file: must_be_immutable
-class MentorsListScreen extends StatelessWidget {
-  MentorsListScreen({Key? key}) : super(key: key);
+class MentorsListScreen extends StatefulWidget {
+  final List<Category> category;
+  final RangeValues values;
+  const MentorsListScreen({super.key, required this.category, required this.values});
 
+  @override
+  State<MentorsListScreen> createState() => _MentorsListScreenState();
+}
+
+class _MentorsListScreenState extends State<MentorsListScreen> {
   TextEditingController searchController = TextEditingController();
+  late List<Course> listCourse = [];
+  late List<Course> chosenCategory = [];
+  FetchCourseList _userList = FetchCourseList();
+  int found = 0;
+  @override
+  void initState() {
+    super.initState();
+    loadCourse();
+  }
 
-  GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+  void loadCourse() async {
+    List<Course> loadedCourse = await Network.getCourse();
+    setState(() {
+      listCourse = loadedCourse;
+    });
+  }
+
+  void loadResult() async {
+    List<Course> loadedCourse = await _userList.getCourseListById();
+    setState(() {
+      listCourse = loadedCourse;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
             resizeToAvoidBottomInset: false,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0.0,
+            toolbarHeight: 65,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Container(
+                margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                width: 300,
+                height: 100, // Add margin
+                child: Text(
+                  'Online Courses',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 25,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          backgroundColor: Colors.white,
             body: SizedBox(
                 width: double.maxFinite,
                 child: Column(children: [
@@ -37,24 +93,6 @@ class MentorsListScreen extends StatelessWidget {
                                   children: [
                                     Padding(
                                         padding: EdgeInsets.only(left: 2.h),
-                                        child: Row(children: [
-                                          CustomImageView(
-                                              imagePath: ImageConstant
-                                                  .imgArrowDownBlueGray900,
-                                              height: 20.v,
-                                              width: 26.h,
-                                              margin: EdgeInsets.only(
-                                                  top: 5.v, bottom: 4.v)),
-                                          Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 11.h),
-                                              child: Text("Mentors",
-                                                  style: theme
-                                                      .textTheme.titleLarge))
-                                        ])),
-                                    SizedBox(height: 16.v),
-                                    Padding(
-                                        padding: EdgeInsets.only(left: 2.h),
                                         child: CustomSearchView(
                                           controller: searchController,
                                           hintText: "3D Design",
@@ -65,10 +103,11 @@ class MentorsListScreen extends StatelessWidget {
                                     SizedBox(height: 15.v),
                                     _buildHEADING(context),
                                     SizedBox(height: 19.v),
-                                    _buildUserProfile(context)
+                                    buildResults(context)
                                   ]))))
                 ])),
-            bottomNavigationBar: _buildBottomBar(context)));
+        )
+    );
   }
 
   /// Section Widget
@@ -102,111 +141,128 @@ class MentorsListScreen extends StatelessWidget {
 
   /// Section Widget
   Widget _buildHEADING(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.only(left: 2.h, right: 4.h),
-        child: Row(
+    List<String> categoryIds = widget.category.map((category) => category.id.toString()).toList();
+    return FutureBuilder<List<Course>>(
+      future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt()),
+      builder: (context, snapshot) {
+        List<Course>? data = snapshot.data;
+        return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               RichText(
                   text: TextSpan(children: [
                     TextSpan(
-                        text: "Result for “",
+                        text: "Result: ",
                         style: CustomTextStyles.titleSmallJostff202244),
-                    TextSpan(
-                        text: "3D Design",
-                        style: CustomTextStyles.titleSmallJostffff9300),
-                    TextSpan(
-                        text: "”",
-                        style: CustomTextStyles.titleSmallJostff202244)
                   ]),
                   textAlign: TextAlign.left),
               Padding(
-                  padding: EdgeInsets.only(bottom: 4.v),
+                  padding: EdgeInsets.only(top: 7.v),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("18 Founds".toUpperCase(),
+                        Text(
+                            (data?.length ?? '').toString() + " Founds".toUpperCase(),
                             style: CustomTextStyles.labelLargePrimary),
-                        CustomImageView(
-                            imagePath: ImageConstant.imgArrowRightPrimary,
-                            height: 10.v,
-                            width: 5.h,
-                            margin: EdgeInsets.only(
-                                left: 10.h, top: 2.v, bottom: 3.v))
                       ]))
-            ]));
+            ]);
+      },
+    );
   }
 
-  /// Section Widget
-  Widget _buildUserProfile(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.only(left: 2.h),
-        child: ListView.separated(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            separatorBuilder: (context, index) {
-              return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 9.5.v),
-                  child: SizedBox(
-                      width: 360.h,
-                      child: Divider(
-                          height: 1.v,
-                          thickness: 1.v,
-                          color: appTheme.blue50)));
-            },
-            itemCount: 6,
-            itemBuilder: (context, index) {
-              return Userprofile2ItemWidget();
-            }));
+  Widget buildResults(BuildContext context) {
+    // Extracting category IDs
+    List<String> categoryIds = widget.category.map((category) => category.id.toString()).toList();
+    return FutureBuilder<List<Course>>(
+      future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt()),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        List<Course>? data = snapshot.data;
+
+        return Padding(
+            padding: EdgeInsets.only(left: 2.h),
+            child: ListView.separated(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                separatorBuilder: (context, index) {
+                  return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 9.5.v),
+                      child: SizedBox(
+                          width: 360.h,
+                          child: Divider(
+                              height: 1.v,
+                              thickness: 1.v,
+                              color: appTheme.blue50)));
+                },
+                itemCount: data?.length ?? 0,
+                itemBuilder: (context, index) {
+                  String image = '${data?[index].tutor?.account?.imageUrl}';
+                  String name = '${data?[index].tutor?.account?.fullName}';
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 66.adaptSize,
+                        width: 66.adaptSize,
+                        decoration: BoxDecoration(
+                          color: appTheme.black900,
+                          borderRadius: BorderRadius.circular(
+                            33.h,
+                          ),
+                        ),
+                        child: Image.network(
+                          image,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: 11.h,
+                          top: 9.v,
+                          bottom: 12.v,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              constraints: const BoxConstraints(
+                                maxWidth: 160,
+                              ),
+                              child: Text(
+                                name,
+                                style: CustomTextStyles.titleMedium17,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            SizedBox(height: 2.v),
+                            Text(
+                              "3D Design",
+                              style: theme.textTheme.labelLarge,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+
+                }));
+      },
+    );
   }
 
-  /// Section Widget
-  Widget _buildBottomBar(BuildContext context) {
-    return CustomBottomBar(onChanged: (BottomBarEnum type) {
-      Navigator.pushNamed(navigatorKey.currentContext!, getCurrentRoute(type));
-    });
-  }
-
-  ///Handling route based on bottom click actions
-  String getCurrentRoute(BottomBarEnum type) {
-    switch (type) {
-      case BottomBarEnum.Home:
-        return AppRoutes.homePage;
-      case BottomBarEnum.Mycourses:
-        return AppRoutes.myCourseCompletedPage;
-      case BottomBarEnum.Indox:
-        return AppRoutes.indoxCallsPage;
-      case BottomBarEnum.Transaction:
-        return AppRoutes.transactionsPage;
-      case BottomBarEnum.Profile:
-        return AppRoutes.profilesPage;
-      default:
-        return "/";
-    }
-  }
-
-  ///Handling page based on route
-  Widget getCurrentPage(String currentRoute) {
-    switch (currentRoute) {
-      case AppRoutes.homePage:
-        return HomePage();
-      case AppRoutes.myCourseCompletedPage:
-        return MyCourseCompletedPage();
-      case AppRoutes.indoxCallsPage:
-        return IndoxCallsPage();
-      case AppRoutes.transactionsPage:
-        return TransactionsPage();
-      case AppRoutes.profilesPage:
-        return ProfilesPage();
-      default:
-        return DefaultWidget();
-    }
-  }
-
-  /// Navigates to the coursesListScreen when the action is triggered.
   onTapCourses(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.coursesListScreen);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              FilterResultScreen(category: widget.category, values: widget.values)),
+    );
   }
 }

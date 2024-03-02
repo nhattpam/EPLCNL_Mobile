@@ -4,6 +4,7 @@ import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
+import 'package:meowlish/presentation/mentors_list_screen/mentors_list_screen.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
@@ -163,7 +164,12 @@ class FilterResultState extends State<FilterResultScreen> {
 
   /// Navigates to the mentorsListScreen when the action is triggered.
   onTapTutors(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.mentorsListScreen);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              MentorsListScreen(category: widget.category, values: widget.values,)),
+    );
   }
 
   Widget buildResults(BuildContext context) {

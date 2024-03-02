@@ -282,7 +282,7 @@ class SingleCourseDetailsTabContainerScreenState
                             Padding(
                               padding: EdgeInsets.only(left: 3.h),
                               child: Text(
-                                "${chosenCourse.rating}",
+                                "${chosenCourse.rating?.toStringAsFixed(1) ?? ''}",
                                 style: theme.textTheme.labelMedium,
                               ),
                             ),

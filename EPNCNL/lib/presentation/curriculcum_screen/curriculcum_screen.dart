@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/assignmentattemps.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
+import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/curriculcum_screen/widgets/videoplayer_widget.dart';
@@ -28,6 +31,8 @@ class CurriculumScreen extends StatefulWidget {
 class CurriculumScreenState extends State<CurriculumScreen> {
   late List<Module> listModuleByCourseId = [];
   late List<ClassModule> listClassModuleByCourseId = [];
+  late List<QuizAttempt> listQuizAttempt = [];
+  late List<AssignmentAttempt> listAssignmentAttempt = [];
   late Course chosenCourse = Course();
 
   // Map to store lessons for each module
@@ -46,6 +51,8 @@ class CurriculumScreenState extends State<CurriculumScreen> {
     loadCourseByCourseID();
     loadModuleByCourseId();
     loadClassModuleByCourseId();
+    loadQuizAttemptsByLearnerId();
+    loadAssignmentAttemptsByLearnerId();
   }
 
   @override
@@ -85,6 +92,20 @@ class CurriculumScreenState extends State<CurriculumScreen> {
         await Network.getClassModulesByCourseId(widget.courseID);
     setState(() {
       listClassModuleByCourseId = loadedModule;
+    });
+  }
+  Future<void> loadQuizAttemptsByLearnerId() async {
+    List<QuizAttempt> loadedQuizAttempt =
+        await Network.getQuizAttemptByLearnerId();
+    setState(() {
+      listQuizAttempt = loadedQuizAttempt;
+    });
+  }
+  Future<void> loadAssignmentAttemptsByLearnerId() async {
+    List<AssignmentAttempt> loadedAssignmentAttempt =
+        await Network.getAssignmentAttemptByLearnerId();
+    setState(() {
+      listAssignmentAttempt = loadedAssignmentAttempt;
     });
   }
 
@@ -328,28 +349,67 @@ class CurriculumScreenState extends State<CurriculumScreen> {
           // Only show the assignments if the module is not minimized
           if (!(minimizedAssignmentsMap[module.id.toString()] ?? false))
             for (int assignmentIndex = 0; assignmentIndex < (moduleAssignmentMap[module.id.toString()]?.length ?? 0); assignmentIndex++)
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DoingAssignmentScreen(
-                            assignmentID: moduleAssignmentMap[module.id.toString()]![assignmentIndex].id.toString(),
-                            cooldownTime: Duration(
-                                minutes: moduleAssignmentMap[
-                                        module.id.toString()]![assignmentIndex]
-                                    .deadline as int))),
-                  );
-                },
-                child: Html(
-                  data: moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText
-                      .toString(),
-                  style: {
-                    "body": Style(
-                        fontWeight: FontWeight.bold, color: Colors.black
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DoingAssignmentScreen(
+                                  assignmentID: moduleAssignmentMap[module.id.toString()]![assignmentIndex].id.toString(),
+                                  cooldownTime: Duration(
+                                      minutes: moduleAssignmentMap[
+                                              module.id.toString()]![assignmentIndex]
+                                          .deadline as int))),
+                        );
+                        loadAssignmentAttemptsByLearnerId();
+                      },
+                        child:  Html(
+                            data: moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText
+                                .toString(),
+                            style: {
+                              "body": Style(
+                                  fontWeight: FontWeight.bold, color: Colors.black
+                              ),
+                            },
+                          ),
                     ),
-                  },
-                ),
+                  ),
+                  if(listAssignmentAttempt.isNotEmpty &&
+                      listAssignmentAttempt.lastIndexWhere((attempt) =>
+                      attempt.id ==
+                          moduleAssignmentMap[module.id.toString()]![assignmentIndex].id) !=
+                          null)
+                    Icon(
+                      listAssignmentAttempt.isNotEmpty &&
+                          listAssignmentAttempt.lastIndexWhere((attempt) =>
+                          attempt.id ==
+                              moduleAssignmentMap[module.id.toString()]![assignmentIndex].id) !=
+                              null &&
+                          moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass !=
+                              null &&
+                          listAssignmentAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
+                              moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass!
+
+                          ? FontAwesomeIcons.check
+                          : Icons.dangerous_outlined,
+                      color: listAssignmentAttempt.isNotEmpty &&
+                          listAssignmentAttempt.lastIndexWhere((attempt) =>
+                          attempt.id ==
+                              moduleAssignmentMap[module.id.toString()]![assignmentIndex].id) !=
+                              null &&
+                          moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass !=
+                              null &&
+                          listAssignmentAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
+                              moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass!
+                          ? Colors.green
+                          : Colors.red,
+                      size: 20.v,
+                    ),
+                ],
               ),
         ],
       ),
@@ -369,17 +429,20 @@ class CurriculumScreenState extends State<CurriculumScreen> {
               Text(
                 'Quiz',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary),
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
               ),
               IconButton(
-                icon: Icon(minimizedQuizzesMap[module.id.toString()] ?? false
-                    ? Icons.arrow_drop_down_outlined
-                    : Icons.minimize),
+                icon: Icon(
+                  minimizedQuizzesMap[module.id.toString()] ?? false
+                      ? Icons.arrow_drop_down_outlined
+                      : Icons.minimize,
+                ),
                 onPressed: () {
                   setState(() {
                     minimizedQuizzesMap[module.id.toString()] =
-                        !(minimizedQuizzesMap[module.id.toString()] ?? false);
+                    !(minimizedQuizzesMap[module.id.toString()] ?? false);
                   });
                 },
               ),
@@ -388,30 +451,67 @@ class CurriculumScreenState extends State<CurriculumScreen> {
           // Only show the quizzes if the module is not minimized
           if (!(minimizedQuizzesMap[module.id.toString()] ?? false))
             for (int quizIndex = 0;
-                quizIndex < (moduleQuizMap[module.id.toString()]?.length ?? 0);
-                quizIndex++)
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DoingQuizScreen(
-                            quizId:
-                                moduleQuizMap[module.id.toString()]![quizIndex]
-                                    .id
-                                    .toString(),
+            quizIndex <
+                (moduleQuizMap[module.id.toString()]?.length ?? 0);
+            quizIndex++)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: ()  async{
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DoingQuizScreen(
+                            quizId: moduleQuizMap[module.id.toString()]![quizIndex].id.toString(),
                             cooldownTime: Duration(
-                                minutes: moduleQuizMap[module.id.toString()]![
-                                        quizIndex]
-                                    .deadline as int))),
-                  ); // Handle quiz tap
-                },
-                child: Text(
-                    moduleQuizMap[module.id.toString()]![quizIndex]
-                        .name
-                        .toString(),
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.black)),
+                              minutes: moduleQuizMap[module.id.toString()]![quizIndex].deadline as int,
+                            ),
+                          ),
+                        ),
+                      );
+                      loadQuizAttemptsByLearnerId();
+                    },
+                    child: Text(
+                      moduleQuizMap[module.id.toString()]![quizIndex].name.toString(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  if(listQuizAttempt.isNotEmpty &&
+                      listQuizAttempt.lastIndexWhere((attempt) =>
+                      attempt.id ==
+                          moduleQuizMap[module.id.toString()]![quizIndex].id) !=
+                          null)
+                  Icon(
+                    listQuizAttempt.isNotEmpty &&
+                        listQuizAttempt.lastIndexWhere((attempt) =>
+                        attempt.id ==
+                            moduleQuizMap[module.id.toString()]![quizIndex].id) !=
+                            null &&
+                        moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass !=
+                            null &&
+                        listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
+                            moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass!
+
+                        ? FontAwesomeIcons.check
+                        : Icons.dangerous_outlined,
+                    color: listQuizAttempt.isNotEmpty &&
+                        listQuizAttempt.lastIndexWhere((attempt) =>
+                        attempt.id ==
+                            moduleQuizMap[module.id.toString()]![quizIndex].id) !=
+                            null &&
+                        moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass !=
+                            null &&
+                        listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
+                            moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass!
+                        ? Colors.green
+                        : Colors.red,
+                    size: 20.v,
+                  ),
+                ],
               ),
         ],
       ),

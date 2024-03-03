@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:meowlish/data/models/accountforums.dart';
 import 'package:meowlish/data/models/accounts.dart';
+import 'package:meowlish/data/models/assignmentattemps.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/classmodules.dart';
@@ -18,6 +19,7 @@ import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/data/models/paperworks.dart';
 import 'package:meowlish/data/models/questionanswers.dart';
 import 'package:meowlish/data/models/questions.dart';
+import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/tutors.dart';
@@ -978,6 +980,32 @@ class Network {
       print('JSON Data: $jsonData');
     }
   }
+  static Future<List<AssignmentAttempt>> getAssignmentAttemptByLearnerId() async {
+    String lid = SessionManager().getLearnerId().toString();
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/learners/$lid/assignment-attempts';
+    print(apiUrl);// Replace with your API URL
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> assignmentListJson = jsonDecode(response.body);
+
+        return assignmentListJson.map((json) => AssignmentAttempt.fromJson(json)).toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
 
   // quiz
   static Future<List<Quiz>> getQuizByModuleId(String moduleId) async {
@@ -1069,6 +1097,32 @@ class Network {
       print('Quiz attempt failed');
       // Print the JSON data before making the API call
       print('JSON Data: $jsonData');
+    }
+  }
+  static Future<List<QuizAttempt>> getQuizAttemptByLearnerId() async {
+    String lid = SessionManager().getLearnerId().toString();
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/learners/$lid/quiz-attempts';
+    print(apiUrl);// Replace with your API URL
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> quizListJson = jsonDecode(response.body);
+
+        return quizListJson.map((json) => QuizAttempt.fromJson(json)).toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
     }
   }
 

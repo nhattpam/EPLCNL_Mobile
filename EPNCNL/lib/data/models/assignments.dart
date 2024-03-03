@@ -5,6 +5,7 @@ class Assignment {
   String? questionText;
   int? deadline;
   String? moduleId;
+  int? gradeToPass;
   String? createdDate;
   String? updatedDate;
   Module? module;
@@ -14,6 +15,7 @@ class Assignment {
       this.questionText,
       this.deadline,
       this.moduleId,
+        this.gradeToPass,
       this.createdDate,
       this.updatedDate,
       this.module});
@@ -23,6 +25,7 @@ class Assignment {
     questionText = json['questionText'];
     deadline = json['deadline'];
     moduleId = json['moduleId'];
+    gradeToPass = json['gradeToPass'];
     createdDate = json['createdDate'];
     updatedDate = json['updatedDate'];
     module =
@@ -35,6 +38,7 @@ class Assignment {
     data['questionText'] = this.questionText;
     data['deadline'] = this.deadline;
     data['moduleId'] = this.moduleId;
+    data['gradeToPass'] = this.gradeToPass;
     data['createdDate'] = this.createdDate;
     data['updatedDate'] = this.updatedDate;
     if (this.module != null) {

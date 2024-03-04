@@ -549,9 +549,11 @@ class SingleCourseDetailsCurriculumPageState
   }
   Future<void> loadClassTopic() async {
     try {
+      listClassModuleByCourseId.sort((a, b) =>
+          DateTime.parse(a.startDate.toString())
+              .compareTo(DateTime.parse(b.startDate.toString())));
       // Load lessons for each module
       for (final module in listClassModuleByCourseId) {
-        print('Check loadclasstopic' + module.id.toString());
         await loadClassTopicsByClassLessonId(module.classLesson?.id ?? '');
       }
       // After all lessons are loaded, proceed with building the UI

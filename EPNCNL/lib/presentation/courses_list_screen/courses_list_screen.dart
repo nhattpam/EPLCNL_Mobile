@@ -4,6 +4,7 @@ import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/category_mentor_list_screen/category_mentor_list_screen.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
@@ -356,6 +357,13 @@ class CoursesListScreenState extends State<CoursesListScreen> {
 
   /// Navigates to the mentorsListScreen when the action is triggered.
   onTapTutors(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.mentorsListScreen);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              CategoryMentorsListScreen(
+                  categoryId:
+                  widget.categoryId)),
+    );
   }
 }

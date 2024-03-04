@@ -39,7 +39,6 @@ class SingleCourseMeetDetailsCurriculcumPageState
   DateTime selectedDatesFromCalendar1 = DateTime.now();
   FetchCourseList _classmoduleList = FetchCourseList();
   late List<ClassTopic> listClassTopic = [];
-  Map<String, List<ClassTopic>> moduleClassLessonMap = {};
   late ClassModule chosenCourse = ClassModule();
   String query = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
@@ -50,17 +49,6 @@ class SingleCourseMeetDetailsCurriculcumPageState
   void initState() {
     super.initState();
     // loadClassModuleByCourseId();
-  }
-
-  Future<void> loadClassTopicsByClassLessonId(String classlessonId) async {
-    List<ClassTopic> loadedClassTopicMaterial =
-        await Network.getClassTopicsByClassLessonId(classlessonId);
-    if (mounted) {
-      setState(() {
-        // Store the lessons for this module in the map
-        moduleClassLessonMap[classlessonId] = loadedClassTopicMaterial;
-      });
-    }
   }
 
   void _showMultiSelect(String lessonId) async {

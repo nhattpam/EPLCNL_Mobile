@@ -679,7 +679,8 @@ class Network {
   static Future<List<ClassTopic>> getClassTopicsByClassLessonId(
       String classLessonId) async {
     final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/class-lessons/$classLessonId/class-topics'; // Replace with your API URL
+        'https://nhatpmse.twentytwo.asia/api/class-lessons/$classLessonId/class-topics';
+    print(apiUrl);
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -740,7 +741,6 @@ class Network {
   static Future<List<Lesson>> getLessonsByModuleId(String moduleId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/lessons'; // Replace with your API URL
-
     try {
       final response = await http.get(
         Uri.parse(apiUrl),

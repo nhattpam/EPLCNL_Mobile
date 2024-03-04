@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
+import 'package:meowlish/data/models/classtopics.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
@@ -472,6 +473,7 @@ class SingleCourseDetailsCurriculumPageState
 
   // Map to store lessons for each module
   Map<String, List<Lesson>> moduleLessonsMap = {};
+  Map<String, List<ClassTopic>> moduleClassTopicMap = {};
 
   @override
   void initState() {
@@ -519,6 +521,7 @@ class SingleCourseDetailsCurriculumPageState
     setState(() {
       listClassModuleByCourseId = loadedModule;
     });
+    loadClassTopic();
   }
 
   Future<void> loadLessonByModuleId(String moduleId) async {
@@ -544,6 +547,32 @@ class SingleCourseDetailsCurriculumPageState
       print('Error loading lessons: $e');
     }
   }
+  Future<void> loadClassTopic() async {
+    try {
+      // Load lessons for each module
+      for (final module in listClassModuleByCourseId) {
+        print('Check loadclasstopic' + module.id.toString());
+        await loadClassTopicsByClassLessonId(module.classLesson?.id ?? '');
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lessons: $e');
+    }
+  }
+
+  Future<void> loadClassTopicsByClassLessonId(String classlessonId) async {
+    List<ClassTopic> loadedClassTopicMaterial =
+    await Network.getClassTopicsByClassLessonId(classlessonId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleClassTopicMap[classlessonId] = loadedClassTopicMaterial;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -585,10 +614,6 @@ class SingleCourseDetailsCurriculumPageState
       itemBuilder: (context, index) {
         final module = listModuleByCourseId[index];
         final number = index + 1;
-        // for (final lesson in moduleLessonsMap[module.id.toString()] ?? []) {
-        //   print('Lesson: ${lesson.name}');
-        // }
-
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -596,7 +621,7 @@ class SingleCourseDetailsCurriculumPageState
               padding: EdgeInsets.only(left: 1.h),
               child: Row(
                 children: [
-                  Text("Session $number - ",
+                  Text("Module $number - ",
                       style: theme.textTheme.labelMedium),
                   Text(module.name.toString(),
                       style: CustomTextStyles.labelLargeOrangeA700),
@@ -604,10 +629,7 @@ class SingleCourseDetailsCurriculumPageState
               ),
             ),
             // Print lessons for this module
-            for (int lessonIndex = 0;
-                lessonIndex <
-                    (moduleLessonsMap[module.id.toString()]?.length ?? 0);
-                lessonIndex++)
+            for (int lessonIndex = 0; lessonIndex < (moduleLessonsMap[module.id.toString()]?.length ?? 0); lessonIndex++)
               GestureDetector(
                 onTap: () {
                   // Handle the onTap action for each video session
@@ -622,12 +644,19 @@ class SingleCourseDetailsCurriculumPageState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                              moduleLessonsMap[module.id.toString()]![
-                                      lessonIndex]
-                                  .name
-                                  .toString(),
-                              style: CustomTextStyles.titleMedium17),
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 270,
+                            ),
+                            child: Text(
+                                moduleLessonsMap[module.id.toString()]![
+                                        lessonIndex]
+                                    .name
+                                    .toString(),
+                                style: CustomTextStyles.titleMedium17,
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis),
+                          ),
                           // Add other information about the video session here
                         ],
                       ),
@@ -657,26 +686,64 @@ class SingleCourseDetailsCurriculumPageState
       itemBuilder: (context, index) {
         final module = listClassModuleByCourseId[index];
         final number = index + 1;
-
         // Parse the startDate string into a DateTime object
         DateTime startDate = DateTime.parse(module.startDate.toString());
-
         // Format the DateTime object into the desired format
         String formattedDate = DateFormat('dd-MM-yyyy').format(startDate);
-
         return Column(
           children: [
             Padding(
               padding: EdgeInsets.only(left: 1.h),
               child: Row(
                 children: [
-                  Text("Session $number - ",
-                      style: theme.textTheme.labelMedium),
-                  Text(formattedDate,
-                      style: CustomTextStyles.labelLargeOrangeA700),
+                  Text("Module $number - ", style: theme.textTheme.labelMedium),
+                  Text(formattedDate, style: CustomTextStyles.labelLargeOrangeA700),
                 ],
               ),
             ),
+            for (int lessonIndex = 0; lessonIndex < (moduleClassTopicMap[module.classLesson?.id.toString()]?.length ?? 0); lessonIndex++)
+              GestureDetector(
+                onTap: () {
+                  // Handle the onTap action for each video session
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    CircleWithNumber(number: lessonIndex + 1),
+                    Padding(
+                      padding:
+                      EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 270,
+                            ),
+                            child: Text(
+                                moduleClassTopicMap[module.classLesson?.id.toString()]![
+                                lessonIndex]
+                                    .name
+                                    .toString(),
+                                style: CustomTextStyles.titleMedium17,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+
+                          ),
+                          // Add other information about the video session here
+                        ],
+                      ),
+                    ),
+                    // Spacer(),
+                    // Icon(
+                    //   Icons.play_arrow,
+                    //   size: 17.0,
+                    //   color: Colors.orange,
+                    // ),
+                  ],
+                ),
+              ),
             SizedBox(height: 21.v),
             Divider(),
           ],

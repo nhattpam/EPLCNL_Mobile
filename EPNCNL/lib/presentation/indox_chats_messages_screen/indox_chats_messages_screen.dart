@@ -131,10 +131,12 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                           child: IntrinsicWidth(
                             child: Column(
                               children: [
-                                if (message.learner?.account?.id == lid)
+                                if (message.learner?.account?.id == lid && message.tutor?.account?.id != '')
                                   Center(child: Text(message.learner?.account?.fullName ?? '')),
-                                if (message.learner?.account?.id != lid)
+                                if (message.learner?.account?.id != lid && message.tutor?.account?.id != '')
                                   Center(child: Text(message.learner?.account?.fullName ?? '')),
+                                if (message.tutor?.account?.id != lid && message.tutor?.account?.role?.name == 'Tutor')
+                                  Center(child: Text(message.tutor?.account?.fullName ?? '')),
                                 // if (message.learner?.account?.role?.name == 'Learner')
                                 //   Center(
                                 //       child: Text(

@@ -147,8 +147,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         SizedBox(height: 30.v),
                         if (isEnrolled || chosenCourse.id == enrollment.courseId && SessionManager().getLearnerId() == enrollment.learnerId)
                           CustomElevatedButton(
-                          onPressed: (){
-                            Navigator.push(
+                          onPressed: () async{
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
@@ -157,6 +157,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                     ),
                               ),
                             );
+                            loadFeedback();
                           },
                           text: "Write a Review",
                         )

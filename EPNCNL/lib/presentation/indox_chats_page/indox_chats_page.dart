@@ -299,9 +299,15 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                            moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                                ? DateFormat('HH:mm').format(DateTime.parse(moduleAccountForumsMap[forums.id]!.first.messagedDate ?? ''))
-                                : '',
+                            DateFormat('HH:mm').format(DateTime.parse(moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
+                                ? (moduleAccountForumsMap[forums.id]!
+                                .where((element) => element.messagedDate != null) // Filter out elements with null messagedDate
+                                .toList() // Convert to list to use sorting
+                              ..sort((a, b) => b.messagedDate!.compareTo(a.messagedDate!))) // Sort in descending order based on messagedDate
+                                .firstWhere((element) => true) // Get the first element or null if the list is empty
+                                ?.messagedDate ?? '' // Get the message of the first element, or '' if it's null
+                                : DateTime.now().toString()))
+                            ,
                             style: CustomTextStyles.labelMediumGray700,
                           ),
                         ),

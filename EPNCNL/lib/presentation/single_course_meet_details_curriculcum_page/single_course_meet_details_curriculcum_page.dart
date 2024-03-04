@@ -2,11 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:internet_file/internet_file.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
+import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/presentation/doing_quiz_screen/doing_quiz_screen.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
@@ -591,11 +593,14 @@ class _MultiTopicState extends State<MultiTopic> {
 
   List<ClassTopic> listClassTopic = [];
   Map<String, List<Quiz>> moduleQuizMap = {};
+  late List<QuizAttempt> listQuizAttempt = [];
 
   @override
   void initState() {
     super.initState();
     loadClassModuleByCourseId();
+    loadQuizAttemptsByLearnerId();
+
   }
 
   void loadClassModuleByCourseId() async {
@@ -633,6 +638,14 @@ class _MultiTopicState extends State<MultiTopic> {
     }
   }
 
+  Future<void> loadQuizAttemptsByLearnerId() async {
+    List<QuizAttempt> loadedQuizAttempt =
+    await Network.getQuizAttemptByLearnerId();
+    setState(() {
+      listQuizAttempt = loadedQuizAttempt;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -668,26 +681,62 @@ class _MultiTopicState extends State<MultiTopic> {
                       ),
                       // Only show the assignments if the module is not minimized
                         for (int assignmentIndex = 0; assignmentIndex < (moduleQuizMap[listClassTopic[index].id]?.length ?? 0); assignmentIndex++)
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => DoingQuizScreen(
-                                      quizId: moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id.toString(),
-                                        cooldownTime: Duration(
-                                            minutes: moduleQuizMap[
-                                            listClassTopic[index].id]![assignmentIndex]
-                                                .deadline as int))),
-                              );
-                            },
-                            child: Text(
-                                moduleQuizMap[listClassTopic[index].id]![assignmentIndex]
-                                    .name
-                                    .toString(),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, color: Colors.black)),
+                          Row(
+                            children: [
+                              TextButton(
+                                onPressed: () async{
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => DoingQuizScreen(
+                                          quizId: moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id.toString(),
+                                            cooldownTime: Duration(
+                                                minutes: moduleQuizMap[
+                                                listClassTopic[index].id]![assignmentIndex]
+                                                    .deadline as int))),
+                                  );
+                                  loadQuizAttemptsByLearnerId();
+                                },
+                                child: Text(
+                                    moduleQuizMap[listClassTopic[index].id]![assignmentIndex]
+                                        .name
+                                        .toString(),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold, color: Colors.black)),
 
+                              ),
+                              if(listQuizAttempt.isNotEmpty &&
+                                  listQuizAttempt.lastIndexWhere((attempt) =>
+                                  attempt.id ==
+                                      moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
+                                      null)
+                                Icon(
+                                  listQuizAttempt.isNotEmpty &&
+                                      listQuizAttempt.lastIndexWhere((attempt) =>
+                                      attempt.id ==
+                                          moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
+                                          null &&
+                                      moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
+                                          null &&
+                                      listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
+                                          moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
+
+                                      ? FontAwesomeIcons.check
+                                      : Icons.dangerous_outlined,
+                                  color: listQuizAttempt.isNotEmpty &&
+                                      listQuizAttempt.lastIndexWhere((attempt) =>
+                                      attempt.id ==
+                                          moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
+                                          null &&
+                                      moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
+                                          null &&
+                                      listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
+                                          moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
+                                      ? Colors.green
+                                      : Colors.red,
+                                  size: 20.v,
+                                ),
+                            ],
                           ),
                     ],
                   ),

@@ -1,6 +1,8 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/login_screen/login_screen.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 
@@ -196,7 +198,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   Widget _buildContinueSection(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        if(newpasswordController == confirmpasswordController)
+        print(newpasswordController);
         Network.updateProfile(
             account?.email ?? '',
             newpasswordController.text,
@@ -211,6 +213,25 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             account?.createdDate ?? '',
             account?.createdBy ?? '',
             account?.note ?? '');
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.scale,
+          dialogType: DialogType.success,
+          body: Center(
+            child: Text(
+              'Change password Success!!!',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+          // title: 'Warning',
+          // desc:   'This is also Ignored',
+          btnOkOnPress: () {
+            Navigator.of(context).pop();
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) =>  LoginScreen()));
+          },
+        )..show();
+
       },
       child: Container(
         height: 60.v,

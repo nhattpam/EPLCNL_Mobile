@@ -1,19 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/network/network.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 
-class CreateNewPasswordScreen extends StatelessWidget {
-  CreateNewPasswordScreen({Key? key})
-      : super(
-          key: key,
-        );
+import '../../data/models/accounts.dart';
+
+class CreateNewPasswordScreen extends StatefulWidget {
+  const CreateNewPasswordScreen({super.key});
+
+  @override
+  State<CreateNewPasswordScreen> createState() => _CreateNewPasswordScreenState();
+}
+
+class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
   TextEditingController newpasswordController = TextEditingController();
 
   TextEditingController confirmpasswordController = TextEditingController();
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late Account? account = Account();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAccountData();
+  }
+
+  Future<void> fetchAccountData() async {
+    Account acc = await Network.getAccount();
+
+    setState(() {
+      // Set the list of pet containers in your state
+      account = acc;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -172,68 +194,87 @@ class CreateNewPasswordScreen extends StatelessWidget {
 
   /// Section Widget
   Widget _buildContinueSection(BuildContext context) {
-    return Container(
-      height: 60.v,
-      width: 350.h,
-      margin: EdgeInsets.only(left: 5.h),
-      child: Stack(
-        alignment: Alignment.centerRight,
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              height: 60.v,
-              width: 350.h,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary,
-                borderRadius: BorderRadius.circular(
-                  30.h,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: appTheme.black900.withOpacity(0.3),
-                    spreadRadius: 2.h,
-                    blurRadius: 2.h,
-                    offset: Offset(
-                      1,
-                      2,
-                    ),
+    return GestureDetector(
+      onTap: (){
+        if(newpasswordController == confirmpasswordController)
+        Network.updateProfile(
+            account?.email ?? '',
+            newpasswordController.text,
+            account?.fullName ?? '',
+            account?.phoneNumber ?? '',
+            account?.imageUrl ?? '',
+            account?.dateOfBirth ?? '',
+            account?.gender ?? false,
+            account?.address ?? '',
+            account?.isActive ?? true,
+            account?.isDeleted ?? false,
+            account?.createdDate ?? '',
+            account?.createdBy ?? '',
+            account?.note ?? '');
+      },
+      child: Container(
+        height: 60.v,
+        width: 350.h,
+        margin: EdgeInsets.only(left: 5.h),
+        child: Stack(
+          alignment: Alignment.centerRight,
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: Container(
+                height: 60.v,
+                width: 350.h,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  borderRadius: BorderRadius.circular(
+                    30.h,
                   ),
-                ],
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: EdgeInsets.only(right: 9.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10.v),
-                    child: Text(
-                      "Continue",
-                      style: CustomTextStyles.titleMediumOnPrimaryContainer,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 81.h),
-                    child: CustomIconButton(
-                      height: 48.adaptSize,
-                      width: 48.adaptSize,
-                      padding: EdgeInsets.all(13.h),
-                      child: CustomImageView(
-                        imagePath: ImageConstant.imgFill1Primary,
+                  boxShadow: [
+                    BoxShadow(
+                      color: appTheme.black900.withOpacity(0.3),
+                      spreadRadius: 2.h,
+                      blurRadius: 2.h,
+                      offset: Offset(
+                        1,
+                        2,
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: EdgeInsets.only(right: 9.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10.v),
+                      child: Text(
+                        "Continue",
+                        style: CustomTextStyles.titleMediumOnPrimaryContainer,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 81.h),
+                      child: CustomIconButton(
+                        height: 48.adaptSize,
+                        width: 48.adaptSize,
+                        padding: EdgeInsets.all(13.h),
+                        child: CustomImageView(
+                          imagePath: ImageConstant.imgFill1Primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

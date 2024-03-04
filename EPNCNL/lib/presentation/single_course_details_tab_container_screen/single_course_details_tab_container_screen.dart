@@ -679,6 +679,7 @@ class SingleCourseDetailsCurriculumPageState
   }
 
   Widget _buildClassCourseListView() {
+
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -696,7 +697,7 @@ class SingleCourseDetailsCurriculumPageState
               padding: EdgeInsets.only(left: 1.h),
               child: Row(
                 children: [
-                  Text("Module $number - ", style: theme.textTheme.labelMedium),
+                  Text("Day $number - ", style: theme.textTheme.labelMedium),
                   Text(formattedDate, style: CustomTextStyles.labelLargeOrangeA700),
                 ],
               ),

@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/presentation/forgot_password_screen/forgot_password_screen.dart';
 import 'package:meowlish/widgets/custom_drop_down.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
@@ -305,27 +306,49 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
   //   );
   // }
   Widget _buildPassword(BuildContext context) {
-    String passwordHint = account?.password != null ? '*' * (account?.password?.length as int) : '';
-
+    String passwordHint =
+    account?.password != null ? '*' * (account?.password?.length as int) : '';
     return Container(
-      width: 360.h,
-      padding: EdgeInsets.symmetric(
-        horizontal: 22.h,
-        vertical: 20.v,
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                decoration: AppDecoration.outlineBlack9001.copyWith(
+                  borderRadius: BorderRadiusStyle.roundedBorder10,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.lock_outline,
+                      size: 20,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(width: 4.v),
+                    Text(
+                      passwordHint,
+                      style: CustomTextStyles.titleSmallGray80001,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
-      decoration: AppDecoration.outlineBlack9001.copyWith(
-        borderRadius: BorderRadiusStyle.roundedBorder10,
-      ),
-      child: Text(
-      passwordHint,
-      style: TextStyle(
-        color: Colors.grey[800],
-        fontSize: 16,
-      ),
-    ),
-
     );
+
   }
+
+
   Widget _buildGender(BuildContext context) {
     return Container(
       width: 360.h,

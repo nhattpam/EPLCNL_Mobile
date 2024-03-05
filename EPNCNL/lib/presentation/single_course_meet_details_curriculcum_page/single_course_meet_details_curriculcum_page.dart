@@ -600,7 +600,6 @@ class _MultiTopicState extends State<MultiTopic> {
     super.initState();
     loadClassModuleByCourseId();
     loadQuizAttemptsByLearnerId();
-
   }
 
   void loadClassModuleByCourseId() async {
@@ -645,7 +644,6 @@ class _MultiTopicState extends State<MultiTopic> {
       listQuizAttempt = loadedQuizAttempt;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {

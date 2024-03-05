@@ -160,8 +160,7 @@ class _WalletScreenState extends State<WalletScreen> {
                               Colors.white,
                               refundrequest.transaction?.course?.name ?? '',
                               refundrequest.status ?? '',
-                              refundrequest.transaction?.course?.stockPrice ??
-                                  0,
+                              refundrequest.transaction?.course?.stockPrice ?? 0,
                               refundrequest?.requestedDate ?? '',
                           refundrequest?.id ?? '');
                         },

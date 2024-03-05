@@ -24,7 +24,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   late List<FedBack> listFedback = [];
   late Course chosenCourse = Course();
   late Enrollment enrollment = Enrollment();
+  int _currentPage = 1;
+  int _itemsPerPage = 3; // Define the number of items per page
 
+  List<FedBack> _paginatedFeedback = [];
   @override
   void initState() {
     loadFeedback();
@@ -32,11 +35,24 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     loadEnrollmentByLearnerAndCourseId();
     super.initState();
   }
-  void loadFeedback() async {
+  Future<void> loadFeedback() async {
     List<FedBack> loadedFedback = await Network.getFeedbackByCourse(widget.courseID);
     setState(() {
       listFedback = loadedFedback;
+      _loadPage(_currentPage); // Load initial page after feedback is loaded
     });
+  }
+
+  void _loadPage(int page) {
+    // Sort feedback list by the newest date
+    listFedback.sort((a, b) => DateTime.parse(b.createdDate.toString()).compareTo(DateTime.parse(a.createdDate.toString())));
+
+    int startIndex = (page - 1) * _itemsPerPage;
+    int endIndex = startIndex + _itemsPerPage;
+    if (startIndex < listFedback.length) {
+      // Ensure endIndex does not exceed the length of the list
+      _paginatedFeedback = listFedback.sublist(startIndex, endIndex.clamp(0, listFedback.length));
+    }
   }
   Future<void> loadCourseByCourseID() async {
     try {
@@ -145,7 +161,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         SizedBox(height: 12),
                         Divider(),
                         SizedBox(height: 30.v),
-                        if (isEnrolled || chosenCourse.id == enrollment.courseId && SessionManager().getLearnerId() == enrollment.learnerId)
+                        if (isEnrolled || chosenCourse.id == enrollment.courseId && SessionManager().getLearnerId() == enrollment.learnerId )
                           CustomElevatedButton(
                           onPressed: () async{
                             await Navigator.push(
@@ -173,144 +189,172 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       ),
     );
   }
-
-  /// Section Widget
   Widget _buildCourseReviewList(BuildContext context) {
-    return ListView.separated(
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      separatorBuilder: (
-          context,
-          index,
-          ) {
-        return Padding(
-          padding: EdgeInsets.symmetric(vertical: 11.5.v),
-          child: SizedBox(
-            width: 360.h,
-            child: Divider(
-              height: 1.v,
-              thickness: 1.v,
-              color: appTheme.blue50,
-            ),
-          ),
-        );
-      },
-      itemCount: listFedback.length,
-      itemBuilder: (context, index) {
-        final feedback = listFedback[index];
-        String originalDateString = feedback.createdDate.toString();
-        DateTime originalDate = DateTime.parse(originalDateString.split('T')[0]);
-        String formattedDate = DateFormat('dd-MM-yyyy').format(originalDate);
-        return Row(
+    return Column(
+      children: [
+        ListView.separated(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          separatorBuilder: (
+              context,
+              index,
+              ) {
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 11.5.v),
+              child: SizedBox(
+                width: 360.h,
+                child: Divider(
+                  height: 1.v,
+                  thickness: 1.v,
+                  color: appTheme.blue50,
+                ),
+              ),
+            );
+          },
+          itemCount: _paginatedFeedback.length,
+          itemBuilder: (context, index) {
+            final feedback = _paginatedFeedback[index];
+            String originalDateString = feedback.createdDate.toString();
+            DateTime originalDate = DateTime.parse(originalDateString.split('T')[0]);
+            String formattedDate = DateFormat('dd-MM-yyyy').format(originalDate);
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                feedback.learner?.account?.imageUrl != null && feedback.learner!.account!.imageUrl!.isNotEmpty
+                    ? Container(
+                  height: 46.adaptSize,
+                  width: 46.adaptSize,
+                  margin: EdgeInsets.only(
+                    top: 3.v,
+                    bottom: 65.v,
+                  ),
+                  decoration: BoxDecoration(
+                    color: appTheme.black900,
+                    borderRadius: BorderRadius.circular(
+                      23.h,
+                    ),
+                  ),
+                  child: Image.network(
+                    feedback.learner!.account!.imageUrl!,
+                    fit: BoxFit.cover,
+                  ),
+                )
+                    : Center(child: Container(child: CircularProgressIndicator())), // Placeholder widget when feedback.learner.account.imageUrl is empty or null
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 12.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              feedback.learner?.account?.fullName ?? '',
+                              style: CustomTextStyles.titleMedium17,
+                            ),
+                            CustomOutlinedButton(
+                              width: 60.h,
+                              text: feedback.rating.toString(),
+                              leftIcon: Container(
+                                  margin: EdgeInsets.only(right: 2.h),
+                                  child: Icon(
+                                    Icons.star,
+                                    color: Colors.yellow,
+                                    size: 12.v,
+                                  )
+                              ),
+                              buttonStyle: CustomButtonStyles.outlinePrimary,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 9.v),
+                        Container(
+                          width: 244.h,
+                          margin: EdgeInsets.only(right: 12.h),
+                          child: Text(
+                            feedback.feedbackContent.toString(),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelLarge,
+                          ),
+                        ),
+                        SizedBox(height: 11.v),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.favorite,
+                              color: Colors.red,
+                              size: 12.v,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 9.h),
+                              child: Text(
+                                "760",
+                                style: CustomTextStyles.labelLargeBluegray900,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 17.h),
+                              child: Text(
+                                "|",
+                                style: CustomTextStyles.titleSmallBlack900,
+                              ),
+                            ),
+                            Icon(
+                              Icons.calendar_month_outlined,
+                              color: Colors.black,
+                              size: 12.v,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 10.h),
+                              child: Text(
+                                formattedDate,
+                                style: CustomTextStyles.labelLargeBluegray900,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        // Pagination controls
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            feedback.learner?.account?.imageUrl != null && feedback.learner!.account!.imageUrl!.isNotEmpty
-                ? Container(
-              height: 46.adaptSize,
-              width: 46.adaptSize,
-              margin: EdgeInsets.only(
-                top: 3.v,
-                bottom: 65.v,
-              ),
-              decoration: BoxDecoration(
-                color: appTheme.black900,
-                borderRadius: BorderRadius.circular(
-                  23.h,
-                ),
-              ),
-              child: Image.network(
-                feedback.learner!.account!.imageUrl!,
-                fit: BoxFit.cover,
-              ),
-            )
-                : Center(child: Container(child: CircularProgressIndicator())), // Placeholder widget when feedback.learner.account.imageUrl is empty or null
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(left: 12.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          feedback.learner?.account?.fullName ?? '',
-                          style: CustomTextStyles.titleMedium17,
-                        ),
-                        CustomOutlinedButton(
-                          width: 60.h,
-                          text: feedback.rating.toString(),
-                          leftIcon: Container(
-                              margin: EdgeInsets.only(right: 2.h),
-                              child: Icon(
-                                Icons.star,
-                                color: Colors.yellow,
-                                size: 12.v,
-                              )
-                          ),
-                          buttonStyle: CustomButtonStyles.outlinePrimary,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 9.v),
-                    Container(
-                      width: 244.h,
-                      margin: EdgeInsets.only(right: 12.h),
-                      child: Text(
-                        feedback.feedbackContent.toString(),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelLarge,
-                      ),
-                    ),
-                    SizedBox(height: 11.v),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.favorite,
-                          color: Colors.red,
-                          size: 12.v,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 9.h),
-                          child: Text(
-                            "760",
-                            style: CustomTextStyles.labelLargeBluegray900,
-                          ),
-                        ),
-                        Padding(
-                          padding:
-                          EdgeInsets.only(left: 17.h),
-                          child: Text(
-                            "|",
-                            style: CustomTextStyles
-                                .titleSmallBlack900,
-                          ),
-                        ),
-                        Icon(
-                          Icons.calendar_month_outlined,
-                          color: Colors.black,
-                          size: 12.v,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 10.h),
-                          child: Text(
-                            formattedDate,
-                            style: CustomTextStyles.labelLargeBluegray900,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+            IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: _currentPage > 1
+                  ? () {
+                setState(() {
+                  _currentPage--;
+                  _loadPage(_currentPage);
+                });
+              }
+                  : null,
+            ),
+            Text('Page $_currentPage'),
+            IconButton(
+              icon: Icon(Icons.arrow_forward),
+              onPressed: _currentPage < (listFedback.length / _itemsPerPage).ceil()
+                  ? () {
+                setState(() {
+                  _currentPage++;
+                  _loadPage(_currentPage);
+                });
+              }
+                  : null,
             ),
           ],
-        );
-      },
+        ),
+      ],
     );
-
   }
 
 }

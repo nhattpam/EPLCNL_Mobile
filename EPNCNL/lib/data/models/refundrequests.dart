@@ -1,3 +1,5 @@
+import 'package:meowlish/data/models/transactions.dart';
+
 class RefundRequest {
   String? id;
   String? transactionId;
@@ -5,6 +7,7 @@ class RefundRequest {
   String? approvedDate;
   String? status;
   String? reason;
+  Transaction? transaction;
 
   RefundRequest(
       {this.id,
@@ -12,6 +15,7 @@ class RefundRequest {
       this.requestedDate,
       this.approvedDate,
       this.status,
+      this.transaction,
       this.reason});
 
   RefundRequest.fromJson(Map<String, dynamic> json) {
@@ -21,6 +25,7 @@ class RefundRequest {
     approvedDate = json['approvedDate'];
     status = json['status'];
     reason = json['reason'];
+    transaction = json['transaction'] != null ? new Transaction.fromJson(json['transaction']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +36,9 @@ class RefundRequest {
     data['approvedDate'] = this.approvedDate;
     data['status'] = this.status;
     data['reason'] = this.reason;
+    if (this.transaction != null) {
+      data['transaction'] = this.transaction!.toJson();
+    }
     return data;
   }
 }

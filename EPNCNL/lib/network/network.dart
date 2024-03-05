@@ -21,6 +21,7 @@ import 'package:meowlish/data/models/questionanswers.dart';
 import 'package:meowlish/data/models/questions.dart';
 import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
+import 'package:meowlish/data/models/refundrequests.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/tutors.dart';
 import 'package:meowlish/data/models/wallets.dart';
@@ -1696,6 +1697,7 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+  ////RefundRequest
   static Future<void> createRefundRequest({
     required String transactionId,
     required String reason,
@@ -1728,4 +1730,68 @@ class Network {
       print('JSON Data: $jsonData');
     }
   }
+  static Future<List<RefundRequest>> getRefundRequestByLeanerId() async {
+    final lid = SessionManager().getLearnerId();
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/learners/$lid/refund-requests'; // Replace with your API URL
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> refundrequestListJson = jsonDecode(response.body);
+
+        return refundrequestListJson
+            .map((json) => RefundRequest.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<RefundRequest> getRefundRequestById(String refundId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/refund-requests/$refundId';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print(
+          'API Response: ${response
+              .body}'); // Add this line to print the response
+
+      if (response.statusCode == 200) {
+        final dynamic refundJson = jsonDecode(response.body);
+        if (refundJson is List) {
+          // If it's a list, extract the first element (assuming it's the desired object)
+          return RefundRequest.fromJson(refundJson.first);
+        } else if (refundJson is Map<String, dynamic>) {
+          // If it's a map, decode directly
+          return RefundRequest.fromJson(refundJson);
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else {
+        throw Exception(
+            'Failed to fetch enrollment. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('An error occurred: $e');
+    }
+  }
+
 }

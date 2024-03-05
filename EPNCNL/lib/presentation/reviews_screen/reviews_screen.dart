@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
@@ -26,7 +28,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   late Enrollment enrollment = Enrollment();
   int _currentPage = 1;
   int _itemsPerPage = 3; // Define the number of items per page
-
+  String lid = '';
   List<FedBack> _paginatedFeedback = [];
   @override
   void initState() {
@@ -40,7 +42,31 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     setState(() {
       listFedback = loadedFedback;
       _loadPage(_currentPage); // Load initial page after feedback is loaded
-    });
+    }
+    );
+    loadLearner();
+  }
+  Future<void> loadLearner() async {
+    try {
+      // Create a list to store all learner IDs
+
+      // Load lessons for each module
+      for (final module in listFedback) {
+        // Add each learner ID to the list
+        if(module.learnerId == SessionManager().getLearnerId()){
+          setState(() {
+            lid = module.learnerId.toString();
+            print("This is "+lid);
+          });
+        }
+      }
+
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lessons: $e');
+    }
   }
 
   void _loadPage(int page) {
@@ -151,7 +177,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         ),
                         SizedBox(height: 4.v),
                         Text(
-                          "Based on 448 Reviews",
+                          "Based on " + listFedback.length.toString() + " Review",
                           style: theme.textTheme.labelLarge,
                         ),
                         SizedBox(height: 71.v),
@@ -161,22 +187,34 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         SizedBox(height: 12),
                         Divider(),
                         SizedBox(height: 30.v),
-                        if (isEnrolled || chosenCourse.id == enrollment.courseId && SessionManager().getLearnerId() == enrollment.learnerId )
+                        if(isEnrolled || chosenCourse.id == enrollment.courseId && SessionManager().getLearnerId() == enrollment.learnerId )
                           CustomElevatedButton(
-                          onPressed: () async{
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    WriteAReviewsScreen(
-                                      courseID: widget.courseID,
-                                    ),
-                              ),
-                            );
-                            loadFeedback();
-                          },
-                          text: "Write a Review",
-                        )
+                            onPressed: () async{
+                              if(lid.isNotEmpty){
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        WriteAReviewsScreen(
+                                          courseID: widget.courseID,
+                                        ),
+                                  ),
+                                );
+                              }else if(lid.isEmpty){
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        WriteAReviewsScreen(
+                                          courseID: widget.courseID,
+                                        ),
+                                  ),
+                                );
+                              }
+                              loadFeedback();
+                            },
+                            text: lid.isNotEmpty ? "Edit Review" : "Write A Review",
+                          ),
                       ],
                     ),
                   ),

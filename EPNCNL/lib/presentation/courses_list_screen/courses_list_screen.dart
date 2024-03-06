@@ -356,8 +356,8 @@ class CoursesListScreenState extends State<CoursesListScreen> {
   }
 
   /// Navigates to the mentorsListScreen when the action is triggered.
-  onTapTutors(BuildContext context) {
-    Navigator.push(
+  onTapTutors(BuildContext context) async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) =>
@@ -365,5 +365,8 @@ class CoursesListScreenState extends State<CoursesListScreen> {
                   categoryId:
                   widget.categoryId)),
     );
+    loadCourse();
+    loadCategoryByCategoryId();
+    loadCourseByCategory();
   }
 }

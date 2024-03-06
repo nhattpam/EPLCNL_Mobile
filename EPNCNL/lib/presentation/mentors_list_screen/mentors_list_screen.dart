@@ -258,11 +258,12 @@ class _MentorsListScreenState extends State<MentorsListScreen> {
   }
 
   onTapCourses(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) =>
-              FilterResultScreen(category: widget.category, values: widget.values)),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //       builder: (context) =>
+    //           FilterResultScreen(category: widget.category, values: widget.values)),
+    // );
+    Navigator.pop(context);
   }
 }

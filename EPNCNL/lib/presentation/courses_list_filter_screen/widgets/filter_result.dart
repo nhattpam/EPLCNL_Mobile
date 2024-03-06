@@ -190,13 +190,14 @@ class FilterResultState extends State<FilterResultScreen> {
   }
 
   /// Navigates to the mentorsListScreen when the action is triggered.
-  onTapTutors(BuildContext context) {
-    Navigator.push(
+  onTapTutors(BuildContext context) async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) =>
               MentorsListScreen(category: widget.category, values: widget.values,)),
     );
+    loadCourse();
   }
 
   Widget buildResults(BuildContext context) {

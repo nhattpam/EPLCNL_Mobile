@@ -1,43 +1,41 @@
-import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/transactions.dart';
 
 class Enrollment {
   String? id;
-  String? learnerId;
-  String? courseId;
+  String? transactionId;
   String? enrolledDate;
   String? status;
   int? totalGrade;
-  Course? course;
+  Transaction? transaction;
 
   Enrollment(
       {this.id,
-      this.learnerId,
-      this.courseId,
-      this.enrolledDate,
-      this.status,
-      this.totalGrade,
-      this.course});
+        this.transactionId,
+        this.enrolledDate,
+        this.status,
+        this.totalGrade,
+        this.transaction});
 
   Enrollment.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    learnerId = json['learnerId'];
-    courseId = json['courseId'];
+    transactionId = json['transactionId'];
     enrolledDate = json['enrolledDate'];
     status = json['status'];
     totalGrade = json['totalGrade'];
-    course = json['course'] != null ? new Course.fromJson(json['course']) : null;
+    transaction = json['transaction'] != null
+        ? new Transaction.fromJson(json['transaction'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['learnerId'] = this.learnerId;
-    data['courseId'] = this.courseId;
+    data['transactionId'] = this.transactionId;
     data['enrolledDate'] = this.enrolledDate;
     data['status'] = this.status;
     data['totalGrade'] = this.totalGrade;
-    if (this.course != null) {
-      data['course'] = this.course!.toJson();
+    if (this.transaction != null) {
+      data['transaction'] = this.transaction!.toJson();
     }
     return data;
   }

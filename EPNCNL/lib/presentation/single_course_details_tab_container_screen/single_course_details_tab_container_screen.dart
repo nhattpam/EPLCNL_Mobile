@@ -204,7 +204,7 @@ class SingleCourseDetailsTabContainerScreenState
   /// Section Widget
   Widget _buildArrowDown(BuildContext context) {
     String? imageUrl = chosenCourse.imageUrl;
-    bool isEnrolled = enrollment.learnerId != null && enrollment.courseId != null;
+    bool isEnrolled = enrollment.transaction?.learnerId != null && enrollment.transaction?.courseId != null;
     return SizedBox(
       height: 595.v,
       width: double.maxFinite,
@@ -423,7 +423,7 @@ class SingleCourseDetailsTabContainerScreenState
               ),
             ),
           ),
-          if (isEnrolled || chosenCourse.id == enrollment.courseId && SessionManager().getLearnerId() == enrollment.learnerId)
+          if (isEnrolled || chosenCourse.id == enrollment.transaction?.courseId && SessionManager().getLearnerId() == enrollment.transaction?.learnerId)
             Padding(
               padding: EdgeInsets.only(
                 right: 49.h,

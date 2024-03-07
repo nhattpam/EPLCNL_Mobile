@@ -207,7 +207,7 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
       itemCount: listEnrollment.length,
       itemBuilder: (context, index) {
         final enrolls = listEnrollment[index];
-        String? imageUrl = enrolls.course?.imageUrl;
+        String? imageUrl = enrolls.transaction?.course?.imageUrl;
         return GestureDetector(
           onTap: () {
             Navigator.push(
@@ -215,8 +215,8 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
               MaterialPageRoute(
                 builder: (context) =>
                     SingleCourseDetailsTabContainerScreen(
-                      courseID: enrolls.course?.id.toString() ?? '',
-                      tutorID: enrolls.course?.tutorId.toString() ?? '',
+                      courseID: enrolls.transaction?.course?.id.toString() ?? '',
+                      tutorID: enrolls.transaction?.course?.tutorId.toString() ?? '',
                     ),
               ),
             );
@@ -251,7 +251,7 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                           maxWidth: 190,
                         ),
                         child: Text(
-                          enrolls.course?.category?.description ?? '',
+                          enrolls.transaction?.course?.category?.description ?? '',
                           style: CustomTextStyles.labelLargeOrangeA700,
                           softWrap: true,
                           overflow: TextOverflow.ellipsis,
@@ -263,7 +263,7 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                           maxWidth: 190,
                         ),
                         child: Text(
-                          enrolls.course?.name ?? '',
+                          enrolls.transaction?.course?.name ?? '',
                           style: theme.textTheme.titleMedium,
                           softWrap: true,
                           overflow: TextOverflow.ellipsis,
@@ -284,7 +284,7 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                                   size: 14.v,
                                 ),
                                 Text(
-                                  enrolls.course?.rating?.toStringAsFixed(1) ?? '' ?? '',
+                                  enrolls.transaction?.course?.rating?.toStringAsFixed(1) ?? '' ?? '',
                                   style: theme.textTheme.labelMedium,
                                 ),
                               ],

@@ -1225,7 +1225,6 @@ class Network {
       "learnerId": SessionManager().getLearnerId(),
       "courseId": courseId,
     };
-
     final jsonData = jsonEncode(userData);
 
     // Print the JSON data before making the API call
@@ -1383,7 +1382,7 @@ class Network {
   static Future<Enrollment> getEnrollmentByLearnerAndCourseId(String learnerId, String courseId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/enrollments/learners/$learnerId/courses/$courseId';
-
+    print(apiUrl);
     try {
       final response = await http.get(
         Uri.parse(apiUrl),

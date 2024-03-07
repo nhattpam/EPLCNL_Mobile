@@ -94,7 +94,7 @@ class SingleMeetCourseDetailsPageState
 
   @override
   Widget build(BuildContext context) {
-    bool isEnrolled = enrollment.learnerId != null && enrollment.courseId != null;
+    bool isEnrolled = enrollment.transaction?.learnerId != null && enrollment.transaction?.courseId != null;
     return SafeArea(
         child: Scaffold(
             body: SizedBox(
@@ -248,9 +248,9 @@ class SingleMeetCourseDetailsPageState
                                 ])),
                             SizedBox(height: 56.v),
                             if (!isEnrolled ||
-                                chosenCourse.id != enrollment.courseId &&
+                                chosenCourse.id != enrollment.transaction?.courseId &&
                                     SessionManager().getLearnerId() !=
-                                        enrollment.learnerId)
+                                        enrollment.transaction?.learnerId)
                               CustomElevatedButton(
                                 text:
                                     "Enroll Course - \$${chosenCourse.stockPrice}",
@@ -268,9 +268,9 @@ class SingleMeetCourseDetailsPageState
                               ),
                             if (isEnrolled &&
                                 chosenCourse.isOnlineClass == true &&
-                                chosenCourse.id == enrollment.courseId &&
+                                chosenCourse.id == enrollment.transaction?.courseId &&
                                 SessionManager().getLearnerId() ==
-                                    enrollment.learnerId)
+                                    enrollment.transaction?.learnerId)
                               CustomElevatedButton(
                                 text: "Study Now",
                                 onPressed: () {
@@ -287,9 +287,9 @@ class SingleMeetCourseDetailsPageState
                               ),
                             if (isEnrolled &&
                                 chosenCourse.isOnlineClass == false &&
-                                chosenCourse.id == enrollment.courseId &&
+                                chosenCourse.id == enrollment.transaction?.courseId &&
                                 SessionManager().getLearnerId() ==
-                                    enrollment.learnerId)
+                                    enrollment.transaction?.learnerId)
                               CustomElevatedButton(
                                 text: "Study Now",
                                 onPressed: () {

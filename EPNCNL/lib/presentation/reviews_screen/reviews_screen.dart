@@ -109,7 +109,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isEnrolled = enrollment.learnerId != null && enrollment.courseId != null;
+    bool isEnrolled = enrollment.transaction?.learnerId != null && enrollment.transaction?.courseId != null;
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -185,7 +185,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         SizedBox(height: 12),
                         Divider(),
                         SizedBox(height: 30.v),
-                        if(isEnrolled || chosenCourse.id == enrollment.courseId && SessionManager().getLearnerId() == enrollment.learnerId )
+                        if(isEnrolled || chosenCourse.id == enrollment.transaction?.courseId && SessionManager().getLearnerId() == enrollment.transaction?.learnerId )
                           CustomElevatedButton(
                             onPressed: () async{
                               if(lid.isNotEmpty){

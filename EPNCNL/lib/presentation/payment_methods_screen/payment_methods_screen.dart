@@ -309,9 +309,9 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         // Change the button text to "Enroll Course" and show the button
         // Cancel the timer as the status is now "DONE"
         _timer.cancel();
-
+        print("this is" + transactionId.toString());
         enrollment = new Enrollment(
-            courseId: chosenCourse.id,
+            transactionId: transactionId,
             status: "0",
             enrolledDate: transaction.transactionDate,
             totalGrade: 0);

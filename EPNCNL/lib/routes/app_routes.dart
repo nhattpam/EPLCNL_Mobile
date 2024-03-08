@@ -6,6 +6,7 @@ import 'package:meowlish/presentation/create_new_password_screen/create_new_pass
 import 'package:meowlish/presentation/e_receipt_edit_screen/e_receipt_edit_screen.dart';
 import 'package:meowlish/presentation/e_receipt_screen/e_receipt_screen.dart';
 import 'package:meowlish/presentation/edit_profiles_screen/edit_profiles_screen.dart';
+import 'package:meowlish/presentation/forgot_password_open_screen/forgot_password_open_screen.dart';
 import 'package:meowlish/presentation/forgot_password_screen/forgot_password_screen.dart';
 import 'package:meowlish/presentation/home_container_screen/home_container_screen.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
@@ -61,6 +62,8 @@ class AppRoutes {
   static const String fillYourProfileScreen = '/fill_your_profile_screen';
 
   static const String forgotPasswordScreen = '/forgot_password_screen';
+
+  static const String forgotPasswordOpenScreen = '/forgot_password_open_screen';
 
   static const String verifyForgotPasswordScreen =
       '/verify_forgot_password_screen';
@@ -172,6 +175,7 @@ class AppRoutes {
     loginScreen: (context) => LoginScreen(),
     // fillYourProfileScreen: (context) => FillYourProfileScreen(),
     forgotPasswordScreen: (context) => ForgotPasswordScreen(),
+    forgotPasswordOpenScreen: (context) => ForgotPasswordOpenScreen(),
     verifyForgotPasswordScreen: (context) => VerifyForgotPasswordScreen(),
     createNewPasswordScreen: (context) => CreateNewPasswordScreen(),
     categoryScreen: (context) => CategoryScreen(),

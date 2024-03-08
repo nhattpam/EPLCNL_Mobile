@@ -291,7 +291,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   /// Navigates to the forgotPasswordScreen when the action is triggered.
   onTapTxtForgotPassword(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.forgotPasswordScreen);
+    Navigator.pushNamed(context, AppRoutes.forgotPasswordOpenScreen);
   }
 
   /// Navigates to the registerNowScreen when the action is triggered.

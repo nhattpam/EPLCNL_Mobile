@@ -5,21 +5,23 @@ import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/presentation/create_new_password_open_screen/create_new_password_open_screen.dart';
 import 'package:meowlish/presentation/create_new_password_screen/create_new_password_screen.dart';
 import 'package:meowlish/presentation/login_screen/login_screen.dart';
 
 import '../../network/network.dart';
 
-class OTPForgotScreen extends StatefulWidget {
+class OTPForgotOpenScreen extends StatefulWidget {
   final EmailOTP myauth;
   final String email;
-  const OTPForgotScreen({super.key, required this.myauth, required this.email});
+  const OTPForgotOpenScreen({super.key, required this.myauth, required this.email});
 
   @override
-  State<OTPForgotScreen> createState() => _OTPForgotScreenState();
+  State<OTPForgotOpenScreen> createState() => _OTPForgotOpenScreenState();
 }
 
-class _OTPForgotScreenState extends State<OTPForgotScreen> {
+class _OTPForgotOpenScreenState extends State<OTPForgotOpenScreen> {
+
 
   TextEditingController otp1Controller = TextEditingController();
   TextEditingController otp2Controller = TextEditingController();
@@ -87,6 +89,7 @@ class _OTPForgotScreenState extends State<OTPForgotScreen> {
               otp3Controller.text +
               otp4Controller.text) ==
           true) {
+        Network.activeAccount(widget.email);
         AwesomeDialog(
           context: context,
           animType: AnimType.scale,
@@ -102,7 +105,7 @@ class _OTPForgotScreenState extends State<OTPForgotScreen> {
           btnOkOnPress: () {
             Navigator.of(context).pop();
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) =>  CreateNewPasswordScreen()));
+                MaterialPageRoute(builder: (context) =>  CreateNewPasswordOpenScreen(email: widget.email)));
           },
         )..show();
       } else {
@@ -136,7 +139,7 @@ class _OTPForgotScreenState extends State<OTPForgotScreen> {
           dialogType: DialogType.success,
           body: Center(
             child: Text(
-              'Verify Success!!!',
+              'Register Success!!!',
               style: TextStyle(fontStyle: FontStyle.italic),
             ),
           ),
@@ -145,7 +148,7 @@ class _OTPForgotScreenState extends State<OTPForgotScreen> {
           btnOkOnPress: () {
             Navigator.of(context).pop();
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const CreateNewPasswordScreen()));
+                MaterialPageRoute(builder: (context) =>  CreateNewPasswordOpenScreen(email: widget.email)));
           },
         )..show();
       } else {

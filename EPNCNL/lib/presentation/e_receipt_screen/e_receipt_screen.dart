@@ -2,8 +2,10 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_outlined_button.dart';
@@ -13,8 +15,9 @@ import '../../data/models/accounts.dart';
 
 class EReceiptScreen extends StatefulWidget {
   final String transactionID;
+  final String courseID;
 
-  const EReceiptScreen({super.key, required this.transactionID});
+  const EReceiptScreen({super.key, required this.transactionID, required this.courseID});
 
   @override
   State<EReceiptScreen> createState() => _EReceiptScreenState();
@@ -24,11 +27,13 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
   late Transaction chosenTransaction = Transaction();
   late Account? account = Account();
   double result = 0;
+  late Enrollment enrollment = Enrollment();
 
   @override
   void initState() {
     loadTransactionByTransactionID();
     fetchAccountData();
+    loadEnrollmentByLearnerAndCourseId();
     super.initState();
   }
 
@@ -54,11 +59,30 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
     });
   }
 
+  Future<void> loadEnrollmentByLearnerAndCourseId() async {
+    try {
+      final enrollmentResponse =
+      await Network.getEnrollmentByLearnerAndCourseId(
+        SessionManager().getLearnerId().toString(),
+        widget.courseID,
+      );
+
+      setState(() {
+        enrollment = enrollmentResponse;
+        // Add more print statements for other properties if needed
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+
   void _showMultiSelect() async {
     final List<String>? result = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return RequestRefund(transactionId: chosenTransaction.id.toString());
+          return RequestRefund(enrollmentId: enrollment.id.toString());
         });
   }
 
@@ -311,9 +335,9 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
 }
 
 class RequestRefund extends StatefulWidget {
-  final String transactionId;
+  final String enrollmentId;
 
-  const RequestRefund({super.key, required this.transactionId});
+  const RequestRefund({super.key, required this.enrollmentId});
 
   @override
   State<RequestRefund> createState() => _RequestRefundState();
@@ -379,7 +403,7 @@ class _RequestRefundState extends State<RequestRefund> {
         TextButton(
             onPressed: () {
               Network.createRefundRequest(
-                  transactionId: widget.transactionId,
+                  enrollmentId: widget.enrollmentId,
                   reason: additionalInfoController.text);
               AwesomeDialog(
                 context: context,

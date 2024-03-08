@@ -303,7 +303,7 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                               top: 3.v,
                             ),
                             child: Text(
-                              enrolls.totalGrade.toString() + 'grade',
+                              "Time",
                               style: theme.textTheme.labelMedium,
                             ),
                           ),
@@ -338,7 +338,7 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                                     3.h,
                                   ),
                                   child: LinearProgressIndicator(
-                                    value: 0.82,
+                                    value: 10/125,
                                     backgroundColor: appTheme.gray5001,
                                     valueColor: AlwaysStoppedAnimation<Color>(
                                       appTheme.teal700,
@@ -350,7 +350,7 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                             Padding(
                               padding: EdgeInsets.only(left: 12.h),
                               child: Text(
-                                "93/125",
+                                enrolls.totalGrade.toString() + "/125",
                                 style: theme.textTheme.labelMedium,
                               ),
                             ),

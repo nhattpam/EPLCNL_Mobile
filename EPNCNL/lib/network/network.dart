@@ -1698,13 +1698,13 @@ class Network {
   }
   ////RefundRequest
   static Future<void> createRefundRequest({
-    required String transactionId,
+    required String enrollmentId,
     required String reason,
 
   }) async {
     final leanerId = SessionManager().getLearnerId() ?? 0;
     final learnerData = {
-      "transactionId": transactionId,
+      "enrollmentId": enrollmentId,
       "reason": reason,
     };
 

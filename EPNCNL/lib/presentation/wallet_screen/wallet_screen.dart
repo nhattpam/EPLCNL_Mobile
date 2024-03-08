@@ -156,11 +156,11 @@ class _WalletScreenState extends State<WalletScreen> {
                         itemBuilder: (BuildContext context, int index) {
                           final refundrequest = listRefundRequests[index];
                           return listTile(
-                              refundrequest.transaction?.course?.imageUrl ?? '',
+                              refundrequest.enrollment?.transaction?.course?.imageUrl ?? '',
                               Colors.white,
-                              refundrequest.transaction?.course?.name ?? '',
+                              refundrequest.enrollment?.transaction?.course?.name ?? '',
                               refundrequest.status ?? '',
-                              refundrequest.transaction?.course?.stockPrice ?? 0,
+                              refundrequest.enrollment?.transaction?.course?.stockPrice ?? 0,
                               refundrequest?.requestedDate ?? '',
                           refundrequest?.id ?? '');
                         },

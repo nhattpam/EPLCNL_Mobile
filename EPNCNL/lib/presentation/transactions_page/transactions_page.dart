@@ -188,7 +188,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => EReceiptScreen(transactionID: transactions.id.toString())
+                builder: (context) => EReceiptScreen(transactionID: transactions.id.toString(), courseID: transactions.courseId.toString(),)
               ),
             );
 

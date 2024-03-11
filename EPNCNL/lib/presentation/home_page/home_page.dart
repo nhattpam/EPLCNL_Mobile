@@ -81,7 +81,7 @@ class HomePageState extends State<HomePage> {
 
   Future<void> loadEnrollmentByCourseId(String courseId) async {
     List<Enrollment> loadedAssignment =
-    await Network.getEnrollmentByCourseId(courseId);
+        await Network.getEnrollmentByCourseId(courseId);
     if (mounted) {
       setState(() {
         moduleEnrollmentMap[courseId] = loadedAssignment;
@@ -103,7 +103,6 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-
   TextEditingController searchController = TextEditingController();
 
   @override
@@ -112,67 +111,72 @@ class HomePageState extends State<HomePage> {
         child: Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
-          width: double.maxFinite,
-          decoration: AppDecoration.fillOnPrimaryContainer,
-          child: SingleChildScrollView(
-              child: SizedBox(
-                  height: 1183.v,
-                  width: double.maxFinite,
-                  child: Stack(alignment: Alignment.bottomRight, children: [
-                    Align(
-                        alignment: Alignment.center,
-                        child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20.h, vertical: 53.v),
-                            child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  _buildHiRonaldAMartinSection(context),
-                                  SizedBox(height: 43.v),
-                                  Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 14.h),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.grey.withOpacity(0.5),
-                                              // Adjust the color and opacity as needed
-                                              spreadRadius: 2,
-                                              blurRadius: 5,
-                                              offset: Offset(0,
-                                                  3), // Adjust the offset to control the shadow's position
-                                            ),
-                                          ],
-                                        ),
-                                        child: CustomSearchView(
-                                            controller: searchController,
-                                            hintText: "Search for..",
-                                            context: context),
-                                      )),
-                                  SizedBox(height: 30.v),
-                                  _buildDiscountTextSection(context),
-                                  SizedBox(height: 32.v),
-                                  _buildHeadingSection1(context),
-                                  SizedBox(height: 12.v),
-                                  _buildDDesignSection(context),
-                                  SizedBox(height: 350.v),
-                                  Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 14.h),
-                                      child: _buildHeadingSection(context,
-                                          title: "Top Mentor",
-                                          seeAllText: "See All",
-                                          onTapHeadingSection: () {
-                                        onTapHeadingSection1(context);
-                                      })),
-                                  SizedBox(height: 13.v),
-                                  _buildColumnSection(context),
-                                ]))),
-                    _buildPopularCourseSection(context),
-                    SizedBox(height: 12.v)
-                  ])))),
+        width: double.maxFinite,
+        decoration: AppDecoration.fillOnPrimaryContainer,
+        child: SingleChildScrollView(
+          child: SizedBox(
+            height: 1183.v,
+            width: double.maxFinite,
+            child: Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.h, vertical: 53.v),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildHiRonaldAMartinSection(context),
+                        SizedBox(height: 43.v),
+                        Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 14.h),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    // Adjust the color and opacity as needed
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(0,
+                                        3), // Adjust the offset to control the shadow's position
+                                  ),
+                                ],
+                              ),
+                              child: CustomSearchView(
+                                  controller: searchController,
+                                  hintText: "Search for..",
+                                  context: context),
+                            )),
+                        SizedBox(height: 30.v),
+                        _buildDiscountTextSection(context),
+                        SizedBox(height: 32.v),
+                        _buildHeadingSection1(context),
+                        SizedBox(height: 12.v),
+                        _buildDDesignSection(context),
+                        SizedBox(height: 350.v),
+                        Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 14.h),
+                            child: _buildHeadingSection(context,
+                                title: "Top Mentor",
+                                seeAllText: "See All", onTapHeadingSection: () {
+                              onTapHeadingSection1(context);
+                            })),
+                        SizedBox(height: 13.v),
+                        _buildColumnSection(context),
+                      ],
+                    ),
+                  ),
+                ),
+                _buildPopularCourseSection(context),
+                SizedBox(height: 12.v)
+              ],
+            ),
+          ),
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -322,9 +326,7 @@ class HomePageState extends State<HomePage> {
                   child: isLoadingList[index]
                       ? CircularProgressIndicator() // Show loading indicator
                       : Chip(
-                          label: Text(
-                              categories.description.toString()
-                          ),
+                          label: Text(categories.description.toString()),
                           backgroundColor: current == index
                               ? Color(0xFFFF9300)
                               : Color(0xFFFFF1DE),
@@ -383,172 +385,148 @@ class HomePageState extends State<HomePage> {
   /// Section Widget
   Widget _buildPopularCourseSection(BuildContext context) {
     return Align(
-        alignment: Alignment.bottomRight,
-        child: Padding(
-            padding: EdgeInsets.only(left: 32.h, bottom: 237.v),
-            child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                      padding: EdgeInsets.only(right: 38.h),
-                      child: _buildHeadingSection(context,
-                          title: "Popular Courses",
-                          seeAllText: "See All", onTapHeadingSection: () {
-                        onTapHeadingSection2(context);
-                      })),
-                  SizedBox(height: 8.v),
-                  SizedBox(height: 20.v),
-                  SizedBox(
-                      height: 240.v,
-                      child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          separatorBuilder: (context, index) {
-                            return SizedBox(width: 20.h);
-                          },
-                          itemCount: listCourse.length,
-                          itemBuilder: (context, index) {
-                            final course = listCourse[index];
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        SingleCourseDetailsTabContainerScreen(
-                                      courseID: course.id.toString(),
-                                      tutorID: course.tutorId.toString(),
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: SingleChildScrollView(
-                                physics: NeverScrollableScrollPhysics(),
-                                child: Container(
-                                  decoration:
-                                      AppDecoration.outlineBlack.copyWith(
-                                    borderRadius:
-                                        BorderRadiusStyle.roundedBorder22,
-                                  ),
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: EdgeInsets.only(left: 32.h, bottom: 237.v),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+                padding: EdgeInsets.only(right: 38.h),
+                child: _buildHeadingSection(context,
+                    title: "Popular Courses",
+                    seeAllText: "See All", onTapHeadingSection: () {
+                  onTapHeadingSection2(context);
+                })),
+            SizedBox(height: 8.v),
+            SizedBox(height: 20.v),
+            SizedBox(
+                height: 240.v,
+                child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    separatorBuilder: (context, index) {
+                      return SizedBox(width: 20.h);
+                    },
+                    itemCount: listCourse.length,
+                    itemBuilder: (context, index) {
+                      final course = listCourse[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  SingleCourseDetailsTabContainerScreen(
+                                courseID: course.id.toString(),
+                                tutorID: course.tutorId.toString(),
+                              ),
+                            ),
+                          );
+                        },
+                        child: SingleChildScrollView(
+                          physics: NeverScrollableScrollPhysics(),
+                          child: Container(
+                            decoration: AppDecoration.outlineBlack.copyWith(
+                              borderRadius: BorderRadiusStyle.roundedBorder22,
+                            ),
+                            width: 280.h,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Image.network(
+                                  course.imageUrl.toString(),
+                                  // Replace 'path_to_your_image' with the actual path to your image asset
+                                  height: 134.v,
                                   width: 280.h,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Image.network(
-                                        course.imageUrl.toString(),
-                                        // Replace 'path_to_your_image' with the actual path to your image asset
-                                        height: 134.v,
-                                        width: 280.h,
-                                        fit: BoxFit
-                                            .cover, // Adjust the BoxFit property based on your image requirements
-                                      ),
-                                      SizedBox(height: 10.v),
-                                      Align(
-                                        alignment: Alignment.center,
-                                        child: IntrinsicWidth(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                constraints: const BoxConstraints(
-                                                  maxWidth: 160,
-                                                ),
-                                                child: Text(
-                                                  course.category!.description.toString(),
-                                                  style: CustomTextStyles
-                                                      .labelLargeOrangeA700,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  softWrap: true,
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 70.0),
-                                                child: Icon(
-                                                  Icons.bookmark_add_outlined,
-                                                  // Replace with the desired icon
-                                                  size: 30.v,
-                                                  color: Color(
-                                                      0xFF168F71), // Specify the desired color,
-                                                ),
-                                              ),
-                                            ],
+                                  fit: BoxFit
+                                      .cover, // Adjust the BoxFit property based on your image requirements
+                                ),
+                                SizedBox(height: 10.v),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: IntrinsicWidth(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          constraints: const BoxConstraints(
+                                            maxWidth: 160,
+                                          ),
+                                          child: Text(
+                                            course.category!.description
+                                                .toString(),
+                                            style: CustomTextStyles
+                                                .labelLargeOrangeA700,
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: true,
                                           ),
                                         ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 70.0),
+                                          child: Icon(
+                                            Icons.bookmark_add_outlined,
+                                            // Replace with the desired icon
+                                            size: 30.v,
+                                            color: Color(
+                                                0xFF168F71), // Specify the desired color,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 4.v),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 14.h),
+                                  child: Text(
+                                    course.name.toString(),
+                                    style: theme.textTheme.titleMedium,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                                SizedBox(height: 9.v),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 14.h),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        '\$${course.stockPrice.toString()}',
+                                        style:
+                                            CustomTextStyles.titleSmallPrimary,
                                       ),
-                                      SizedBox(height: 4.v),
                                       Padding(
-                                        padding: EdgeInsets.only(left: 14.h),
+                                        padding: EdgeInsets.only(left: 17.h),
                                         child: Text(
-                                          course.name.toString(),
-                                          style: theme.textTheme.titleMedium,
-                                          maxLines: 1,
+                                          "|",
+                                          style: CustomTextStyles
+                                              .titleSmallBlack900,
                                         ),
                                       ),
-                                      SizedBox(height: 9.v),
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 14.h),
+                                      Container(
+                                        width: 32.h,
+                                        margin: EdgeInsets.only(
+                                          left: 16.h,
+                                          top: 3.v,
+                                        ),
                                         child: Row(
                                           children: [
-                                            Text(
-                                              '\$${course.stockPrice.toString()}',
-                                              style: CustomTextStyles
-                                                  .titleSmallPrimary,
+                                            Icon(
+                                              Icons.star,
+                                              // Replace with the desired signal icon
+                                              size: 14.v,
+                                              color: Colors.yellow,
                                             ),
                                             Padding(
                                               padding:
-                                                  EdgeInsets.only(left: 17.h),
+                                                  EdgeInsets.only(left: 3.h),
                                               child: Text(
-                                                "|",
-                                                style: CustomTextStyles
-                                                    .titleSmallBlack900,
-                                              ),
-                                            ),
-                                            Container(
-                                              width: 32.h,
-                                              margin: EdgeInsets.only(
-                                                left: 16.h,
-                                                top: 3.v,
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.star,
-                                                    // Replace with the desired signal icon
-                                                    size: 14.v,
-                                                    color: Colors.yellow,
-                                                  ),
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 3.h),
-                                                    child: Text(
-                                                      course.rating?.toStringAsFixed(1) ?? '',
-                                                      style: theme.textTheme
-                                                          .labelMedium,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 16.h),
-                                              child: Text(
-                                                "|",
-                                                style: CustomTextStyles
-                                                    .titleSmallBlack900,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                left: 16.h,
-                                                top: 3.v,
-                                              ),
-                                              child: Text(
-                                                (moduleEnrollmentMap[course.id]?.length).toString() + " Enroll",
+                                                course.rating
+                                                        ?.toStringAsFixed(1) ??
+                                                    '',
                                                 style:
                                                     theme.textTheme.labelMedium,
                                               ),
@@ -556,14 +534,41 @@ class HomePageState extends State<HomePage> {
                                           ],
                                         ),
                                       ),
-                                      SizedBox(height: 21.v),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 16.h),
+                                        child: Text(
+                                          "|",
+                                          style: CustomTextStyles
+                                              .titleSmallBlack900,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          left: 16.h,
+                                          top: 3.v,
+                                        ),
+                                        child: Text(
+                                          (moduleEnrollmentMap[course.id]
+                                                      ?.length)
+                                                  .toString() +
+                                              " Enroll",
+                                          style: theme.textTheme.labelMedium,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
-                              ),
-                            );
-                          }))
-                ])));
+                                SizedBox(height: 21.v),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }))
+          ],
+        ),
+      ),
+    );
   }
 
   /// Common widget
@@ -574,31 +579,35 @@ class HomePageState extends State<HomePage> {
     Function? onTapHeadingSection,
   }) {
     return GestureDetector(
-        onTap: () {
-          onTapHeadingSection!.call();
-        },
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      onTap: () {
+        onTapHeadingSection!.call();
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
           Text(title,
               style: CustomTextStyles.titleMedium18
                   .copyWith(color: appTheme.blueGray900)),
           Padding(
-              padding: EdgeInsets.symmetric(vertical: 5.v),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(seeAllText,
-                        style: CustomTextStyles.labelLargePrimary
-                            .copyWith(color: theme.colorScheme.primary)),
-                    CustomImageView(
-                        imagePath: ImageConstant.imgArrowRightPrimary,
-                        height: 10.v,
-                        width: 5.h,
-                        margin:
-                            EdgeInsets.only(left: 10.h, top: 2.v, bottom: 3.v))
-                  ]))
-        ]));
+            padding: EdgeInsets.symmetric(vertical: 5.v),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(seeAllText,
+                    style: CustomTextStyles.labelLargePrimary
+                        .copyWith(color: theme.colorScheme.primary)),
+                CustomImageView(
+                    imagePath: ImageConstant.imgArrowRightPrimary,
+                    height: 10.v,
+                    width: 5.h,
+                    margin: EdgeInsets.only(left: 10.h, top: 2.v, bottom: 3.v))
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Navigates to the categoryScreen when the action is triggered.

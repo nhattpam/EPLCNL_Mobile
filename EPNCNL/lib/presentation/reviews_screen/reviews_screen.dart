@@ -228,6 +228,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   Widget _buildCourseReviewList(BuildContext context) {
     return Column(
       children: [
+        if(_paginatedFeedback.length !=0)
         ListView.separated(
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -361,7 +362,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           },
         ),
         // Pagination controls
-        Row(
+        if(_paginatedFeedback.length !=0)
+          Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
@@ -389,6 +391,14 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             ),
           ],
         ),
+        if(_paginatedFeedback.length == 0)
+          Center(
+            child: Container(
+              child: Text(
+                'No one review yet'
+              ),
+            ),
+          ),
       ],
     );
   }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
-import 'package:meowlish/data/models/classtopics.dart';
+import 'package:meowlish/data/models/topics.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
@@ -473,7 +473,7 @@ class SingleCourseDetailsCurriculumPageState
 
   // Map to store lessons for each module
   Map<String, List<Lesson>> moduleLessonsMap = {};
-  Map<String, List<ClassTopic>> moduleClassTopicMap = {};
+  Map<String, List<Topic>> moduleClassTopicMap = {};
 
   @override
   void initState() {
@@ -554,7 +554,7 @@ class SingleCourseDetailsCurriculumPageState
               .compareTo(DateTime.parse(b.startDate.toString())));
       // Load lessons for each module
       for (final module in listClassModuleByCourseId) {
-        await loadClassTopicsByClassLessonId(module.classLesson?.id ?? '');
+        await loadTopicsByClassLessonId(module.classLesson?.id ?? '');
       }
       // After all lessons are loaded, proceed with building the UI
       setState(() {});
@@ -564,9 +564,9 @@ class SingleCourseDetailsCurriculumPageState
     }
   }
 
-  Future<void> loadClassTopicsByClassLessonId(String classlessonId) async {
-    List<ClassTopic> loadedClassTopicMaterial =
-    await Network.getClassTopicsByClassLessonId(classlessonId);
+  Future<void> loadTopicsByClassLessonId(String classlessonId) async {
+    List<Topic> loadedClassTopicMaterial =
+    await Network.getTopicsByClassLessonId(classlessonId);
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map

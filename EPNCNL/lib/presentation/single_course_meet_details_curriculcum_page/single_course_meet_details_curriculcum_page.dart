@@ -17,7 +17,7 @@ import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../data/models/classtopics.dart';
+import '../../data/models/topics.dart';
 import '../../network/network.dart';
 
 // ignore_for_file: must_be_immutable
@@ -40,7 +40,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
     with AutomaticKeepAliveClientMixin<SingleCourseMeetDetailsCurriculcumPage> {
   DateTime selectedDatesFromCalendar1 = DateTime.now();
   FetchCourseList _classmoduleList = FetchCourseList();
-  late List<ClassTopic> listClassTopic = [];
+  late List<Topic> listClassTopic = [];
   late ClassModule chosenCourse = ClassModule();
   String query = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
@@ -417,7 +417,7 @@ class MultiSelect extends StatefulWidget {
 }
 
 class _MultiSelectState extends State<MultiSelect> {
-  List<ClassTopic> listClassTopic = [];
+  List<Topic> listClassTopic = [];
   Map<String, List<LessonMaterial>> moduleLessonsMaterialMap = {};
 
   @override
@@ -427,8 +427,8 @@ class _MultiSelectState extends State<MultiSelect> {
   }
 
   void loadClassModuleByCourseId() async {
-    List<ClassTopic> loadedClassTopic =
-        await Network.getClassTopicsByClassLessonId(widget.lessonId);
+    List<Topic> loadedClassTopic =
+        await Network.getTopicsByClassLessonId(widget.lessonId);
     setState(() {
       listClassTopic = loadedClassTopic;
     });
@@ -438,7 +438,7 @@ class _MultiSelectState extends State<MultiSelect> {
   Future<void> loadLessonMaterialByClassTopicId(String classtopicId) async {
     try {
       List<LessonMaterial> loadedLessonMaterial =
-          await Network.getListLessonMaterialByClassTopicId(classtopicId);
+          await Network.getListLessonMaterialByTopicId(classtopicId);
       setState(() {
         moduleLessonsMaterialMap[classtopicId] = loadedLessonMaterial;
       });
@@ -591,7 +591,7 @@ class MultiTopic extends StatefulWidget {
 
 class _MultiTopicState extends State<MultiTopic> {
 
-  List<ClassTopic> listClassTopic = [];
+  List<Topic> listClassTopic = [];
   Map<String, List<Quiz>> moduleQuizMap = {};
   late List<QuizAttempt> listQuizAttempt = [];
 
@@ -603,8 +603,8 @@ class _MultiTopicState extends State<MultiTopic> {
   }
 
   void loadClassModuleByCourseId() async {
-    List<ClassTopic> loadedClassTopic =
-        await Network.getClassTopicsByClassLessonId(widget.lessonId);
+    List<Topic> loadedClassTopic =
+        await Network.getTopicsByClassLessonId(widget.lessonId);
     setState(() {
       listClassTopic = loadedClassTopic;
     });
@@ -614,7 +614,7 @@ class _MultiTopicState extends State<MultiTopic> {
   Future<void> loadQuizByClassTopicId(String classtopicId) async {
     try {
       List<Quiz> loadedQuiz =
-          await Network.getQuizByClassTopicId(classtopicId);
+          await Network.getQuizByTopicId(classtopicId);
       setState(() {
         moduleQuizMap[classtopicId] = loadedQuiz;
       });
@@ -718,7 +718,6 @@ class _MultiTopicState extends State<MultiTopic> {
                                           null &&
                                       listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
                                           moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
-
                                       ? FontAwesomeIcons.check
                                       : Icons.dangerous_outlined,
                                   color: listQuizAttempt.isNotEmpty &&

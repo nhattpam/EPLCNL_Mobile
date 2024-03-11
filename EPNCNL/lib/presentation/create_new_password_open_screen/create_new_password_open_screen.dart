@@ -32,11 +32,12 @@ class _CreateNewPasswordOpenScreenState extends State<CreateNewPasswordOpenScree
   }
 
   Future<void> fetchAccountData() async {
-    Account acc = await Network.getAccount();
+    Account acc = await Network.getAccountByEmail(query: widget.email);
 
     setState(() {
       // Set the list of pet containers in your state
       account = acc;
+      print(account?.email);
     });
   }
 

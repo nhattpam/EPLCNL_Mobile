@@ -8,7 +8,7 @@ import 'package:meowlish/data/models/assignmentattemps.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/classmodules.dart';
-import 'package:meowlish/data/models/classtopics.dart';
+import 'package:meowlish/data/models/topics.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/feedbacks.dart';
 import 'package:meowlish/data/models/forums.dart';
@@ -610,6 +610,40 @@ class Network {
     }
   }
 
+  static Future<Account> getAccountByEmail({String? query}) async {
+    var data = [];
+    late Account result; // Change the type to Account
+    String urlList = 'https://nhatpmse.twentytwo.asia/api/accounts';
+    var url = Uri.parse(urlList);
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        data = json.decode(response.body);
+        var accounts = data.map((e) => Account.fromJson(e)).toList();
+        if (query != null) {
+          var filteredAccounts = accounts.where((element) {
+            final emailMatches = element.email != null &&
+                element.email!.toLowerCase().contains(query.toLowerCase());
+            return emailMatches;
+          }).toList();
+          if (filteredAccounts.isNotEmpty) {
+            result = filteredAccounts.first; // Assuming you want only one account
+          } else {
+            throw Exception('No account found for the provided query.');
+          }
+        } else {
+          throw Exception('Query parameter cannot be null.');
+        }
+      } else {
+        throw Exception("fetch error");
+      }
+    } on Exception catch (e) {
+      print('error: $e');
+      rethrow; // Rethrow the exception for proper handling
+    }
+    return result;
+  }
+
 //// Put Api for Module here
   static Future<List<Module>> getModulesByCourseId(String courseId) async {
     final apiUrl =
@@ -677,10 +711,10 @@ class Network {
   }
 
   //class topic
-  static Future<List<ClassTopic>> getClassTopicsByClassLessonId(
+  static Future<List<Topic>> getTopicsByClassLessonId(
       String classLessonId) async {
     final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/class-lessons/$classLessonId/class-topics';
+        'https://nhatpmse.twentytwo.asia/api/class-lessons/$classLessonId/topics';
     print(apiUrl);
     try {
       final response = await http.get(
@@ -695,7 +729,7 @@ class Network {
 
         // Map each JSON object to a Pet object and return a list of pets
         return classLessonListJson
-            .map((json) => ClassTopic.fromJson(json))
+            .map((json) => Topic.fromJson(json))
             .toList();
       } else {
         // If the request fails, throw an exception or return null
@@ -707,10 +741,10 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
-  static Future<List<Quiz>> getQuizByClassTopicId(
+  static Future<List<Quiz>> getQuizByTopicId(
       String classLessonId) async {
     final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/class-topics/$classLessonId/quizzes';
+        'https://nhatpmse.twentytwo.asia/api/topics/$classLessonId/quizzes';
     print(apiUrl);// Replace with your API URL
     try {
       final response = await http.get(
@@ -826,10 +860,10 @@ class Network {
   }
 
   //lesson-material
-  static Future<List<LessonMaterial>> getListLessonMaterialByClassTopicId(
-      String classtopicId) async {
+  static Future<List<LessonMaterial>> getListLessonMaterialByTopicId(
+      String topicId) async {
     final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/class-topics/$classtopicId/lesson-materials';
+        'https://nhatpmse.twentytwo.asia/api/topics/$topicId/materials';
     print(apiUrl);
     try {
       final response = await http.get(
@@ -856,10 +890,10 @@ class Network {
     }
   }
 
-  static Future<LessonMaterial> getLessonMaterialByClassTopicId(
+  static Future<LessonMaterial> getLessonMaterialByTopicId(
       String classtopicId) async {
     final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/class-topics/$classtopicId/lesson-materials';
+        'https://nhatpmse.twentytwo.asia/api/topics/$classtopicId/lesson-materials';
     print(apiUrl);
     try {
       final response = await http.get(

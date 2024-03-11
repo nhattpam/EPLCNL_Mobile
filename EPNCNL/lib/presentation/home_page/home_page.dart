@@ -302,8 +302,7 @@ class HomePageState extends State<HomePage> {
 
   /// Section Widget
   Widget _buildDDesignSection(BuildContext context) {
-    List<bool> isLoadingList =
-        List.generate(listCategory.length, (index) => false);
+    List<bool> isLoadingList = List.generate(listCategory.length, (index) => false);
     return SizedBox(
         height: 40,
         child: ListView.builder(

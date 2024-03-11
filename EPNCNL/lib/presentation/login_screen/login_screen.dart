@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/learners.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_checkbox_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
@@ -43,13 +44,16 @@ class LoginScreenState extends State<LoginScreen> {
     });
 
     final loginSuccessful = await Network.loginUser(email, password);
-
     setState(() {
       isLoading = false;
     });
 
     if (loginSuccessful) {
-      onTapBtnSignin(context);
+      if (SessionManager().getLearnerId()?.isNotEmpty ?? false) {
+        onTapBtnSignin(context);
+      } else if (SessionManager().getTutorId()?.isNotEmpty ?? false) {
+        onTapSignin(context);
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -57,6 +61,7 @@ class LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
+
   }
 
   @override
@@ -303,6 +308,12 @@ class LoginScreenState extends State<LoginScreen> {
     Navigator.pushNamed(
       context,
       AppRoutes.homePage,
+    );
+  }
+  onTapSignin(BuildContext context) {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.mentorCuriculum,
     );
   }
 }

@@ -77,14 +77,16 @@ class Network {
         // Update this line to access 'Id' as a key
         // Set the userId in session
         SessionManager().setUserId(userId);
+        //get tutorId
+        Tutor tutor = await Network.getTutorByAccountId();
+        SessionManager().setTutorId(tutor.id.toString());
+        if(SessionManager().getTutorId() == ''){
+          Leaner leaner = await Network.getLeaner();
+          SessionManager().setLearnerId(leaner.id.toString());
+        }else{
 
-        print('User ID: $userId');
-        print('day la session id: ' + SessionManager().getUserId().toString());
-
+        }
         //get learnerId
-        Leaner leaner = await Network.getLeaner();
-
-        SessionManager().setLearnerId(leaner.id.toString());
 
         // Return true to indicate a successful login
         return true;
@@ -406,6 +408,39 @@ class Network {
         throw Exception(
             'Failed to fetch course. Status code: ${response.statusCode}');
       }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<Tutor> getTutorByAccountId() async {
+    final accountId = SessionManager().getUserId() ?? 0;
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/accounts/$accountId/tutors'; // Replace with your API URL
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic petJson = jsonDecode(response.body);
+
+        // Map the JSON object to a User object and return it
+        return Tutor.fromJson(petJson);
+      }else if(response.statusCode == 204){
+        Tutor tutor = Tutor();
+        return tutor;
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch account. Status code: ${response.statusCode}');
+      }
+
     } catch (e) {
       // Handle any exceptions that may occur during the request
       throw Exception('An error occurred: $e');

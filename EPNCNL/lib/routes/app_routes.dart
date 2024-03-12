@@ -12,6 +12,7 @@ import 'package:meowlish/presentation/indox_chats_tab_container_screen/indox_cha
 import 'package:meowlish/presentation/launching_screen/launching_screen.dart';
 import 'package:meowlish/presentation/login_screen/login_screen.dart';
 import 'package:meowlish/presentation/mentor_curiculum/mentor_curiculum.dart';
+import 'package:meowlish/presentation/mentor_open_screen/mentor_open_screen.dart';
 import 'package:meowlish/presentation/my_course_certificate_screen/my_course_certificate_screen.dart';
 import 'package:meowlish/presentation/my_course_course_completed_screen/my_course_course_completed_screen.dart';
 import 'package:meowlish/presentation/my_course_lessons_screen/my_course_lessons_screen.dart';
@@ -36,6 +37,8 @@ class AppRoutes {
   static const String homePage = '/home_page';
 
   static const String mentorCuriculum = '/mentor_curiculum';
+
+  static const String mentorOpenScreen = '/mentor_open_screen';
 
   static const String homeContainerScreen = '/home_container_screen';
 
@@ -162,6 +165,7 @@ class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
     homePage: (context) => HomePage(),
     mentorCuriculum: (context) => MentorCuriculum(),
+    mentorOpenScreen: (context) => MentorOpenScreen(),
     launchingScreen: (context) => LaunchingScreen(),
     openscreenScreen: (context) => OpenscreenScreen(),
     surveyscreenOneScreen: (context) => SurveyscreenOneScreen(),

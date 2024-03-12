@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
-import 'package:meowlish/presentation/mentor_curiculum/mentor_curiculum.dart';
+import 'package:meowlish/presentation/mentor_open_screen/mentor_open_screen.dart';
 import 'package:meowlish/presentation/openscreen_screen/openscreen_screen.dart';
 import 'package:meowlish/session/session.dart';
 
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
                           ? HomePage()
                           : OpenscreenScreen()
                         : SessionManager().getTutorId().toString() != "null"
-                          ? MentorCuriculum()
+                          ? MentorOpenScreen()
                           : OpenscreenScreen()
                         ,
                 // initialRoute: AppRoutes.openscreenScreen,

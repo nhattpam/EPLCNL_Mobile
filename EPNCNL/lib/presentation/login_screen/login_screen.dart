@@ -314,7 +314,7 @@ class LoginScreenState extends State<LoginScreen> {
   onTapSignin(BuildContext context) {
     Navigator.pushNamed(
       context,
-      AppRoutes.mentorCuriculum,
+      AppRoutes.mentorOpenScreen,
     );
   }
 }

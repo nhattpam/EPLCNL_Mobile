@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/utils/size_utils.dart';
 import 'package:meowlish/data/models/refundrequests.dart';
-import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/wallets.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
 
 import '../../data/models/accounts.dart';
-import '../../theme/custom_text_style.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});

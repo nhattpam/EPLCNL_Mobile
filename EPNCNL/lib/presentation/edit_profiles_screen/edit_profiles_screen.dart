@@ -8,10 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/presentation/forgot_password_screen/forgot_password_screen.dart';
-import 'package:meowlish/widgets/custom_drop_down.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
-import 'package:meowlish/widgets/custom_phone_number.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 
 import '../../data/models/accounts.dart';

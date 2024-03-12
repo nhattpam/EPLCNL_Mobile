@@ -2,13 +2,9 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
-import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/otp_forgot_open_screen/otp_forgot_open_screen.dart';
-import 'package:meowlish/presentation/otp_forgot_screen/otp_forgot_screen.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
-
-import '../../data/models/accounts.dart';
 
 class ForgotPasswordOpenScreen extends StatefulWidget {
   const ForgotPasswordOpenScreen({super.key});

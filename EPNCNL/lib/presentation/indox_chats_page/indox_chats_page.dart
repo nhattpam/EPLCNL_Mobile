@@ -10,8 +10,6 @@ import 'package:meowlish/presentation/my_course_completed_page/my_course_complet
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 
-import '../indox_chats_page/widgets/userprofile6_item_widget.dart';
-
 // ignore_for_file: must_be_immutable
 class IndoxChatsPage extends StatefulWidget {
   const IndoxChatsPage({Key? key})

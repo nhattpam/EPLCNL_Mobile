@@ -5,8 +5,6 @@ import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 
-import '../single_mentor_details_page/widgets/productcard2_item_widget.dart';
-
 // ignore_for_file: must_be_immutable
 class SingleMentorDetailsPage extends StatefulWidget {
   final String tutorId;

@@ -5,15 +5,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meowlish/core/app_export.dart';
-import 'package:meowlish/data/models/topics.dart';
 import 'package:meowlish/data/models/enrollments.dart';
-import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/curriculcum_screen/curriculcum_screen.dart';
 import 'package:meowlish/presentation/payment_methods_screen/payment_methods_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
-import 'package:readmore/readmore.dart';
 
 import '../../data/models/courses.dart';
 import '../../data/models/tutors.dart';

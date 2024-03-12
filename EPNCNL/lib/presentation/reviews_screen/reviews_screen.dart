@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/enrollments.dart';
+import 'package:meowlish/data/models/feedbacks.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/write_a_reviews_screen/write_a_reviews_screen.dart';
 import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_outlined_button.dart';
 import 'package:meowlish/widgets/custom_rating_bar.dart';
-import 'package:meowlish/data/models/feedbacks.dart';
-import '../reviews_screen/widgets/categorylist_item_widget.dart';
 
 class ReviewsScreen extends StatefulWidget {
   final String courseID;
@@ -27,6 +27,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   int _currentPage = 1;
   int _itemsPerPage = 3; // Define the number of items per page
   String lid = '';
+  bool _ascendingOrder = true;
   List<FedBack> _paginatedFeedback = [];
   @override
   void initState() {
@@ -78,6 +79,16 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       _paginatedFeedback = listFedback.sublist(startIndex, endIndex.clamp(0, listFedback.length));
     }
   }
+  void _loadPageBySort(int page) {
+    // Sort feedback list by the newest date
+
+    int startIndex = (page - 1) * _itemsPerPage;
+    int endIndex = startIndex + _itemsPerPage;
+    if (startIndex < listFedback.length) {
+      // Ensure endIndex does not exceed the length of the list
+      _paginatedFeedback = listFedback.sublist(startIndex, endIndex.clamp(0, listFedback.length));
+    }
+  }
   Future<void> loadCourseByCourseID() async {
     try {
       var course = await Network.getCourseByCourseID(widget.courseID);
@@ -107,6 +118,13 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     }
   }
 
+  int _compareFeedback(FedBack a, FedBack b) {
+    if (_ascendingOrder) {
+      return b.rating.toString().compareTo(a.rating.toString());
+    } else {
+      return a.rating.toString().compareTo(b.rating.toString());
+    }
+  }
   @override
   Widget build(BuildContext context) {
     bool isEnrolled = enrollment.transaction?.learnerId != null && enrollment.transaction?.courseId != null;
@@ -134,20 +152,26 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                           child: Padding(
                             padding: EdgeInsets.only(left: 1.h),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                CustomImageView(
-                                  imagePath:
-                                      ImageConstant.imgArrowDownBlueGray900,
-                                  height: 20.v,
-                                  width: 26.h,
-                                  margin: EdgeInsets.symmetric(vertical: 5.v),
-                                ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 11.h),
                                   child: Text(
                                     "Reviews",
                                     style: theme.textTheme.titleLarge,
                                   ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _ascendingOrder = !_ascendingOrder;
+                                      // Sort the list based on the current order
+                                      listFedback.sort((a, b) =>  _compareFeedback(a, b));
+                                      // Reload the current page
+                                      _loadPageBySort(_currentPage);
+                                    });
+                                  },
+                                  icon: Icon(FontAwesomeIcons.sortByRating),
                                 ),
                               ],
                             ),

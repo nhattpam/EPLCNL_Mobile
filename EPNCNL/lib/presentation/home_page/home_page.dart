@@ -11,7 +11,6 @@ import 'package:meowlish/presentation/my_course_completed_page/my_course_complet
 import 'package:meowlish/presentation/notifications_screen/notifications_screen.dart';
 import 'package:meowlish/presentation/popular_courses_screen/popular_courses_screen.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
-import 'package:meowlish/presentation/single_mentor_details_page/single_mentor_details_page.dart';
 import 'package:meowlish/presentation/single_mentor_details_rating_tab_container_screen/single_mentor_details_rating_tab_container_screen.dart';
 import 'package:meowlish/presentation/top_mentors_screen/top_mentors_screen.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';

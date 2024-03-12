@@ -5,9 +5,6 @@ import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/accountforums.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/session/session.dart';
-import 'package:meowlish/widgets/custom_icon_button.dart';
-import 'package:meowlish/widgets/custom_outlined_button.dart';
-import 'package:meowlish/widgets/custom_rating_bar.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 
 class IndoxChatsMessagesScreen extends StatefulWidget {

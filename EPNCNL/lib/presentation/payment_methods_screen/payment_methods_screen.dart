@@ -10,7 +10,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../data/models/courses.dart';
 import '../../data/models/transactions.dart';
 import '../../network/network.dart';
-import '../single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 
 class PaymentMethodsScreen extends StatefulWidget {
   final String courseID;

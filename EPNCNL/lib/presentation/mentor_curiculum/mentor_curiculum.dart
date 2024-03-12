@@ -13,7 +13,6 @@ import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/presentation/doing_quiz_screen/doing_quiz_screen.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/session/session.dart';
-import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';

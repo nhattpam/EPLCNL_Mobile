@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:meowlish/presentation/home_container_screen/home_container_screen.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/mentor_curiculum/mentor_curiculum.dart';
 import 'package:meowlish/presentation/openscreen_screen/openscreen_screen.dart';

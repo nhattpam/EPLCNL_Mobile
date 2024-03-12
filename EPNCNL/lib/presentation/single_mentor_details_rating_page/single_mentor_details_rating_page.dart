@@ -5,8 +5,6 @@ import 'package:meowlish/data/models/feedbacks.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/widgets/custom_outlined_button.dart';
 
-import '../single_mentor_details_rating_page/widgets/userprofile3_item_widget.dart';
-
 // ignore_for_file: must_be_immutable
 class SingleMentorDetailsRatingPage extends StatefulWidget {
   final String tutorId;

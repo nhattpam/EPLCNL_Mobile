@@ -3,17 +3,13 @@ import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
-import 'package:meowlish/presentation/indox_calls_page/indox_calls_page.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
-import 'package:meowlish/widgets/custom_bottom_bar.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
-
-import '../my_course_ongoing_screen/widgets/userprofile5_item_widget.dart';
 
 // ignore_for_file: must_be_immutable
 class MyCourseOngoingScreen extends StatefulWidget {

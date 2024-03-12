@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:meowlish/data/models/classmodules.dart';
+import 'package:meowlish/data/models/feedbacks.dart';
 
 import '../../../data/models/courses.dart';
 
@@ -164,5 +165,33 @@ class FetchCourseList {
     return results;
   }
 
+  Future<List<FedBack>> getFeedback({String? query, String? courseId}) async {
+    var data = [];
+    List<FedBack> results = [];
+    String urlList = 'https://nhatpmse.twentytwo.asia/api/courses/$courseId/feedbacks';
+    var url = Uri.parse(urlList);
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        data = json.decode(response.body);
+        results = data.map((e) => FedBack.fromJson(e)).toList();
+        if (query != null) {
+          results = results.where((element)
+              {
+                final learnerMatches = element.learnerId != null &&
+                    element.learnerId!.toLowerCase().contains(query.toLowerCase());
+
+                return learnerMatches;
+              }
+          ).toList();
+        }
+      } else {
+        print("fetch error");
+      }
+    } on Exception catch (e) {
+      print('error: $e');
+    }
+    return results;
+  }
 
 }

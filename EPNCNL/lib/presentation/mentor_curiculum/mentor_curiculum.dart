@@ -704,17 +704,17 @@ class _MultiTopicState extends State<MultiTopic> {
                           children: [
                             TextButton(
                               onPressed: () async{
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => DoingQuizScreen(
-                                          quizId: moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id.toString(),
-                                          cooldownTime: Duration(
-                                              minutes: moduleQuizMap[
-                                              listClassTopic[index].id]![assignmentIndex]
-                                                  .deadline as int))),
-                                );
-                                loadQuizAttemptsByLearnerId();
+                                // await Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //       builder: (context) => DoingQuizScreen(
+                                //           quizId: moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id.toString(),
+                                //           cooldownTime: Duration(
+                                //               minutes: moduleQuizMap[
+                                //               listClassTopic[index].id]![assignmentIndex]
+                                //                   .deadline as int))),
+                                // );
+                                // loadQuizAttemptsByLearnerId();
                               },
                               child: Text(
                                   moduleQuizMap[listClassTopic[index].id]![assignmentIndex]

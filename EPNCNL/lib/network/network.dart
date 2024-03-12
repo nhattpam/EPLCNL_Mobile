@@ -80,7 +80,7 @@ class Network {
         //get tutorId
         Tutor tutor = await Network.getTutorByAccountId();
         SessionManager().setTutorId(tutor.id.toString());
-        if(SessionManager().getTutorId() == ''){
+        if(SessionManager().getTutorId().toString() == 'null'){
           Leaner leaner = await Network.getLeaner();
           SessionManager().setLearnerId(leaner.id.toString());
         }else{

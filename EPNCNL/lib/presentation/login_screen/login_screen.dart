@@ -47,7 +47,8 @@ class LoginScreenState extends State<LoginScreen> {
     setState(() {
       isLoading = false;
     });
-
+    print("This is tutor" + SessionManager().getTutorId().toString());
+    print("This is learner" + SessionManager().getLearnerId().toString());
     if (loginSuccessful) {
       if (SessionManager().getLearnerId()?.isNotEmpty ?? false) {
         onTapBtnSignin(context);

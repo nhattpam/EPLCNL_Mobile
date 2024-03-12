@@ -7,6 +7,7 @@ import 'package:internet_file/internet_file.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
+import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
@@ -37,12 +38,13 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
 
   @override
   bool get wantKeepAlive => true;
+  late List<Course> chosenTutor = [];
 
   @override
   void initState() {
     super.initState();
     // loadClassModuleByCourseId();
-    SessionManager().clearSession();
+    loadCourseByTutorId();
   }
 
   void _showMultiSelect(String lessonId) async {
@@ -61,6 +63,33 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
         });
   }
 
+  void loadCourseByTutorId() async {
+    try {
+      final tutors = await Network.getCourseByTutorId(SessionManager().getTutorId().toString());
+      setState(() {
+        chosenTutor = tutors;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+    // loadAllCourse();
+  }
+
+  // Future<void> loadAllCourse() async {
+  //   try {
+  //     // Load lessons for each module
+  //     for (final course in chosenTutor) {
+  //       await loadFeedback(course.id.toString());
+  //     }
+  //     // After all lessons are loaded, proceed with building the UI
+  //     setState(() {});
+  //   } catch (e) {
+  //     // Handle errors here
+  //     print('Error loading lessons: $e');
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -75,7 +104,7 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
               width: 300,
               height: 100, // Add margin
               child: Text(
-                'Course Detail',
+                'Curriculum',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 25,
@@ -101,7 +130,7 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
                       color: appTheme.gray50,
                     ),
                     FutureBuilder<List<ClassModule>>(
-                      future: _classmoduleList.getClassModule(query: query, courseId: ''),
+                      future: _classmoduleList.getClassModuleByTutor(query: query, courseIds: chosenTutor.map((course) => course.id.toString()).toList()),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           return Center(

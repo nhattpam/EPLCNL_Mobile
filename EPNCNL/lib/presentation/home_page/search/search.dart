@@ -123,6 +123,46 @@ class FetchCourseList {
     }
     return results;
   }
+  Future<List<ClassModule>> getClassModuleByTutor({String? query, List<String>? courseIds}) async {
+    print(courseIds);
+    var data = [];
+    List<ClassModule> results = [];
+    if (courseIds == null || courseIds.isEmpty) {
+      return results;
+    }
+    for (var courseId in courseIds) {
+      String urlList = 'https://nhatpmse.twentytwo.asia/api/courses/$courseId/class-modules';
+      var url = Uri.parse(urlList);
+      try {
+        var response = await http.get(url);
+        if (response.statusCode == 200) {
+          data = json.decode(response.body);
+          results.addAll(data.map((e) => ClassModule.fromJson(e)).toList());
+          if (query != null) {
+            results = results.where((element) {
+              if (element.startDate != null) {
+                // Convert startDate to DateTime object
+                DateTime startDate = DateTime.parse(element.startDate!);
+                // Convert query to DateTime object
+                DateTime queryDate = DateTime.parse(query);
+                // Check if startDate matches the query date
+                return startDate.year == queryDate.year &&
+                    startDate.month == queryDate.month &&
+                    startDate.day == queryDate.day;
+              } else {
+                return false;
+              }
+            }).toList();
+          }
+        } else {
+          print("fetch error for course ID: $courseId");
+        }
+      } on Exception catch (e) {
+        print('error fetching data for course ID $courseId: $e');
+      }
+    }
+    return results;
+  }
 
 
 }

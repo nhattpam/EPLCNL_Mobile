@@ -198,7 +198,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   Widget _buildContinueSection(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        print(newpasswordController);
         Network.updateProfile(
             account?.email ?? '',
             newpasswordController.text,
@@ -209,7 +208,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             account?.gender ?? false,
             account?.address ?? '',
             account?.isActive ?? true,
-            account?.isDeleted ?? false,
             account?.createdDate ?? '',
             account?.createdBy ?? '',
             account?.note ?? '');

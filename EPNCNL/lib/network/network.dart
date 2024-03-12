@@ -608,11 +608,11 @@ class Network {
       bool gender,
       String address,
       bool isActive,
-      bool isDeleted,
       String createdDate,
       String createdBy,
       String note) async {
     String accountId = SessionManager().getUserId().toString();
+    print(accountId);
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/accounts/$accountId'; // Replace with your API URL
     try {
@@ -627,14 +627,12 @@ class Network {
         'address': address,
         "roleId": "f3db0ef2-7f03-4728-a868-aacbe76891a8",
         'isActive': isActive,
-        'isDeleted': isDeleted,
         'createdDate': createdDate,
         // 'createdBy': createdBy,
         // 'updateDate': null,
         // 'updatedBy': accountId,
         'note': note
       };
-      print(updateData);
       final response = await http.put(
         Uri.parse(apiUrl),
         headers: {
@@ -643,7 +641,7 @@ class Network {
         },
         body: jsonEncode(updateData),
       );
-
+      print(jsonEncode(updateData));
       if (response.statusCode == 200) {
         print('Profile updated successfully.');
         return true; // Password updated successfully, return true.
@@ -657,39 +655,31 @@ class Network {
     }
   }
 
-  static Future<Account> getAccountByEmail({String? query}) async {
+  static Future<List<Account>> getAccountByEmail({String? query}) async {
     var data = [];
-    late Account result; // Change the type to Account
+    List<Account> results = [];
     String urlList = 'https://nhatpmse.twentytwo.asia/api/accounts';
     var url = Uri.parse(urlList);
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {
         data = json.decode(response.body);
-        var accounts = data.map((e) => Account.fromJson(e)).toList();
+        results = data.map((e) => Account.fromJson(e)).toList();
         if (query != null) {
-          var filteredAccounts = accounts.where((element) {
+          results = results.where((element) {
+            //////// Add list
             final emailMatches = element.email != null &&
                 element.email!.toLowerCase().contains(query.toLowerCase());
             return emailMatches;
           }).toList();
-          if (filteredAccounts.isNotEmpty) {
-            result =
-                filteredAccounts.first; // Assuming you want only one account
-          } else {
-            throw Exception('No account found for the provided query.');
-          }
-        } else {
-          throw Exception('Query parameter cannot be null.');
         }
       } else {
-        throw Exception("fetch error");
+        print("fetch error");
       }
     } on Exception catch (e) {
       print('error: $e');
-      rethrow; // Rethrow the exception for proper handling
     }
-    return result;
+    return results;
   }
 
 //// Put Api for Module here

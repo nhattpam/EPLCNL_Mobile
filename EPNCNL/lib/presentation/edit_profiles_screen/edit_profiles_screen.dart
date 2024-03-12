@@ -457,7 +457,6 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
               account?.gender ?? false,
               account?.address ?? '',
               account?.isActive ?? true,
-              account?.isDeleted ?? false,
               account?.createdDate ?? '',
               account?.createdBy ?? '',
               account?.note ?? '');
@@ -472,7 +471,6 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
               account?.gender ?? false,
               account?.address ?? '',
               account?.isActive ?? true,
-              account?.isDeleted ?? false,
               account?.createdDate ?? '',
               account?.createdBy ?? '',
               account?.note ?? '');

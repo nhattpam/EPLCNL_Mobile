@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/enrollments.dart';
@@ -259,6 +260,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               print("DONE ");
               // Do something with paymentUrl if needed
               // Change the button text to "Enroll Course" and show the button
+
             } else {
 
               print("NOT DONE YET");
@@ -316,15 +318,26 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
             enrolledDate: transaction.transactionDate,
             totalGrade: 0);
         // await Network.createEnrollment(enrollment);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SingleCourseDetailsTabContainerScreen(
-              courseID: chosenCourse.id.toString(),
-              tutorID: chosenCourse.tutorId.toString(),
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.scale,
+          dialogType: DialogType.success,
+          body: Center(
+            child: Text(
+              'Payment Success!!!',
+              style: TextStyle(fontStyle: FontStyle.italic),
             ),
           ),
-        );
+          btnOkOnPress: () {
+            setState(() {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            });
+            // if(isSelected == true){
+            //   nextQuestion();
+            // }
+          },
+        )..show();
       } else {
         print("NOT DONE YET");
         // If status is not "DONE", show loading indicator or perform other actions

@@ -14,7 +14,7 @@ import 'package:meowlish/presentation/indox_chats_messages_screen/indox_chats_me
 import 'package:meowlish/presentation/indox_chats_tab_container_screen/indox_chats_tab_container_screen.dart';
 import 'package:meowlish/presentation/launching_screen/launching_screen.dart';
 import 'package:meowlish/presentation/login_screen/login_screen.dart';
-import 'package:meowlish/presentation/mentor_curiculum.dart';
+import 'package:meowlish/presentation/mentor_curiculum/mentor_curiculum.dart';
 import 'package:meowlish/presentation/mentors_list_screen/mentors_list_screen.dart';
 import 'package:meowlish/presentation/my_course_certificate_screen/my_course_certificate_screen.dart';
 import 'package:meowlish/presentation/my_course_course_completed_screen/my_course_course_completed_screen.dart';

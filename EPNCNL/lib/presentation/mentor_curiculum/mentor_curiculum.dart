@@ -18,8 +18,8 @@ import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../data/models/topics.dart';
-import '../../network/network.dart';
+import '../../../data/models/topics.dart';
+import '../../../network/network.dart';
 
 // ignore_for_file: must_be_immutable
 class MentorCuriculum extends StatefulWidget {
@@ -43,6 +43,7 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
   void initState() {
     super.initState();
     // loadClassModuleByCourseId();
+    SessionManager().clearSession();
   }
 
   void _showMultiSelect(String lessonId) async {

@@ -254,8 +254,8 @@ class SingleMeetCourseDetailsPageState
                               CustomElevatedButton(
                                 text:
                                     "Enroll Course - \$${chosenCourse.stockPrice}",
-                                onPressed: () {
-                                  Navigator.push(
+                                onPressed: () async{
+                                  await Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
@@ -264,6 +264,7 @@ class SingleMeetCourseDetailsPageState
                                       ),
                                     ),
                                   );
+                                  loadEnrollmentByLearnerAndCourseId();
                                 },
                               ),
                             if (isEnrolled &&

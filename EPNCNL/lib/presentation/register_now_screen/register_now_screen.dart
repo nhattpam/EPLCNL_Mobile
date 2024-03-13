@@ -25,6 +25,8 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  bool rememberMe = false;
+
   @override
   void initState() {
     super.initState();
@@ -63,7 +65,7 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                         key: _formKey,
                         child: Container(
                             width: double.maxFinite,
-                            height: 716,
+                            height: 730,
                             padding: EdgeInsets.symmetric(
                                 horizontal: 34.h, vertical: 13.v),
                             child: Column(children: [
@@ -275,16 +277,24 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
   /// Section Widget
   Widget _buildTermsAgreementSection(BuildContext context) {
     return Align(
-        alignment: Alignment.centerLeft,
-        child: CustomCheckboxButton(
-            alignment: Alignment.centerLeft,
-            text: "Agree to Terms & Conditions",
-            value: termsAgreementSection,
-            padding: EdgeInsets.symmetric(vertical: 2.v),
-            textStyle: CustomTextStyles.labelLargeExtraBold,
-            onChange: (value) {
-              termsAgreementSection = value;
-            }));
+      alignment: Alignment.centerLeft,
+      child: Row(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(bottom: 1.v),
+            child: Checkbox(
+              value: rememberMe,
+              onChanged: (newValue) {
+                setState(() {
+                  rememberMe = newValue!;
+                });
+              },
+            ),
+          ),
+          Text('Agree to Terms & Conditions', style: CustomTextStyles.labelLargeExtraBold),
+        ],
+      ),
+    );
   }
 
   /// Section Widget

@@ -22,7 +22,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   TextEditingController passwordController = TextEditingController();
 
-  bool rememberMe = false;
+  bool rememberMe = true;
 
   bool isLoading = false;
 
@@ -223,16 +223,23 @@ class LoginScreenState extends State<LoginScreen> {
   /// Section Widget
   Widget _buildRememberMe(BuildContext context) {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Padding(
-          padding: EdgeInsets.only(bottom: 1.v),
-          child: CustomCheckboxButton(
-              text: "Remember Me",
-              value: rememberMe,
-              padding: EdgeInsets.symmetric(vertical: 1.v),
-              textStyle: CustomTextStyles.labelLargeExtraBold,
-              onChange: (value) {
-                rememberMe = value;
-              })),
+      Row(
+        children: [
+          Padding(
+              padding: EdgeInsets.only(bottom: 1.v),
+              child:  Checkbox(
+                value: rememberMe,
+                onChanged: (newValue) {
+                  setState(() {
+                    rememberMe = newValue!;
+                  });
+                },
+              ),
+          ),
+          Text('Remember Me', style: CustomTextStyles.labelLargeExtraBold),
+
+        ],
+      ),
       GestureDetector(
           onTap: () {
             onTapTxtForgotPassword(context);

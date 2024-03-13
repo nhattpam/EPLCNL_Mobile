@@ -24,6 +24,7 @@ import 'package:meowlish/data/models/refundrequests.dart';
 import 'package:meowlish/data/models/topics.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/tutors.dart';
+import 'package:meowlish/data/models/wallethistories.dart';
 import 'package:meowlish/data/models/wallets.dart';
 
 import '../data/models/enrollments.dart';
@@ -1818,6 +1819,33 @@ class Network {
             'Failed to fetch enrollment. Status code: ${response.statusCode}');
       }
     } catch (e) {
+      throw Exception('An error occurred: $e');
+    }
+  }
+  ////Wallets History
+  static Future<List<WalletHistory>> getWalletHistoryByWalletId(String walletId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/wallets/$walletId/wallet-histories'; // Replace with your API URL
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> wallethistoriesListJson = jsonDecode(response.body);
+
+        return wallethistoriesListJson.map((json) => WalletHistory.fromJson(json)).toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
       throw Exception('An error occurred: $e');
     }
   }

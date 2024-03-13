@@ -366,7 +366,8 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                         );
                         loadAssignmentAttemptsByLearnerId();
                       },
-                        child:  Html(
+                        child:
+                        Html(
                             data: moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText
                                 .toString(),
                             style: {

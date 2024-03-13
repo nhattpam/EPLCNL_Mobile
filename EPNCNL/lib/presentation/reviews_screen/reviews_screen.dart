@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
@@ -125,6 +126,19 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       return a.rating.toString().compareTo(b.rating.toString());
     }
   }
+
+
+  String removeAllHtmlTags(String htmlText) {
+    RegExp exp = RegExp(
+        r"<[^>]*>",
+        multiLine: true,
+        caseSensitive: true
+    );
+
+    return htmlText.replaceAll(exp, '');
+  }
+
+
   @override
   Widget build(BuildContext context) {
     bool isEnrolled = enrollment.transaction?.learnerId != null && enrollment.transaction?.courseId != null;
@@ -312,7 +326,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              feedback.learner?.account?.fullName ?? '',
+                              removeAllHtmlTags(feedback.learner?.account?.fullName ?? ''),
                               style: CustomTextStyles.titleMedium17,
                             ),
                             CustomOutlinedButton(
@@ -335,7 +349,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                           width: 244.h,
                           margin: EdgeInsets.only(right: 12.h),
                           child: Text(
-                            feedback.feedbackContent.toString(),
+                            removeAllHtmlTags(feedback.feedbackContent.toString()),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.labelLarge,

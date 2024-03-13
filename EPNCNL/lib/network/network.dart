@@ -1886,8 +1886,7 @@ class Network {
   }
 
   static Future<RefundRequest> getRefundRequestById(String refundId) async {
-    final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/refund-requests/$refundId';
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/refund-requests/$refundId';
 
     try {
       final response = await http.get(
@@ -1902,6 +1901,7 @@ class Network {
 
       if (response.statusCode == 200) {
         final dynamic refundJson = jsonDecode(response.body);
+        print(refundJson);
         if (refundJson is List) {
           // If it's a list, extract the first element (assuming it's the desired object)
           return RefundRequest.fromJson(refundJson.first);

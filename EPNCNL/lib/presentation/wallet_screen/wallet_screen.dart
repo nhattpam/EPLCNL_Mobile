@@ -180,7 +180,7 @@ class _WalletScreenState extends State<WalletScreen> {
     Color tileColor;
     if (tittle == "PROCESSING") {
       tileColor = Color(0xbbff9300);
-    } else if (tittle == "DONE") {
+    } else if (tittle == "APPROVED") {
       tileColor = Colors.green;
     } else {
       tileColor = Colors.red;

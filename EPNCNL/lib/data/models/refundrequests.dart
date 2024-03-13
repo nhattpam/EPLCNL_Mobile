@@ -4,7 +4,7 @@ class RefundRequest {
   String? id;
   String? enrollmentId;
   String? requestedDate;
-  Null? approvedDate;
+  String? approvedDate;
   String? status;
   String? reason;
   Enrollment? enrollment;

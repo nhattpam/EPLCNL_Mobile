@@ -79,7 +79,8 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
             ),
             builder: (context, snapshot) {
               List<FedBack>? data = snapshot.data;
-              if(snapshot.hasData){
+              print(data);
+              if(data?.isNotEmpty ?? false){
                 num vote = data?[0]?.rating ?? 0;
                 String feedbackContent = '${data?[0].feedbackContent}';
                 return Container(

@@ -1422,6 +1422,7 @@ class Network {
   }
 
   //enrollment
+
   // static Future<String> createEnrollment(Enrollment enrollment) async {
   //   final userData = {
   //     "status": enrollment.status,
@@ -1459,8 +1460,7 @@ class Network {
   //   }
   // }
 
-  static Future<Enrollment> getEnrollmentByLearnerAndCourseId(
-      String learnerId, String courseId) async {
+  static Future<Enrollment> getEnrollmentByLearnerAndCourseId(String learnerId, String courseId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/enrollments/learners/$learnerId/courses/$courseId';
     print(apiUrl);
@@ -1551,6 +1551,53 @@ class Network {
       }
     } catch (e) {
       // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<int> getLearningScoreByEnrollmentId(String enrollmentId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/enrollments/$enrollmentId/learning-score';
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('API Response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        // Parse the response body as an integer
+        return int.parse(response.body);
+      } else {
+        throw Exception('Failed to fetch enrollment. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+  static Future<int> getCourseScoreByEnrollmentId(String enrollmentId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/enrollments/$enrollmentId/course-score';
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('API Response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        // Parse the response body as an integer
+        return int.parse(response.body);
+      } else {
+        throw Exception('Failed to fetch course score. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
       throw Exception('An error occurred: $e');
     }
   }
@@ -1947,4 +1994,5 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
 }

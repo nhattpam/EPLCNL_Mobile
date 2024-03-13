@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
@@ -20,7 +21,6 @@ class MyCourseOngoingScreen extends StatefulWidget {
 }
 
 class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
-
   TextEditingController searchController = TextEditingController();
 
   GlobalKey<NavigatorState> navigatorKey = GlobalKey();
@@ -28,6 +28,8 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
   late List<Enrollment> listEnrollment = [];
 
   int _currentIndex = 1;
+  Map<String, int> moduleLearningscoreMap = {};
+  Map<String, int> moduleCoursescoreMap = {};
 
   @override
   void initState() {
@@ -40,132 +42,157 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
     setState(() {
       listEnrollment = loadedEnrollment;
     });
+    loadAllScore();
+  }
+
+  Future<void> fetchLearningScoreByEnrollmentId(String enrollmentId) async {
+    int acc = await Network.getLearningScoreByEnrollmentId(enrollmentId);
+
+    setState(() {
+      moduleLearningscoreMap[enrollmentId] = acc;
+    });
+  }
+
+  Future<void> fetchCourseScoreByEnrollmentId(String enrollmentId) async {
+    int acc = await Network.getCourseScoreByEnrollmentId(enrollmentId);
+
+    setState(() {
+      // Set the list of pet containers in your state
+      moduleCoursescoreMap[enrollmentId] = acc;
+    });
+  }
+
+  Future<void> loadAllScore() async {
+    try {
+      // Load lessons for each module
+      for (final module in listEnrollment) {
+        await fetchLearningScoreByEnrollmentId(module.id.toString());
+        await fetchCourseScoreByEnrollmentId(module.id.toString());
+      }
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lessons: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: Container(
-                width: double.maxFinite,
-                padding: EdgeInsets.symmetric(horizontal: 34.h),
-                child: SingleChildScrollView(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 70.v),
-                        Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CustomImageView(
-                                  imagePath:
-                                      ImageConstant.imgArrowDownBlueGray900,
-                                  height: 20.v,
-                                  width: 26.h,
-                                  margin: EdgeInsets.only(top: 3.v, bottom: 5.v)),
-                              Padding(
-                                  padding: EdgeInsets.only(left: 11.h),
-                                  child: Text("My Courses",
-                                      style: theme.textTheme.titleLarge))
-                            ]),
-                        SizedBox(height: 16.v),
-                        Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 14.h),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    // Adjust the color and opacity as needed
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: Offset(0,
-                                        3), // Adjust the offset to control the shadow's position
-                                  ),
-                                ],
-                              ),
-                              child: CustomSearchView(
-                                controller: searchController,
-                                hintText: "Search for..",
-                                context: context,
-                              ),
-                            )),
-                        SizedBox(height: 20.v),
-                        _buildCategory(context),
-                        SizedBox(height: 20.v),
-                        _buildUserProfile(context)
-                      ]),
-                )
-            ),
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-              if (index == 0) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => HomePage()),
-                );
-              }
-              if (index == 1) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
-                );
-              }
-              if (index == 2) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => IndoxChatsPage()),
-                );
-              }
-              if (index == 3) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => TransactionsPage()),
-                );
-              }
-              if (index == 4) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => ProfilesPage()),
-                );
-              }
-            },
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.book),
-                label: 'My Courses',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.chat),
-                label: 'Inbox',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.wallet),
-                label: 'Transaction',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
-            selectedItemColor: Color(0xbbff9300),
-            unselectedItemColor: Color(0xffff9300),
+      resizeToAvoidBottomInset: false,
+      body: Container(
+          width: double.maxFinite,
+          padding: EdgeInsets.symmetric(horizontal: 34.h),
+          child: SingleChildScrollView(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              SizedBox(height: 70.v),
+              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                CustomImageView(
+                    imagePath: ImageConstant.imgArrowDownBlueGray900,
+                    height: 20.v,
+                    width: 26.h,
+                    margin: EdgeInsets.only(top: 3.v, bottom: 5.v)),
+                Padding(
+                    padding: EdgeInsets.only(left: 11.h),
+                    child:
+                        Text("My Courses", style: theme.textTheme.titleLarge))
+              ]),
+              SizedBox(height: 16.v),
+              Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 14.h),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          // Adjust the color and opacity as needed
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0,
+                              3), // Adjust the offset to control the shadow's position
+                        ),
+                      ],
+                    ),
+                    child: CustomSearchView(
+                      controller: searchController,
+                      hintText: "Search for..",
+                      context: context,
+                    ),
+                  )),
+              SizedBox(height: 20.v),
+              _buildCategory(context),
+              SizedBox(height: 20.v),
+              _buildUserProfile(context)
+            ]),
+          )),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+          if (index == 0) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          }
+          if (index == 1) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+            );
+          }
+          if (index == 2) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+            );
+          }
+          if (index == 3) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => TransactionsPage()),
+            );
+          }
+          if (index == 4) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => ProfilesPage()),
+            );
+          }
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
-
-        )
-    );
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'My Courses',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Inbox',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.wallet),
+            label: 'Transaction',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        selectedItemColor: Color(0xbbff9300),
+        unselectedItemColor: Color(0xffff9300),
+      ),
+    ));
   }
 
   /// Section Widget
   Widget _buildCategory(BuildContext context) {
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       Expanded(
-          child: CustomElevatedButton(
-            onPressed: (){
+        child: CustomElevatedButton(
+            onPressed: () {
               Navigator.push(
                 context,
                 new MaterialPageRoute(
@@ -173,15 +200,12 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                 ),
               );
             },
-              height: 48.v,
-              text: "Completed",
-              margin: EdgeInsets.only(right: 10.h),
-              buttonStyle: CustomButtonStyles.fillOnPrimaryContainerTL24,
-              buttonTextStyle:
-                  CustomTextStyles.titleSmallBluegray900ExtraBold15),
-
+            height: 48.v,
+            text: "Completed",
+            margin: EdgeInsets.only(right: 10.h),
+            buttonStyle: CustomButtonStyles.fillOnPrimaryContainerTL24,
+            buttonTextStyle: CustomTextStyles.titleSmallBluegray900ExtraBold15),
       ),
-
       Expanded(
           child: CustomElevatedButton(
               height: 48.v,
@@ -204,16 +228,23 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
       itemBuilder: (context, index) {
         final enrolls = listEnrollment[index];
         String? imageUrl = enrolls.transaction?.course?.imageUrl;
+        String dateStr = enrolls?.enrolledDate ?? '';
+
+        // Parse the date
+        DateTime date = DateTime.parse(dateStr);
+
+        // Format the date
+        String formattedDate = DateFormat("MM/dd/yyyy").format(date);
         return GestureDetector(
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    SingleCourseDetailsTabContainerScreen(
-                      courseID: enrolls.transaction?.course?.id.toString() ?? '',
-                      tutorID: enrolls.transaction?.course?.tutorId.toString() ?? '',
-                    ),
+                builder: (context) => SingleCourseDetailsTabContainerScreen(
+                  courseID: enrolls.transaction?.course?.id.toString() ?? '',
+                  tutorID:
+                      enrolls.transaction?.course?.tutorId.toString() ?? '',
+                ),
               ),
             );
           },
@@ -228,10 +259,13 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                   width: 130.h,
                   child: imageUrl != null && imageUrl.isNotEmpty
                       ? Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                  )
-                      : Container(child: Center(child: CircularProgressIndicator())), // Placeholder widget when imageUrl is empty or null
+                          imageUrl,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          child: Center(
+                              child:
+                                  CircularProgressIndicator())), // Placeholder widget when imageUrl is empty or null
                 ),
                 Padding(
                   padding: EdgeInsets.only(
@@ -247,7 +281,8 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                           maxWidth: 190,
                         ),
                         child: Text(
-                          enrolls.transaction?.course?.category?.description ?? '',
+                          enrolls.transaction?.course?.category?.description ??
+                              '',
                           style: CustomTextStyles.labelLargeOrangeA700,
                           softWrap: true,
                           overflow: TextOverflow.ellipsis,
@@ -280,7 +315,10 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                                   size: 14.v,
                                 ),
                                 Text(
-                                  enrolls.transaction?.course?.rating?.toStringAsFixed(1) ?? '' ?? '',
+                                  enrolls.transaction?.course?.rating
+                                          ?.toStringAsFixed(1) ??
+                                      '' ??
+                                      '',
                                   style: theme.textTheme.labelMedium,
                                 ),
                               ],
@@ -299,13 +337,14 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                               top: 3.v,
                             ),
                             child: Text(
-                              "Time",
+                              formattedDate,
                               style: theme.textTheme.labelMedium,
                             ),
                           ),
                         ],
                       ),
                       SizedBox(height: 10.v),
+                      if(enrolls.transaction?.course?.isOnlineClass == false)
                       Padding(
                         padding: EdgeInsets.only(left: 3.h),
                         child: Row(
@@ -334,7 +373,7 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                                     3.h,
                                   ),
                                   child: LinearProgressIndicator(
-                                    value: 10/125,
+                                    value: (moduleLearningscoreMap[enrolls.id.toString()] ?? 0) / (moduleCoursescoreMap[enrolls.id.toString()] ?? 0),
                                     backgroundColor: appTheme.gray5001,
                                     valueColor: AlwaysStoppedAnimation<Color>(
                                       appTheme.teal700,
@@ -343,13 +382,14 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                                 ),
                               ),
                             ),
-                            Padding(
+                              Padding(
                               padding: EdgeInsets.only(left: 12.h),
-                              child: Text(
-                                enrolls.totalGrade.toString() + "/125",
-                                style: theme.textTheme.labelMedium,
+                                child: Text(
+                                  (moduleLearningscoreMap[enrolls.id.toString()] ?? 0).toString() + "/" + (moduleCoursescoreMap[enrolls.id.toString()] ?? 0).toString(),
+                                  style: theme.textTheme.labelMedium,
+                                ),
+
                               ),
-                            ),
                           ],
                         ),
                       ),
@@ -363,7 +403,6 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
       },
     );
   }
-
 
   /// Navigates to the myCourseOngoingLessonsScreen when the action is triggered.
   onTapUserProfile(BuildContext context) {

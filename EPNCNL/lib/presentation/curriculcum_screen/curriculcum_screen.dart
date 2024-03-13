@@ -14,6 +14,11 @@ import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/curriculcum_screen/widgets/videoplayer_widget.dart';
 import 'package:meowlish/presentation/doing_assignment_screen/doing_assignment_screen.dart';
 import 'package:meowlish/presentation/doing_quiz_screen/doing_quiz_screen.dart';
+import 'package:meowlish/presentation/home_page/home_page.dart';
+import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
+import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
+import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
+import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 
 class CurriculumScreen extends StatefulWidget {
   final courseID;
@@ -33,6 +38,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   late List<QuizAttempt> listQuizAttempt = [];
   late List<AssignmentAttempt> listAssignmentAttempt = [];
   late Course chosenCourse = Course();
+  int _currentIndex = 0;
 
   // Map to store lessons for each module
   Map<String, List<Lesson>> moduleLessonsMap = {};
@@ -196,6 +202,63 @@ class CurriculumScreenState extends State<CurriculumScreen> {
               ],
             ),
           ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 0) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            }
+            if (index == 1) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+              );
+            }
+            if (index == 2) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+              );
+            }
+            if (index == 3) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => TransactionsPage()),
+              );
+            }
+            if (index == 4) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ProfilesPage()),
+              );
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              label: 'My Courses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wallet),
+              label: 'Transaction',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          selectedItemColor: Color(0xbbff9300),
+          unselectedItemColor: Color(0xffff9300),
         ),
       ),
     );

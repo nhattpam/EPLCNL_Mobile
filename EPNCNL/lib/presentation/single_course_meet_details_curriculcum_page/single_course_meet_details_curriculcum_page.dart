@@ -780,7 +780,7 @@ class _MultiTopicState extends State<MultiTopic> {
                                           null &&
                                       moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
                                           null &&
-                                      listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
+                                      listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >=
                                           moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
                                       ? FontAwesomeIcons.check
                                       : Icons.dangerous_outlined,
@@ -791,7 +791,7 @@ class _MultiTopicState extends State<MultiTopic> {
                                           null &&
                                       moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
                                           null &&
-                                      listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
+                                      listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >=
                                           moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
                                       ? Colors.green
                                       : Colors.red,

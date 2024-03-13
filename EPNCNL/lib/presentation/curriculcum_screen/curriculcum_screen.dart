@@ -454,7 +454,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                               null &&
                           moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass !=
                               null &&
-                          listAssignmentAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
+                          listAssignmentAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >=
                               moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass!
 
                           ? FontAwesomeIcons.check
@@ -466,7 +466,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                               null &&
                           moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass !=
                               null &&
-                          listAssignmentAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
+                          listAssignmentAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >=
                               moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass!
                           ? Colors.green
                           : Colors.red,
@@ -556,8 +556,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                             null &&
                         moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass !=
                             null &&
-                        listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
-                            moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass!
+                        listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >= moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass!
 
                         ? FontAwesomeIcons.check
                         : Icons.dangerous_outlined,
@@ -568,8 +567,8 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                             null &&
                         moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass !=
                             null &&
-                        listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
-                            moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass!
+                        listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >= moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass!
+
                         ? Colors.green
                         : Colors.red,
                     size: 20.v,

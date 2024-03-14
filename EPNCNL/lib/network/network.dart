@@ -16,6 +16,7 @@ import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/data/models/paperworks.dart';
+import 'package:meowlish/data/models/profilecertificates.dart';
 import 'package:meowlish/data/models/questionanswers.dart';
 import 'package:meowlish/data/models/questions.dart';
 import 'package:meowlish/data/models/quizattempts.dart';
@@ -1525,8 +1526,7 @@ class Network {
     }
   }
 
-  static Future<List<Enrollment>> getEnrollmentByCourseId(
-      String courseId) async {
+  static Future<List<Enrollment>> getEnrollmentByCourseId(String courseId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/courses/$courseId/enrollments'; // Replace with your API URL
     print(apiUrl);
@@ -1554,6 +1554,7 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
   static Future<int> getLearningScoreByEnrollmentId(String enrollmentId) async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/enrollments/$enrollmentId/learning-score';
     print(apiUrl);
@@ -1983,6 +1984,70 @@ class Network {
         } else if (refundJson is Map<String, dynamic>) {
           // If it's a map, decode directly
           return RefundRequest.fromJson(refundJson);
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else {
+        throw Exception(
+            'Failed to fetch enrollment. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('An error occurred: $e');
+    }
+  }
+  /////Profile-Certificates
+  static Future<List<ProfileCertificate>> getProfileCertificateByLearnerId() async {
+    String lid = SessionManager().getLearnerId().toString();
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/learners/$lid/profile-certificates'; // Replace with your API URL
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> profileCertificateListJson = jsonDecode(response.body);
+
+        return profileCertificateListJson
+            .map((json) => ProfileCertificate.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<ProfileCertificate> getProfileCertificate(String profileId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/profile-certificates/$profileId';
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print(
+          'API Response: ${response.body}'); // Add this line to print the response
+
+      if (response.statusCode == 200) {
+        final dynamic profileJson = jsonDecode(response.body);
+
+        if (profileJson is List) {
+          // If it's a list, extract the first element (assuming it's the desired object)
+          return ProfileCertificate.fromJson(profileJson.first);
+        } else if (profileJson is Map<String, dynamic>) {
+          // If it's a map, decode directly
+          return ProfileCertificate.fromJson(profileJson);
         } else {
           throw Exception('Unexpected response format');
         }

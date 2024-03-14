@@ -188,7 +188,6 @@ class AppRoutes {
     notificationsScreen: (context) => NotificationsScreen(),
     paymentMethods1Screen: (context) => PaymentMethods1Screen(),
     myCourseLessonsScreen: (context) => MyCourseLessonsScreen(),
-    myCourseCertificateScreen: (context) => MyCourseCertificateScreen(),
     myCourseOngoingScreen: (context) => MyCourseOngoingScreen(),
     myCourseOngoingLessonsScreen: (context) => MyCourseOngoingLessonsScreen(),
     myCourseOngoingVideoScreen: (context) => MyCourseOngoingVideoScreen(),

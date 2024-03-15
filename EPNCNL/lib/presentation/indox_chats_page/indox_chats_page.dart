@@ -274,25 +274,25 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          width: 24.adaptSize,
-                          margin: EdgeInsets.only(right: 1.h),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 5.h,
-                            vertical: 4.v,
-                          ),
-                          decoration: AppDecoration.outlineOnPrimaryContainer1
-                              .copyWith(
-                            borderRadius: BorderRadiusStyle.roundedBorder10,
-                          ),
-                          child: Text(
-                            "03",
-                            style: CustomTextStyles.labelMediumOnPrimaryContainer,
-                          ),
-                        ),
-                      ),
+                      // Align(
+                      //   alignment: Alignment.centerRight,
+                      //   child: Container(
+                      //     width: 24.adaptSize,
+                      //     margin: EdgeInsets.only(right: 1.h),
+                      //     padding: EdgeInsets.symmetric(
+                      //       horizontal: 5.h,
+                      //       vertical: 4.v,
+                      //     ),
+                      //     decoration: AppDecoration.outlineOnPrimaryContainer1
+                      //         .copyWith(
+                      //       borderRadius: BorderRadiusStyle.roundedBorder10,
+                      //     ),
+                      //     child: Text(
+                      //       "03",
+                      //       style: CustomTextStyles.labelMediumOnPrimaryContainer,
+                      //     ),
+                      //   ),
+                      // ),
                       SizedBox(height: 5.v),
                         Align(
                           alignment: Alignment.center,

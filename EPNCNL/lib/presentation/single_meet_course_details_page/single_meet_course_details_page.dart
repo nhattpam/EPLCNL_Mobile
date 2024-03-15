@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/enrollments.dart';
@@ -150,38 +151,38 @@ class SingleMeetCourseDetailsPageState
                             Padding(
                                 padding: EdgeInsets.only(left: 4.h),
                                 child: Row(children: [
-                                  CustomImageView(
-                                      imagePath: ImageConstant.imgReply,
-                                      height: 20.v,
-                                      width: 15.h),
+                                  Icon(
+                                    Icons.video_camera_front,
+                                    size: 12,
+                                  ),
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 17.h, top: 3.v),
                                       child: Text("25 Meeting ",
                                           style: theme.textTheme.titleSmall))
                                 ])),
-                            SizedBox(height: 30.v),
-                            Padding(
-                                padding: EdgeInsets.only(left: 4.h),
-                                child: Row(children: [
-                                  CustomImageView(
-                                      imagePath: ImageConstant.imgMinimize,
-                                      height: 22.v,
-                                      width: 14.h),
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.only(left: 18.h, top: 4.v),
-                                      child: Text("Access Mobile, Desktop & TV",
-                                          style: theme.textTheme.titleSmall))
-                                ])),
+                            // SizedBox(height: 30.v),
+                            // Padding(
+                            //     padding: EdgeInsets.only(left: 4.h),
+                            //     child: Row(children: [
+                            //       CustomImageView(
+                            //           imagePath: ImageConstant.imgMinimize,
+                            //           height: 22.v,
+                            //           width: 14.h),
+                            //       Padding(
+                            //           padding:
+                            //               EdgeInsets.only(left: 18.h, top: 4.v),
+                            //           child: Text("Access Mobile, Desktop & TV",
+                            //               style: theme.textTheme.titleSmall))
+                            //     ])),
                             SizedBox(height: 31.v),
                             Padding(
                                 padding: EdgeInsets.only(left: 2.h),
                                 child: Row(children: [
-                                  CustomImageView(
-                                      imagePath: ImageConstant.imgIcon,
-                                      height: 20.adaptSize,
-                                      width: 20.adaptSize),
+                                  Icon(
+                                    FontAwesomeIcons.signal,
+                                    size: 12,
+                                  ),
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 14.h, top: 3.v),
@@ -190,11 +191,10 @@ class SingleMeetCourseDetailsPageState
                                 ])),
                             SizedBox(height: 30.v),
                             Row(children: [
-                              CustomImageView(
-                                  imagePath: ImageConstant.imgIconOnprimary,
-                                  height: 13.v,
-                                  width: 24.h,
-                                  margin: EdgeInsets.symmetric(vertical: 2.v)),
+                              Icon(
+                                FontAwesomeIcons.youtube,
+                                size: 12,
+                              ),
                               Padding(
                                   padding: EdgeInsets.only(left: 11.h),
                                   child: Text("Video",
@@ -204,10 +204,10 @@ class SingleMeetCourseDetailsPageState
                             Padding(
                                 padding: EdgeInsets.only(left: 2.h),
                                 child: Row(children: [
-                                  CustomImageView(
-                                      imagePath: ImageConstant.imgUserOnprimary,
-                                      height: 23.v,
-                                      width: 19.h),
+                                  Icon(
+                                    FontAwesomeIcons.pencilAlt,
+                                    size: 12,
+                                  ),
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 15.h, top: 5.v),
@@ -218,11 +218,10 @@ class SingleMeetCourseDetailsPageState
                             Padding(
                                 padding: EdgeInsets.only(left: 2.h),
                                 child: Row(children: [
-                                  CustomImageView(
-                                      imagePath:
-                                          ImageConstant.imgIconOnprimary21x22,
-                                      height: 21.v,
-                                      width: 22.h),
+                                  Icon(
+                                    FontAwesomeIcons.book,
+                                    size: 12,
+                                  ),
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 12.h, top: 3.v),
@@ -233,10 +232,10 @@ class SingleMeetCourseDetailsPageState
                             Padding(
                                 padding: EdgeInsets.only(left: 4.h),
                                 child: Row(children: [
-                                  CustomImageView(
-                                      imagePath: ImageConstant.imgReply,
-                                      height: 20.v,
-                                      width: 15.h),
+                                  Icon(
+                                    FontAwesomeIcons.certificate,
+                                    size: 12,
+                                  ),
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 11.h, top: 3.v),
@@ -336,17 +335,17 @@ class SingleMeetCourseDetailsPageState
                     overflow: TextOverflow.ellipsis,
                     style: CustomTextStyles.titleMedium17),
               ),
-              Text("${chosenCourse.category?.description ?? ""}",
+              Text("${chosenTutor.account?.email ?? ""}",
                   style: theme.textTheme.labelLarge)
             ],
           ),
         ),
         Spacer(),
-        Icon(
-          Icons.chat_outlined,
-          size: 17.0,
-          color: Colors.black,
-        ),
+        // Icon(
+        //   Icons.chat_outlined,
+        //   size: 17.0,
+        //   color: Colors.black,
+        // ),
       ],
     );
   }

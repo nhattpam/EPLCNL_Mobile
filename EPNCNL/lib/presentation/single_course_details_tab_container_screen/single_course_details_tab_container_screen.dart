@@ -1,11 +1,16 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/assignmentattemps.dart';
+import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/enrollments.dart';
+import 'package:meowlish/data/models/quizattempts.dart';
+import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/data/models/topics.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
@@ -44,7 +49,6 @@ class SingleCourseDetailsTabContainerScreenState
   late Course chosenCourse = Course();
   late Enrollment enrollment = Enrollment();
   int _currentIndex = 0;
-
   @override
   void initState() {
     super.initState();
@@ -468,10 +472,20 @@ class SingleCourseDetailsCurriculumPageState
     extends State<SingleCourseDetailsCurriculumPage> {
   late List<Module> listModuleByCourseId = [];
   late List<ClassModule> listClassModuleByCourseId = [];
+  late List<QuizAttempt> listQuizAttempt = [];
+  late List<AssignmentAttempt> listAssignmentAttempt = [];
   late Course chosenCourse = Course();
+  int _currentIndex = 0;
 
   // Map to store lessons for each module
   Map<String, List<Lesson>> moduleLessonsMap = {};
+  Map<String, List<Quiz>> moduleQuizMap = {};
+  Map<String, List<Assignment>> moduleAssignmentMap = {};
+
+  // Maps to track minimized states for each type of content within each module
+  Map<String, bool> minimizedLessonsMap = {};
+  Map<String, bool> minimizedAssignmentsMap = {};
+  Map<String, bool> minimizedQuizzesMap = {};
   Map<String, List<Topic>> moduleClassTopicMap = {};
 
   @override
@@ -480,6 +494,7 @@ class SingleCourseDetailsCurriculumPageState
     loadCourseByCourseID();
     loadModuleByCourseId();
     loadClassModuleByCourseId();
+    loadAssignmentAttemptsByLearnerId();
   }
 
   @override
@@ -490,7 +505,7 @@ class SingleCourseDetailsCurriculumPageState
   Future<void> loadModuleByCourseId() async {
     try {
       List<Module> loadedModule =
-          await Network.getModulesByCourseId(widget.courseID);
+      await Network.getModulesByCourseId(widget.courseID);
       setState(() {
         listModuleByCourseId = loadedModule;
       });
@@ -514,13 +529,13 @@ class SingleCourseDetailsCurriculumPageState
     }
   }
 
-  Future<void> loadClassModuleByCourseId() async {
-    List<ClassModule> loadedModule =
-        await Network.getClassModulesByCourseId(widget.courseID);
+
+  Future<void> loadAssignmentAttemptsByLearnerId() async {
+    List<AssignmentAttempt> loadedAssignmentAttempt =
+    await Network.getAssignmentAttemptByLearnerId();
     setState(() {
-      listClassModuleByCourseId = loadedModule;
+      listAssignmentAttempt = loadedAssignmentAttempt;
     });
-    loadClassTopic();
   }
 
   Future<void> loadLessonByModuleId(String moduleId) async {
@@ -533,27 +548,34 @@ class SingleCourseDetailsCurriculumPageState
     }
   }
 
+  Future<void> loadQuizByModuleId(String moduleId) async {
+    List<Quiz> loadedQuiz = await Network.getQuizByModuleId(moduleId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleQuizMap[moduleId] = loadedQuiz;
+      });
+    }
+  }
+
+  Future<void> loadAssignmentByModuleId(String moduleId) async {
+    List<Assignment> loadedAssignment =
+    await Network.getAssignmentByModuleId(moduleId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleAssignmentMap[moduleId] = loadedAssignment;
+      });
+    }
+  }
+
   Future<void> loadAllLessons() async {
     try {
       // Load lessons for each module
       for (final module in listModuleByCourseId) {
         await loadLessonByModuleId(module.id.toString());
-      }
-      // After all lessons are loaded, proceed with building the UI
-      setState(() {});
-    } catch (e) {
-      // Handle errors here
-      print('Error loading lessons: $e');
-    }
-  }
-  Future<void> loadClassTopic() async {
-    try {
-      listClassModuleByCourseId.sort((a, b) =>
-          DateTime.parse(a.startDate.toString())
-              .compareTo(DateTime.parse(b.startDate.toString())));
-      // Load lessons for each module
-      for (final module in listClassModuleByCourseId) {
-        await loadTopicsByClassLessonId(module.classLesson?.id ?? '');
+        await loadQuizByModuleId(module.id.toString());
+        await loadAssignmentByModuleId(module.id.toString());
       }
       // After all lessons are loaded, proceed with building the UI
       setState(() {});
@@ -572,6 +594,30 @@ class SingleCourseDetailsCurriculumPageState
         moduleClassTopicMap[classlessonId] = loadedClassTopicMaterial;
       });
     }
+  }
+  Future<void> loadClassTopic() async {
+    try {
+      listClassModuleByCourseId.sort((a, b) =>
+          DateTime.parse(a.startDate.toString())
+              .compareTo(DateTime.parse(b.startDate.toString())));
+      // Load lessons for each module
+      for (final module in listClassModuleByCourseId) {
+        await loadTopicsByClassLessonId(module.classLesson?.id ?? '');
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lessons: $e');
+    }
+  }
+  Future<void> loadClassModuleByCourseId() async {
+    List<ClassModule> loadedModule =
+    await Network.getClassModulesByCourseId(widget.courseID);
+    setState(() {
+      listClassModuleByCourseId = loadedModule;
+    });
+    loadClassTopic();
   }
 
 
@@ -607,7 +653,6 @@ class SingleCourseDetailsCurriculumPageState
   }
 
   Widget _buildVideoCourseListView() {
-    // loadAllLessons();
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -622,56 +667,30 @@ class SingleCourseDetailsCurriculumPageState
               padding: EdgeInsets.only(left: 1.h),
               child: Row(
                 children: [
-                  Text("Module $number - ",
-                      style: theme.textTheme.labelMedium),
-                  Text(module.name.toString(),
-                      style: CustomTextStyles.labelLargeOrangeA700),
+                  Text(
+                    "Module $number - ",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    module.name.toString(),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
               ),
             ),
-            // Print lessons for this module
-            for (int lessonIndex = 0; lessonIndex < (moduleLessonsMap[module.id.toString()]?.length ?? 0); lessonIndex++)
-              GestureDetector(
-                onTap: () {
-                  // Handle the onTap action for each video session
-                },
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    CircleWithNumber(number: lessonIndex + 1),
-                    Padding(
-                      padding:
-                          EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            constraints: const BoxConstraints(
-                              maxWidth: 270,
-                            ),
-                            child: Text(
-                                moduleLessonsMap[module.id.toString()]![
-                                        lessonIndex]
-                                    .name
-                                    .toString(),
-                                style: CustomTextStyles.titleMedium17,
-                            softWrap: true,
-                            overflow: TextOverflow.ellipsis),
-                          ),
-                          // Add other information about the video session here
-                        ],
-                      ),
-                    ),
-                    Spacer(),
-                    Icon(
-                      Icons.play_arrow,
-                      size: 17.0,
-                      color: Colors.orange,
-                    ),
-                  ],
-                ),
-              ),
-            SizedBox(height: 21.v),
+            _buildLessonsMenu(module),
+            _buildAssignmentsMenu(module),
+            _buildQuizzesMenu(module),
             Divider(),
           ],
         );
@@ -679,6 +698,185 @@ class SingleCourseDetailsCurriculumPageState
     );
   }
 
+  Widget _buildLessonsMenu(Module module) {
+    return Visibility(
+      visible: moduleLessonsMap[module.id.toString()] != null &&
+          moduleLessonsMap[module.id.toString()]!.isNotEmpty,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Lesson',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary),
+              ),
+              IconButton(
+                icon: Icon(minimizedLessonsMap[module.id.toString()] ?? false
+                    ? Icons.arrow_drop_down_outlined
+                    : Icons.minimize),
+                onPressed: () {
+                  setState(() {
+                    minimizedLessonsMap[module.id.toString()] =
+                    !(minimizedLessonsMap[module.id.toString()] ?? false);
+                  });
+                },
+              ),
+            ],
+          ),
+          // Only show the lessons if the module is not minimized
+          if (!(minimizedLessonsMap[module.id.toString()] ?? false))
+            for (int lessonIndex = 0;
+            lessonIndex <
+                (moduleLessonsMap[module.id.toString()]?.length ?? 0);
+            lessonIndex++)
+              TextButton(
+                onPressed: () {
+                },
+                child: Text(
+                    moduleLessonsMap[module.id.toString()]![lessonIndex]
+                        .name
+                        .toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black)),
+              ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAssignmentsMenu(Module module) {
+    return Visibility(
+      visible: moduleAssignmentMap[module.id.toString()] != null &&
+          moduleAssignmentMap[module.id.toString()]!.isNotEmpty,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Assignment',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary),
+              ),
+              IconButton(
+                icon: Icon(
+                    minimizedAssignmentsMap[module.id.toString()] ?? false
+                        ? Icons.arrow_drop_down_outlined
+                        : Icons.minimize),
+                onPressed: () {
+                  setState(() {
+                    minimizedAssignmentsMap[module.id.toString()] =
+                    !(minimizedAssignmentsMap[module.id.toString()] ??
+                        false);
+                  });
+                },
+              ),
+            ],
+          ),
+          // Only show the assignments if the module is not minimized
+          if (!(minimizedAssignmentsMap[module.id.toString()] ?? false))
+            for (int assignmentIndex = 0; assignmentIndex < (moduleAssignmentMap[module.id.toString()]?.length ?? 0); assignmentIndex++)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () async {
+                        // await Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) => DoingAssignmentScreen(
+                        //           assignmentID: moduleAssignmentMap[module.id.toString()]![assignmentIndex].id.toString(),
+                        //           cooldownTime: Duration(
+                        //               minutes: moduleAssignmentMap[
+                        //               module.id.toString()]![assignmentIndex]
+                        //                   .deadline as int))),
+                        // );
+                        // loadAssignmentAttemptsByLearnerId();
+                      },
+                      child:
+                      Html(
+                        data: moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText
+                            .toString(),
+                        style: {
+                          "body": Style(
+                              fontWeight: FontWeight.bold, color: Colors.black
+                          ),
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuizzesMenu(Module module) {
+    return Visibility(
+      visible: moduleQuizMap[module.id.toString()] != null &&
+          moduleQuizMap[module.id.toString()]!.isNotEmpty,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Quiz',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  minimizedQuizzesMap[module.id.toString()] ?? false
+                      ? Icons.arrow_drop_down_outlined
+                      : Icons.minimize,
+                ),
+                onPressed: () {
+                  setState(() {
+                    minimizedQuizzesMap[module.id.toString()] =
+                    !(minimizedQuizzesMap[module.id.toString()] ?? false);
+                  });
+                },
+              ),
+            ],
+          ),
+          // Only show the quizzes if the module is not minimized
+          if (!(minimizedQuizzesMap[module.id.toString()] ?? false))
+            for (int quizIndex = 0;
+            quizIndex <
+                (moduleQuizMap[module.id.toString()]?.length ?? 0);
+            quizIndex++)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: ()  async{
+                    },
+                    child: Text(
+                      moduleQuizMap[module.id.toString()]![quizIndex].name.toString(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+        ],
+      ),
+    );
+  }
   Widget _buildClassCourseListView() {
 
     return ListView.builder(

@@ -4,6 +4,7 @@ import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/all_course_curiculum/all_course_curiculum.dart';
 import 'package:meowlish/presentation/category_screen/category_screen.dart';
 import 'package:meowlish/presentation/home_page/carousel/landing.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
@@ -260,11 +261,11 @@ class HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => NotificationsScreen()),
+                        builder: (context) => AllCourseCurriculum()),
                   );
                 },
                 child: Icon(
-                  Icons.notifications_none_outlined,
+                  Icons.calendar_month_outlined,
                   // Replace with the desired icon
                   size: 18.v,
                   color: Color(0xFF168F71),

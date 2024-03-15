@@ -29,7 +29,7 @@ class _MyCourseCertificateScreenState extends State<MyCourseCertificateScreen> {
   late ProfileCertificate? profile = ProfileCertificate();
 
   int _currentIndex = 1;
-
+  String formattedDate = '';
   @override
   void initState() {
     super.initState();
@@ -52,6 +52,12 @@ class _MyCourseCertificateScreenState extends State<MyCourseCertificateScreen> {
     setState(() {
       // Set the list of pet containers in your state
       profile = acc;
+      String dateStr = profile?.certificate?.createdDate ?? DateTime.now().toString();
+      // Parse the date
+      DateTime date = DateTime.parse(dateStr);
+      // Format the date
+      String convert = DateFormat.yMMMMd().format(date);
+      formattedDate = convert;
     });
   }
 
@@ -59,12 +65,6 @@ class _MyCourseCertificateScreenState extends State<MyCourseCertificateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String dateStr = profile?.certificate?.createdDate ?? DateTime.now().toString();
-    print("This is" + (profile?.certificate?.createdDate ?? ''));
-    // Parse the date
-    DateTime date = DateTime.parse(dateStr);
-    // Format the date
-    String formattedDate = DateFormat.yMMMMd().format(date);
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,

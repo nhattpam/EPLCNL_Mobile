@@ -1,6 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/transactions.dart';
@@ -28,7 +29,7 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
   late Account? account = Account();
   double result = 0;
   late Enrollment enrollment = Enrollment();
-
+  String formattedDate = '';
   @override
   void initState() {
     loadTransactionByTransactionID();
@@ -43,6 +44,12 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
           await Network.getTransactionByTransactionId(widget.transactionID);
       setState(() {
         chosenTransaction = transaction;
+        String dateStr = chosenTransaction.transactionDate ?? '';
+        // Parse the date
+        DateTime date = DateTime.parse(dateStr);
+        // Format the date
+        String convert = DateFormat.yMMMMd().format(date);
+        formattedDate = convert;
       });
     } catch (e) {
       // Handle errors here
@@ -206,7 +213,7 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
                 child: _buildEmailSection(
                   context,
                   emailLabel: "Date",
-                  emailText: chosenTransaction.transactionDate.toString(),
+                  emailText: formattedDate,
                 ),
               ),
               SizedBox(height: 11.v),
@@ -224,7 +231,7 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
                     ),
                     CustomOutlinedButton(
                       height: 22.v,
-                      width: 60.h,
+                      width: 80.h,
                       text: chosenTransaction.status.toString(),
                       margin: EdgeInsets.only(top: 2.v),
                       buttonStyle: CustomButtonStyles.outlinePrimaryTL4,
@@ -237,7 +244,7 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
               SizedBox(height: 15.v),
               Divider(),
               SizedBox(height: 15.v),
-              if (chosenTransaction.transactionDate != null && DateTime.parse(chosenTransaction.transactionDate.toString()).isAfter(DateTime.now().subtract(Duration(days: 7))))
+              if (chosenTransaction.transactionDate != null && DateTime.parse(chosenTransaction.transactionDate.toString()).isAfter(DateTime.now().subtract(Duration(days: 7))) || enrollment.refundStatus == true)
                 CustomElevatedButton(
                   onPressed: () {
                     _showMultiSelect();

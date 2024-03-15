@@ -426,7 +426,7 @@ class SingleCourseDetailsTabContainerScreenState
               ),
             ),
           ),
-          if (isEnrolled || chosenCourse.id == enrollment.transaction?.courseId && SessionManager().getLearnerId() == enrollment.transaction?.learnerId)
+          if (isEnrolled || chosenCourse.id == enrollment.transaction?.courseId && SessionManager().getLearnerId() == enrollment.transaction?.learnerId || enrollment.refundStatus == false)
             Padding(
               padding: EdgeInsets.only(
                 right: 49.h,

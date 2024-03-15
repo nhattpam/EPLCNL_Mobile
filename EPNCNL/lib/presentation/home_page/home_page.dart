@@ -6,6 +6,7 @@ import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/all_course_curiculum/all_course_curiculum.dart';
 import 'package:meowlish/presentation/category_screen/category_screen.dart';
+import 'package:meowlish/presentation/courses_list_screen/courses_list_screen.dart';
 import 'package:meowlish/presentation/home_page/carousel/landing.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
@@ -313,6 +314,13 @@ class HomePageState extends State<HomePage> {
               return GestureDetector(
                 onTap: () {
                   setState(() {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              CoursesListScreen(
+                                  categoryId: categories.id)),
+                    );
                     current = index;
                   });
                 },

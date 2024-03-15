@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/enrollments.dart';
@@ -39,14 +40,24 @@ class HomePageState extends State<HomePage> {
   late List<Tutor> listTutor = [];
   late Account? account = Account();
   Map<String, List<Enrollment>> moduleEnrollmentMap = {};
+  late bool isLoadingAccount;
+  late bool isLoadingCategories;
+  late bool isLoadingCourse;
+  late bool isLoadingTutor;
 
   @override
   void initState() {
-    super.initState();
+    isLoadingAccount = true;
+    isLoadingCategories = true;
+    isLoadingCourse = true;
+    isLoadingTutor = true;
     loadCategories();
     loadCourse();
     loadTutor();
+    // Future.delayed(const Duration(seconds: 30), () {
+    // });
     fetchAccountData();
+    super.initState();
   }
 
   Future<void> fetchAccountData() async {
@@ -55,6 +66,7 @@ class HomePageState extends State<HomePage> {
     setState(() {
       // Set the list of pet containers in your state
       account = acc;
+      isLoadingAccount = false;
     });
   }
 
@@ -62,6 +74,7 @@ class HomePageState extends State<HomePage> {
     List<Category> loadedCategories = await Network.getCategories();
     setState(() {
       listCategory = loadedCategories;
+      isLoadingCategories = false;
     });
   }
 
@@ -69,6 +82,7 @@ class HomePageState extends State<HomePage> {
     List<Course> loadedCourse = await Network.getCourse();
     setState(() {
       listCourse = loadedCourse;
+      isLoadingCourse = false;
     });
     loadEnrollments();
   }
@@ -77,12 +91,13 @@ class HomePageState extends State<HomePage> {
     List<Tutor> loadedTutor = await Network.getTutor();
     setState(() {
       listTutor = loadedTutor;
+      isLoadingTutor = false;
     });
   }
 
   Future<void> loadEnrollmentByCourseId(String courseId) async {
     List<Enrollment> loadedAssignment =
-    await Network.getEnrollmentByCourseId(courseId);
+        await Network.getEnrollmentByCourseId(courseId);
     if (mounted) {
       setState(() {
         moduleEnrollmentMap[courseId] = loadedAssignment;
@@ -103,7 +118,6 @@ class HomePageState extends State<HomePage> {
       print('Error loading lessons: $e');
     }
   }
-
 
   TextEditingController searchController = TextEditingController();
 
@@ -241,8 +255,13 @@ class HomePageState extends State<HomePage> {
         child:
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Column(children: [
-            Text('Hi, ${account!.fullName ?? ""}',
-                style: theme.textTheme.headlineSmall),
+            isLoadingAccount
+                ? Skeleton(
+                    width: 60,
+                    height: 30,
+                  )
+                : Text('Hi, ${account!.fullName ?? ""}',
+                    style: theme.textTheme.headlineSmall),
             SizedBox(height: 3.v),
             SizedBox(
                 width: 229.h,
@@ -303,49 +322,80 @@ class HomePageState extends State<HomePage> {
 
   /// Section Widget
   Widget _buildDDesignSection(BuildContext context) {
-    List<bool> isLoadingList = List.generate(listCategory.length, (index) => false);
-    return SizedBox(
-        height: 40,
-        child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: listCategory.length,
-            itemBuilder: (context, index) {
-              final categories = listCategory[index];
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              CoursesListScreen(
-                                  categoryId: categories.id)),
-                    );
-                    current = index;
-                  });
-                },
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: isLoadingList[index]
-                      ? CircularProgressIndicator() // Show loading indicator
-                      : Chip(
-                          label: Text(
-                              categories.description.toString()
-                          ),
-                          backgroundColor: current == index
-                              ? Color(0xFFFF9300)
-                              : Color(0xFFFFF1DE),
-                        ),
-                ),
-              );
-            }));
+    return isLoadingCategories
+        ? SizedBox(
+            height: 40,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: 5,
+              itemBuilder: (context, index) => Skeleton(width: 120, height: 40),
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
+            ),
+          )
+        : SizedBox(
+            height: 40,
+            child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: listCategory.length,
+                itemBuilder: (context, index) {
+                  final categories = listCategory[index];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  CoursesListScreen(categoryId: categories.id)),
+                        );
+                        current = index;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                      child: Chip(
+                        label: Text(categories.description.toString()),
+                        backgroundColor: current == index
+                            ? Color(0xFFFF9300)
+                            : Color(0xFFFFF1DE),
+                      ),
+                    ),
+                  );
+                }));
   }
 
   /// Section Widget
   Widget _buildColumnSection(BuildContext context) {
     return SizedBox(
         height: 97.v,
-        child: ListView.separated(
+        child: isLoadingTutor
+        ? ListView.separated(
+            padding: EdgeInsets.only(left: 14.h),
+            scrollDirection: Axis.horizontal,
+            separatorBuilder: (context, index) {
+              return SizedBox(width: 18.h);
+            },
+            itemCount: 5,
+            itemBuilder: (context, index) {
+              return SizedBox(
+                width: 80,
+                child: Column(
+                  children: [
+                    Container(
+                      height: 66.adaptSize,
+                      width: 66.adaptSize,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(27.h)
+                      ),
+                      child: Skeleton(width: 66.adaptSize),
+                    ),
+                    SizedBox(height: 8.v),
+                    Skeleton(width: 80),
+                  ],
+                ),
+              );
+            })
+        : ListView.separated(
             padding: EdgeInsets.only(left: 14.h),
             scrollDirection: Axis.horizontal,
             separatorBuilder: (context, index) {
@@ -408,7 +458,68 @@ class HomePageState extends State<HomePage> {
                   SizedBox(height: 20.v),
                   SizedBox(
                       height: 240.v,
-                      child: ListView.separated(
+                      child: isLoadingCourse
+                          ? ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          separatorBuilder: (context, index) {
+                            return SizedBox(width: 20.h);
+                          },
+                          itemCount: 5,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              width: 280.h,
+                              child: Column(
+                                children: [
+                                  Skeleton(width: 280,height: 118),
+                                  SizedBox(height: 10.v),
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Skeleton(width: 160),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 4.v),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 14.h),
+                                    child: Skeleton(width: 280),
+                                  ),
+                                  SizedBox(height: 9.v),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 14.h),
+                                    child: Row(
+                                      children: [
+                                        Skeleton(width: 30),
+                                        Container(
+                                          child: Row(
+                                            children: [
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                    left: 3.h),
+                                                child: Skeleton(width: 30),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                            left: 16.h,
+                                            top: 3.v,
+                                          ),
+                                          child: Skeleton(width: 30),
+                                        ),
+
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 21.v),
+                                ],
+                              ),
+                            );
+                          })
+                          : ListView.separated(
                           scrollDirection: Axis.horizontal,
                           separatorBuilder: (context, index) {
                             return SizedBox(width: 20.h);
@@ -423,9 +534,9 @@ class HomePageState extends State<HomePage> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         SingleCourseDetailsTabContainerScreen(
-                                      courseID: course.id.toString(),
-                                      tutorID: course.tutorId.toString(),
-                                    ),
+                                          courseID: course.id.toString(),
+                                          tutorID: course.tutorId.toString(),
+                                        ),
                                   ),
                                 );
                               },
@@ -433,15 +544,15 @@ class HomePageState extends State<HomePage> {
                                 physics: NeverScrollableScrollPhysics(),
                                 child: Container(
                                   decoration:
-                                      AppDecoration.outlineBlack.copyWith(
+                                  AppDecoration.outlineBlack.copyWith(
                                     borderRadius:
-                                        BorderRadiusStyle.roundedBorder22,
+                                    BorderRadiusStyle.roundedBorder22,
                                   ),
                                   width: 280.h,
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Image.network(
                                         course.imageUrl.toString(),
@@ -457,17 +568,20 @@ class HomePageState extends State<HomePage> {
                                         child: IntrinsicWidth(
                                           child: Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                             children: [
                                               Container(
-                                                constraints: const BoxConstraints(
+                                                constraints:
+                                                const BoxConstraints(
                                                   maxWidth: 160,
                                                 ),
                                                 child: Text(
-                                                  course.category!.description.toString(),
+                                                  course.category!.description
+                                                      .toString(),
                                                   style: CustomTextStyles
                                                       .labelLargeOrangeA700,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                  TextOverflow.ellipsis,
                                                   softWrap: true,
                                                 ),
                                               ),
@@ -507,7 +621,7 @@ class HomePageState extends State<HomePage> {
                                             ),
                                             Padding(
                                               padding:
-                                                  EdgeInsets.only(left: 17.h),
+                                              EdgeInsets.only(left: 17.h),
                                               child: Text(
                                                 "|",
                                                 style: CustomTextStyles
@@ -532,7 +646,10 @@ class HomePageState extends State<HomePage> {
                                                     padding: EdgeInsets.only(
                                                         left: 3.h),
                                                     child: Text(
-                                                      course.rating?.toStringAsFixed(1) ?? '',
+                                                      course.rating
+                                                          ?.toStringAsFixed(
+                                                          1) ??
+                                                          '',
                                                       style: theme.textTheme
                                                           .labelMedium,
                                                     ),
@@ -542,7 +659,7 @@ class HomePageState extends State<HomePage> {
                                             ),
                                             Padding(
                                               padding:
-                                                  EdgeInsets.only(left: 16.h),
+                                              EdgeInsets.only(left: 16.h),
                                               child: Text(
                                                 "|",
                                                 style: CustomTextStyles
@@ -555,9 +672,12 @@ class HomePageState extends State<HomePage> {
                                                 top: 3.v,
                                               ),
                                               child: Text(
-                                                (moduleEnrollmentMap[course.id]?.length).toString() + " Enroll",
+                                                (moduleEnrollmentMap[course.id]
+                                                    ?.length)
+                                                    .toString() +
+                                                    " Enroll",
                                                 style:
-                                                    theme.textTheme.labelMedium,
+                                                theme.textTheme.labelMedium,
                                               ),
                                             ),
                                           ],
@@ -569,6 +689,7 @@ class HomePageState extends State<HomePage> {
                                 ),
                               ),
                             );
+
                           }))
                 ])));
   }

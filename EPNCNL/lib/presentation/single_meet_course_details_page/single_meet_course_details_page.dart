@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/curriculcum_screen/curriculcum_screen.dart';
@@ -37,9 +38,13 @@ class SingleMeetCourseDetailsPageState
   late Course chosenCourse = Course();
 
   late Enrollment enrollment = Enrollment();
+  late bool isLoadingCourse;
+  late bool isLoadingTutor;
 
   @override
   void initState() {
+    isLoadingTutor = true;
+    isLoadingCourse = true;
     super.initState();
     loadTutorByTutorID();
     loadCourseByCourseID();
@@ -51,6 +56,7 @@ class SingleMeetCourseDetailsPageState
       final course = await Network.getCourseByCourseID(widget.courseID);
       setState(() {
         chosenCourse = course;
+        isLoadingCourse = false;
       });
     } catch (e) {
       // Handle errors here
@@ -63,6 +69,7 @@ class SingleMeetCourseDetailsPageState
       final tutor = await Network.getTutorByTutorID(widget.tutorID);
       setState(() {
         chosenTutor = tutor;
+        isLoadingTutor = false;
       });
     } catch (e) {
       // Handle errors here
@@ -105,6 +112,7 @@ class SingleMeetCourseDetailsPageState
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            if(isLoadingCourse == false)
                             Container(
                                 width: 307.h,
                                 margin:
@@ -115,24 +123,10 @@ class SingleMeetCourseDetailsPageState
                                     overflow: TextOverflow.ellipsis,
                                     style: CustomTextStyles.labelLargeGray50001
                                         .copyWith(height: 1.46))),
-                            // SizedBox(height: 18.v),
-                            // Align(
-                            //     alignment: Alignment.center,
-                            //     child: SizedBox(
-                            //         width: 313.h,
-                            //         child: ReadMoreText(
-                            //             "${chosenCourse.description ?? ''}",
-                            //             trimLines: 4,
-                            //             colorClickableText:
-                            //                 theme.colorScheme.primary,
-                            //             trimMode: TrimMode.Line,
-                            //             trimCollapsedText: "Read More",
-                            //             moreStyle: CustomTextStyles
-                            //                 .labelLargeGray50001
-                            //                 .copyWith(height: 1.46),
-                            //             lessStyle: CustomTextStyles
-                            //                 .labelLargeGray50001
-                            //                 .copyWith(height: 1.46)))),
+                            if(isLoadingCourse == true)
+                              Skeleton(
+                                  width: 307.h,
+                                  ),
                             SizedBox(height: 50.v),
                             Padding(
                                 padding: EdgeInsets.only(left: 1.h),
@@ -309,8 +303,7 @@ class SingleMeetCourseDetailsPageState
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        if (imageUrl != null &&
-            imageUrl.isNotEmpty) // Check if imageUrl is not null or empty
+        if (imageUrl != null && imageUrl.isNotEmpty && isLoadingTutor == false) // Check if imageUrl is not null or empty
           CustomImageView(
             imagePath: imageUrl,
             fit: BoxFit.cover,
@@ -318,8 +311,16 @@ class SingleMeetCourseDetailsPageState
             width: 54.adaptSize,
             radius: BorderRadius.circular(27.h),
           )
-        else
-          Center(child: CircularProgressIndicator()),
+        else Container(
+            decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(27.h)
+            ),
+            height: 54.adaptSize,
+            width: 54.adaptSize,
+            child: Skeleton(height: 54.adaptSize,
+              width: 54.adaptSize),
+          ),
+        if(isLoadingTutor == false)
         Padding(
           padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
           child: Column(
@@ -339,7 +340,18 @@ class SingleMeetCourseDetailsPageState
                   style: theme.textTheme.labelLarge)
             ],
           ),
+        )
+        else  Padding(
+          padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Skeleton(width: 250),
+              Skeleton(width: 100)
+            ],
+          ),
         ),
+
         Spacer(),
         // Icon(
         //   Icons.chat_outlined,

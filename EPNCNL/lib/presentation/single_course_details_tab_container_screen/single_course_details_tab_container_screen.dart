@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/assignmentattemps.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/classmodules.dart';
@@ -49,8 +50,10 @@ class SingleCourseDetailsTabContainerScreenState
   late Course chosenCourse = Course();
   late Enrollment enrollment = Enrollment();
   int _currentIndex = 0;
+  late bool isLoading;
   @override
   void initState() {
+    isLoading = true;
     super.initState();
     tabviewController = TabController(length: 3, vsync: this);
     loadCourseByCourseID();
@@ -68,6 +71,7 @@ class SingleCourseDetailsTabContainerScreenState
       final course = await Network.getCourseByCourseID(widget.courseID);
       setState(() {
         chosenCourse = course;
+        isLoading = false;
       });
     } catch (e) {
       // Handle errors here
@@ -230,7 +234,7 @@ class SingleCourseDetailsTabContainerScreenState
                   backgroundColor: Colors.white.withOpacity(0.1),
                 ),
               ),
-              if(imageUrl != null && imageUrl.isNotEmpty)
+              if(imageUrl != null && imageUrl.isNotEmpty && isLoading == false)
                 Positioned(
                   top: 0,
                   right: 0,
@@ -241,7 +245,13 @@ class SingleCourseDetailsTabContainerScreenState
                     fit: BoxFit.cover, // Adjust the fit based on your needs
                   ),
                 )
-              else Center(child: CircularProgressIndicator())
+              else Positioned(
+                top: 0,
+                right: 0,
+                child: Skeleton(
+                  height: 595.v,
+                ),
+              )
             ],
           ),
           Align(
@@ -263,9 +273,10 @@ class SingleCourseDetailsTabContainerScreenState
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        if(isLoading == false)
                         Container(
                           constraints: const BoxConstraints(
-                            maxWidth: 260,
+                            maxWidth: 256,
                           ),
                           child: Text(
                             "${chosenCourse.category?.description ?? ''}",
@@ -274,7 +285,10 @@ class SingleCourseDetailsTabContainerScreenState
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        Row(
+                        if(isLoading == true)
+                        Skeleton(width: 256),
+                        if(isLoading == false)
+                          Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
@@ -292,11 +306,19 @@ class SingleCourseDetailsTabContainerScreenState
                             ),
                           ],
                         ),
+                        if(isLoading == true)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Skeleton(width: 30)
+                            ],
+                          ),
                       ],
                     ),
                   ),
                   SizedBox(height: 6.v),
-                  Align(
+                  if(isLoading == false)
+                    Align(
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: EdgeInsets.only(left: 20.h),
@@ -304,6 +326,14 @@ class SingleCourseDetailsTabContainerScreenState
                         "${chosenCourse.name}",
                         style: CustomTextStyles.titleLarge20,
                       ),
+                    ),
+                  ),
+                  if(isLoading == true)
+                    Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 20.h),
+                      child: Skeleton(width: 20)
                     ),
                   ),
                   SizedBox(height: 6.v),
@@ -370,10 +400,13 @@ class SingleCourseDetailsTabContainerScreenState
                           ),
                         ),
                         Spacer(),
+                        if(isLoading == false)
                         Text(
                           "\$${chosenCourse.stockPrice.toString()}",
                           style: CustomTextStyles.titleLargeMulishPrimary,
                         ),
+                        if(isLoading == true)
+                        Skeleton(width: 30)
                       ],
                     ),
                   ),

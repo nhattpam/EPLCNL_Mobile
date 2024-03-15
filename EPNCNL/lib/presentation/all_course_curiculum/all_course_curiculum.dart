@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:internet_file/internet_file.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/enrollments.dart';
@@ -84,19 +85,6 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
     // loadAllCourse();
   }
 
-  // Future<void> loadAllCourse() async {
-  //   try {
-  //     // Load lessons for each module
-  //     for (final course in chosenTutor) {
-  //       await loadFeedback(course.id.toString());
-  //     }
-  //     // After all lessons are loaded, proceed with building the UI
-  //     setState(() {});
-  //   } catch (e) {
-  //     // Handle errors here
-  //     print('Error loading lessons: $e');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -140,108 +128,143 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
                     FutureBuilder<List<ClassModule>>(
                       future: _classmoduleList.getClassModuleByTutor(query: query, courseIds: listEnrollment.map((course) => course.transaction?.course?.id ?? '').toList()),
                       builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return Center(
-                            child: CircularProgressIndicator(),
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            // itemCount: listClassModule.length,
+                            itemCount: 4,
+                            itemBuilder: (context, index) {
+                              return Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      children: [
+                                        Skeleton(width: 100),
+                                        lineGen(
+                                          lines: [20.0, 30.0, 40.0, 10.0],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(width: 12),
+                                  Expanded(
+                                    child: Container(
+                                      padding: EdgeInsets.only(left: 16, top: 8),
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xfff6f6f5),
+                                        borderRadius:
+                                        BorderRadius.all(Radius.circular(20.0)),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Skeleton(width: 70),
+                                          SizedBox(height: 5.v),
+                                          Skeleton(width: 70),
+                                          SizedBox(height: 5.v),
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Skeleton(width: 50),
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets.only(left: 8.0),
+                                                    child: Skeleton(width: 50)
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 5.v),
+                                              Row(
+                                                children: [
+                                                  Skeleton(width: 50,)
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              );
+                            },
                           );
                         }
-                        List<ClassModule>? data = snapshot.data;
-                        return ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          // itemCount: listClassModule.length,
-                          itemCount: data?.length?? 0,
-                          itemBuilder: (context, index) {
-                            final classModule = data?[index];
-                            // loadClassTopicsByClassLessonId();
-                            return Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        classModule?.classLesson?.classHours ?? "",
-                                        style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                      lineGen(
-                                        lines: [20.0, 30.0, 40.0, 10.0],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(width: 12),
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.only(left: 16, top: 8),
-                                    height: 150,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xfff6f6f5),
-                                      borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0)),
-                                    ),
+                        if(snapshot.connectionState == ConnectionState.done){
+                          List<ClassModule>? data = snapshot.data;
+                          return ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            // itemCount: listClassModule.length,
+                            itemCount: data?.length?? 0,
+                            itemBuilder: (context, index) {
+                              final classModule = data?[index];
+                              // loadClassTopicsByClassLessonId();
+                              return Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Expanded(
-                                            child: Text(classModule?.course?.name ?? "",
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                overflow: TextOverflow.fade,
-                                                softWrap: true)
-                                        ),
                                         Text(
-                                          listClassTopic.isNotEmpty
-                                              ? listClassTopic[index]
-                                              .name
-                                              .toString()
-                                              : "", // Assuming 'name' is the property you want to display
+                                          classModule?.classLesson?.classHours ?? "",
+                                          style:
+                                          TextStyle(fontWeight: FontWeight.bold),
                                         ),
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    launch(classModule
-                                                        ?.classLesson?.classUrl ??
-                                                        "");
-                                                  },
-                                                  style: ElevatedButton.styleFrom(
-                                                    minimumSize: Size(100, 50),
-                                                    primary: Color(0xffbfe25c),
-                                                    // Background color
-                                                    onPrimary: Colors.white,
-                                                    // Text color
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                      BorderRadius.circular(10.0),
-                                                    ),
+                                        lineGen(
+                                          lines: [20.0, 30.0, 40.0, 10.0],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(width: 12),
+                                  Expanded(
+                                    child: Container(
+                                      padding: EdgeInsets.only(left: 16, top: 8),
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xfff6f6f5),
+                                        borderRadius:
+                                        BorderRadius.all(Radius.circular(20.0)),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                              child: Text(classModule?.course?.name ?? "",
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
-                                                  child: Text('Meet URL'),
-                                                ),
-                                                VerticalDivider(),
-                                                Padding(
-                                                  padding:
-                                                  const EdgeInsets.only(left: 8.0),
-                                                  child: ElevatedButton(
+                                                  overflow: TextOverflow.fade,
+                                                  softWrap: true)
+                                          ),
+                                          Text(
+                                            listClassTopic.isNotEmpty
+                                                ? listClassTopic[index]
+                                                .name
+                                                .toString()
+                                                : "", // Assuming 'name' is the property you want to display
+                                          ),
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  ElevatedButton(
                                                     onPressed: () {
-                                                      // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
-                                                      //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
-                                                      // }
-                                                      _showMultiSelect(
-                                                          data?[index]
-                                                              .classLesson
-                                                              ?.id ??
-                                                              '');
+                                                      launch(classModule
+                                                          ?.classLesson?.classUrl ??
+                                                          "");
                                                     },
                                                     style: ElevatedButton.styleFrom(
                                                       minimumSize: Size(100, 50),
-                                                      primary: Color(0xffefc83c),
+                                                      primary: Color(0xffbfe25c),
                                                       // Background color
                                                       onPrimary: Colors.white,
                                                       // Text color
@@ -250,43 +273,73 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
                                                         BorderRadius.circular(10.0),
                                                       ),
                                                     ),
-                                                    child: Text('Materials'),
+                                                    child: Text('Meet URL'),
                                                   ),
-                                                )
-                                              ],
-                                            ),
-                                            SizedBox(height: 5.v),
-                                            Row(
-                                              children: [
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    _showTopic(classModule?.classLesson?.id ?? '');
-                                                  },
-                                                  style: ElevatedButton.styleFrom(
-                                                    minimumSize: Size(100, 50),
-                                                    primary: Color(0xFFF887A8),
-                                                    // Background color
-                                                    onPrimary: Colors.white,
-                                                    // Text color
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                      BorderRadius.circular(10.0),
+                                                  VerticalDivider(),
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets.only(left: 8.0),
+                                                    child: ElevatedButton(
+                                                      onPressed: () {
+                                                        // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
+                                                        //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
+                                                        // }
+                                                        _showMultiSelect(
+                                                            data?[index]
+                                                                .classLesson
+                                                                ?.id ??
+                                                                '');
+                                                      },
+                                                      style: ElevatedButton.styleFrom(
+                                                        minimumSize: Size(100, 50),
+                                                        primary: Color(0xffefc83c),
+                                                        // Background color
+                                                        onPrimary: Colors.white,
+                                                        // Text color
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                          BorderRadius.circular(10.0),
+                                                        ),
+                                                      ),
+                                                      child: Text('Materials'),
                                                     ),
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 5.v),
+                                              Row(
+                                                children: [
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      _showTopic(classModule?.classLesson?.id ?? '');
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      minimumSize: Size(100, 50),
+                                                      primary: Color(0xFFF887A8),
+                                                      // Background color
+                                                      onPrimary: Colors.white,
+                                                      // Text color
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                        BorderRadius.circular(10.0),
+                                                      ),
+                                                    ),
+                                                    child: Text('Topic'),
                                                   ),
-                                                  child: Text('Topic'),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                )
-                              ],
-                            );
-                          },
-                        );
+                                  )
+                                ],
+                              );
+                            },
+                          );
+                        }
+                        return Container();
                       },
                     ),
                     // SizedBox(height: 50.v),
@@ -363,9 +416,6 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
 
   /// Section Widget
   Widget _buildCalendar(BuildContext context) {
-    // String timestamp = listClassModule?[1]?.startDate ?? '';
-    // DateTime dateTime = DateTime.parse(timestamp);
-    // int day = dateTime.day;
     return SizedBox(
       height: 130.v,
       width: 368.h,
@@ -506,9 +556,10 @@ class MultiSelect extends StatefulWidget {
 class _MultiSelectState extends State<MultiSelect> {
   List<Topic> listClassTopic = [];
   Map<String, List<LessonMaterial>> moduleLessonsMaterialMap = {};
-
+  late bool isLoading;
   @override
   void initState() {
+    isLoading = true;
     super.initState();
     loadClassModuleByCourseId();
   }
@@ -518,6 +569,7 @@ class _MultiSelectState extends State<MultiSelect> {
     await Network.getTopicsByClassLessonId(widget.lessonId);
     setState(() {
       listClassTopic = loadedClassTopic;
+      isLoading = false;
     });
     loadLessonMaterial();
   }
@@ -609,8 +661,9 @@ class _MultiSelectState extends State<MultiSelect> {
           // Adjust the height as needed
           Center(child: Text('Choose Topic to Down')),
           SingleChildScrollView(
-            child: ListBody(
-              children: listClassTopic.asMap().entries.map((entry) {
+            child: isLoading
+           ? Skeleton(width: 100)
+           : ListBody(children: listClassTopic.asMap().entries.map((entry) {
                 final index = entry.key;
                 final item = entry.value;
                 return TextButton(
@@ -659,8 +712,7 @@ class _MultiSelectState extends State<MultiSelect> {
                     ],
                   ),
                 );
-              }).toList(),
-            ),
+              }).toList(),),
           ),
         ],
       ),

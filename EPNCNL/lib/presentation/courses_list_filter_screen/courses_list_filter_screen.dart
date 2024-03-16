@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/courses_list_filter_screen/widgets/filter_result.dart';
@@ -30,9 +31,24 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
   RangeValues values = RangeValues(10, 200);
   RangeLabels labels = RangeLabels('10\$', '200\$');
   int _currentIndex = 0;
-
+  late bool isLoading;
+  List<Widget> textWidgets = [
+    Skeleton(width: 100),
+    SizedBox(height: 40),
+    Skeleton(width: 100),
+    SizedBox(height: 40),
+    Skeleton(width: 100),
+    SizedBox(height: 40),
+    Skeleton(width: 100),
+    SizedBox(height: 40),
+    Skeleton(width: 100),
+    SizedBox(height: 40),
+    Skeleton(width: 100),
+    SizedBox(height: 40)
+  ];
   @override
   void initState() {
+    isLoading = true;
     super.initState();
     loadCategories();
     loadCourse();
@@ -52,6 +68,7 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
     List<Category> loadedCategories = await Network.getCategories();
     setState(() {
       listCategory = loadedCategories;
+      isLoading = false;
     });
   }
 
@@ -102,6 +119,11 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Category'),
+                        if(isLoading == true)
+                          ListBody(
+                            children: textWidgets
+                          ),
+                        if(isLoading == false)
                         ListBody(
                           children: listCategory
                               .map((item) => CheckboxListTile(

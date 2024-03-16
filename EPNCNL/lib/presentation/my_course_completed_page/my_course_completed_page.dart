@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/profilecertificates.dart';
 import 'package:meowlish/network/network.dart';
@@ -28,9 +29,10 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
 
   TextEditingController searchController = TextEditingController();
   late List<ProfileCertificate> listProfileCertificate = [];
-
+  late bool isLoadingEnrollment;
   @override
   void initState() {
+    isLoadingEnrollment = true;
     super.initState();
     loadEnrollments();
   }
@@ -39,6 +41,7 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
     List<ProfileCertificate> loadedProfile = await Network.getProfileCertificateByLearnerId();
     setState(() {
       listProfileCertificate = loadedProfile;
+      isLoadingEnrollment = false;
     });
   }
 
@@ -187,7 +190,86 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
 
   /// Section Widget
   Widget _buildUserProfile(BuildContext context) {
-    return ListView.separated(
+    return isLoadingEnrollment
+     ? ListView.separated(
+        physics: ScrollPhysics(),
+        shrinkWrap: true,
+        separatorBuilder: (context, index) {
+          return SizedBox(height: 20.v);
+        },
+        itemCount: 4,
+        itemBuilder: (context, index) {
+          return SizedBox(
+            height: 142.v,
+            width: 360.h,
+            child: Stack(
+              alignment: Alignment.topRight,
+              children: [
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    margin: EdgeInsets.only(top: 8.v),
+                    decoration: AppDecoration.outlineBlack.copyWith(
+                      borderRadius: BorderRadiusStyle.circleBorder15,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 134.v,
+                          width: 130.h,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.horizontal(
+                              left: Radius.circular(16.h),
+                            ),
+                          ),
+                          child: Skeleton(width: 30)
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: 14.h,
+                            top: 15.v,
+                            bottom: 18.v,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Skeleton(width: 190),
+                              SizedBox(height: 5.v),
+                              Skeleton(width: 140),
+                              SizedBox(height: 5.v),
+                              Row(
+                                children: [
+                                  Skeleton(width: 32),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: 16.h,
+                                      top: 3.v,
+                                    ),
+                                    child: Skeleton(width: 30)
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10.v),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
+                                  onTap: (){
+                                  },
+                                  child: Skeleton(width: 50)
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        })
+     : ListView.separated(
         physics: ScrollPhysics(),
         shrinkWrap: true,
         separatorBuilder: (context, index) {

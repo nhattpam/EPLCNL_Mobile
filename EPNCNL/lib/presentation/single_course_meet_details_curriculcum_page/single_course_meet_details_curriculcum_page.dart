@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:internet_file/internet_file.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/data/models/quizattempts.dart';
@@ -116,13 +117,77 @@ class SingleCourseMeetDetailsCurriculcumPageState
                     FutureBuilder<List<ClassModule>>(
                         future: _classmoduleList.getClassModule(query: query, courseId: widget.courseID),
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return Center(
-                              child: CircularProgressIndicator(),
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              // itemCount: listClassModule.length,
+                              itemCount: 4,
+                              itemBuilder: (context, index) {
+                                return Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        children: [
+                                          Skeleton(width: 100),
+                                          lineGen(
+                                            lines: [20.0, 30.0, 40.0, 10.0],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Expanded(
+                                      child: Container(
+                                        padding: EdgeInsets.only(left: 16, top: 8),
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          color: Color(0xfff6f6f5),
+                                          borderRadius:
+                                          BorderRadius.all(Radius.circular(20.0)),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Skeleton(width: 70),
+                                            SizedBox(height: 5.v),
+                                            Skeleton(width: 70),
+                                            SizedBox(height: 5.v),
+                                            Column(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Skeleton(width: 50),
+                                                    Padding(
+                                                        padding:
+                                                        const EdgeInsets.only(left: 8.0),
+                                                        child: Skeleton(width: 50)
+                                                    )
+                                                  ],
+                                                ),
+                                                SizedBox(height: 5.v),
+                                                Row(
+                                                  children: [
+                                                    Skeleton(width: 50,)
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                );
+                              },
                             );
                           }
-                          List<ClassModule>? data = snapshot.data;
-                          return ListView.builder(
+                          if(snapshot.connectionState == ConnectionState.done){
+
+                            List<ClassModule>? data = snapshot.data;
+                            return ListView.builder(
                               physics: NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               // itemCount: listClassModule.length,
@@ -161,13 +226,13 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Expanded(
-                                                  child: Text(classModule?.course?.name ?? "",
-                                                      style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight: FontWeight.bold,
-                                                      ),
-                                                  overflow: TextOverflow.fade,
-                                                  softWrap: true)
+                                                child: Text(classModule?.course?.name ?? "",
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                    overflow: TextOverflow.fade,
+                                                    softWrap: true)
                                             ),
                                             Text(
                                               listClassTopic.isNotEmpty
@@ -264,6 +329,8 @@ class SingleCourseMeetDetailsCurriculcumPageState
                               },
 
                             );
+                          }
+                          return Container();
                         },
                     ),
                     // SizedBox(height: 50.v),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
@@ -43,9 +44,10 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   late Timer _timer;
 
   late Enrollment enrollment = Enrollment();
-
+  late bool isLoadingCourse;
   @override
   void initState() {
+    isLoadingCourse = true;
     super.initState();
     loadCourseByCourseID();
   }
@@ -62,6 +64,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
       final course = await Network.getCourseByCourseID(widget.courseID);
       setState(() {
         chosenCourse = course;
+        isLoadingCourse = false;
       });
     } catch (e) {
       // Handle errors here
@@ -194,14 +197,15 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          chosenCourse?.imageUrl != null && chosenCourse!.imageUrl!.isNotEmpty
+          chosenCourse?.imageUrl != null && chosenCourse!.imageUrl!.isNotEmpty && isLoadingCourse == false
               ? Image.network(
             chosenCourse!.imageUrl!,
             height: 100.adaptSize,
             width: 100.adaptSize,
             fit: BoxFit.cover,
           )
-              : Center(child: Container(child: CircularProgressIndicator())), // Placeholder widget when chosenCourse.imageUrl is empty or null
+              : Skeleton(height: 100.adaptSize,
+            width: 100.adaptSize), // Placeholder widget when chosenCourse.imageUrl is empty or null
           Padding(
             padding: EdgeInsets.only(
               top: 33.v,
@@ -211,6 +215,9 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if(isLoadingCourse == true)
+                Skeleton(width: 150),
+                if(isLoadingCourse == false)
                 Container(
                   constraints: const BoxConstraints(
                     maxWidth: 160,
@@ -223,7 +230,10 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   ),
                 ),
                 SizedBox(height: 7.v),
-                Text(
+                if(isLoadingCourse == true)
+                  Skeleton(width: 150),
+                if(isLoadingCourse == false)
+                  Text(
                   chosenCourse?.name ?? '',
                   style: theme.textTheme.titleMedium,
                 ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/assignmentattemps.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/classmodules.dart';
@@ -49,9 +50,17 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   Map<String, bool> minimizedLessonsMap = {};
   Map<String, bool> minimizedAssignmentsMap = {};
   Map<String, bool> minimizedQuizzesMap = {};
+  late bool isLoadingModule;
+  late bool isLoadingLesson;
+  late bool isLoadingAssignment;
+  late bool isLoadingQuiz;
 
   @override
   void initState() {
+    isLoadingModule = true;
+    isLoadingLesson = true;
+    isLoadingAssignment = true;
+    isLoadingQuiz = true;
     super.initState();
     loadCourseByCourseID();
     loadModuleByCourseId();
@@ -71,6 +80,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
           await Network.getModulesByCourseId(widget.courseID);
       setState(() {
         listModuleByCourseId = loadedModule;
+        isLoadingModule = false;
       });
       // After loading modules, load all lessons
       loadAllLessons();
@@ -120,6 +130,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
       setState(() {
         // Store the lessons for this module in the map
         moduleLessonsMap[moduleId] = loadedLesson;
+        isLoadingLesson = false;
       });
     }
   }
@@ -130,6 +141,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
       setState(() {
         // Store the lessons for this module in the map
         moduleQuizMap[moduleId] = loadedQuiz;
+        isLoadingQuiz = false;
       });
     }
   }
@@ -141,6 +153,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
       setState(() {
         // Store the lessons for this module in the map
         moduleAssignmentMap[moduleId] = loadedAssignment;
+        isLoadingAssignment = false;
       });
     }
   }
@@ -265,7 +278,31 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   }
 
   Widget _buildVideoCourseListView() {
-    return ListView.builder(
+    return isLoadingModule
+        ? ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: 2,
+      itemBuilder: (context, index) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 1.h),
+              child: Row(
+                children: [
+                  Skeleton(width: 40),
+                  SizedBox(width: 30),
+                  Skeleton(width: 200)
+                ],
+              ),
+            ),
+            Divider(),
+          ],
+        );
+      },
+    )
+        : ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemCount: listModuleByCourseId.length,
@@ -311,7 +348,36 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   }
 
   Widget _buildLessonsMenu(Module module) {
-    return Visibility(
+    return isLoadingLesson
+        ? Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Skeleton(width: 20),
+            IconButton(
+              icon: Icon(minimizedLessonsMap[module.id.toString()] ?? false
+                  ? Icons.arrow_drop_down_outlined
+                  : Icons.minimize),
+              onPressed: () {
+                setState(() {
+                  minimizedLessonsMap[module.id.toString()] =
+                  !(minimizedLessonsMap[module.id.toString()] ?? false);
+                });
+              },
+            ),
+          ],
+        ),
+        // Only show the lessons if the module is not minimized
+        if (!(minimizedLessonsMap[module.id.toString()] ?? false))
+          TextButton(
+            onPressed: () {},
+            child: Skeleton(width: 200),
+          ),
+      ],
+    )
+        : Visibility(
       visible: moduleLessonsMap[module.id.toString()] != null &&
           moduleLessonsMap[module.id.toString()]!.isNotEmpty,
       child: Column(
@@ -378,7 +444,50 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   }
 
   Widget _buildAssignmentsMenu(Module module) {
-    return Visibility(
+    return isLoadingAssignment
+        ? Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Skeleton(width: 20),
+            IconButton(
+              icon: Icon(
+                  minimizedAssignmentsMap[module.id.toString()] ?? false
+                      ? Icons.arrow_drop_down_outlined
+                      : Icons.minimize),
+              onPressed: () {
+                setState(() {
+                  minimizedAssignmentsMap[module.id.toString()] =
+                  !(minimizedAssignmentsMap[module.id.toString()] ??
+                      false);
+                });
+              },
+            ),
+          ],
+        ),
+        // Only show the assignments if the module is not minimized
+        if (!(minimizedAssignmentsMap[module.id.toString()] ?? false))
+          for (int assignmentIndex = 0;
+          assignmentIndex <
+              (moduleAssignmentMap[module.id.toString()]?.length ?? 0);
+          assignmentIndex++)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: TextButton(
+                      onPressed: () async {
+                      },
+                      child: Skeleton(width: 200)
+                  ),
+                ),
+              ],
+            ),
+      ],
+    )
+        : Visibility(
       visible: moduleAssignmentMap[module.id.toString()] != null &&
           moduleAssignmentMap[module.id.toString()]!.isNotEmpty,
       child: Column(
@@ -480,7 +589,43 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   }
 
   Widget _buildQuizzesMenu(Module module) {
-    return Visibility(
+    return isLoadingQuiz
+        ? Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Skeleton(width: 20),
+            IconButton(
+              icon: Icon(
+                minimizedQuizzesMap[module.id.toString()] ?? false
+                    ? Icons.arrow_drop_down_outlined
+                    : Icons.minimize,
+              ),
+              onPressed: () {
+                setState(() {
+                  minimizedQuizzesMap[module.id.toString()] =
+                  !(minimizedQuizzesMap[module.id.toString()] ?? false);
+                });
+              },
+            ),
+          ],
+        ),
+        // Only show the quizzes if the module is not minimized
+        if (!(minimizedQuizzesMap[module.id.toString()] ?? false))
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                  onPressed: () async {},
+                  child: Skeleton(width: 200)
+              ),
+            ],
+          ),
+      ],
+    )
+        : Visibility(
       visible: moduleQuizMap[module.id.toString()] != null &&
           moduleQuizMap[module.id.toString()]!.isNotEmpty,
       child: Column(

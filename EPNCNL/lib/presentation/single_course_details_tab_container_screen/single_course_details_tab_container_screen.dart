@@ -521,6 +521,7 @@ class SingleCourseDetailsCurriculumPageState
   Map<String, bool> minimizedQuizzesMap = {};
   Map<String, List<Topic>> moduleClassTopicMap = {};
   late bool isLoadingModule;
+  late bool isLoadingClassModule;
   late bool isLoadingLesson;
   late bool isLoadingAssignment;
   late bool isLoadingQuiz;
@@ -528,6 +529,7 @@ class SingleCourseDetailsCurriculumPageState
   @override
   void initState() {
     isLoadingModule = true;
+    isLoadingClassModule = true;
     isLoadingLesson = true;
     isLoadingAssignment = true;
     isLoadingQuiz = true;
@@ -662,6 +664,7 @@ class SingleCourseDetailsCurriculumPageState
         await Network.getClassModulesByCourseId(widget.courseID);
     setState(() {
       listClassModuleByCourseId = loadedModule;
+      isLoadingClassModule = false;
     });
     loadClassTopic();
   }
@@ -1058,7 +1061,53 @@ class SingleCourseDetailsCurriculumPageState
   }
 
   Widget _buildClassCourseListView() {
-    return ListView.builder(
+    return isLoadingClassModule
+     ? ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: 2,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 1.h),
+              child: Row(
+                children: [
+                  Skeleton(width: 30),
+                  SizedBox(width: 30),
+                  Skeleton(width: 100)
+                ],
+              ),
+            ),
+              GestureDetector(
+                onTap: () {
+                  // Handle the onTap action for each video session
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Skeleton(width: 20),
+                    Padding(
+                      padding:
+                          EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Skeleton(width: 250)
+                          // Add other information about the video session here
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            SizedBox(height: 21.v),
+            Divider(),
+          ],
+        );
+      },
+    )
+     : ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemCount: listClassModuleByCourseId.length,

@@ -6,6 +6,8 @@ import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/refund_curriculum_class_course/refund_curriculum_class_course.dart';
+import 'package:meowlish/presentation/refund_curriculum_video_course/refund_curriculum_video_course.dart';
 import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
@@ -245,12 +247,27 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
               Divider(),
               SizedBox(height: 15.v),
               if (chosenTransaction.transactionDate != null && DateTime.parse(chosenTransaction.transactionDate.toString()).isAfter(DateTime.now().subtract(Duration(days: 7))) || enrollment.refundStatus == true)
+                if(chosenTransaction.course?.isOnlineClass == false)
                 CustomElevatedButton(
                   onPressed: () {
-                    _showMultiSelect();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => RefundCurriculum(courseID: widget.courseID)),
+                    );
+                    // _showMultiSelect();
                   },
                   text: "Refund request",
-                )
+                ),
+              if (chosenTransaction.transactionDate != null && DateTime.parse(chosenTransaction.transactionDate.toString()).isAfter(DateTime.now().subtract(Duration(days: 7))) || enrollment.refundStatus == true)
+                if(chosenTransaction.course?.isOnlineClass == true)
+                  CustomElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => RefundCurriculumClassCourse(courseID: widget.courseID)),
+                      );
+                      // _showMultiSelect();
+                    },
+                    text: "Refund request",
+                  ),
             ],
           ),
         ),

@@ -1062,7 +1062,7 @@ class SingleCourseDetailsCurriculumPageState
 
   Widget _buildClassCourseListView() {
     return isLoadingClassModule
-     ? ListView.builder(
+        ? ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemCount: 2,
@@ -1079,35 +1079,35 @@ class SingleCourseDetailsCurriculumPageState
                 ],
               ),
             ),
-              GestureDetector(
-                onTap: () {
-                  // Handle the onTap action for each video session
-                },
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Skeleton(width: 20),
-                    Padding(
-                      padding:
-                          EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Skeleton(width: 250)
-                          // Add other information about the video session here
-                        ],
-                      ),
+            GestureDetector(
+              onTap: () {
+                // Handle the onTap action for each video session
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Skeleton(width: 20),
+                  Padding(
+                    padding:
+                    EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Skeleton(width: 250)
+                        // Add other information about the video session here
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
             SizedBox(height: 21.v),
             Divider(),
           ],
         );
       },
     )
-     : ListView.builder(
+        : ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemCount: listClassModuleByCourseId.length,
@@ -1122,31 +1122,51 @@ class SingleCourseDetailsCurriculumPageState
           children: [
             Padding(
               padding: EdgeInsets.only(left: 1.h),
-              child: Row(
+              child: Column(
                 children: [
-                  Text("Day $number - ", style: theme.textTheme.labelMedium),
-                  Text(formattedDate,
-                      style: CustomTextStyles.labelLargeOrangeA700),
+                  Row(
+                    children: [
+                      Text("Day $number - ", style: theme.textTheme.labelMedium),
+                      Text("$formattedDate - ",
+                          style: CustomTextStyles.labelLargeOrangeA700),
+                      Container(
+                        constraints: const BoxConstraints(
+                          maxWidth: 270,
+                        ),
+                        child: Text(
+                          module.classLesson?.classHours ?? '',
+                          style: theme.textTheme.labelMedium,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ), // Add other information about the video session here
+
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Class Topic: " , style: CustomTextStyles.labelLargeOrangeA700)),
                 ],
               ),
             ),
             for (int lessonIndex = 0;
-                lessonIndex <
-                    (moduleClassTopicMap[module.classLesson?.id.toString()]
-                            ?.length ??
-                        0);
-                lessonIndex++)
+            lessonIndex <
+                (moduleClassTopicMap[module.classLesson?.id.toString()]
+                    ?.length ??
+                    0);
+            lessonIndex++)
               GestureDetector(
                 onTap: () {
                   // Handle the onTap action for each video session
                 },
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleWithNumber(number: lessonIndex + 1),
                     Padding(
                       padding:
-                          EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                      EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -1156,7 +1176,7 @@ class SingleCourseDetailsCurriculumPageState
                             ),
                             child: Text(
                               moduleClassTopicMap[module.classLesson?.id
-                                      .toString()]![lessonIndex]
+                                  .toString()]![lessonIndex]
                                   .name
                                   .toString(),
                               style: CustomTextStyles.titleMedium17,
@@ -1164,17 +1184,11 @@ class SingleCourseDetailsCurriculumPageState
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          // Add other information about the video session here
                         ],
                       ),
                     ),
-                    // Spacer(),
-                    // Icon(
-                    //   Icons.play_arrow,
-                    //   size: 17.0,
-                    //   color: Colors.orange,
-                    // ),
                   ],
+
                 ),
               ),
             SizedBox(height: 21.v),

@@ -33,7 +33,7 @@ class _RefundCurriculumClassCourseState extends State<RefundCurriculumClassCours
   late String? refundId = "";
   late Enrollment enrollment = Enrollment();
   List<TextEditingController> _controllers = [];
-
+  int _index = 0;
   @override
   void initState() {
     isLoadingClassModule = true;
@@ -150,11 +150,16 @@ class _RefundCurriculumClassCourseState extends State<RefundCurriculumClassCours
                 _buildVideoCourseListView(),
                 CustomElevatedButton(
                   onPressed: () async {
-                    String? refundId = await _createRefundRequest();
+
                     try {
                       for (var reason in _controllers){
-                        for (int lessonIndex = 0; lessonIndex < (listClassModuleByCourseId?.length ?? 0); lessonIndex++)
-                        Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: reason.text);
+                        final module = listClassModuleByCourseId[_index];
+                        // Parse the startDate string into a DateTime object
+                        DateTime startDate = DateTime.parse(module.startDate.toString());
+                        // Format the DateTime object into the desired format
+                        String formattedDate = DateFormat('dd-MM-yyyy').format(startDate);
+                        String? refundId = await _createRefundRequest();
+                        Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: "Reason: " + reason.text + " " + "Date: "+ formattedDate);
                       }
                     } catch (e) {
                       // Handle the error, e.g., show an error message

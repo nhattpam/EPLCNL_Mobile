@@ -62,6 +62,7 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
   late Enrollment enrollment = Enrollment();
   late String? refundId = "";
   List<TextEditingController> _controllers = [];
+  int _index = 0;
   @override
   void initState() {
     isLoadingModule = true;
@@ -259,10 +260,8 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
                   onPressed: () async {
                     String? refundId = await _createRefundRequest();
                     try {
-                     for(var module in listModuleByCourseId){
                         for (var reason in _controllers){
-                          Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: reason.text + module.name.toString());
-                        }
+                          Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: "Reason:" + reason.text + " " + "Name:"+ listModuleByCourseId[_index].name.toString());
                       }
                     } catch (e) {
                       // Handle the error, e.g., show an error message

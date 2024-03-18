@@ -87,13 +87,13 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
   }
 
 
-  void _showMultiSelect() async {
-    final List<String>? result = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return RequestRefund(enrollmentId: enrollment.id.toString());
-        });
-  }
+  // void _showMultiSelect() async {
+  //   final List<String>? result = await showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return RequestRefund(enrollmentId: enrollment.id.toString());
+  //       });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -357,97 +357,97 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
     );
   }
 }
-
-class RequestRefund extends StatefulWidget {
-  final String enrollmentId;
-
-  const RequestRefund({super.key, required this.enrollmentId});
-
-  @override
-  State<RequestRefund> createState() => _RequestRefundState();
-}
-
-class _RequestRefundState extends State<RequestRefund> {
-  TextEditingController additionalInfoController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Center(child: Text('Report')),
-      content: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Adjust the height as needed
-              Center(child: Text('Your Reason:')),
-              SizedBox(height: 24.v),
-              Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: CustomTextFormField(
-                  controller: additionalInfoController,
-                  hintText: "Your Reason",
-                  hintStyle: CustomTextStyles.titleSmallGray80001,
-                  textInputAction: TextInputAction.done,
-                  maxLines: 14,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 15.h,
-                    vertical: 28.v,
-                  ),
-                  borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
-                ),
-              ),
-              SizedBox(height: 24.v),
-            ],
-          ),
-        ),
-      ),
-      actions: [
-        TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text('Cancel')),
-        TextButton(
-            onPressed: () {
-              Network.createRefundRequest(
-                  enrollmentId: widget.enrollmentId,
-                  reason: additionalInfoController.text);
-              AwesomeDialog(
-                context: context,
-                animType: AnimType.scale,
-                dialogType: DialogType.success,
-                body: Center(
-                  child: Text(
-                    'Request Refund success!!!',
-                    style: TextStyle(fontStyle: FontStyle.italic),
-                  ),
-                ),
-                btnOkOnPress: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-              )..show();
-            },
-            child: Text('Report'))
-      ],
-    );
-  }
-}
+//
+// class RequestRefund extends StatefulWidget {
+//   final String enrollmentId;
+//
+//   const RequestRefund({super.key, required this.enrollmentId});
+//
+//   @override
+//   State<RequestRefund> createState() => _RequestRefundState();
+// }
+//
+// class _RequestRefundState extends State<RequestRefund> {
+//   TextEditingController additionalInfoController = TextEditingController();
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return AlertDialog(
+//       title: Center(child: Text('Report')),
+//       content: SingleChildScrollView(
+//         child: Padding(
+//           padding: EdgeInsets.all(8.0),
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             crossAxisAlignment: CrossAxisAlignment.stretch,
+//             children: [
+//               // Adjust the height as needed
+//               Center(child: Text('Your Reason:')),
+//               SizedBox(height: 24.v),
+//               Container(
+//                 decoration: BoxDecoration(
+//                   boxShadow: [
+//                     BoxShadow(
+//                       color: Colors.grey.withOpacity(0.5),
+//                       spreadRadius: 2,
+//                       blurRadius: 5,
+//                       offset: Offset(0, 3),
+//                     ),
+//                   ],
+//                 ),
+//                 child: CustomTextFormField(
+//                   controller: additionalInfoController,
+//                   hintText: "Your Reason",
+//                   hintStyle: CustomTextStyles.titleSmallGray80001,
+//                   textInputAction: TextInputAction.done,
+//                   maxLines: 14,
+//                   contentPadding: EdgeInsets.symmetric(
+//                     horizontal: 15.h,
+//                     vertical: 28.v,
+//                   ),
+//                   borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
+//                 ),
+//               ),
+//               SizedBox(height: 24.v),
+//             ],
+//           ),
+//         ),
+//       ),
+//       actions: [
+//         TextButton(
+//             onPressed: () {
+//               Navigator.pop(context);
+//             },
+//             child: Text('Cancel')),
+//         TextButton(
+//             onPressed: () {
+//               Network.createRefundRequest(
+//                   enrollmentId: widget.enrollmentId,
+//                   reason: additionalInfoController.text);
+//               AwesomeDialog(
+//                 context: context,
+//                 animType: AnimType.scale,
+//                 dialogType: DialogType.success,
+//                 body: Center(
+//                   child: Text(
+//                     'Request Refund success!!!',
+//                     style: TextStyle(fontStyle: FontStyle.italic),
+//                   ),
+//                 ),
+//                 btnOkOnPress: () {
+//                   setState(() {
+//                     Navigator.pop(context);
+//                   });
+//                 },
+//               )..show();
+//             },
+//             child: Text('Report'))
+//       ],
+//     );
+//   }
+// }

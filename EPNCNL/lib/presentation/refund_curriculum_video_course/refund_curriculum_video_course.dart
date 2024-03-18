@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,10 +8,12 @@ import 'package:meowlish/data/models/assignmentattemps.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
+import 'package:meowlish/data/models/refundrequests.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/curriculcum_screen/widgets/videoplayer_widget.dart';
 import 'package:meowlish/presentation/doing_assignment_screen/doing_assignment_screen.dart';
@@ -20,6 +23,7 @@ import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 
@@ -55,7 +59,9 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
   late bool isLoadingAssignment;
   late bool isLoadingQuiz;
   TextEditingController reasonController = TextEditingController();
-
+  late Enrollment enrollment = Enrollment();
+  late String? refundId = "";
+  List<TextEditingController> _controllers = [];
   @override
   void initState() {
     isLoadingModule = true;
@@ -68,6 +74,7 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
     loadClassModuleByCourseId();
     loadQuizAttemptsByLearnerId();
     loadAssignmentAttemptsByLearnerId();
+    loadEnrollmentByLearnerAndCourseId();
   }
 
   @override
@@ -82,6 +89,11 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
       setState(() {
         listModuleByCourseId = loadedModule;
         isLoadingModule = false;
+        List<TextEditingController> _controller = List.generate(
+          listModuleByCourseId.length,
+              (index) => TextEditingController(),
+        );
+        _controllers = _controller;
       });
       // After loading modules, load all lessons
       loadAllLessons();
@@ -176,6 +188,34 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
       print('Error loading lessons: $e');
     }
   }
+  Future<void> loadEnrollmentByLearnerAndCourseId() async {
+    try {
+      final enrollmentResponse =
+      await Network.getEnrollmentByLearnerAndCourseId(
+        SessionManager().getLearnerId().toString(),
+        widget.courseID,
+      );
+
+      setState(() {
+        enrollment = enrollmentResponse;
+        // Add more print statements for other properties if needed
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+  Future<String?> _createRefundRequest() async {
+    try {
+      refundId = await Network.createRefundRequest(
+        enrollmentId: enrollment.id.toString());
+      // orderId now contains the order ID returned from the API
+      return refundId;
+    } catch (e) {
+      print('Error creating transaction: $e');
+    }
+    return "not found transaction";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -217,7 +257,33 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
                 _buildVideoCourseListView(),
                 CustomElevatedButton(
                   onPressed: () async {
-
+                    String? refundId = await _createRefundRequest();
+                    try {
+                     for(var module in listModuleByCourseId){
+                        for (var reason in _controllers){
+                          Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: reason.text + module.name.toString());
+                        }
+                      }
+                    } catch (e) {
+                      // Handle the error, e.g., show an error message
+                      print('Error during payment transaction: $e');
+                    }
+                    AwesomeDialog(
+                      context: context,
+                      animType: AnimType.scale,
+                      dialogType: DialogType.success,
+                      body: Center(
+                        child: Text(
+                          'Request Refund success!!!',
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      ),
+                      btnOkOnPress: () {
+                        setState(() {
+                          Navigator.pop(context);
+                        });
+                      },
+                    )..show();
                   },
                   margin: EdgeInsets.only(
                     left: 39.h,
@@ -356,7 +422,7 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
             _buildAssignmentsMenu(module),
             _buildQuizzesMenu(module),
             CustomTextFormField(
-                controller: reasonController,
+                controller: _controllers[index],
                 hintText: "Reason",
                 hintStyle:
                 CustomTextStyles.titleSmallGray80001,
@@ -449,23 +515,23 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
             lessonIndex++)
               TextButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                      // VideoPlayerWidget(videoUrl: moduleLessonsMap[module.id.toString()]![lessonIndex].videoUrl.toString(),
-                      VideoPlayerWidget(
-                        lessonId:
-                        moduleLessonsMap[module.id.toString()]![lessonIndex]
-                            .id
-                            .toString(),
-                        videoUrl:
-                        moduleLessonsMap[module.id.toString()]![lessonIndex]
-                            .videoUrl
-                            .toString(),
-                      ),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) =>
+                  //     // VideoPlayerWidget(videoUrl: moduleLessonsMap[module.id.toString()]![lessonIndex].videoUrl.toString(),
+                  //     VideoPlayerWidget(
+                  //       lessonId:
+                  //       moduleLessonsMap[module.id.toString()]![lessonIndex]
+                  //           .id
+                  //           .toString(),
+                  //       videoUrl:
+                  //       moduleLessonsMap[module.id.toString()]![lessonIndex]
+                  //           .videoUrl
+                  //           .toString(),
+                  //     ),
+                  //   ),
+                  // );
                 },
                 child: Text(
                     moduleLessonsMap[module.id.toString()]![lessonIndex]
@@ -563,21 +629,21 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
                   Expanded(
                     child: TextButton(
                       onPressed: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  DoingAssignmentScreen(
-                                      assignmentID: moduleAssignmentMap[module
-                                          .id.toString()]![assignmentIndex].id
-                                          .toString(),
-                                      cooldownTime: Duration(
-                                          minutes: moduleAssignmentMap[
-                                          module.id
-                                              .toString()]![assignmentIndex]
-                                              .deadline as int))),
-                        );
-                        loadAssignmentAttemptsByLearnerId();
+                        // await Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) =>
+                        //           DoingAssignmentScreen(
+                        //               assignmentID: moduleAssignmentMap[module
+                        //                   .id.toString()]![assignmentIndex].id
+                        //                   .toString(),
+                        //               cooldownTime: Duration(
+                        //                   minutes: moduleAssignmentMap[
+                        //                   module.id
+                        //                       .toString()]![assignmentIndex]
+                        //                       .deadline as int))),
+                        // );
+                        // loadAssignmentAttemptsByLearnerId();
                       },
                       child:
                       Html(
@@ -728,21 +794,21 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
                 children: [
                   TextButton(
                     onPressed: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              DoingQuizScreen(
-                                quizId: moduleQuizMap[module.id
-                                    .toString()]![quizIndex].id.toString(),
-                                cooldownTime: Duration(
-                                  minutes: moduleQuizMap[module.id
-                                      .toString()]![quizIndex].deadline as int,
-                                ),
-                              ),
-                        ),
-                      );
-                      loadQuizAttemptsByLearnerId();
+                      // await Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) =>
+                      //         DoingQuizScreen(
+                      //           quizId: moduleQuizMap[module.id
+                      //               .toString()]![quizIndex].id.toString(),
+                      //           cooldownTime: Duration(
+                      //             minutes: moduleQuizMap[module.id
+                      //                 .toString()]![quizIndex].deadline as int,
+                      //           ),
+                      //         ),
+                      //   ),
+                      // );
+                      // loadQuizAttemptsByLearnerId();
                     },
                     child: Text(
                       moduleQuizMap[module.id.toString()]![quizIndex].name

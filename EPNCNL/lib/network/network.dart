@@ -1897,15 +1897,13 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
-
-  ////RefundRequest
-  static Future<void> createRefundRequest({
-    required String enrollmentId,
+  ////Refund-Survey
+  static Future<void> createRefundSurvey({
+    required String refundRequestId,
     required String reason,
   }) async {
-    final leanerId = SessionManager().getLearnerId() ?? 0;
     final learnerData = {
-      "enrollmentId": enrollmentId,
+      "refundRequestId": refundRequestId,
       "reason": reason,
     };
 
@@ -1914,7 +1912,7 @@ class Network {
     // Print the JSON data before making the API call
 
     final response = await http.post(
-      Uri.parse('https://nhatpmse.twentytwo.asia/api/refund-requests'),
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/refund-surveys'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -1928,6 +1926,42 @@ class Network {
       print('Create report failed');
       // Print the JSON data before making the API call
       print('JSON Data: $jsonData');
+    }
+  }
+
+  ////RefundRequest
+  static Future<String> createRefundRequest({
+    required String enrollmentId,
+  }) async {
+    final userData = {
+      "enrollmentId": enrollmentId,
+    };
+    final jsonData = jsonEncode(userData);
+
+    // Print the JSON data before making the API call
+    print('JSON Data: $jsonData');
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/refund-requests'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+      // Extract the authCode
+      final refundId = jsonResponse['id'];
+      //set accountId to create learner
+      print("After create refund:  " + refundId.toString());
+      return refundId;
+    } else {
+      print('Create refund failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
+      return "null refundId";
     }
   }
 

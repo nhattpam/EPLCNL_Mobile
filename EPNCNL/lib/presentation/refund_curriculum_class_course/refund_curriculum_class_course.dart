@@ -1,8 +1,10 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/classmodules.dart';
+import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/topics.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
@@ -11,6 +13,7 @@ import 'package:meowlish/presentation/my_course_completed_page/my_course_complet
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 class RefundCurriculumClassCourse extends StatefulWidget {
@@ -27,11 +30,15 @@ class _RefundCurriculumClassCourseState extends State<RefundCurriculumClassCours
   Map<String, List<Topic>> moduleClassTopicMap = {};
   int _currentIndex = 0;
   TextEditingController reasonController = TextEditingController();
+  late String? refundId = "";
+  late Enrollment enrollment = Enrollment();
+  List<TextEditingController> _controllers = [];
 
   @override
   void initState() {
     isLoadingClassModule = true;
     loadClassModuleByCourseId();
+    loadEnrollmentByLearnerAndCourseId();
     super.initState();
   }
   Future<void> loadClassTopic() async {
@@ -66,8 +73,41 @@ class _RefundCurriculumClassCourseState extends State<RefundCurriculumClassCours
     setState(() {
       listClassModuleByCourseId = loadedModule;
       isLoadingClassModule = false;
+      List<TextEditingController> _controller = List.generate(
+        listClassModuleByCourseId.length,
+            (index) => TextEditingController(),
+      );
+      _controllers = _controller;
     });
     loadClassTopic();
+  }
+  Future<void> loadEnrollmentByLearnerAndCourseId() async {
+    try {
+      final enrollmentResponse =
+      await Network.getEnrollmentByLearnerAndCourseId(
+        SessionManager().getLearnerId().toString(),
+        widget.courseID,
+      );
+
+      setState(() {
+        enrollment = enrollmentResponse;
+        // Add more print statements for other properties if needed
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+  Future<String?> _createRefundRequest() async {
+    try {
+      refundId = await Network.createRefundRequest(
+          enrollmentId: enrollment.id.toString());
+      // orderId now contains the order ID returned from the API
+      return refundId;
+    } catch (e) {
+      print('Error creating transaction: $e');
+    }
+    return "not found transaction";
   }
 
   @override
@@ -110,7 +150,32 @@ class _RefundCurriculumClassCourseState extends State<RefundCurriculumClassCours
                 _buildVideoCourseListView(),
                 CustomElevatedButton(
                   onPressed: () async {
-
+                    String? refundId = await _createRefundRequest();
+                    try {
+                      for (var reason in _controllers){
+                        for (int lessonIndex = 0; lessonIndex < (listClassModuleByCourseId?.length ?? 0); lessonIndex++)
+                        Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: reason.text);
+                      }
+                    } catch (e) {
+                      // Handle the error, e.g., show an error message
+                      print('Error during payment transaction: $e');
+                    }
+                    AwesomeDialog(
+                      context: context,
+                      animType: AnimType.scale,
+                      dialogType: DialogType.success,
+                      body: Center(
+                        child: Text(
+                          'Request Refund success!!!',
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      ),
+                      btnOkOnPress: () {
+                        setState(() {
+                          Navigator.pop(context);
+                        });
+                      },
+                    )..show();
                   },
                   margin: EdgeInsets.only(
                     left: 39.h,
@@ -312,12 +377,11 @@ class _RefundCurriculumClassCourseState extends State<RefundCurriculumClassCours
                       ),
                     ),
                   ],
-
                 ),
               ),
             SizedBox(height: 21.v),
             CustomTextFormField(
-                controller: reasonController,
+                controller: _controllers[index],
                 hintText: "Reason",
                 hintStyle:
                 CustomTextStyles.titleSmallGray80001,

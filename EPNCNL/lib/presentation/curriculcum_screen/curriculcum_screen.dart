@@ -550,15 +550,15 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                           ),
                     ),
                   ),
-                  if(listAssignmentAttempt.isNotEmpty &&
-                      listAssignmentAttempt.lastIndexWhere((attempt) =>
-                      attempt.id ==
-                          moduleAssignmentMap[module.id.toString()]![assignmentIndex].id) !=
-                          null)
+                  if (listAssignmentAttempt.isNotEmpty &&
+                      listAssignmentAttempt.any((attempt) =>
+                      attempt.assignmentId ==
+                          moduleAssignmentMap[module.id.toString()]![assignmentIndex].id))
+
                     Icon(
                       listAssignmentAttempt.isNotEmpty &&
                           listAssignmentAttempt.lastIndexWhere((attempt) =>
-                          attempt.id ==
+                          attempt.assignmentId ==
                               moduleAssignmentMap[module.id.toString()]![assignmentIndex].id) !=
                               null &&
                           moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass !=
@@ -570,7 +570,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                           : Icons.dangerous_outlined,
                       color: listAssignmentAttempt.isNotEmpty &&
                           listAssignmentAttempt.lastIndexWhere((attempt) =>
-                          attempt.id ==
+                          attempt.assignmentId ==
                               moduleAssignmentMap[module.id.toString()]![assignmentIndex].id) !=
                               null &&
                           moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass !=
@@ -690,13 +690,13 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                   ),
                   if(listQuizAttempt.isNotEmpty &&
                       listQuizAttempt.lastIndexWhere((attempt) =>
-                      attempt.id ==
+                      attempt.quizId ==
                           moduleQuizMap[module.id.toString()]![quizIndex].id) !=
                           null)
                   Icon(
                     listQuizAttempt.isNotEmpty &&
                         listQuizAttempt.lastIndexWhere((attempt) =>
-                        attempt.id ==
+                        attempt.quizId ==
                             moduleQuizMap[module.id.toString()]![quizIndex].id) !=
                             null &&
                         moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass !=
@@ -707,7 +707,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                         : Icons.dangerous_outlined,
                     color: listQuizAttempt.isNotEmpty &&
                         listQuizAttempt.lastIndexWhere((attempt) =>
-                        attempt.id ==
+                        attempt.quizId ==
                             moduleQuizMap[module.id.toString()]![quizIndex].id) !=
                             null &&
                         moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass !=

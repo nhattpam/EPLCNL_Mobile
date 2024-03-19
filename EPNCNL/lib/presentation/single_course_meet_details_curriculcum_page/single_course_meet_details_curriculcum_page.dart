@@ -836,13 +836,13 @@ class _MultiTopicState extends State<MultiTopic> {
                               ),
                               if(listQuizAttempt.isNotEmpty &&
                                   listQuizAttempt.lastIndexWhere((attempt) =>
-                                  attempt.id ==
+                                  attempt.quizId ==
                                       moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
                                       null)
                                 Icon(
                                   listQuizAttempt.isNotEmpty &&
                                       listQuizAttempt.lastIndexWhere((attempt) =>
-                                      attempt.id ==
+                                      attempt.quizId ==
                                           moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
                                           null &&
                                       moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
@@ -853,7 +853,7 @@ class _MultiTopicState extends State<MultiTopic> {
                                       : Icons.dangerous_outlined,
                                   color: listQuizAttempt.isNotEmpty &&
                                       listQuizAttempt.lastIndexWhere((attempt) =>
-                                      attempt.id ==
+                                      attempt.quizId ==
                                           moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
                                           null &&
                                       moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=

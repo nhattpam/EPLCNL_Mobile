@@ -30,6 +30,7 @@ class PaymentMethodsScreen extends StatefulWidget {
 }
 
 class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
+  late int _selectedOption;
 
   int _currentIndex = 0;
 
@@ -45,8 +46,10 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
 
   late Enrollment enrollment = Enrollment();
   late bool isLoadingCourse;
+
   @override
   void initState() {
+    _selectedOption = 1;
     isLoadingCourse = true;
     super.initState();
     loadCourseByCourseID();
@@ -117,7 +120,6 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               _buildPaymentOptionsRow(context),
               Spacer(),
               _buildEnrollCourseButton(context),
-
             ],
           ),
         ),
@@ -134,7 +136,8 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
             }
             if (index == 1) {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+                MaterialPageRoute(
+                    builder: (context) => MyCourseCompletedPage()),
               );
             }
             if (index == 2) {
@@ -197,15 +200,17 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          chosenCourse?.imageUrl != null && chosenCourse!.imageUrl!.isNotEmpty && isLoadingCourse == false
+          chosenCourse?.imageUrl != null &&
+                  chosenCourse!.imageUrl!.isNotEmpty &&
+                  isLoadingCourse == false
               ? Image.network(
-            chosenCourse!.imageUrl!,
-            height: 100.adaptSize,
-            width: 100.adaptSize,
-            fit: BoxFit.cover,
-          )
-              : Skeleton(height: 100.adaptSize,
-            width: 100.adaptSize), // Placeholder widget when chosenCourse.imageUrl is empty or null
+                  chosenCourse!.imageUrl!,
+                  height: 100.adaptSize,
+                  width: 100.adaptSize,
+                  fit: BoxFit.cover,
+                )
+              : Skeleton(height: 100.adaptSize, width: 100.adaptSize),
+          // Placeholder widget when chosenCourse.imageUrl is empty or null
           Padding(
             padding: EdgeInsets.only(
               top: 33.v,
@@ -215,28 +220,26 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if(isLoadingCourse == true)
-                Skeleton(width: 150),
-                if(isLoadingCourse == false)
-                Container(
-                  constraints: const BoxConstraints(
-                    maxWidth: 160,
+                if (isLoadingCourse == true) Skeleton(width: 150),
+                if (isLoadingCourse == false)
+                  Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 160,
+                    ),
+                    child: Text(
+                      chosenCourse.category?.description ?? '',
+                      style: CustomTextStyles.labelLargeOrangeA700,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  child: Text(
-                    chosenCourse.category?.description ?? '',
-                    style: CustomTextStyles.labelLargeOrangeA700,
-                    softWrap: true,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
                 SizedBox(height: 7.v),
-                if(isLoadingCourse == true)
-                  Skeleton(width: 150),
-                if(isLoadingCourse == false)
+                if (isLoadingCourse == true) Skeleton(width: 150),
+                if (isLoadingCourse == false)
                   Text(
-                  chosenCourse?.name ?? '',
-                  style: theme.textTheme.titleMedium,
-                ),
+                    chosenCourse?.name ?? '',
+                    style: theme.textTheme.titleMedium,
+                  ),
               ],
             ),
           ),
@@ -246,13 +249,10 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   }
 
   /// Section Widget
-  Widget _buildPaymentOptionsRow(BuildContext context) {
+  Widget _buildPaymentOption(String title, int value) {
     return Container(
       margin: EdgeInsets.only(right: 6.h),
-      padding: EdgeInsets.symmetric(
-        horizontal: 20.h,
-        vertical: 17.v,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 17.v),
       decoration: AppDecoration.outlineBlack.copyWith(
         borderRadius: BorderRadiusStyle.circleBorder15,
       ),
@@ -261,35 +261,46 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: EdgeInsets.only(
-              left: 231.h,
-              top: 5.v,
-              bottom: 2.v,
-            ),
+            padding: EdgeInsets.only(left: 231.h, top: 5.v, bottom: 2.v),
             child: Text(
-              "VN Pay",
+              title,
               style: CustomTextStyles.titleSmallBluegray900ExtraBold,
             ),
           ),
           Container(
             margin: EdgeInsets.only(left: 11.h),
             padding: EdgeInsets.all(5.h),
-            decoration: AppDecoration.outlineTeal.copyWith(
-              borderRadius: BorderRadiusStyle.circleBorder15,
-            ),
             child: Container(
               height: 12.adaptSize,
               width: 12.adaptSize,
               decoration: BoxDecoration(
-                color: appTheme.teal700,
-                borderRadius: BorderRadius.circular(
-                  6.h,
-                ),
+                borderRadius: BorderRadius.circular(6.h),
+              ),
+              child: Radio(
+                value: value,
+                groupValue: _selectedOption,
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedOption = newValue as int;
+                  });
+                },
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPaymentOptionsRow(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        _buildPaymentOption("VN Pay", 1),
+        SizedBox(height: 10),
+        _buildPaymentOption("Wallet", 2),
+        SizedBox(height: 10), // Adjust spacing as needed
+      ],
     );
   }
 
@@ -335,9 +346,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               print("DONE ");
               // Do something with paymentUrl if needed
               // Change the button text to "Enroll Course" and show the button
-
             } else {
-
               print("NOT DONE YET");
               // If status is not "DONE", show loading indicator or perform other actions
               showDialog(

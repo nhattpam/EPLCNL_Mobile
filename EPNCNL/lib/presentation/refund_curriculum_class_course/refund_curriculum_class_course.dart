@@ -160,6 +160,9 @@ class _RefundCurriculumClassCourseState extends State<RefundCurriculumClassCours
                         String formattedDate = DateFormat('dd-MM-yyyy').format(startDate);
                         String? refundId = await _createRefundRequest();
                         Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: "Reason: " + reason.text + " " + "Date: "+ formattedDate);
+                        setState(() {
+                          _index++;
+                        });
                       }
                     } catch (e) {
                       // Handle the error, e.g., show an error message

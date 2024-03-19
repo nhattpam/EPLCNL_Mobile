@@ -261,7 +261,10 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
                     String? refundId = await _createRefundRequest();
                     try {
                         for (var reason in _controllers){
-                          Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: "Reason:" + reason.text + " " + "Name:"+ listModuleByCourseId[_index].name.toString());
+                          Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: "Section:" + listModuleByCourseId[_index].name.toString() + " " +  "Reason:" + reason.text );
+                          setState(() {
+                            _index++;
+                          });
                       }
                     } catch (e) {
                       // Handle the error, e.g., show an error message

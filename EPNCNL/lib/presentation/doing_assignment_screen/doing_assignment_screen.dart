@@ -186,10 +186,10 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                 SizedBox(height: 93.v),
                 CustomElevatedButton(
                   onPressed: () async {
-                    // await Network.createAssignmentAttempt(
-                    //   assignmentId: widget.assignmentID,
-                    //   answerText: additionalInfoController.text.toString(),
-                    // );
+                    await Network.createAssignmentAttempt(
+                      assignmentId: widget.assignmentID,
+                      answerText: additionalInfoController.text.toString(),
+                    );
                     AwesomeDialog(
                       context: context,
                       animType: AnimType.scale,

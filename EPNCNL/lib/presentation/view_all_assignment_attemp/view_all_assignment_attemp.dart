@@ -66,6 +66,7 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
 
       setState(() {
         listAssignmentAttempt = assignment;
+        listAssignmentAttempt.removeWhere((element) => element.learnerId == SessionManager().getLearnerId());
         _loadPage(_currentPage);
         isLoadingAssignmentAttempt = false;
         // Add more print statements for other properties if needed
@@ -165,6 +166,15 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                       SizedBox(height: 12),
                       Divider(),
                       SizedBox(height: 30.v),
+                      CustomElevatedButton(
+                        onPressed: () {
+                          for(int index = 0; index < _paginatedAssignmentAttempt.length; index++){
+                            final attemmpt = _paginatedAssignmentAttempt[index];
+                            print("Submit point" + point[attemmpt.id].toString());
+                          }
+                        },
+                        text: "Submit",
+                      ),
                     ],
                   ),
                 ),
@@ -440,6 +450,7 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                                             onChanged: (value) {
                                               setState(() {
                                                 point[attempt.id.toString()] = value.toString();
+                                                print(point[attempt.id.toString()]);
                                               });
                                             },
                                           ),

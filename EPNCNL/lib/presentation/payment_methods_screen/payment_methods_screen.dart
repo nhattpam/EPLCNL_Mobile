@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/enrollments.dart';
+import 'package:meowlish/data/models/wallets.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
@@ -43,6 +44,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   bool isLoading = false;
 
   late Timer _timer;
+  late Wallet wallet = Wallet();
 
   late Enrollment enrollment = Enrollment();
   late bool isLoadingCourse;
@@ -53,6 +55,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     isLoadingCourse = true;
     super.initState();
     loadCourseByCourseID();
+    fetchWalletData();
   }
 
   @override
@@ -60,6 +63,14 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     // Cancel the timer when the widget is disposed
     _timer.cancel();
     super.dispose();
+  }
+  Future<void> fetchWalletData() async {
+    Wallet wlet = await Network.getWalletByAccountId();
+
+    setState(() {
+      // Set the list of pet containers in your state
+      wallet = wlet;
+    });
   }
 
   Future<void> loadCourseByCourseID() async {
@@ -250,46 +261,105 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
 
   /// Section Widget
   Widget _buildPaymentOption(String title, int value) {
-    return Container(
-      margin: EdgeInsets.only(right: 6.h),
-      padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 17.v),
-      decoration: AppDecoration.outlineBlack.copyWith(
-        borderRadius: BorderRadiusStyle.circleBorder15,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 231.h, top: 5.v, bottom: 2.v),
-            child: Text(
-              title,
-              style: CustomTextStyles.titleSmallBluegray900ExtraBold,
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 11.h),
-            padding: EdgeInsets.all(5.h),
-            child: Container(
-              height: 12.adaptSize,
-              width: 12.adaptSize,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6.h),
+    if(title == "Wallet"){
+      return Container(
+        margin: EdgeInsets.only(right: 6.h),
+        padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 17.v),
+        decoration: AppDecoration.outlineBlack.copyWith(
+          borderRadius: BorderRadiusStyle.circleBorder15,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: 5.v, bottom: 2.v),
+              child: Container(
+                width: 290,
+                child: Row(
+                  children: [
+                    Container(
+                      width: 100,
+                      child: Text(
+                        "Your Balance: " + (wallet.balance ?? 0).toString() + "\$" ,
+                        style: CustomTextStyles.titleSmallBluegray900ExtraBold,
+                      ),
+                    ),
+                     Padding(
+                       padding: EdgeInsets.only(left: 120),
+                       child: Text(
+                        title,
+                        style: CustomTextStyles.titleSmallBluegray900ExtraBold,
+                    ),
+                     ),
+                    Container(
+                      margin: EdgeInsets.only(left: 11.h),
+                      padding: EdgeInsets.all(5.h),
+                      child: Container(
+                        height: 12.adaptSize,
+                        width: 12.adaptSize,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6.h),
+                        ),
+                        child: Radio(
+                          value: value,
+                          groupValue: _selectedOption,
+                          onChanged: (newValue) {
+                            setState(() {
+                              _selectedOption = newValue as int;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Radio(
-                value: value,
-                groupValue: _selectedOption,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedOption = newValue as int;
-                  });
-                },
+            ),
+          ],
+        ),
+      );
+    }
+      return Container(
+        margin: EdgeInsets.only(right: 6.h),
+        padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 17.v),
+        decoration: AppDecoration.outlineBlack.copyWith(
+          borderRadius: BorderRadiusStyle.circleBorder15,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 231.h, top: 5.v, bottom: 2.v),
+              child: Text(
+                title,
+                style: CustomTextStyles.titleSmallBluegray900ExtraBold,
               ),
             ),
-          ),
-        ],
-      ),
-    );
+            Container(
+              margin: EdgeInsets.only(left: 11.h),
+              padding: EdgeInsets.all(5.h),
+              child: Container(
+                height: 12.adaptSize,
+                width: 12.adaptSize,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6.h),
+                ),
+                child: Radio(
+                  value: value,
+                  groupValue: _selectedOption,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedOption = newValue as int;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
   }
 
   Widget _buildPaymentOptionsRow(BuildContext context) {

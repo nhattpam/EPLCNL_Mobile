@@ -139,9 +139,15 @@ class SingleMeetCourseDetailsPageState
         await loadAssignmentByModuleId(module.id.toString());
         sumAssignment += moduleAssignmentMap[module.id]?.length ?? 0;
         sumQuiz += moduleQuizMap[module.id]?.length ?? 0;
+
       }
+
       // After all lessons are loaded, proceed with building the UI
-      setState(() {});
+      setState(() {
+        isLoadingAssignment = false;
+        isLoadingQuiz = false;
+
+      });
     } catch (e) {
       // Handle errors here
       print('Error loading lessons: $e');
@@ -165,7 +171,6 @@ class SingleMeetCourseDetailsPageState
       setState(() {
         // Store the lessons for this module in the map
         moduleQuizMap[moduleId] = loadedQuiz;
-        isLoadingQuiz = false;
       });
     }
   }
@@ -177,13 +182,13 @@ class SingleMeetCourseDetailsPageState
       setState(() {
         // Store the lessons for this module in the map
         moduleAssignmentMap[moduleId] = loadedAssignment;
-        isLoadingAssignment = false;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    print(isLoadingAssignment);
     bool isEnrolled = enrollment.transaction?.learnerId != null && enrollment.transaction?.courseId != null;
     return SafeArea(
         child: Scaffold(
@@ -234,11 +239,17 @@ class SingleMeetCourseDetailsPageState
                                     Icons.video_camera_front,
                                     size: 12,
                                   ),
+                                  if(isLoadingModule == false)
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 17.h, top: 3.v),
                                       child: Text(listModuleByCourseId.length.toString() +" Module",
-                                          style: theme.textTheme.titleSmall))
+                                          style: theme.textTheme.titleSmall)),
+                                  if(isLoadingModule == true)
+                                    Padding(
+                                        padding:
+                                        EdgeInsets.only(left: 17.h, top: 3.v),
+                                        child: Skeleton(width: 50))
                                 ])),
                             SizedBox(height: 31.v),
                             Padding(
@@ -248,12 +259,18 @@ class SingleMeetCourseDetailsPageState
                                     FontAwesomeIcons.pencilAlt,
                                     size: 12,
                                   ),
+                                  if(isLoadingAssignment == false)
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 15.h, top: 5.v),
                                       child: Text(sumAssignment.toString() + " Assignment",
-                                          style: theme.textTheme.titleSmall))
-                                ])),
+                                          style: theme.textTheme.titleSmall)),
+                                  if(isLoadingAssignment == true)
+                                    Padding(
+                                        padding:
+                                        EdgeInsets.only(left: 15.h, top: 5.v),
+                                        child: Skeleton(width: 50)
+                                    )])),
                             SizedBox(height: 32.v),
                             Padding(
                                 padding: EdgeInsets.only(left: 2.h),
@@ -262,11 +279,17 @@ class SingleMeetCourseDetailsPageState
                                     FontAwesomeIcons.book,
                                     size: 12,
                                   ),
-                                  Padding(
+                                  if(isLoadingQuiz == false)
+                                    Padding(
                                       padding:
                                           EdgeInsets.only(left: 12.h, top: 3.v),
                                       child: Text(sumQuiz.toString() + " Quizzes",
-                                          style: theme.textTheme.titleSmall))
+                                          style: theme.textTheme.titleSmall)),
+                                  if(isLoadingQuiz == true)
+                                    Padding(
+                                        padding:
+                                        EdgeInsets.only(left: 12.h, top: 3.v),
+                                        child: Skeleton(width: 50)),
                                 ])),
                             SizedBox(height: 30.v),
                             Padding(

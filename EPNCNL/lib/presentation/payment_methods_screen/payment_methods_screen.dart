@@ -31,7 +31,7 @@ class PaymentMethodsScreen extends StatefulWidget {
 }
 
 class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
-  late int _selectedOption;
+  late String _selectedOption;
 
   int _currentIndex = 0;
 
@@ -40,6 +40,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   late String? transactionId = "";
 
   late String paymentUrl;
+  bool status = false;
 
   bool isLoading = false;
 
@@ -51,7 +52,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
 
   @override
   void initState() {
-    _selectedOption = 1;
+    _selectedOption = '1dffb0d3-f5a5-4725-98fc-b4dea22f4b0e';
     isLoadingCourse = true;
     super.initState();
     loadCourseByCourseID();
@@ -260,7 +261,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   }
 
   /// Section Widget
-  Widget _buildPaymentOption(String title, int value) {
+  Widget _buildPaymentOption(String title, String value) {
     if(title == "Wallet"){
       return Container(
         margin: EdgeInsets.only(right: 6.h),
@@ -306,7 +307,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                           groupValue: _selectedOption,
                           onChanged: (newValue) {
                             setState(() {
-                              _selectedOption = newValue as int;
+                              _selectedOption = newValue!;
                             });
                           },
                         ),
@@ -351,7 +352,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   groupValue: _selectedOption,
                   onChanged: (newValue) {
                     setState(() {
-                      _selectedOption = newValue as int;
+                      _selectedOption = newValue!;
                     });
                   },
                 ),
@@ -366,19 +367,20 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        _buildPaymentOption("VN Pay", 1),
+        _buildPaymentOption("VN Pay", "1dffb0d3-f5a5-4725-98fc-b4dea22f4b0e"),
         SizedBox(height: 10),
-        _buildPaymentOption("Wallet", 2),
+        _buildPaymentOption("Wallet", "2968c869-dceb-4b3e-8c6d-720fccb89a88"),
         SizedBox(height: 10), // Adjust spacing as needed
       ],
     );
   }
 
   Future<String?> _createTransaction() async {
+    print(_selectedOption);
     try {
       transactionId = await Network.createTransaction(
           courseId: widget.courseID,
-          amount: chosenCourse.stockPrice!.toDouble() * 24000);
+          amount: chosenCourse.stockPrice!.toDouble() * 24000, paymentMethodId: _selectedOption);
       // orderId now contains the order ID returned from the API
       print('Transaction ID pro : $transactionId');
       return transactionId;
@@ -392,55 +394,79 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   Widget _buildEnrollCourseButton(BuildContext context) {
     return CustomElevatedButton(
       onPressed: () async {
-        String? transactionId = await _createTransaction();
-
-        if (transactionId != null) {
-          // Set loading state when the transaction is being processed
-          setState(() {
-            isLoading = true;
-          });
-
-          try {
-            Transaction transaction =
-                await Network.getTransactionByTransactionId(transactionId);
-
-            // Start the periodic timer to check transaction status every 5 seconds
-            _timer = Timer.periodic(Duration(seconds: 5), (timer) {
-              if (!isLoading) {
-                _checkTransactionStatus();
-              }
-            });
-
-            // Status is "DONE", proceed with payment
-            if (transaction.status == "DONE") {
-              print("DONE ");
-              // Do something with paymentUrl if needed
-              // Change the button text to "Enroll Course" and show the button
-            } else {
-              print("NOT DONE YET");
-              // If status is not "DONE", show loading indicator or perform other actions
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-              );
-
-              // Call payTransaction only if the status is not "DONE"
-              paymentUrl = await Network.payTransaction(transactionId);
-              print("vcl: " + paymentUrl);
-              launch(paymentUrl);
+        if(_selectedOption == '2968c869-dceb-4b3e-8c6d-720fccb89a88' && (wallet.balance ?? 0)  < (chosenCourse.stockPrice ?? 0)){
+          AwesomeDialog(
+            context: context,
+            animType: AnimType.scale,
+            dialogType: DialogType.error,
+            body: Center(
+              child: Text(
+                "Your balance doesn't enough to do this",
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
+            ),
+            btnCancelText: 'OK',
+            btnCancelOnPress: (){
             }
-          } catch (e) {
-            // Handle the error, e.g., show an error message
-            print('Error during payment transaction: $e');
-          } finally {
-            // Set loading state to false after the transaction processing is complete
+
+          )..show();
+        }
+        else{
+          String? transactionId = await _createTransaction();
+          if (transactionId != null) {
+            // Set loading state when the transaction is being processed
             setState(() {
-              isLoading = false;
+              isLoading = true;
             });
+
+            try {
+              Transaction transaction =
+              await Network.getTransactionByTransactionId(transactionId);
+
+              // Start the periodic timer to check transaction status every 5 seconds
+              _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+                if (!isLoading) {
+                  _checkTransactionStatus();
+                }
+              });
+
+              // Status is "DONE", proceed with payment
+              if (transaction.status == "DONE") {
+                print("DONE ");
+                // Do something with paymentUrl if needed
+                // Change the button text to "Enroll Course" and show the button
+              } else {
+                print("NOT DONE YET");
+                // If status is not "DONE", show loading indicator or perform other actions
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
+                );
+                if(transaction.paymentMethod?.name == 'VnPay'){
+                  paymentUrl = await Network.payTransaction(transactionId);
+                  print("VnPay: " + paymentUrl);
+                  launch(paymentUrl);
+                }
+                if(transaction.paymentMethod?.name == 'Wallet'){
+                  status = await Network.payTransactionByWallet(transactionId);
+                  print("Wallet: " + status.toString());
+                }
+                // Call payTransaction only if the status is not "DONE"
+
+              }
+            } catch (e) {
+              // Handle the error, e.g., show an error message
+              print('Error during payment transaction: $e');
+            } finally {
+              // Set loading state to false after the transaction processing is complete
+              setState(() {
+                isLoading = false;
+              });
+            }
           }
         }
       },
@@ -498,11 +524,15 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         setState(() {
           isLoading = true;
         });
-
-        // Call payTransaction only if the status is not "DONE"
-        paymentUrl = await Network.payTransaction(transactionId);
-        print("vcl: " + paymentUrl);
-        launch(paymentUrl);
+        if(transaction.paymentMethod?.name == 'VnPay'){
+          paymentUrl = await Network.payTransaction(transactionId);
+          print("VnPay: " + paymentUrl);
+          launch(paymentUrl);
+        }
+        if(transaction.paymentMethod?.name == 'Wallet'){
+          status = await Network.payTransactionByWallet(transactionId);
+          print("Wallet: " + status.toString());
+        }
       }
     } catch (e) {
       // Handle the error, e.g., show an error message

@@ -1327,9 +1327,10 @@ class Network {
   static Future<String> createTransaction({
     required String courseId,
     required double amount,
+    required String paymentMethodId
   }) async {
     final userData = {
-      "paymentMethodId": "1dffb0d3-f5a5-4725-98fc-b4dea22f4b0e",
+      "paymentMethodId": paymentMethodId,
       "amount": amount,
       "learnerId": SessionManager().getLearnerId(),
       "courseId": courseId,
@@ -1388,11 +1389,37 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+  static Future<bool> payTransactionByWallet(String? transactionId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/transactions/$transactionId/wallet-payment'; // Replace with your API URL
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Map the JSON object to a User object and return it
+        return json.decode(json.encode(response.body));
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to retrieve payment link. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
 
   static Future<Transaction> getTransactionByTransactionId(
       String? transactionId) async {
     final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/transactions/$transactionId'; // Replace with your API URL
+        'https://nhatpmse.twentytwo.asia/api/transactions/$transactionId';
+    print(apiUrl);// Replace with your API URL
     try {
       final response = await http.get(
         Uri.parse(apiUrl),

@@ -675,7 +675,7 @@ class HomePageState extends State<HomePage> {
                                                 (moduleEnrollmentMap[course.id]
                                                     ?.length)
                                                     .toString() +
-                                                    " Enroll",
+                                                    " Enrollment",
                                                 style:
                                                 theme.textTheme.labelMedium,
                                               ),

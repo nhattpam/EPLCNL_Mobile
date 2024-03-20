@@ -417,7 +417,7 @@ class FilterResultState extends State<FilterResultScreen> {
                                   top: 3.v,
                                 ),
                                 child: Text(
-                                  (moduleEnrollmentMap[data?[index].id]?.length).toString() + " Enroll",
+                                  (moduleEnrollmentMap[data?[index].id]?.length).toString() + " Enrollment",
                                   style: theme.textTheme.labelMedium,
                                 ),
                               ),

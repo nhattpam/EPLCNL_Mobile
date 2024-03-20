@@ -703,7 +703,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                         (moduleEnrollmentMap[courses.id]
                                                     ?.length)
                                                 .toString() +
-                                            " Enroll",
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -845,7 +845,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                         (moduleEnrollmentMap[courses.id]
                                                     ?.length)
                                                 .toString() +
-                                            " Enroll",
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -987,7 +987,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                         (moduleEnrollmentMap[courses.id]
                                                     ?.length)
                                                 .toString() +
-                                            " Enroll",
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -1129,7 +1129,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                         (moduleEnrollmentMap[courses.id]
                                                     ?.length)
                                                 .toString() +
-                                            " Enroll",
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -1271,7 +1271,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                         (moduleEnrollmentMap[courses.id]
                                                     ?.length)
                                                 .toString() +
-                                            " Enroll",
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -1413,7 +1413,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                         (moduleEnrollmentMap[courses.id]
                                                     ?.length)
                                                 .toString() +
-                                            " Enroll",
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -1555,7 +1555,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                         (moduleEnrollmentMap[courses.id]
                                                     ?.length)
                                                 .toString() +
-                                            " Enroll",
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),

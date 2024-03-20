@@ -397,7 +397,7 @@ class CoursesListScreenState extends State<CoursesListScreen> {
                                 top: 3.v,
                               ),
                               child: Text(
-                                (moduleEnrollmentMap[course.id]?.length).toString() + " Enroll",
+                                (moduleEnrollmentMap[course.id]?.length).toString() + " Enrollment",
                                 style: theme.textTheme.labelMedium,
                               ),
                             ),

@@ -7,7 +7,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
+import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/enrollments.dart';
+import 'package:meowlish/data/models/lessons.dart';
+import 'package:meowlish/data/models/modules.dart';
+import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/curriculcum_screen/curriculcum_screen.dart';
 import 'package:meowlish/presentation/payment_methods_screen/payment_methods_screen.dart';
@@ -36,15 +40,18 @@ class SingleMeetCourseDetailsPageState
     extends State<SingleMeetCourseDetailsPage> {
   late Tutor chosenTutor = Tutor();
   late Course chosenCourse = Course();
+  late List<Module> listModuleByCourseId = [];
 
   late Enrollment enrollment = Enrollment();
   late bool isLoadingCourse;
   late bool isLoadingTutor;
+  late bool isLoadingModule;
 
   @override
   void initState() {
     isLoadingTutor = true;
     isLoadingCourse = true;
+    isLoadingModule = true;
     super.initState();
     loadTutorByTutorID();
     loadCourseByCourseID();
@@ -95,7 +102,71 @@ class SingleMeetCourseDetailsPageState
     }
   }
 
-
+  Future<void> loadModuleByCourseId() async {
+    try {
+      List<Module> loadedModule =
+      await Network.getModulesByCourseId(widget.courseID);
+      setState(() {
+        listModuleByCourseId = loadedModule;
+        isLoadingModule = false;
+      });
+      // After loading modules, load all lessons
+      // loadAllLessons();
+    } catch (e) {
+      // Handle errors here
+      print('Error loading modules: $e');
+    }
+  }
+  //
+  // Future<void> loadAllLessons() async {
+  //   try {
+  //     // Load lessons for each module
+  //     for (final module in listModuleByCourseId) {
+  //       await loadLessonByModuleId(module.id.toString());
+  //       await loadQuizByModuleId(module.id.toString());
+  //       await loadAssignmentByModuleId(module.id.toString());
+  //     }
+  //     // After all lessons are loaded, proceed with building the UI
+  //     setState(() {});
+  //   } catch (e) {
+  //     // Handle errors here
+  //     print('Error loading lessons: $e');
+  //   }
+  // }
+  //
+  // Future<void> loadLessonByModuleId(String moduleId) async {
+  //   List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
+  //   if (mounted) {
+  //     setState(() {
+  //       // Store the lessons for this module in the map
+  //       moduleLessonsMap[moduleId] = loadedLesson;
+  //       isLoadingLesson = false;
+  //     });
+  //   }
+  // }
+  //
+  // Future<void> loadQuizByModuleId(String moduleId) async {
+  //   List<Quiz> loadedQuiz = await Network.getQuizByModuleId(moduleId);
+  //   if (mounted) {
+  //     setState(() {
+  //       // Store the lessons for this module in the map
+  //       moduleQuizMap[moduleId] = loadedQuiz;
+  //       isLoadingQuiz = false;
+  //     });
+  //   }
+  // }
+  //
+  // Future<void> loadAssignmentByModuleId(String moduleId) async {
+  //   List<Assignment> loadedAssignment =
+  //   await Network.getAssignmentByModuleId(moduleId);
+  //   if (mounted) {
+  //     setState(() {
+  //       // Store the lessons for this module in the map
+  //       moduleAssignmentMap[moduleId] = loadedAssignment;
+  //       isLoadingAssignment = false;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -170,31 +241,31 @@ class SingleMeetCourseDetailsPageState
                             //               style: theme.textTheme.titleSmall))
                             //     ])),
                             SizedBox(height: 31.v),
-                            Padding(
-                                padding: EdgeInsets.only(left: 2.h),
-                                child: Row(children: [
-                                  Icon(
-                                    FontAwesomeIcons.signal,
-                                    size: 12,
-                                  ),
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.only(left: 14.h, top: 3.v),
-                                      child: Text("Beginner Level",
-                                          style: theme.textTheme.titleSmall))
-                                ])),
-                            SizedBox(height: 30.v),
-                            Row(children: [
-                              Icon(
-                                FontAwesomeIcons.youtube,
-                                size: 12,
-                              ),
-                              Padding(
-                                  padding: EdgeInsets.only(left: 11.h),
-                                  child: Text("Video",
-                                      style: theme.textTheme.titleSmall))
-                            ]),
-                            SizedBox(height: 29.v),
+                            // Padding(
+                            //     padding: EdgeInsets.only(left: 2.h),
+                            //     child: Row(children: [
+                            //       Icon(
+                            //         FontAwesomeIcons.signal,
+                            //         size: 12,
+                            //       ),
+                            //       Padding(
+                            //           padding:
+                            //               EdgeInsets.only(left: 14.h, top: 3.v),
+                            //           child: Text("Beginner Level",
+                            //               style: theme.textTheme.titleSmall))
+                            //     ])),
+                            // SizedBox(height: 30.v),
+                            // Row(children: [
+                            //   Icon(
+                            //     FontAwesomeIcons.youtube,
+                            //     size: 12,
+                            //   ),
+                            //   Padding(
+                            //       padding: EdgeInsets.only(left: 11.h),
+                            //       child: Text("Video",
+                            //           style: theme.textTheme.titleSmall))
+                            // ]),
+                            // SizedBox(height: 29.v),
                             Padding(
                                 padding: EdgeInsets.only(left: 2.h),
                                 child: Row(children: [

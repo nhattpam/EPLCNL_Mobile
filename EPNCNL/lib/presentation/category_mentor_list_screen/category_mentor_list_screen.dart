@@ -112,7 +112,7 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
                                   padding: EdgeInsets.only(left: 2.h),
                                   child: CustomSearchView(
                                     controller: searchController,
-                                    hintText: "3D Design",
+                                    hintText: "Search for",
                                     context: context,
                                   )),
                               SizedBox(height: 25.v),
@@ -265,6 +265,7 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
             itemBuilder: (context, index) {
               String image = '${chosenCategory?[index].tutor?.account?.imageUrl}';
               String name = '${chosenCategory?[index].tutor?.account?.fullName}';
+              String email = '${chosenCategory?[index].tutor?.account?.email}';
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -304,7 +305,7 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
                         ),
                         SizedBox(height: 2.v),
                         Text(
-                          "3D Design",
+                          email,
                           style: theme.textTheme.labelLarge,
                         ),
                       ],

@@ -26,8 +26,8 @@ class CurriculumScreen extends StatefulWidget {
 
   const CurriculumScreen({Key? key, this.courseID})
       : super(
-          key: key,
-        );
+    key: key,
+  );
 
   @override
   CurriculumScreenState createState() => CurriculumScreenState();
@@ -77,7 +77,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   Future<void> loadModuleByCourseId() async {
     try {
       List<Module> loadedModule =
-          await Network.getModulesByCourseId(widget.courseID);
+      await Network.getModulesByCourseId(widget.courseID);
       setState(() {
         listModuleByCourseId = loadedModule;
         isLoadingModule = false;
@@ -104,21 +104,23 @@ class CurriculumScreenState extends State<CurriculumScreen> {
 
   Future<void> loadClassModuleByCourseId() async {
     List<ClassModule> loadedModule =
-        await Network.getClassModulesByCourseId(widget.courseID);
+    await Network.getClassModulesByCourseId(widget.courseID);
     setState(() {
       listClassModuleByCourseId = loadedModule;
     });
   }
+
   Future<void> loadQuizAttemptsByLearnerId() async {
     List<QuizAttempt> loadedQuizAttempt =
-        await Network.getQuizAttemptByLearnerId();
+    await Network.getQuizAttemptByLearnerId();
     setState(() {
       listQuizAttempt = loadedQuizAttempt;
     });
   }
+
   Future<void> loadAssignmentAttemptsByLearnerId() async {
     List<AssignmentAttempt> loadedAssignmentAttempt =
-        await Network.getAssignmentAttemptByLearnerId();
+    await Network.getAssignmentAttemptByLearnerId();
     setState(() {
       listAssignmentAttempt = loadedAssignmentAttempt;
     });
@@ -148,7 +150,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
 
   Future<void> loadAssignmentByModuleId(String moduleId) async {
     List<Assignment> loadedAssignment =
-        await Network.getAssignmentByModuleId(moduleId);
+    await Network.getAssignmentByModuleId(moduleId);
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
@@ -229,7 +231,8 @@ class CurriculumScreenState extends State<CurriculumScreen> {
             }
             if (index == 1) {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+                MaterialPageRoute(
+                    builder: (context) => MyCourseCompletedPage()),
               );
             }
             if (index == 2) {
@@ -399,7 +402,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                 onPressed: () {
                   setState(() {
                     minimizedLessonsMap[module.id.toString()] =
-                        !(minimizedLessonsMap[module.id.toString()] ?? false);
+                    !(minimizedLessonsMap[module.id.toString()] ?? false);
                   });
                 },
               ),
@@ -408,25 +411,25 @@ class CurriculumScreenState extends State<CurriculumScreen> {
           // Only show the lessons if the module is not minimized
           if (!(minimizedLessonsMap[module.id.toString()] ?? false))
             for (int lessonIndex = 0;
-                lessonIndex <
-                    (moduleLessonsMap[module.id.toString()]?.length ?? 0);
-                lessonIndex++)
+            lessonIndex <
+                (moduleLessonsMap[module.id.toString()]?.length ?? 0);
+            lessonIndex++)
               TextButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          // VideoPlayerWidget(videoUrl: moduleLessonsMap[module.id.toString()]![lessonIndex].videoUrl.toString(),
-                          VideoPlayerWidget(
+                      // VideoPlayerWidget(videoUrl: moduleLessonsMap[module.id.toString()]![lessonIndex].videoUrl.toString(),
+                      VideoPlayerWidget(
                         lessonId:
-                            moduleLessonsMap[module.id.toString()]![lessonIndex]
-                                .id
-                                .toString(),
+                        moduleLessonsMap[module.id.toString()]![lessonIndex]
+                            .id
+                            .toString(),
                         videoUrl:
-                            moduleLessonsMap[module.id.toString()]![lessonIndex]
-                                .videoUrl
-                                .toString(),
+                        moduleLessonsMap[module.id.toString()]![lessonIndex]
+                            .videoUrl
+                            .toString(),
                       ),
                     ),
                   );
@@ -478,8 +481,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
               children: [
                 Expanded(
                   child: TextButton(
-                      onPressed: () async {
-                      },
+                      onPressed: () async {},
                       child: Skeleton(width: 200)
                   ),
                 ),
@@ -510,8 +512,8 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                 onPressed: () {
                   setState(() {
                     minimizedAssignmentsMap[module.id.toString()] =
-                        !(minimizedAssignmentsMap[module.id.toString()] ??
-                            false);
+                    !(minimizedAssignmentsMap[module.id.toString()] ??
+                        false);
                   });
                 },
               ),
@@ -519,7 +521,9 @@ class CurriculumScreenState extends State<CurriculumScreen> {
           ),
           // Only show the assignments if the module is not minimized
           if (!(minimizedAssignmentsMap[module.id.toString()] ?? false))
-            for (int assignmentIndex = 0; assignmentIndex < (moduleAssignmentMap[module.id.toString()]?.length ?? 0); assignmentIndex++)
+            for (int assignmentIndex = 0; assignmentIndex <
+                (moduleAssignmentMap[module.id.toString()]?.length ??
+                    0); assignmentIndex++)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -529,54 +533,78 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => DoingAssignmentScreen(
-                                  assignmentID: moduleAssignmentMap[module.id.toString()]![assignmentIndex].id.toString(),
-                                  cooldownTime: Duration(
-                                      minutes: moduleAssignmentMap[
-                                              module.id.toString()]![assignmentIndex]
-                                          .deadline as int))),
+                              builder: (context) =>
+                                  DoingAssignmentScreen(
+                                      assignmentID: moduleAssignmentMap[module
+                                          .id.toString()]![assignmentIndex].id
+                                          .toString(),
+                                      cooldownTime: Duration(
+                                          minutes: moduleAssignmentMap[
+                                          module.id
+                                              .toString()]![assignmentIndex]
+                                              .deadline as int))),
                         );
                         loadAssignmentAttemptsByLearnerId();
                       },
-                        child:
-                        Html(
-                            data: moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText
-                                .toString(),
-                            style: {
-                              "body": Style(
-                                  fontWeight: FontWeight.bold, color: Colors.black
-                              ),
-                            },
+                      child:
+                      Html(
+                        data: moduleAssignmentMap[module.id
+                            .toString()]![assignmentIndex].questionText
+                            .toString(),
+                        style: {
+                          "body": Style(
+                              fontWeight: FontWeight.bold, color: Colors.black
                           ),
+                        },
+                      ),
                     ),
                   ),
                   if (listAssignmentAttempt.isNotEmpty &&
                       listAssignmentAttempt.any((attempt) =>
                       attempt.assignmentId ==
-                          moduleAssignmentMap[module.id.toString()]![assignmentIndex].id))
+                          moduleAssignmentMap[module.id
+                              .toString()]![assignmentIndex].id))
 
                     Icon(
                       listAssignmentAttempt.isNotEmpty &&
                           listAssignmentAttempt.lastIndexWhere((attempt) =>
                           attempt.assignmentId ==
-                              moduleAssignmentMap[module.id.toString()]![assignmentIndex].id) !=
+                              moduleAssignmentMap[module.id
+                                  .toString()]![assignmentIndex].id) !=
                               null &&
-                          moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass !=
+                          moduleAssignmentMap[module.id
+                              .toString()]![assignmentIndex].gradeToPass !=
                               null &&
-                          listAssignmentAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >=
-                              moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass!
+                          listAssignmentAttempt
+                              .reduce((a, b) =>
+                          DateTime.parse(a.attemptedDate!)
+                              .isAfter(DateTime.parse(b.attemptedDate!))
+                              ? a
+                              : b)
+                              .totalGrade! >=
+                              moduleAssignmentMap[module.id
+                                  .toString()]![assignmentIndex].gradeToPass!
 
                           ? FontAwesomeIcons.check
                           : Icons.dangerous_outlined,
                       color: listAssignmentAttempt.isNotEmpty &&
                           listAssignmentAttempt.lastIndexWhere((attempt) =>
                           attempt.assignmentId ==
-                              moduleAssignmentMap[module.id.toString()]![assignmentIndex].id) !=
+                              moduleAssignmentMap[module.id
+                                  .toString()]![assignmentIndex].id) !=
                               null &&
-                          moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass !=
+                          moduleAssignmentMap[module.id
+                              .toString()]![assignmentIndex].gradeToPass !=
                               null &&
-                          listAssignmentAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >=
-                              moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass!
+                          listAssignmentAttempt
+                              .reduce((a, b) =>
+                          DateTime.parse(a.attemptedDate!)
+                              .isAfter(DateTime.parse(b.attemptedDate!))
+                              ? a
+                              : b)
+                              .totalGrade! >=
+                              moduleAssignmentMap[module.id
+                                  .toString()]![assignmentIndex].gradeToPass!
                           ? Colors.green
                           : Colors.red,
                       size: 20.v,
@@ -666,58 +694,80 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
-                    onPressed: ()  async{
+                    onPressed: () async {
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DoingQuizScreen(
-                            quizId: moduleQuizMap[module.id.toString()]![quizIndex].id.toString(),
-                            cooldownTime: Duration(
-                              minutes: moduleQuizMap[module.id.toString()]![quizIndex].deadline as int,
-                            ),
-                          ),
+                          builder: (context) =>
+                              DoingQuizScreen(
+                                quizId: moduleQuizMap[module.id
+                                    .toString()]![quizIndex].id.toString(),
+                                cooldownTime: Duration(
+                                  minutes: moduleQuizMap[module.id
+                                      .toString()]![quizIndex].deadline as int,
+                                ),
+                              ),
                         ),
                       );
                       loadQuizAttemptsByLearnerId();
                     },
                     child: Text(
-                      moduleQuizMap[module.id.toString()]![quizIndex].name.toString(),
+                      moduleQuizMap[module.id.toString()]![quizIndex].name
+                          .toString(),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
                   ),
-                  if(listQuizAttempt.isNotEmpty &&
-                      listQuizAttempt.lastIndexWhere((attempt) =>
+                  if (listQuizAttempt.isNotEmpty &&
+                      listQuizAttempt.any((attempt) =>
                       attempt.quizId ==
-                          moduleQuizMap[module.id.toString()]![quizIndex].id) !=
-                          null)
-                  Icon(
-                    listQuizAttempt.isNotEmpty &&
-                        listQuizAttempt.lastIndexWhere((attempt) =>
-                        attempt.quizId ==
-                            moduleQuizMap[module.id.toString()]![quizIndex].id) !=
-                            null &&
-                        moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass !=
-                            null &&
-                        listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >= moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass!
+                          moduleQuizMap[module.id.toString()]![quizIndex].id))
+                    Icon(
+                      listQuizAttempt.isNotEmpty &&
+                          listQuizAttempt.lastIndexWhere((attempt) =>
+                          attempt.quizId ==
+                              moduleQuizMap[module.id.toString()]![quizIndex]
+                                  .id) !=
+                              null &&
+                          moduleQuizMap[module.id.toString()]![quizIndex]
+                              .gradeToPass !=
+                              null &&
+                          listQuizAttempt
+                              .reduce((a, b) =>
+                          DateTime.parse(a.attemptedDate!)
+                              .isAfter(DateTime.parse(b.attemptedDate!))
+                              ? a
+                              : b)
+                              .totalGrade! >=
+                              moduleQuizMap[module.id.toString()]![quizIndex]
+                                  .gradeToPass!
+                          ? FontAwesomeIcons.check
+                          : Icons.dangerous_outlined,
+                      color: listQuizAttempt.isNotEmpty &&
+                          listQuizAttempt.lastIndexWhere((attempt) =>
+                          attempt.quizId ==
+                              moduleQuizMap[module.id.toString()]![quizIndex]
+                                  .id) !=
+                              null &&
+                          moduleQuizMap[module.id.toString()]![quizIndex]
+                              .gradeToPass !=
+                              null &&
+                          listQuizAttempt
+                              .reduce((a, b) =>
+                          DateTime.parse(a.attemptedDate!)
+                              .isAfter(DateTime.parse(b.attemptedDate!))
+                              ? a
+                              : b)
+                              .totalGrade! >=
+                              moduleQuizMap[module.id.toString()]![quizIndex]
+                                  .gradeToPass!
 
-                        ? FontAwesomeIcons.check
-                        : Icons.dangerous_outlined,
-                    color: listQuizAttempt.isNotEmpty &&
-                        listQuizAttempt.lastIndexWhere((attempt) =>
-                        attempt.quizId ==
-                            moduleQuizMap[module.id.toString()]![quizIndex].id) !=
-                            null &&
-                        moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass !=
-                            null &&
-                        listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >= moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass!
-
-                        ? Colors.green
-                        : Colors.red,
-                    size: 20.v,
-                  ),
+                          ? Colors.green
+                          : Colors.red,
+                      size: 20.v,
+                    ),
                 ],
               ),
         ],

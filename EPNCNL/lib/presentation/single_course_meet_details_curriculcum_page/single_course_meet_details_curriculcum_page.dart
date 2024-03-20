@@ -32,8 +32,8 @@ class SingleCourseMeetDetailsCurriculcumPage extends StatefulWidget {
   const SingleCourseMeetDetailsCurriculcumPage(
       {Key? key, required this.courseID})
       : super(
-          key: key,
-        );
+    key: key,
+  );
 
   @override
   SingleCourseMeetDetailsCurriculcumPageState createState() =>
@@ -115,223 +115,251 @@ class SingleCourseMeetDetailsCurriculcumPageState
                       color: appTheme.gray50,
                     ),
                     FutureBuilder<List<ClassModule>>(
-                        future: _classmoduleList.getClassModule(query: query, courseId: widget.courseID),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              // itemCount: listClassModule.length,
-                              itemCount: 4,
-                              itemBuilder: (context, index) {
-                                return Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Column(
-                                        children: [
-                                          Skeleton(width: 100),
-                                          lineGen(
-                                            lines: [20.0, 30.0, 40.0, 10.0],
-                                          )
-                                        ],
-                                      ),
+                      future: _classmoduleList.getClassModule(
+                          query: query, courseId: widget.courseID),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            // itemCount: listClassModule.length,
+                            itemCount: 4,
+                            itemBuilder: (context, index) {
+                              return Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      children: [
+                                        Skeleton(width: 100),
+                                        lineGen(
+                                          lines: [20.0, 30.0, 40.0, 10.0],
+                                        )
+                                      ],
                                     ),
-                                    SizedBox(width: 12),
-                                    Expanded(
-                                      child: Container(
-                                        padding: EdgeInsets.only(left: 16, top: 8),
-                                        height: 150,
-                                        decoration: BoxDecoration(
-                                          color: Color(0xfff6f6f5),
-                                          borderRadius:
-                                          BorderRadius.all(Radius.circular(20.0)),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Skeleton(width: 70),
-                                            SizedBox(height: 5.v),
-                                            Skeleton(width: 70),
-                                            SizedBox(height: 5.v),
-                                            Column(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Skeleton(width: 50),
-                                                    Padding(
-                                                        padding:
-                                                        const EdgeInsets.only(left: 8.0),
-                                                        child: Skeleton(width: 50)
-                                                    )
-                                                  ],
-                                                ),
-                                                SizedBox(height: 5.v),
-                                                Row(
-                                                  children: [
-                                                    Skeleton(width: 50,)
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
+                                  ),
+                                  SizedBox(width: 12),
+                                  Expanded(
+                                    child: Container(
+                                      padding: EdgeInsets.only(
+                                          left: 16, top: 8),
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xfff6f6f5),
+                                        borderRadius:
+                                        BorderRadius.all(Radius.circular(20.0)),
                                       ),
-                                    )
-                                  ],
-                                );
-                              },
-                            );
-                          }
-                          if(snapshot.connectionState == ConnectionState.done){
-
-                            List<ClassModule>? data = snapshot.data;
-                            return ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              // itemCount: listClassModule.length,
-                              itemCount: data?.length?? 0,
-                              itemBuilder: (context, index) {
-                                final classModule = data?[index];
-                                // loadClassTopicsByClassLessonId();
-                                return Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(16.0),
                                       child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .start,
                                         children: [
-                                          Text(
-                                            classModule?.classLesson?.classHours ?? "",
-                                            style:
-                                            TextStyle(fontWeight: FontWeight.bold),
-                                          ),
-                                          lineGen(
-                                            lines: [20.0, 30.0, 40.0, 10.0],
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(width: 12),
-                                    Expanded(
-                                      child: Container(
-                                        padding: EdgeInsets.only(left: 16, top: 8),
-                                        height: 150,
-                                        decoration: BoxDecoration(
-                                          color: Color(0xfff6f6f5),
-                                          borderRadius:
-                                          BorderRadius.all(Radius.circular(20.0)),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                                child: Text(classModule?.course?.name ?? "",
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                                    overflow: TextOverflow.fade,
-                                                    softWrap: true)
-                                            ),
-                                            Text(
-                                              listClassTopic.isNotEmpty
-                                                  ? listClassTopic[index]
-                                                  .name
-                                                  .toString()
-                                                  : "", // Assuming 'name' is the property you want to display
-                                            ),
-                                            Column(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    ElevatedButton(
-                                                      onPressed: () {
-                                                        launch(classModule
-                                                            ?.classLesson?.classUrl ??
-                                                            "");
-                                                      },
-                                                      style: ElevatedButton.styleFrom(
-                                                        minimumSize: Size(100, 50),
-                                                        primary: Color(0xffbfe25c),
-                                                        // Background color
-                                                        onPrimary: Colors.white,
-                                                        // Text color
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius:
-                                                          BorderRadius.circular(10.0),
-                                                        ),
-                                                      ),
-                                                      child: Text('Meet URL'),
-                                                    ),
-                                                    VerticalDivider(),
-                                                    Padding(
+                                          Skeleton(width: 70),
+                                          SizedBox(height: 5.v),
+                                          Skeleton(width: 70),
+                                          SizedBox(height: 5.v),
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Skeleton(width: 50),
+                                                  Padding(
                                                       padding:
-                                                      const EdgeInsets.only(left: 8.0),
-                                                      child: ElevatedButton(
-                                                        onPressed: () {
-                                                          // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
-                                                          //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
-                                                          // }
-                                                          _showMultiSelect(
-                                                              data?[index]
-                                                                  .classLesson
-                                                                  ?.id ??
-                                                                  '');
-                                                        },
-                                                        style: ElevatedButton.styleFrom(
-                                                          minimumSize: Size(100, 50),
-                                                          primary: Color(0xffefc83c),
-                                                          // Background color
-                                                          onPrimary: Colors.white,
-                                                          // Text color
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius:
-                                                            BorderRadius.circular(10.0),
-                                                          ),
-                                                        ),
-                                                        child: Text('Materials'),
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                      child: Skeleton(width: 50)
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 5.v),
+                                              Row(
+                                                children: [
+                                                  Skeleton(width: 50,)
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              );
+                            },
+                          );
+                        }
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          List<ClassModule>? data = snapshot.data;
+                          return ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            // itemCount: listClassModule.length,
+                            itemCount: data?.length ?? 0,
+                            itemBuilder: (context, index) {
+                              final classModule = data?[index];
+                              // loadClassTopicsByClassLessonId();
+                              return Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          classModule?.classLesson
+                                              ?.classHours ?? "",
+                                          style:
+                                          TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        lineGen(
+                                          lines: [20.0, 30.0, 40.0, 10.0],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(width: 12),
+                                  Expanded(
+                                    child: Container(
+                                      padding: EdgeInsets.only(
+                                          left: 16, top: 8),
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xfff6f6f5),
+                                        borderRadius:
+                                        BorderRadius.all(Radius.circular(20.0)),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .start,
+                                        children: [
+                                          Expanded(
+                                              child: Text(
+                                                  classModule?.course?.name ??
+                                                      "",
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                  overflow: TextOverflow.fade,
+                                                  softWrap: true)
+                                          ),
+                                          Text(
+                                            listClassTopic.isNotEmpty
+                                                ? listClassTopic[index]
+                                                .name
+                                                .toString()
+                                                : "", // Assuming 'name' is the property you want to display
+                                          ),
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      launch(classModule
+                                                          ?.classLesson
+                                                          ?.classUrl ??
+                                                          "");
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      minimumSize: Size(
+                                                          100, 50),
+                                                      primary: Color(
+                                                          0xffbfe25c),
+                                                      // Background color
+                                                      onPrimary: Colors.white,
+                                                      // Text color
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0),
                                                       ),
-                                                    )
-                                                  ],
-                                                ),
-                                                SizedBox(height: 5.v),
-                                                Row(
-                                                  children: [
-                                                    ElevatedButton(
+                                                    ),
+                                                    child: Text('Meet URL'),
+                                                  ),
+                                                  VerticalDivider(),
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets.only(
+                                                        left: 8.0),
+                                                    child: ElevatedButton(
                                                       onPressed: () {
-                                                        _showTopic(classModule?.classLesson?.id ?? '');
+                                                        // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
+                                                        //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
+                                                        // }
+                                                        _showMultiSelect(
+                                                            data?[index]
+                                                                .classLesson
+                                                                ?.id ??
+                                                                '');
                                                       },
-                                                      style: ElevatedButton.styleFrom(
-                                                        minimumSize: Size(100, 50),
-                                                        primary: Color(0xFFF887A8),
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        minimumSize: Size(
+                                                            100, 50),
+                                                        primary: Color(
+                                                            0xffefc83c),
                                                         // Background color
                                                         onPrimary: Colors.white,
                                                         // Text color
                                                         shape: RoundedRectangleBorder(
                                                           borderRadius:
-                                                          BorderRadius.circular(10.0),
+                                                          BorderRadius.circular(
+                                                              10.0),
                                                         ),
                                                       ),
-                                                      child: Text('Topic'),
+                                                      child: Text('Materials'),
                                                     ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 5.v),
+                                              Row(
+                                                children: [
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      _showTopic(classModule
+                                                          ?.classLesson?.id ??
+                                                          '');
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      minimumSize: Size(
+                                                          100, 50),
+                                                      primary: Color(
+                                                          0xFFF887A8),
+                                                      // Background color
+                                                      onPrimary: Colors.white,
+                                                      // Text color
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0),
+                                                      ),
+                                                    ),
+                                                    child: Text('Topic'),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                    )
-                                  ],
-                                );
-                              },
+                                    ),
+                                  )
+                                ],
+                              );
+                            },
 
-                            );
-                          }
-                          return Container();
-                        },
+                          );
+                        }
+                        return Container();
+                      },
                     ),
                     // SizedBox(height: 50.v),
                     // CustomElevatedButton(
@@ -356,7 +384,8 @@ class SingleCourseMeetDetailsCurriculcumPageState
             }
             if (index == 1) {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+                MaterialPageRoute(
+                    builder: (context) => MyCourseCompletedPage()),
               );
             }
             if (index == 2) {
@@ -426,88 +455,89 @@ class SingleCourseMeetDetailsCurriculcumPageState
           width: 46.h,
           height: 64.v,
         ),
-          onDateChange: (selectedDate) {
-            print(selectedDate);
-            setState(() {
-              String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
-              query = formattedDate;
-            });
-          },
+        onDateChange: (selectedDate) {
+          print(selectedDate);
+          setState(() {
+            String formattedDate = DateFormat('yyyy-MM-dd').format(
+                selectedDate);
+            query = formattedDate;
+          });
+        },
         itemBuilder:
             (context, dayNumber, dayName, monthName, fullDate, isSelected) {
           return isSelected
               ? Container(
-                  width: 70.h,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12.h,
-                    vertical: 8.v,
-                  ),
-                  decoration: BoxDecoration(
-                    color: appTheme.deepOrange400,
-                    borderRadius: BorderRadius.circular(
-                      10.h,
+            width: 70.h,
+            padding: EdgeInsets.symmetric(
+              horizontal: 12.h,
+              vertical: 8.v,
+            ),
+            decoration: BoxDecoration(
+              color: appTheme.deepOrange400,
+              borderRadius: BorderRadius.circular(
+                10.h,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 3.h),
+                  child: Text(
+                    dayName.toString(),
+                    style: CustomTextStyles
+                        .labelLargePoppinsOnPrimaryContainer
+                        .copyWith(
+                      color: theme.colorScheme.onPrimaryContainer,
                     ),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 3.h),
-                        child: Text(
-                          dayName.toString(),
-                          style: CustomTextStyles
-                              .labelLargePoppinsOnPrimaryContainer
-                              .copyWith(
-                            color: theme.colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 5.v),
-                        child: Text(
-                          dayNumber.toString(),
-                          style: CustomTextStyles
-                              .titleMediumPoppinsOnPrimaryContainer
-                              .copyWith(
-                            color: theme.colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                      ),
-                    ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 5.v),
+                  child: Text(
+                    dayNumber.toString(),
+                    style: CustomTextStyles
+                        .titleMediumPoppinsOnPrimaryContainer
+                        .copyWith(
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
                   ),
-                )
+                ),
+              ],
+            ),
+          )
               : SizedBox(
-                  width: 46.h,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 4.h),
-                        child: Text(
-                          dayName.toString(),
-                          style: CustomTextStyles.labelLargePoppinsBluegray20001
-                              .copyWith(
-                            color: appTheme.blueGray20001,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 1.v),
-                        child: Text(
-                          dayNumber.toString(),
-                          style: CustomTextStyles.titleMediumPoppinsGray90002
-                              .copyWith(
-                            color: appTheme.gray90002,
-                          ),
-                        ),
-                      ),
-                    ],
+            width: 46.h,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 4.h),
+                  child: Text(
+                    dayName.toString(),
+                    style: CustomTextStyles.labelLargePoppinsBluegray20001
+                        .copyWith(
+                      color: appTheme.blueGray20001,
+                    ),
                   ),
-                );
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 1.v),
+                  child: Text(
+                    dayNumber.toString(),
+                    style: CustomTextStyles.titleMediumPoppinsGray90002
+                        .copyWith(
+                      color: appTheme.gray90002,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
         },
       ),
     );
@@ -528,7 +558,8 @@ class lineGen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(
           4,
-          (index) => Container(
+              (index) =>
+              Container(
                 height: 2,
                 width: lines[index],
                 color: Color(0xffd02d8),
@@ -559,7 +590,7 @@ class _MultiSelectState extends State<MultiSelect> {
 
   void loadClassModuleByCourseId() async {
     List<Topic> loadedClassTopic =
-        await Network.getTopicsByClassLessonId(widget.lessonId);
+    await Network.getTopicsByClassLessonId(widget.lessonId);
     setState(() {
       listClassTopic = loadedClassTopic;
     });
@@ -569,7 +600,7 @@ class _MultiSelectState extends State<MultiSelect> {
   Future<void> loadLessonMaterialByClassTopicId(String classtopicId) async {
     try {
       List<LessonMaterial> loadedLessonMaterial =
-          await Network.getListLessonMaterialByTopicId(classtopicId);
+      await Network.getListLessonMaterialByTopicId(classtopicId);
       setState(() {
         moduleLessonsMaterialMap[classtopicId] = loadedLessonMaterial;
       });
@@ -608,11 +639,11 @@ class _MultiSelectState extends State<MultiSelect> {
         try {
           await Dio().download(url, savePath,
               onReceiveProgress: (received, total) {
-            if (total != -1) {
-              print((received / total * 100).toStringAsFixed(0) + "%");
-              //you can build progressbar feature too
-            }
-          });
+                if (total != -1) {
+                  print((received / total * 100).toStringAsFixed(0) + "%");
+                  //you can build progressbar feature too
+                }
+              });
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Container(
               height: 40.0, // Adjust the height as needed
@@ -654,24 +685,27 @@ class _MultiSelectState extends State<MultiSelect> {
           Center(child: Text('Choose Topic to Down')),
           SingleChildScrollView(
             child: ListBody(
-              children: listClassTopic.asMap().entries.map((entry) {
+              children: listClassTopic
+                  .asMap()
+                  .entries
+                  .map((entry) {
                 final index = entry.key;
                 final item = entry.value;
                 return TextButton(
                   onPressed: () {
                     for (int lessonIndex = 0;
-                        lessonIndex <
-                            (moduleLessonsMaterialMap[listClassTopic[index].id]
-                                    ?.length ??
-                                0);
-                        lessonIndex++)
+                    lessonIndex <
+                        (moduleLessonsMaterialMap[listClassTopic[index].id]
+                            ?.length ??
+                            0);
+                    lessonIndex++)
                       downloadFile(
                           moduleLessonsMaterialMap[listClassTopic[index].id]![
-                                  lessonIndex]
+                          lessonIndex]
                               .materialUrl
                               .toString(),
                           moduleLessonsMaterialMap[listClassTopic[index].id]![
-                                  lessonIndex]
+                          lessonIndex]
                               .name
                               .toString());
                   },
@@ -681,21 +715,22 @@ class _MultiSelectState extends State<MultiSelect> {
                       IconButton(
                         onPressed: () {
                           for (int lessonIndex = 0;
-                              lessonIndex <
-                                  (moduleLessonsMaterialMap[
-                                              listClassTopic[index].id]
-                                          ?.length ??
-                                      0);
-                              lessonIndex++)
+                          lessonIndex <
+                              (moduleLessonsMaterialMap[
+                              listClassTopic[index].id]
+                                  ?.length ??
+                                  0);
+                          lessonIndex++)
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => MaterialView(
-                                      url: moduleLessonsMaterialMap[
-                                              listClassTopic[index]
-                                                  .id]![lessonIndex]
-                                          .materialUrl
-                                          .toString())),
+                                  builder: (context) =>
+                                      MaterialView(
+                                          url: moduleLessonsMaterialMap[
+                                          listClassTopic[index]
+                                              .id]![lessonIndex]
+                                              .materialUrl
+                                              .toString())),
                             );
                         },
                         icon: Icon(Icons.remove_red_eye_outlined),
@@ -714,6 +749,7 @@ class _MultiSelectState extends State<MultiSelect> {
 
 class MultiTopic extends StatefulWidget {
   final String lessonId;
+
   const MultiTopic({super.key, required this.lessonId});
 
   @override
@@ -735,7 +771,7 @@ class _MultiTopicState extends State<MultiTopic> {
 
   void loadClassModuleByCourseId() async {
     List<Topic> loadedClassTopic =
-        await Network.getTopicsByClassLessonId(widget.lessonId);
+    await Network.getTopicsByClassLessonId(widget.lessonId);
     setState(() {
       listClassTopic = loadedClassTopic;
     });
@@ -745,7 +781,7 @@ class _MultiTopicState extends State<MultiTopic> {
   Future<void> loadQuizByClassTopicId(String classtopicId) async {
     try {
       List<Quiz> loadedQuiz =
-          await Network.getQuizByTopicId(classtopicId);
+      await Network.getQuizByTopicId(classtopicId);
       setState(() {
         moduleQuizMap[classtopicId] = loadedQuiz;
       });
@@ -788,7 +824,10 @@ class _MultiTopicState extends State<MultiTopic> {
           Center(child: Text('Choose quiz to do')),
           SingleChildScrollView(
             child: ListBody(
-              children: listClassTopic.asMap().entries.map((entry) {
+              children: listClassTopic
+                  .asMap()
+                  .entries
+                  .map((entry) {
                 final index = entry.key;
                 final item = entry.value;
                 return Visibility(
@@ -801,7 +840,8 @@ class _MultiTopicState extends State<MultiTopic> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Topic:" +" "+ listClassTopic[index].name.toString(),
+                            "Topic:" + " " +
+                                listClassTopic[index].name.toString(),
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.primary),
@@ -809,67 +849,95 @@ class _MultiTopicState extends State<MultiTopic> {
                         ],
                       ),
                       // Only show the assignments if the module is not minimized
-                        for (int assignmentIndex = 0; assignmentIndex < (moduleQuizMap[listClassTopic[index].id]?.length ?? 0); assignmentIndex++)
-                          Row(
-                            children: [
-                              TextButton(
-                                onPressed: () async{
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => DoingQuizScreen(
-                                          quizId: moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id.toString(),
-                                            cooldownTime: Duration(
-                                                minutes: moduleQuizMap[
-                                                listClassTopic[index].id]![assignmentIndex]
-                                                    .deadline as int))),
-                                  );
-                                  loadQuizAttemptsByLearnerId();
-                                },
-                                child: Text(
-                                    moduleQuizMap[listClassTopic[index].id]![assignmentIndex]
-                                        .name
-                                        .toString(),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold, color: Colors.black)),
+                      for (int assignmentIndex = 0; assignmentIndex <
+                          (moduleQuizMap[listClassTopic[index].id]?.length ??
+                              0); assignmentIndex++)
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          DoingQuizScreen(
+                                              quizId: moduleQuizMap[listClassTopic[index]
+                                                  .id]![assignmentIndex].id
+                                                  .toString(),
+                                              cooldownTime: Duration(
+                                                  minutes: moduleQuizMap[
+                                                  listClassTopic[index]
+                                                      .id]![assignmentIndex]
+                                                      .deadline as int))),
+                                );
+                                loadQuizAttemptsByLearnerId();
+                              },
+                              child: Text(
+                                  moduleQuizMap[listClassTopic[index]
+                                      .id]![assignmentIndex]
+                                      .name
+                                      .toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black)),
 
+                            ),
+                            if (listQuizAttempt.isNotEmpty &&
+                                listQuizAttempt.any((attempt) =>
+                                attempt.quizId ==
+                                    moduleQuizMap[listClassTopic[index]
+                                        .id]![assignmentIndex].id))
+                              Icon(
+                                listQuizAttempt.isNotEmpty &&
+                                    listQuizAttempt.lastIndexWhere((attempt) =>
+                                    attempt.quizId ==
+                                        moduleQuizMap[listClassTopic[index]
+                                            .id]![assignmentIndex]
+                                            .id) !=
+                                        null &&
+                                    moduleQuizMap[listClassTopic[index]
+                                        .id]![assignmentIndex]
+                                        .gradeToPass !=
+                                        null &&
+                                    listQuizAttempt
+                                        .reduce((a, b) =>
+                                    DateTime.parse(a.attemptedDate!)
+                                        .isAfter(
+                                        DateTime.parse(b.attemptedDate!))
+                                        ? a
+                                        : b)
+                                        .totalGrade! >=
+                                        moduleQuizMap[listClassTopic[index]
+                                            .id]![assignmentIndex].gradeToPass!
+                                    ? FontAwesomeIcons.check
+                                    : Icons.dangerous_outlined,
+                                color: listQuizAttempt.isNotEmpty &&
+                                    listQuizAttempt.lastIndexWhere((attempt) =>
+                                    attempt.quizId ==
+                                        moduleQuizMap[listClassTopic[index]
+                                            .id]![assignmentIndex].id) !=
+                                        null &&
+                                    moduleQuizMap[listClassTopic[index]
+                                        .id]![assignmentIndex].gradeToPass !=
+                                        null &&
+                                    listQuizAttempt
+                                        .reduce((a, b) =>
+                                    DateTime.parse(a.attemptedDate!).isAfter(
+                                        DateTime.parse(b.attemptedDate!))
+                                        ? a
+                                        : b)
+                                        .totalGrade! >=
+                                        moduleQuizMap[listClassTopic[index]
+                                            .id]![assignmentIndex].gradeToPass!
+                                    ? Colors.green
+                                    : Colors.red,
+                                size: 20.v,
                               ),
-                              if(listQuizAttempt.isNotEmpty &&
-                                  listQuizAttempt.lastIndexWhere((attempt) =>
-                                  attempt.quizId ==
-                                      moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
-                                      null)
-                                Icon(
-                                  listQuizAttempt.isNotEmpty &&
-                                      listQuizAttempt.lastIndexWhere((attempt) =>
-                                      attempt.quizId ==
-                                          moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
-                                          null &&
-                                      moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
-                                          null &&
-                                      listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >=
-                                          moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
-                                      ? FontAwesomeIcons.check
-                                      : Icons.dangerous_outlined,
-                                  color: listQuizAttempt.isNotEmpty &&
-                                      listQuizAttempt.lastIndexWhere((attempt) =>
-                                      attempt.quizId ==
-                                          moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
-                                          null &&
-                                      moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
-                                          null &&
-                                      listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >=
-                                          moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
-                                      ? Colors.green
-                                      : Colors.red,
-                                  size: 20.v,
-                                ),
-                            ],
-                          ),
+                          ],
+                        ),
                     ],
                   ),
                 );
-
               }).toList(),
             ),
           ),
@@ -890,7 +958,8 @@ class MaterialView extends StatefulWidget {
 
 class _MaterialViewState extends State<MaterialView> {
   late PdfControllerPinch pdfControllerPinch;
-  int totalPageCount = 0, currentPage = 1;
+  int totalPageCount = 0,
+      currentPage = 1;
 
   @override
   void initState() {
@@ -940,19 +1009,19 @@ class _MaterialViewState extends State<MaterialView> {
             ),
             Expanded(
                 child: PdfViewPinch(
-              scrollDirection: Axis.vertical,
-              controller: pdfControllerPinch,
-              onDocumentLoaded: (doc) {
-                setState(() {
-                  totalPageCount = doc.pagesCount;
-                });
-              },
-              onPageChanged: (page) {
-                setState(() {
-                  currentPage = page;
-                });
-              },
-            ))
+                  scrollDirection: Axis.vertical,
+                  controller: pdfControllerPinch,
+                  onDocumentLoaded: (doc) {
+                    setState(() {
+                      totalPageCount = doc.pagesCount;
+                    });
+                  },
+                  onPageChanged: (page) {
+                    setState(() {
+                      currentPage = page;
+                    });
+                  },
+                ))
           ],
         ));
   }

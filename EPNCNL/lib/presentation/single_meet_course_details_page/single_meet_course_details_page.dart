@@ -41,20 +41,32 @@ class SingleMeetCourseDetailsPageState
   late Tutor chosenTutor = Tutor();
   late Course chosenCourse = Course();
   late List<Module> listModuleByCourseId = [];
-
   late Enrollment enrollment = Enrollment();
+
+  Map<String, List<Lesson>> moduleLessonsMap = {};
+  Map<String, List<Quiz>> moduleQuizMap = {};
+  Map<String, List<Assignment>> moduleAssignmentMap = {};
+
   late bool isLoadingCourse;
   late bool isLoadingTutor;
   late bool isLoadingModule;
-
+  late bool isLoadingLesson;
+  late bool isLoadingAssignment;
+  late bool isLoadingQuiz;
+  int sumAssignment = 0;
+  int sumQuiz = 0;
   @override
   void initState() {
     isLoadingTutor = true;
     isLoadingCourse = true;
     isLoadingModule = true;
+    isLoadingLesson = true;
+    isLoadingAssignment = true;
+    isLoadingQuiz = true;
     super.initState();
     loadTutorByTutorID();
     loadCourseByCourseID();
+    loadModuleByCourseId();
     loadEnrollmentByLearnerAndCourseId();
   }
 
@@ -111,62 +123,64 @@ class SingleMeetCourseDetailsPageState
         isLoadingModule = false;
       });
       // After loading modules, load all lessons
-      // loadAllLessons();
+      loadAllLessons();
     } catch (e) {
       // Handle errors here
       print('Error loading modules: $e');
     }
   }
-  //
-  // Future<void> loadAllLessons() async {
-  //   try {
-  //     // Load lessons for each module
-  //     for (final module in listModuleByCourseId) {
-  //       await loadLessonByModuleId(module.id.toString());
-  //       await loadQuizByModuleId(module.id.toString());
-  //       await loadAssignmentByModuleId(module.id.toString());
-  //     }
-  //     // After all lessons are loaded, proceed with building the UI
-  //     setState(() {});
-  //   } catch (e) {
-  //     // Handle errors here
-  //     print('Error loading lessons: $e');
-  //   }
-  // }
-  //
-  // Future<void> loadLessonByModuleId(String moduleId) async {
-  //   List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
-  //   if (mounted) {
-  //     setState(() {
-  //       // Store the lessons for this module in the map
-  //       moduleLessonsMap[moduleId] = loadedLesson;
-  //       isLoadingLesson = false;
-  //     });
-  //   }
-  // }
-  //
-  // Future<void> loadQuizByModuleId(String moduleId) async {
-  //   List<Quiz> loadedQuiz = await Network.getQuizByModuleId(moduleId);
-  //   if (mounted) {
-  //     setState(() {
-  //       // Store the lessons for this module in the map
-  //       moduleQuizMap[moduleId] = loadedQuiz;
-  //       isLoadingQuiz = false;
-  //     });
-  //   }
-  // }
-  //
-  // Future<void> loadAssignmentByModuleId(String moduleId) async {
-  //   List<Assignment> loadedAssignment =
-  //   await Network.getAssignmentByModuleId(moduleId);
-  //   if (mounted) {
-  //     setState(() {
-  //       // Store the lessons for this module in the map
-  //       moduleAssignmentMap[moduleId] = loadedAssignment;
-  //       isLoadingAssignment = false;
-  //     });
-  //   }
-  // }
+
+  Future<void> loadAllLessons() async {
+    try {
+      // Load lessons for each module
+      for (final module in listModuleByCourseId) {
+        await loadLessonByModuleId(module.id.toString());
+        await loadQuizByModuleId(module.id.toString());
+        await loadAssignmentByModuleId(module.id.toString());
+        sumAssignment += moduleAssignmentMap[module.id]?.length ?? 0;
+        sumQuiz += moduleQuizMap[module.id]?.length ?? 0;
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lessons: $e');
+    }
+  }
+
+  Future<void> loadLessonByModuleId(String moduleId) async {
+    List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleLessonsMap[moduleId] = loadedLesson;
+        isLoadingLesson = false;
+      });
+    }
+  }
+
+  Future<void> loadQuizByModuleId(String moduleId) async {
+    List<Quiz> loadedQuiz = await Network.getQuizByModuleId(moduleId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleQuizMap[moduleId] = loadedQuiz;
+        isLoadingQuiz = false;
+      });
+    }
+  }
+
+  Future<void> loadAssignmentByModuleId(String moduleId) async {
+    List<Assignment> loadedAssignment =
+    await Network.getAssignmentByModuleId(moduleId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleAssignmentMap[moduleId] = loadedAssignment;
+        isLoadingAssignment = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -223,49 +237,10 @@ class SingleMeetCourseDetailsPageState
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 17.h, top: 3.v),
-                                      child: Text("25 Meeting ",
+                                      child: Text(listModuleByCourseId.length.toString() +" Module",
                                           style: theme.textTheme.titleSmall))
                                 ])),
-                            // SizedBox(height: 30.v),
-                            // Padding(
-                            //     padding: EdgeInsets.only(left: 4.h),
-                            //     child: Row(children: [
-                            //       CustomImageView(
-                            //           imagePath: ImageConstant.imgMinimize,
-                            //           height: 22.v,
-                            //           width: 14.h),
-                            //       Padding(
-                            //           padding:
-                            //               EdgeInsets.only(left: 18.h, top: 4.v),
-                            //           child: Text("Access Mobile, Desktop & TV",
-                            //               style: theme.textTheme.titleSmall))
-                            //     ])),
                             SizedBox(height: 31.v),
-                            // Padding(
-                            //     padding: EdgeInsets.only(left: 2.h),
-                            //     child: Row(children: [
-                            //       Icon(
-                            //         FontAwesomeIcons.signal,
-                            //         size: 12,
-                            //       ),
-                            //       Padding(
-                            //           padding:
-                            //               EdgeInsets.only(left: 14.h, top: 3.v),
-                            //           child: Text("Beginner Level",
-                            //               style: theme.textTheme.titleSmall))
-                            //     ])),
-                            // SizedBox(height: 30.v),
-                            // Row(children: [
-                            //   Icon(
-                            //     FontAwesomeIcons.youtube,
-                            //     size: 12,
-                            //   ),
-                            //   Padding(
-                            //       padding: EdgeInsets.only(left: 11.h),
-                            //       child: Text("Video",
-                            //           style: theme.textTheme.titleSmall))
-                            // ]),
-                            // SizedBox(height: 29.v),
                             Padding(
                                 padding: EdgeInsets.only(left: 2.h),
                                 child: Row(children: [
@@ -276,7 +251,7 @@ class SingleMeetCourseDetailsPageState
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 15.h, top: 5.v),
-                                      child: Text("25 Assignment",
+                                      child: Text(sumAssignment.toString() + " Assignment",
                                           style: theme.textTheme.titleSmall))
                                 ])),
                             SizedBox(height: 32.v),
@@ -290,7 +265,7 @@ class SingleMeetCourseDetailsPageState
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 12.h, top: 3.v),
-                                      child: Text("100 Quizzes",
+                                      child: Text(sumQuiz.toString() + " Quizzes",
                                           style: theme.textTheme.titleSmall))
                                 ])),
                             SizedBox(height: 30.v),

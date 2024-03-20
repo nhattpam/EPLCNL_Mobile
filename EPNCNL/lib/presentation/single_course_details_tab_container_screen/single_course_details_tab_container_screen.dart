@@ -344,59 +344,59 @@ class SingleCourseDetailsTabContainerScreenState
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Icon(
-                          Icons.video_camera_front_outlined,
-                          // Replace with the desired icon
-                          size: 17.0, // Adjust the size as needed
-                          color: Colors.black, // Adjust the color as needed
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: 9.h,
-                            top: 7.v,
-                            bottom: 5.v,
-                          ),
-                          child: Text(
-                            "21 Class",
-                            style: theme.textTheme.labelMedium,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: 10.h,
-                            top: 7.v,
-                          ),
-                          child: Text(
-                            "|",
-                            style: CustomTextStyles.titleSmallBlack900,
-                          ),
-                        ),
-                        Container(
-                            height: 16.adaptSize,
-                            width: 16.adaptSize,
-                            margin: EdgeInsets.only(
-                              left: 10.h,
-                              top: 6.v,
-                              bottom: 4.v,
-                            ),
-                            padding: EdgeInsets.all(4.h),
-                            child: Icon(
-                              Icons.hourglass_empty,
-                              // Replace with the desired icon
-                              size: 17.0, // Adjust the size as needed
-                              color: Colors.black, // Adjust the color as needed
-                            )),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: 8.h,
-                            top: 8.v,
-                            bottom: 4.v,
-                          ),
-                          child: Text(
-                            "42 Hours",
-                            style: theme.textTheme.labelMedium,
-                          ),
-                        ),
+                        // Icon(
+                        //   Icons.video_camera_front_outlined,
+                        //   // Replace with the desired icon
+                        //   size: 17.0, // Adjust the size as needed
+                        //   color: Colors.black, // Adjust the color as needed
+                        // ),
+                        // Padding(
+                        //   padding: EdgeInsets.only(
+                        //     left: 9.h,
+                        //     top: 7.v,
+                        //     bottom: 5.v,
+                        //   ),
+                        //   child: Text(
+                        //     "21 Class",
+                        //     style: theme.textTheme.labelMedium,
+                        //   ),
+                        // ),
+                        // Padding(
+                        //   padding: EdgeInsets.only(
+                        //     left: 10.h,
+                        //     top: 7.v,
+                        //   ),
+                        //   child: Text(
+                        //     "|",
+                        //     style: CustomTextStyles.titleSmallBlack900,
+                        //   ),
+                        // ),
+                        // Container(
+                        //     height: 16.adaptSize,
+                        //     width: 16.adaptSize,
+                        //     margin: EdgeInsets.only(
+                        //       left: 10.h,
+                        //       top: 6.v,
+                        //       bottom: 4.v,
+                        //     ),
+                        //     padding: EdgeInsets.all(4.h),
+                        //     child: Icon(
+                        //       Icons.hourglass_empty,
+                        //       // Replace with the desired icon
+                        //       size: 17.0, // Adjust the size as needed
+                        //       color: Colors.black, // Adjust the color as needed
+                        //     )),
+                        // Padding(
+                        //   padding: EdgeInsets.only(
+                        //     left: 8.h,
+                        //     top: 8.v,
+                        //     bottom: 4.v,
+                        //   ),
+                        //   child: Text(
+                        //     "42 Hours",
+                        //     style: theme.textTheme.labelMedium,
+                        //   ),
+                        // ),
                         Spacer(),
                         if (isLoading == false)
                           Text(

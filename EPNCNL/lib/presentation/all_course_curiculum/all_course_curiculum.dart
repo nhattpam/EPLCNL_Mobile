@@ -8,6 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/classmodules.dart';
+import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
@@ -18,45 +20,40 @@ import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../data/models/topics.dart';
-import '../../network/network.dart';
+import '../../../data/models/topics.dart';
+import '../../../network/network.dart';
 
 // ignore_for_file: must_be_immutable
-class SingleCourseMeetDetailsCurriculcumPage extends StatefulWidget {
-  final String courseID;
-
-  const SingleCourseMeetDetailsCurriculcumPage(
-      {Key? key, required this.courseID})
-      : super(
-    key: key,
-  );
+class AllCourseCurriculum extends StatefulWidget {
+  const AllCourseCurriculum({super.key});
 
   @override
-  SingleCourseMeetDetailsCurriculcumPageState createState() =>
-      SingleCourseMeetDetailsCurriculcumPageState();
+  State<AllCourseCurriculum> createState() => _AllCourseCurriculumState();
 }
 
-class SingleCourseMeetDetailsCurriculcumPageState
-    extends State<SingleCourseMeetDetailsCurriculcumPage>
-    with AutomaticKeepAliveClientMixin<SingleCourseMeetDetailsCurriculcumPage> {
+class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
+
   DateTime selectedDatesFromCalendar1 = DateTime.now();
   FetchCourseList _classmoduleList = FetchCourseList();
   late List<Topic> listClassTopic = [];
   late ClassModule chosenCourse = ClassModule();
   String query = DateFormat('yyyy-MM-dd').format(DateTime.now());
-  int _currentIndex = 0;
 
   @override
   bool get wantKeepAlive => true;
+  late List<Enrollment> listEnrollment = [];
+  int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
     // loadClassModuleByCourseId();
+    loadEnrollmentByLearner();
   }
 
   void _showMultiSelect(String lessonId) async {
@@ -75,6 +72,20 @@ class SingleCourseMeetDetailsCurriculcumPageState
         });
   }
 
+  void loadEnrollmentByLearner() async {
+    try {
+      final enroll = await Network.getEnrollmentByLearner();
+      setState(() {
+        listEnrollment = enroll;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+    // loadAllCourse();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -89,7 +100,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
               width: 300,
               height: 100, // Add margin
               child: Text(
-                'Course Detail',
+                'Curriculum',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 25,
@@ -115,11 +126,9 @@ class SingleCourseMeetDetailsCurriculcumPageState
                       color: appTheme.gray50,
                     ),
                     FutureBuilder<List<ClassModule>>(
-                      future: _classmoduleList.getClassModule(
-                          query: query, courseId: widget.courseID),
+                      future: _classmoduleList.getClassModuleByTutor(query: query, courseIds: listEnrollment.map((course) => course.transaction?.course?.id ?? '').toList()),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
                           return ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
@@ -142,8 +151,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                   SizedBox(width: 12),
                                   Expanded(
                                     child: Container(
-                                      padding: EdgeInsets.only(
-                                          left: 16, top: 8),
+                                      padding: EdgeInsets.only(left: 16, top: 8),
                                       height: 150,
                                       decoration: BoxDecoration(
                                         color: Color(0xfff6f6f5),
@@ -151,25 +159,22 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                         BorderRadius.all(Radius.circular(20.0)),
                                       ),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment
-                                            .start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Skeleton(width: 70),
                                           SizedBox(height: 5.v),
                                           Skeleton(width: 70),
                                           SizedBox(height: 5.v),
                                           Column(
-                                            mainAxisAlignment: MainAxisAlignment
-                                                .spaceBetween,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               Row(
                                                 children: [
                                                   Skeleton(width: 50),
                                                   Padding(
-                                                      padding:
-                                                      const EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: Skeleton(width: 50)
+                                                    padding:
+                                                    const EdgeInsets.only(left: 8.0),
+                                                    child: Skeleton(width: 50)
                                                   )
                                                 ],
                                               ),
@@ -190,13 +195,13 @@ class SingleCourseMeetDetailsCurriculcumPageState
                             },
                           );
                         }
-                        if (snapshot.connectionState == ConnectionState.done) {
+                        if(snapshot.connectionState == ConnectionState.done){
                           List<ClassModule>? data = snapshot.data;
                           return ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             // itemCount: listClassModule.length,
-                            itemCount: data?.length ?? 0,
+                            itemCount: data?.length?? 0,
                             itemBuilder: (context, index) {
                               final classModule = data?[index];
                               // loadClassTopicsByClassLessonId();
@@ -207,11 +212,9 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                     child: Column(
                                       children: [
                                         Text(
-                                          classModule?.classLesson
-                                              ?.classHours ?? "",
+                                          classModule?.classLesson?.classHours ?? "",
                                           style:
-                                          TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                          TextStyle(fontWeight: FontWeight.bold),
                                         ),
                                         lineGen(
                                           lines: [20.0, 30.0, 40.0, 10.0],
@@ -222,8 +225,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                   SizedBox(width: 12),
                                   Expanded(
                                     child: Container(
-                                      padding: EdgeInsets.only(
-                                          left: 16, top: 8),
+                                      padding: EdgeInsets.only(left: 16, top: 8),
                                       height: 150,
                                       decoration: BoxDecoration(
                                         color: Color(0xfff6f6f5),
@@ -231,13 +233,10 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                         BorderRadius.all(Radius.circular(20.0)),
                                       ),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment
-                                            .start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Expanded(
-                                              child: Text(
-                                                  classModule?.course?.name ??
-                                                      "",
+                                              child: Text(classModule?.course?.name ?? "",
                                                   style: TextStyle(
                                                     fontSize: 15,
                                                     fontWeight: FontWeight.bold,
@@ -253,31 +252,25 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                                 : "", // Assuming 'name' is the property you want to display
                                           ),
                                           Column(
-                                            mainAxisAlignment: MainAxisAlignment
-                                                .spaceBetween,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               Row(
                                                 children: [
                                                   ElevatedButton(
                                                     onPressed: () {
                                                       launch(classModule
-                                                          ?.classLesson
-                                                          ?.classUrl ??
+                                                          ?.classLesson?.classUrl ??
                                                           "");
                                                     },
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      minimumSize: Size(
-                                                          100, 50),
-                                                      primary: Color(
-                                                          0xffbfe25c),
+                                                    style: ElevatedButton.styleFrom(
+                                                      minimumSize: Size(100, 50),
+                                                      primary: Color(0xffbfe25c),
                                                       // Background color
                                                       onPrimary: Colors.white,
                                                       // Text color
                                                       shape: RoundedRectangleBorder(
                                                         borderRadius:
-                                                        BorderRadius.circular(
-                                                            10.0),
+                                                        BorderRadius.circular(10.0),
                                                       ),
                                                     ),
                                                     child: Text('Meet URL'),
@@ -285,8 +278,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                                   VerticalDivider(),
                                                   Padding(
                                                     padding:
-                                                    const EdgeInsets.only(
-                                                        left: 8.0),
+                                                    const EdgeInsets.only(left: 8.0),
                                                     child: ElevatedButton(
                                                       onPressed: () {
                                                         // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
@@ -298,19 +290,15 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                                                 ?.id ??
                                                                 '');
                                                       },
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        minimumSize: Size(
-                                                            100, 50),
-                                                        primary: Color(
-                                                            0xffefc83c),
+                                                      style: ElevatedButton.styleFrom(
+                                                        minimumSize: Size(100, 50),
+                                                        primary: Color(0xffefc83c),
                                                         // Background color
                                                         onPrimary: Colors.white,
                                                         // Text color
                                                         shape: RoundedRectangleBorder(
                                                           borderRadius:
-                                                          BorderRadius.circular(
-                                                              10.0),
+                                                          BorderRadius.circular(10.0),
                                                         ),
                                                       ),
                                                       child: Text('Materials'),
@@ -323,23 +311,17 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                                 children: [
                                                   ElevatedButton(
                                                     onPressed: () {
-                                                      _showTopic(classModule
-                                                          ?.classLesson?.id ??
-                                                          '');
+                                                      _showTopic(classModule?.classLesson?.id ?? '');
                                                     },
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      minimumSize: Size(
-                                                          100, 50),
-                                                      primary: Color(
-                                                          0xFFF887A8),
+                                                    style: ElevatedButton.styleFrom(
+                                                      minimumSize: Size(100, 50),
+                                                      primary: Color(0xFFF887A8),
                                                       // Background color
                                                       onPrimary: Colors.white,
                                                       // Text color
                                                       shape: RoundedRectangleBorder(
                                                         borderRadius:
-                                                        BorderRadius.circular(
-                                                            10.0),
+                                                        BorderRadius.circular(10.0),
                                                       ),
                                                     ),
                                                     child: Text('Topic'),
@@ -355,7 +337,6 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                 ],
                               );
                             },
-
                           );
                         }
                         return Container();
@@ -368,6 +349,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
                   ],
                 ),
               ],
+
             ),
           ),
         ),
@@ -384,8 +366,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
             }
             if (index == 1) {
               Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => MyCourseCompletedPage()),
+                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
               );
             }
             if (index == 2) {
@@ -429,16 +410,12 @@ class SingleCourseMeetDetailsCurriculcumPageState
           selectedItemColor: Color(0xbbff9300),
           unselectedItemColor: Color(0xffff9300),
         ),
-
       ),
     );
   }
 
   /// Section Widget
   Widget _buildCalendar(BuildContext context) {
-    // String timestamp = listClassModule?[1]?.startDate ?? '';
-    // DateTime dateTime = DateTime.parse(timestamp);
-    // int day = dateTime.day;
     return SizedBox(
       height: 130.v,
       width: 368.h,
@@ -458,8 +435,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
         onDateChange: (selectedDate) {
           print(selectedDate);
           setState(() {
-            String formattedDate = DateFormat('yyyy-MM-dd').format(
-                selectedDate);
+            String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
             query = formattedDate;
           });
         },
@@ -558,13 +534,12 @@ class lineGen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(
           4,
-              (index) =>
-              Container(
-                height: 2,
-                width: lines[index],
-                color: Color(0xffd02d8),
-                margin: EdgeInsets.symmetric(vertical: 14),
-              )),
+              (index) => Container(
+            height: 2,
+            width: lines[index],
+            color: Color(0xffd02d8),
+            margin: EdgeInsets.symmetric(vertical: 14),
+          )),
     );
   }
 }
@@ -581,9 +556,10 @@ class MultiSelect extends StatefulWidget {
 class _MultiSelectState extends State<MultiSelect> {
   List<Topic> listClassTopic = [];
   Map<String, List<LessonMaterial>> moduleLessonsMaterialMap = {};
-
+  late bool isLoading;
   @override
   void initState() {
+    isLoading = true;
     super.initState();
     loadClassModuleByCourseId();
   }
@@ -593,6 +569,7 @@ class _MultiSelectState extends State<MultiSelect> {
     await Network.getTopicsByClassLessonId(widget.lessonId);
     setState(() {
       listClassTopic = loadedClassTopic;
+      isLoading = false;
     });
     loadLessonMaterial();
   }
@@ -684,11 +661,9 @@ class _MultiSelectState extends State<MultiSelect> {
           // Adjust the height as needed
           Center(child: Text('Choose Topic to Down')),
           SingleChildScrollView(
-            child: ListBody(
-              children: listClassTopic
-                  .asMap()
-                  .entries
-                  .map((entry) {
+            child: isLoading
+           ? Skeleton(width: 100)
+           : ListBody(children: listClassTopic.asMap().entries.map((entry) {
                 final index = entry.key;
                 final item = entry.value;
                 return TextButton(
@@ -724,13 +699,12 @@ class _MultiSelectState extends State<MultiSelect> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      MaterialView(
-                                          url: moduleLessonsMaterialMap[
-                                          listClassTopic[index]
-                                              .id]![lessonIndex]
-                                              .materialUrl
-                                              .toString())),
+                                  builder: (context) => MaterialView(
+                                      url: moduleLessonsMaterialMap[
+                                      listClassTopic[index]
+                                          .id]![lessonIndex]
+                                          .materialUrl
+                                          .toString())),
                             );
                         },
                         icon: Icon(Icons.remove_red_eye_outlined),
@@ -738,8 +712,7 @@ class _MultiSelectState extends State<MultiSelect> {
                     ],
                   ),
                 );
-              }).toList(),
-            ),
+              }).toList(),),
           ),
         ],
       ),
@@ -749,7 +722,6 @@ class _MultiSelectState extends State<MultiSelect> {
 
 class MultiTopic extends StatefulWidget {
   final String lessonId;
-
   const MultiTopic({super.key, required this.lessonId});
 
   @override
@@ -824,10 +796,7 @@ class _MultiTopicState extends State<MultiTopic> {
           Center(child: Text('Choose quiz to do')),
           SingleChildScrollView(
             child: ListBody(
-              children: listClassTopic
-                  .asMap()
-                  .entries
-                  .map((entry) {
+              children: listClassTopic.asMap().entries.map((entry) {
                 final index = entry.key;
                 final item = entry.value;
                 return Visibility(
@@ -840,8 +809,7 @@ class _MultiTopicState extends State<MultiTopic> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Topic:" + " " +
-                                listClassTopic[index].name.toString(),
+                            "Topic:" +" "+ listClassTopic[index].name.toString(),
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.primary),
@@ -849,86 +817,57 @@ class _MultiTopicState extends State<MultiTopic> {
                         ],
                       ),
                       // Only show the assignments if the module is not minimized
-                      for (int assignmentIndex = 0; assignmentIndex <
-                          (moduleQuizMap[listClassTopic[index].id]?.length ??
-                              0); assignmentIndex++)
+                      for (int assignmentIndex = 0; assignmentIndex < (moduleQuizMap[listClassTopic[index].id]?.length ?? 0); assignmentIndex++)
                         Row(
                           children: [
                             TextButton(
-                              onPressed: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          DoingQuizScreen(
-                                              quizId: moduleQuizMap[listClassTopic[index]
-                                                  .id]![assignmentIndex].id
-                                                  .toString(),
-                                              cooldownTime: Duration(
-                                                  minutes: moduleQuizMap[
-                                                  listClassTopic[index]
-                                                      .id]![assignmentIndex]
-                                                      .deadline as int))),
-                                );
-                                loadQuizAttemptsByLearnerId();
+                              onPressed: () async{
+                                // await Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //       builder: (context) => DoingQuizScreen(
+                                //           quizId: moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id.toString(),
+                                //           cooldownTime: Duration(
+                                //               minutes: moduleQuizMap[
+                                //               listClassTopic[index].id]![assignmentIndex]
+                                //                   .deadline as int))),
+                                // );
+                                // loadQuizAttemptsByLearnerId();
                               },
                               child: Text(
-                                  moduleQuizMap[listClassTopic[index]
-                                      .id]![assignmentIndex]
+                                  moduleQuizMap[listClassTopic[index].id]![assignmentIndex]
                                       .name
                                       .toString(),
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black)),
+                                      fontWeight: FontWeight.bold, color: Colors.black)),
 
                             ),
-                            if (listQuizAttempt.isNotEmpty &&
-                                listQuizAttempt.any((attempt) =>
-                                attempt.quizId ==
-                                    moduleQuizMap[listClassTopic[index]
-                                        .id]![assignmentIndex].id))
+                            if(listQuizAttempt.isNotEmpty &&
+                                listQuizAttempt.lastIndexWhere((attempt) =>
+                                attempt.id ==
+                                    moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
+                                    null)
                               Icon(
                                 listQuizAttempt.isNotEmpty &&
                                     listQuizAttempt.lastIndexWhere((attempt) =>
-                                    attempt.quizId ==
-                                        moduleQuizMap[listClassTopic[index]
-                                            .id]![assignmentIndex]
-                                            .id) !=
+                                    attempt.id ==
+                                        moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
                                         null &&
-                                    moduleQuizMap[listClassTopic[index]
-                                        .id]![assignmentIndex]
-                                        .gradeToPass !=
+                                    moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
                                         null &&
-                                    listQuizAttempt
-                                        .reduce((a, b) =>
-                                    DateTime.parse(a.attemptedDate!)
-                                        .isAfter(
-                                        DateTime.parse(b.attemptedDate!))
-                                        ? a
-                                        : b)
-                                        .totalGrade! >=
-                                        moduleQuizMap[listClassTopic[index]
-                                            .id]![assignmentIndex].gradeToPass!
+                                    listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
+                                        moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
                                     ? FontAwesomeIcons.check
                                     : Icons.dangerous_outlined,
                                 color: listQuizAttempt.isNotEmpty &&
                                     listQuizAttempt.lastIndexWhere((attempt) =>
-                                    attempt.quizId ==
-                                        moduleQuizMap[listClassTopic[index]
-                                            .id]![assignmentIndex].id) !=
+                                    attempt.id ==
+                                        moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
                                         null &&
-                                    moduleQuizMap[listClassTopic[index]
-                                        .id]![assignmentIndex].gradeToPass !=
+                                    moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
                                         null &&
-                                    listQuizAttempt
-                                        .reduce((a, b) =>
-                                    DateTime.parse(a.attemptedDate!).isAfter(
-                                        DateTime.parse(b.attemptedDate!))
-                                        ? a
-                                        : b)
-                                        .totalGrade! >=
-                                        moduleQuizMap[listClassTopic[index]
-                                            .id]![assignmentIndex].gradeToPass!
+                                    listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
+                                        moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
                                     ? Colors.green
                                     : Colors.red,
                                 size: 20.v,
@@ -938,6 +877,7 @@ class _MultiTopicState extends State<MultiTopic> {
                     ],
                   ),
                 );
+
               }).toList(),
             ),
           ),
@@ -958,8 +898,7 @@ class MaterialView extends StatefulWidget {
 
 class _MaterialViewState extends State<MaterialView> {
   late PdfControllerPinch pdfControllerPinch;
-  int totalPageCount = 0,
-      currentPage = 1;
+  int totalPageCount = 0, currentPage = 1;
 
   @override
   void initState() {

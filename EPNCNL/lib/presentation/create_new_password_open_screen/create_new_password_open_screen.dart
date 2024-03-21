@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/login_screen/login_screen.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 
@@ -23,7 +24,7 @@ class _CreateNewPasswordOpenScreenState extends State<CreateNewPasswordOpenScree
   TextEditingController confirmpasswordController = TextEditingController();
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late Account? account = Account();
+  late List<Account> listAccount = [];
 
   @override
   void initState() {
@@ -32,11 +33,11 @@ class _CreateNewPasswordOpenScreenState extends State<CreateNewPasswordOpenScree
   }
 
   Future<void> fetchAccountData() async {
-    Account acc = await Network.getAccount();
-
+    List<Account> acc = await Network.getAccountByEmail(query: widget.email);
     setState(() {
       // Set the list of pet containers in your state
-      account = acc;
+      listAccount = acc;
+      SessionManager().setUserId(listAccount[0].id ?? '');
     });
   }
 
@@ -199,21 +200,19 @@ class _CreateNewPasswordOpenScreenState extends State<CreateNewPasswordOpenScree
   Widget _buildContinueSection(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        print(newpasswordController);
         Network.updateProfile(
-            account?.email ?? '',
+            listAccount[0]?.email ?? '',
             newpasswordController.text,
-            account?.fullName ?? '',
-            account?.phoneNumber ?? '',
-            account?.imageUrl ?? '',
-            account?.dateOfBirth ?? '',
-            account?.gender ?? false,
-            account?.address ?? '',
-            account?.isActive ?? true,
-            account?.isDeleted ?? false,
-            account?.createdDate ?? '',
-            account?.createdBy ?? '',
-            account?.note ?? '');
+            listAccount[0]?.fullName ?? '',
+            listAccount[0]?.phoneNumber ?? '',
+            listAccount[0]?.imageUrl ?? '',
+            listAccount[0]?.dateOfBirth ?? '',
+            listAccount[0]?.gender ?? false,
+            listAccount[0]?.address ?? '',
+            listAccount[0]?.isActive ?? true,
+            listAccount[0]?.createdDate ?? '',
+            listAccount[0]?.createdBy ?? '',
+            listAccount[0]?.note ?? '');
         AwesomeDialog(
           context: context,
           animType: AnimType.scale,

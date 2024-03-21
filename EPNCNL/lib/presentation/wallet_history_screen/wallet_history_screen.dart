@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/utils/size_utils.dart';
 import 'package:meowlish/data/models/refundrequests.dart';
+import 'package:meowlish/data/models/wallethistories.dart';
 import 'package:meowlish/data/models/wallets.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
 
 import '../../data/models/accounts.dart';
 
-class WalletScreen extends StatefulWidget {
-  const WalletScreen({super.key});
+class WalletHistoryScreen extends StatefulWidget {
+  const WalletHistoryScreen({super.key});
 
   @override
-  State<WalletScreen> createState() => _WalletScreenState();
+  State<WalletHistoryScreen> createState() => _WalletHistoryScreenState();
 }
 
-class _WalletScreenState extends State<WalletScreen> {
+class _WalletHistoryScreenState extends State<WalletHistoryScreen> {
+
   late Account? account = Account();
   late Wallet? wallet = Wallet();
-  late List<RefundRequest> listRefundRequests = [];
+  late List<WalletHistory> listWalletHistory = [];
+  // late List<RefundRequest> listRefundRequests = [];
   FetchCourseList _userList = FetchCourseList();
 
   @override
@@ -25,7 +28,7 @@ class _WalletScreenState extends State<WalletScreen> {
     super.initState();
     fetchAccountData();
     fetchWalletData();
-    loadRefundRequests();
+    // loadRefundRequests();
   }
 
   Future<void> fetchAccountData() async {
@@ -44,15 +47,24 @@ class _WalletScreenState extends State<WalletScreen> {
       // Set the list of pet containers in your state
       wallet = wlet;
     });
+    fetchWalletHistoryData(wallet?.id ?? '');
+  }
+  Future<void> fetchWalletHistoryData(String walletId) async {
+    List<WalletHistory> loadedWalletHistory = await Network.getWalletHistoryByWalletId(walletId);
+    if (mounted) {
+      setState(() {
+        listWalletHistory = loadedWalletHistory;
+      });
+    }
   }
 
-  void loadRefundRequests() async {
-    List<RefundRequest> loadedRefundRequest =
-        await Network.getRefundRequestByLeanerId();
-    setState(() {
-      listRefundRequests = loadedRefundRequest;
-    });
-  }
+  // void loadRefundRequests() async {
+  //   List<RefundRequest> loadedRefundRequest =
+  //   await Network.getRefundRequestByLeanerId();
+  //   setState(() {
+  //     listRefundRequests = loadedRefundRequest;
+  //   });
+  // }
   void _showTopic(String refundId) async {
     final List<String>? result = await showDialog(
         context: context,
@@ -62,8 +74,8 @@ class _WalletScreenState extends State<WalletScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    listRefundRequests.sort((a, b) => DateTime.parse(b.requestedDate.toString())
-        .compareTo(DateTime.parse(a.requestedDate.toString())));
+    listWalletHistory.sort((a, b) => DateTime.parse(b.transactionDate.toString())
+        .compareTo(DateTime.parse(a.transactionDate.toString())));
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xffff9300),
@@ -138,7 +150,7 @@ class _WalletScreenState extends State<WalletScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Request Refund",
+                      "Transaction History",
                       style: TextStyle(
                           color: Color(0xffff9300),
                           fontSize: 26,
@@ -149,18 +161,15 @@ class _WalletScreenState extends State<WalletScreen> {
                     ),
                     Expanded(
                       child: ListView.builder(
-                        itemCount: listRefundRequests.length,
+                        itemCount: listWalletHistory.length,
                         // Number of items in your list
                         itemBuilder: (BuildContext context, int index) {
-                          final refundrequest = listRefundRequests[index];
+                          final refundrequest = listWalletHistory[index];
                           return listTile(
-                              refundrequest.enrollment?.transaction?.course?.imageUrl ?? '',
                               Colors.white,
-                              refundrequest.enrollment?.transaction?.course?.name ?? '',
-                              refundrequest.status ?? '',
-                              refundrequest.enrollment?.transaction?.course?.stockPrice ?? 0,
-                              refundrequest?.requestedDate ?? '',
-                          refundrequest?.id ?? '');
+                              refundrequest?.note ?? '',
+                              refundrequest?.transactionDate ?? '',
+                              refundrequest?.id ?? '');
                         },
                       ),
                     )
@@ -173,60 +182,36 @@ class _WalletScreenState extends State<WalletScreen> {
       ),
     );
   }
-  Widget listTile(String imageurl, Color color, String type, String tittle, num value, String date, String id) {
+  Widget listTile(Color color, String note, String date, String id) {
     DateTime dateTime = DateTime.parse(date);
     String formattedDate =
         "${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}-${dateTime.year}";
-    Color tileColor;
-    if (tittle == "PROCESSING") {
-      tileColor = Color(0xbbff9300);
-    } else if (tittle == "APPROVED") {
-      tileColor = Colors.green;
-    } else {
-      tileColor = Colors.red;
-    }
     return InkWell(
       onTap: () {
-        _showTopic(id);
+        // _showTopic(id);
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: tileColor, borderRadius: BorderRadius.circular(8)),
+            color: Color(0xffff9300), borderRadius: BorderRadius.circular(8)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                  color: Color(0xffff9300),
-                  borderRadius: BorderRadius.circular(8)),
-              child: Image.network(imageurl, fit: BoxFit.cover),
-            ),
-            SizedBox(
-              width: 12,
-            ),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(type,
+                  Text(note,
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 15,
                           fontWeight: FontWeight.bold)),
                   SizedBox(height: 10),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text(tittle,
-                          style: TextStyle(color: Colors.white, fontSize: 12)),
-                      Padding(
-                        padding: EdgeInsets.only(left: 10.h),
-                        child: Text("|", style: TextStyle(color: Colors.white)),
-                      ),
                       Padding(
                         padding: EdgeInsets.only(left: 10.h),
                         child: Text(formattedDate,
@@ -237,11 +222,6 @@ class _WalletScreenState extends State<WalletScreen> {
                 ],
               ),
             ),
-            Text("$value\$",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold))
           ],
         ),
       ),

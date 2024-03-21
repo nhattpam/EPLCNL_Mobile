@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/courses_list_filter_screen/widgets/filter_result.dart';
+import 'package:meowlish/presentation/home_page/home_page.dart';
+import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
+import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
+import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
+import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 
 import '../../data/models/courses.dart';
@@ -24,8 +30,25 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
   String cateId = '';
   RangeValues values = RangeValues(10, 200);
   RangeLabels labels = RangeLabels('10\$', '200\$');
+  int _currentIndex = 0;
+  late bool isLoading;
+  List<Widget> textWidgets = [
+    Skeleton(width: 100),
+    SizedBox(height: 40),
+    Skeleton(width: 100),
+    SizedBox(height: 40),
+    Skeleton(width: 100),
+    SizedBox(height: 40),
+    Skeleton(width: 100),
+    SizedBox(height: 40),
+    Skeleton(width: 100),
+    SizedBox(height: 40),
+    Skeleton(width: 100),
+    SizedBox(height: 40)
+  ];
   @override
   void initState() {
+    isLoading = true;
     super.initState();
     loadCategories();
     loadCourse();
@@ -45,6 +68,7 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
     List<Category> loadedCategories = await Network.getCategories();
     setState(() {
       listCategory = loadedCategories;
+      isLoading = false;
     });
   }
 
@@ -95,6 +119,11 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Category'),
+                        if(isLoading == true)
+                          ListBody(
+                            children: textWidgets
+                          ),
+                        if(isLoading == false)
                         ListBody(
                           children: listCategory
                               .map((item) => CheckboxListTile(
@@ -132,6 +161,64 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
             ],
           ),
         ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 0) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            }
+            if (index == 1) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+              );
+            }
+            if (index == 2) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+              );
+            }
+            if (index == 3) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => TransactionsPage()),
+              );
+            }
+            if (index == 4) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ProfilesPage()),
+              );
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              label: 'My Courses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wallet),
+              label: 'Transaction',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          selectedItemColor: Color(0xbbff9300),
+          unselectedItemColor: Color(0xffff9300),
+        ),
+
       ),
     );
   }

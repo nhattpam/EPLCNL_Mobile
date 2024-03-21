@@ -25,6 +25,9 @@ class SessionManager {
   void setLearnerId(String id) {
     _preferences?.setString('learnerId', id);
   }
+  void setTutorId(String id) {
+    _preferences?.setString('tutorId', id);
+  }
 
   // Get the user ID from the session
   String? getUserId() {
@@ -33,6 +36,9 @@ class SessionManager {
 
   String? getLearnerId() {
     return _preferences?.getString('learnerId');
+  }
+  String? getTutorId() {
+    return _preferences?.getString('tutorId');
   }
 
   // Clear user session data (logout)

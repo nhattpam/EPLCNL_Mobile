@@ -1,4 +1,4 @@
-class ClassTopic {
+class Topic {
   String? id;
   String? name;
   String? description;
@@ -7,7 +7,7 @@ class ClassTopic {
   String? updatedDate;
   String? classLessonId;
 
-  ClassTopic(
+  Topic(
       {this.id,
       this.name,
       this.description,
@@ -16,7 +16,7 @@ class ClassTopic {
       this.updatedDate,
       this.classLessonId});
 
-  ClassTopic.fromJson(Map<String, dynamic> json) {
+  Topic.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     description = json['description'];

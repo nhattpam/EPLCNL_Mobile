@@ -3,20 +3,13 @@ import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/categories.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/network/network.dart';
-import 'package:meowlish/presentation/courses_list_filter_screen/widgets/filter_result.dart';
-import 'package:meowlish/presentation/courses_list_screen/courses_list_screen.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
-import 'package:meowlish/presentation/home_page/search/search.dart';
-import 'package:meowlish/presentation/indox_calls_page/indox_calls_page.dart';
+import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
-import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
-import 'package:meowlish/widgets/custom_bottom_bar.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
-
-import '../mentors_list_screen/widgets/userprofile2_item_widget.dart';
 
 // ignore_for_file: must_be_immutable
 class CategoryMentorsListScreen extends StatefulWidget {
@@ -34,6 +27,7 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
   late List<Course> listCourse = [];
   late List<Course> chosenCategory = [];
   late Category? _category = Category();
+  int _currentIndex = 0;
 
   int found = 0;
 
@@ -118,7 +112,7 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
                                   padding: EdgeInsets.only(left: 2.h),
                                   child: CustomSearchView(
                                     controller: searchController,
-                                    hintText: "3D Design",
+                                    hintText: "Search for",
                                     context: context,
                                   )),
                               SizedBox(height: 25.v),
@@ -129,7 +123,65 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
                               buildResults(context)
                             ]))))
           ])),
-    ));
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+              if (index == 0) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => HomePage()),
+                );
+              }
+              if (index == 1) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+                );
+              }
+              if (index == 2) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+                );
+              }
+              if (index == 3) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => TransactionsPage()),
+                );
+              }
+              if (index == 4) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => ProfilesPage()),
+                );
+              }
+            },
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.book),
+                label: 'My Courses',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.chat),
+                label: 'Inbox',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.wallet),
+                label: 'Transaction',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
+            selectedItemColor: Color(0xbbff9300),
+            unselectedItemColor: Color(0xffff9300),
+          ),
+
+        ));
   }
 
   /// Section Widget
@@ -213,6 +265,7 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
             itemBuilder: (context, index) {
               String image = '${chosenCategory?[index].tutor?.account?.imageUrl}';
               String name = '${chosenCategory?[index].tutor?.account?.fullName}';
+              String email = '${chosenCategory?[index].tutor?.account?.email}';
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -252,7 +305,7 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
                         ),
                         SizedBox(height: 2.v),
                         Text(
-                          "3D Design",
+                          email,
                           style: theme.textTheme.labelLarge,
                         ),
                       ],

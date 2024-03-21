@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
+import 'package:meowlish/data/models/enrollments.dart';
+import 'package:meowlish/data/models/profilecertificates.dart';
+import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
+import 'package:meowlish/presentation/my_course_certificate_screen/my_course_certificate_screen.dart';
 import 'package:meowlish/presentation/my_course_ongoing_screen/my_course_ongoing_screen.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
@@ -23,6 +28,22 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
   int _currentIndex = 1;
 
   TextEditingController searchController = TextEditingController();
+  late List<ProfileCertificate> listProfileCertificate = [];
+  late bool isLoadingEnrollment;
+  @override
+  void initState() {
+    isLoadingEnrollment = true;
+    super.initState();
+    loadEnrollments();
+  }
+
+  void loadEnrollments() async {
+    List<ProfileCertificate> loadedProfile = await Network.getProfileCertificateByLearnerId();
+    setState(() {
+      listProfileCertificate = loadedProfile;
+      isLoadingEnrollment = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +190,8 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
 
   /// Section Widget
   Widget _buildUserProfile(BuildContext context) {
-    return ListView.separated(
+    return isLoadingEnrollment
+     ? ListView.separated(
         physics: ScrollPhysics(),
         shrinkWrap: true,
         separatorBuilder: (context, index) {
@@ -177,7 +199,210 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
         },
         itemCount: 4,
         itemBuilder: (context, index) {
-          return Userprofile4ItemWidget();
+          return SizedBox(
+            height: 142.v,
+            width: 360.h,
+            child: Stack(
+              alignment: Alignment.topRight,
+              children: [
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    margin: EdgeInsets.only(top: 8.v),
+                    decoration: AppDecoration.outlineBlack.copyWith(
+                      borderRadius: BorderRadiusStyle.circleBorder15,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 134.v,
+                          width: 130.h,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.horizontal(
+                              left: Radius.circular(16.h),
+                            ),
+                          ),
+                          child: Skeleton(width: 30)
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: 14.h,
+                            top: 15.v,
+                            bottom: 18.v,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Skeleton(width: 190),
+                              SizedBox(height: 5.v),
+                              Skeleton(width: 140),
+                              SizedBox(height: 5.v),
+                              Row(
+                                children: [
+                                  Skeleton(width: 32),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: 16.h,
+                                      top: 3.v,
+                                    ),
+                                    child: Skeleton(width: 30)
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10.v),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
+                                  onTap: (){
+                                  },
+                                  child: Skeleton(width: 50)
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        })
+     : ListView.separated(
+        physics: ScrollPhysics(),
+        shrinkWrap: true,
+        separatorBuilder: (context, index) {
+          return SizedBox(height: 20.v);
+        },
+        itemCount: listProfileCertificate.length,
+        itemBuilder: (context, index) {
+          final profile = listProfileCertificate[index];
+          return SizedBox(
+            height: 142.v,
+            width: 360.h,
+            child: Stack(
+              alignment: Alignment.topRight,
+              children: [
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    margin: EdgeInsets.only(top: 8.v),
+                    decoration: AppDecoration.outlineBlack.copyWith(
+                      borderRadius: BorderRadiusStyle.circleBorder15,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 134.v,
+                          width: 130.h,
+                          decoration: BoxDecoration(
+                            color: appTheme.black900,
+                            borderRadius: BorderRadius.horizontal(
+                              left: Radius.circular(16.h),
+                            ),
+                          ),
+                          child: Image.network(
+                            profile.certificate?.course?.imageUrl ?? "",
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: 14.h,
+                            top: 15.v,
+                            bottom: 18.v,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                profile.certificate?.course?.category?.description ?? "" ,
+                                style: CustomTextStyles.labelLargeOrangeA700,
+                              ),
+                              SizedBox(height: 5.v),
+                              Text(
+                                profile.certificate?.course?.name ?? "",
+                                style: theme.textTheme.titleMedium,
+                              ),
+                              SizedBox(height: 5.v),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 32.h,
+                                    margin: EdgeInsets.only(top: 3.v),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Icon(
+                                          Icons.star,
+                                          color: Colors.yellow,
+                                          size: 14.v,
+                                        ),
+                                        Text(
+                                          profile.certificate?.course?.rating
+                                              ?.toStringAsFixed(1) ??
+                                              '' ??
+                                              '',
+                                          style: theme.textTheme.labelMedium,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 16.h),
+                                    child: Text(
+                                      "|",
+                                      style: CustomTextStyles.titleSmallBlack900,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: 16.h,
+                                      top: 3.v,
+                                    ),
+                                    child: Text(
+                                      "Status: "+ (profile?.status ?? ""),
+                                      style: theme.textTheme.labelMedium,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 15.v),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
+                                  onTap: (){
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (context) => MyCourseCertificateScreen(profileId: profile.id.toString())),
+                                    );
+                                  },
+                                  child: Text(
+                                    "View Certificate".toUpperCase(),
+                                    style: CustomTextStyles.labelLargeTeal700.copyWith(
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                CustomImageView(
+                  imagePath: ImageConstant.imgCheckmarkGreen500,
+                  height: 28.adaptSize,
+                  width: 28.adaptSize,
+                  alignment: Alignment.topRight,
+                  margin: EdgeInsets.only(right: 24.h),
+                ),
+              ],
+            ),
+          );
         });
   }
 

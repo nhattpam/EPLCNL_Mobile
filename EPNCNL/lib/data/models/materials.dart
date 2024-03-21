@@ -1,4 +1,4 @@
-class ClassMaterial {
+class Material {
   String? id;
   String? classHours;
   String? classUrl;
@@ -6,7 +6,7 @@ class ClassMaterial {
   String? createdDate;
   String? updatedDate;
 
-  ClassMaterial(
+  Material(
       {this.id,
       this.classHours,
       this.classUrl,
@@ -14,7 +14,7 @@ class ClassMaterial {
       this.createdDate,
       this.updatedDate});
 
-  ClassMaterial.fromJson(Map<String, dynamic> json) {
+  Material.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     classHours = json['classHours'];
     classUrl = json['classUrl'];

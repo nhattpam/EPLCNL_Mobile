@@ -9,6 +9,7 @@ import 'package:meowlish/presentation/login_screen/login_screen.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/terms_conditions_screen/terms_conditions_screen.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
+import 'package:meowlish/presentation/wallet_history_screen/wallet_history_screen.dart';
 import 'package:meowlish/presentation/wallet_screen/wallet_screen.dart';
 import 'package:meowlish/session/session.dart';
 
@@ -185,27 +186,32 @@ class ProfilesPageState extends State<ProfilesPage> {
                                 SizedBox(height: 33.v),
                                 Padding(
                                   padding: EdgeInsets.only(left: 1.h),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.notifications_none_outlined,
-                                        size: 17.v,
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 14.h),
-                                        child: Text(
-                                          "Notifications",
-                                          style: CustomTextStyles
-                                              .titleSmallBluegray90015,
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      onTapWalletHistory(context);
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.wallet,
+                                          size: 17.v,
                                         ),
-                                      ),
-                                      Spacer(),
-                                      Icon(
-                                        Icons.arrow_forward,
-                                        size: 17.v,
-                                      ),
-                                    ],
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 14.h),
+                                          child: Text(
+                                            "Wallet History",
+                                            style: CustomTextStyles
+                                                .titleSmallBluegray90015,
+                                          ),
+                                        ),
+                                        Spacer(),
+                                        Icon(
+                                          Icons.arrow_forward,
+                                          size: 17.v,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 SizedBox(height: 33.v),
@@ -365,6 +371,13 @@ class ProfilesPageState extends State<ProfilesPage> {
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => TermsConditionsScreen()),
+    );
+    fetchAccountData(); // Reload data after returning from TermsConditionsScreen
+  }
+  onTapWalletHistory(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => WalletHistoryScreen()),
     );
     fetchAccountData(); // Reload data after returning from TermsConditionsScreen
   }

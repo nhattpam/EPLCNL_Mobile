@@ -5,8 +5,6 @@ import 'package:meowlish/data/models/feedbacks.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/widgets/custom_outlined_button.dart';
 
-import '../single_mentor_details_rating_page/widgets/userprofile3_item_widget.dart';
-
 // ignore_for_file: must_be_immutable
 class SingleMentorDetailsRatingPage extends StatefulWidget {
   final String tutorId;
@@ -67,6 +65,15 @@ class SingleMentorDetailsRatingPageState
     }
   }
 
+  String removeAllHtmlTags(String htmlText) {
+    RegExp exp = RegExp(
+        r"<[^>]*>",
+        multiLine: true,
+        caseSensitive: true
+    );
+
+    return htmlText.replaceAll(exp, '');
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -157,7 +164,7 @@ class SingleMentorDetailsRatingPageState
                                   width: 244.h,
                                   margin: EdgeInsets.only(right: 12.h),
                                   child: Text(
-                                    feedback.feedbackContent.toString(),
+                                    removeAllHtmlTags(feedback.feedbackContent.toString()),
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,
                                     style: theme.textTheme.labelLarge,

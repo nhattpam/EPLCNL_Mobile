@@ -4,92 +4,92 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
+import 'package:meowlish/data/models/assignmentattemps.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/feedbacks.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/home_page/home_page.dart';
+import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
+import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
+import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
+import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/presentation/write_a_reviews_screen/write_a_reviews_screen.dart';
 import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_outlined_button.dart';
 import 'package:meowlish/widgets/custom_rating_bar.dart';
 
-class ReviewsScreen extends StatefulWidget {
-  final String courseID;
+class ViewAllAssignmentAttempt extends StatefulWidget {
+  final String assignmentId;
 
-  const ReviewsScreen({super.key, required this.courseID});
+  const ViewAllAssignmentAttempt({super.key, required this.assignmentId});
 
   @override
-  State<ReviewsScreen> createState() => _ReviewsScreenState();
+  State<ViewAllAssignmentAttempt> createState() =>
+      _ViewAllAssignmentAttemptState();
 }
 
-class _ReviewsScreenState extends State<ReviewsScreen> {
-  late List<FedBack> listFedback = [];
-  late Course chosenCourse = Course();
-  late Enrollment enrollment = Enrollment();
+class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
+  late List<AssignmentAttempt> listAssignmentAttempt = [];
   int _currentPage = 1;
-  int _itemsPerPage = 3; // Define the number of items per page
+  int _itemsPerPage = 4; // Define the number of items per page
   String lid = '';
   bool _ascendingOrder = true;
-  List<FedBack> _paginatedFeedback = [];
-  late bool isLoadingFeedback;
-  late bool isLoadingCourse;
+  List<AssignmentAttempt> _paginatedAssignmentAttempt = [];
 
+  // late bool isLoadingFeedback;
+  // late bool isLoadingCourse;
+  int _currentIndex = 0;
+  late bool isLoadingAssignmentAttempt;
+  final List<String> listPoint = [
+    '2',
+    '4',
+    '6',
+    '8',
+    '10',
+  ];
+  late Map<String, String> point;
   @override
   void initState() {
-    isLoadingFeedback = true;
-    isLoadingCourse = true;
-    loadFeedback();
-    loadCourseByCourseID();
-    loadEnrollmentByLearnerAndCourseId();
+    point = {};
+    isLoadingAssignmentAttempt = true;
+    loadAssignmentAttemptByAssignmentId();
     super.initState();
   }
 
-  Future<void> loadFeedback() async {
-    List<FedBack> loadedFedback =
-        await Network.getFeedbackByCourse(widget.courseID);
-    setState(() {
-      listFedback = loadedFedback;
-      _loadPage(_currentPage);
-    });
-    loadLearner();
-  }
-
-  Future<void> loadLearner() async {
+  Future<void> loadAssignmentAttemptByAssignmentId() async {
     try {
-      // Create a list to store all learner IDs
+      final assignment = await Network.getAssignmentAttemptByAssignmentId(
+        widget.assignmentId,
+      );
 
-      // Load lessons for each module
-      for (final module in listFedback) {
-        // Add each learner ID to the list
-        if (module.learnerId == SessionManager().getLearnerId()) {
-          setState(() {
-            lid = module.learnerId.toString();
-            print("This is " + lid);
-          });
-        }
-      }
-
-      // After all lessons are loaded, proceed with building the UI
-      setState(() {});
+      setState(() {
+        listAssignmentAttempt = assignment;
+        listAssignmentAttempt.removeWhere((element) => element.learnerId == SessionManager().getLearnerId());
+        _loadPage(_currentPage);
+        isLoadingAssignmentAttempt = false;
+        // Add more print statements for other properties if needed
+      });
     } catch (e) {
       // Handle errors here
-      print('Error loading lessons: $e');
+      print('Error: $e');
     }
   }
 
   void _loadPage(int page) {
     // Sort feedback list by the newest date
-    listFedback.sort((a, b) => DateTime.parse(b.createdDate.toString())
-        .compareTo(DateTime.parse(a.createdDate.toString())));
+    listAssignmentAttempt.sort((a, b) =>
+        DateTime.parse(b.attemptedDate.toString())
+            .compareTo(DateTime.parse(a.attemptedDate.toString())));
 
     int startIndex = (page - 1) * _itemsPerPage;
     int endIndex = startIndex + _itemsPerPage;
-    if (startIndex < listFedback.length) {
+    if (startIndex < listAssignmentAttempt.length) {
       // Ensure endIndex does not exceed the length of the list
-      _paginatedFeedback = listFedback.sublist(
-          startIndex, endIndex.clamp(0, listFedback.length));
-      isLoadingFeedback = false;
+      _paginatedAssignmentAttempt = listAssignmentAttempt.sublist(
+          startIndex, endIndex.clamp(0, listAssignmentAttempt.length));
+      // isLoadingFeedback = false;
     }
   }
 
@@ -98,41 +98,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
 
     int startIndex = (page - 1) * _itemsPerPage;
     int endIndex = startIndex + _itemsPerPage;
-    if (startIndex < listFedback.length) {
+    if (startIndex < listAssignmentAttempt.length) {
       // Ensure endIndex does not exceed the length of the list
-      _paginatedFeedback = listFedback.sublist(
-          startIndex, endIndex.clamp(0, listFedback.length));
-    }
-  }
-
-  Future<void> loadCourseByCourseID() async {
-    try {
-      var course = await Network.getCourseByCourseID(widget.courseID);
-      setState(() {
-        chosenCourse = course;
-        isLoadingCourse = false;
-      });
-    } catch (e) {
-      // Handle errors here
-      print('Error: $e');
-    }
-  }
-
-  Future<void> loadEnrollmentByLearnerAndCourseId() async {
-    try {
-      final enrollmentResponse =
-          await Network.getEnrollmentByLearnerAndCourseId(
-        SessionManager().getLearnerId().toString(),
-        widget.courseID,
-      );
-
-      setState(() {
-        enrollment = enrollmentResponse;
-        // Add more print statements for other properties if needed
-      });
-    } catch (e) {
-      // Handle errors here
-      print('Error: $e');
+      _paginatedAssignmentAttempt = listAssignmentAttempt.sublist(
+          startIndex, endIndex.clamp(0, listAssignmentAttempt.length));
     }
   }
 
@@ -152,11 +121,30 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isEnrolled = enrollment.transaction?.learnerId != null &&
-        enrollment.transaction?.courseId != null;
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          toolbarHeight: 65,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              width: 300,
+              height: 100, // Add margin
+              child: Text(
+                'Peer Review',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
         body: SizedBox(
           height: SizeUtils.height,
           width: double.maxFinite,
@@ -173,109 +161,20 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 1.h),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(left: 11.h),
-                                child: Text(
-                                  "Reviews",
-                                  style: theme.textTheme.titleLarge,
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _ascendingOrder = !_ascendingOrder;
-                                    // Sort the list based on the current order
-                                    listFedback
-                                        .sort((a, b) => _compareFeedback(a, b));
-                                    // Reload the current page
-                                    _loadPageBySort(_currentPage);
-                                  });
-                                },
-                                icon: Icon(FontAwesomeIcons.sortByRating),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (isLoadingCourse == true)
-                        SizedBox(
-                          height: 63.v,
-                          width: 102.h,
-                          child: Skeleton(height: 63.v, width: 102.h),
-                        ),
-                      if (isLoadingCourse == false)
-                        SizedBox(
-                          height: 63.v,
-                          width: 102.h,
-                          child: Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: [
-                              Align(
-                                alignment: Alignment.topCenter,
-                                child: Text(
-                                  chosenCourse.rating?.toStringAsFixed(1) ?? '',
-                                  style: theme.textTheme.displaySmall,
-                                ),
-                              ),
-                              CustomRatingBar(
-                                alignment: Alignment.bottomCenter,
-                                initialRating: chosenCourse.rating?.toDouble(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      SizedBox(height: 4.v),
-                      if (isLoadingCourse == true) Skeleton(width: 100),
-                      if (isLoadingCourse == false)
-                        Text(
-                          "Based on " +
-                              listFedback.length.toString() +
-                              " Review",
-                          style: theme.textTheme.labelLarge,
-                        ),
-                      SizedBox(height: 71.v),
                       SingleChildScrollView(
                           child: _buildCourseReviewList(context)),
                       SizedBox(height: 12),
                       Divider(),
                       SizedBox(height: 30.v),
-                      if (isEnrolled ||
-                          chosenCourse.id == enrollment.transaction?.courseId &&
-                              SessionManager().getLearnerId() ==
-                                  enrollment.transaction?.learnerId)
-                        CustomElevatedButton(
-                          onPressed: () async {
-                            if (lid.isNotEmpty) {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => WriteAReviewsScreen(
-                                    courseID: widget.courseID,
-                                  ),
-                                ),
-                              );
-                            } else if (lid.isEmpty) {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => WriteAReviewsScreen(
-                                    courseID: widget.courseID,
-                                  ),
-                                ),
-                              );
-                            }
-                            loadFeedback();
-                          },
-                          text:
-                              lid.isNotEmpty ? "Edit Review" : "Write A Review",
-                        ),
+                      CustomElevatedButton(
+                        onPressed: () {
+                          for(int index = 0; index < _paginatedAssignmentAttempt.length; index++){
+                            final attemmpt = _paginatedAssignmentAttempt[index];
+                            print("Submit point" + point[attemmpt.id].toString());
+                          }
+                        },
+                        text: "Submit",
+                      ),
                     ],
                   ),
                 ),
@@ -285,12 +184,70 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             ],
           ),
         ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 0) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            }
+            if (index == 1) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => MyCourseCompletedPage()),
+              );
+            }
+            if (index == 2) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+              );
+            }
+            if (index == 3) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => TransactionsPage()),
+              );
+            }
+            if (index == 4) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ProfilesPage()),
+              );
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              label: 'My Courses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wallet),
+              label: 'Transaction',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          selectedItemColor: Color(0xbbff9300),
+          unselectedItemColor: Color(0xffff9300),
+        ),
       ),
     );
   }
 
   Widget _buildCourseReviewList(BuildContext context) {
-    return isLoadingFeedback
+    return isLoadingAssignmentAttempt
         ? Column(
             children: [
               ListView.separated(
@@ -369,7 +326,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           )
         : Column(
             children: [
-              if (_paginatedFeedback.length != 0)
+              if (_paginatedAssignmentAttempt.length != 0)
                 ListView.separated(
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
@@ -389,10 +346,15 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                       ),
                     );
                   },
-                  itemCount: _paginatedFeedback.length,
+                  itemCount: _paginatedAssignmentAttempt.length,
                   itemBuilder: (context, index) {
-                    final feedback = _paginatedFeedback[index];
-                    String originalDateString = feedback.createdDate.toString();
+
+                    final attempt = _paginatedAssignmentAttempt[index];
+                    if (!point.containsKey(attempt.id)) {
+                      point[attempt.id.toString()] = ''; // Set default value to 2
+                    }
+                    String originalDateString =
+                        attempt.attemptedDate.toString();
                     DateTime originalDate =
                         DateTime.parse(originalDateString.split('T')[0]);
                     String formattedDate =
@@ -401,8 +363,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        feedback.learner?.account?.imageUrl != null &&
-                                feedback.learner!.account!.imageUrl!.isNotEmpty
+                        attempt.learner?.account?.imageUrl != null &&
+                                attempt.learner!.account!.imageUrl!.isNotEmpty
                             ? Container(
                                 height: 46.adaptSize,
                                 width: 46.adaptSize,
@@ -417,7 +379,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                   ),
                                 ),
                                 child: Image.network(
-                                  feedback.learner!.account!.imageUrl!,
+                                  attempt.learner!.account!.imageUrl!,
                                   fit: BoxFit.cover,
                                 ),
                               )
@@ -437,32 +399,21 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                   children: [
                                     Text(
                                       removeAllHtmlTags(
-                                          feedback.learner?.account?.fullName ??
+                                          attempt.learner?.account?.fullName ??
                                               ''),
                                       style: CustomTextStyles.titleMedium17,
-                                    ),
-                                    CustomOutlinedButton(
-                                      width: 60.h,
-                                      text: feedback.rating.toString(),
-                                      leftIcon: Container(
-                                          margin: EdgeInsets.only(right: 2.h),
-                                          child: Icon(
-                                            Icons.star,
-                                            color: Colors.yellow,
-                                            size: 12.v,
-                                          )),
-                                      buttonStyle:
-                                          CustomButtonStyles.outlinePrimary,
                                     ),
                                   ],
                                 ),
                                 SizedBox(height: 9.v),
                                 Container(
-                                  width: 244.h,
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 244,
+                                  ),
                                   margin: EdgeInsets.only(right: 12.h),
                                   child: Text(
                                     removeAllHtmlTags(
-                                        feedback.feedbackContent.toString()),
+                                        attempt.answerText.toString()),
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,
                                     style: theme.textTheme.labelLarge,
@@ -471,27 +422,6 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                 SizedBox(height: 11.v),
                                 Row(
                                   children: [
-                                    Icon(
-                                      Icons.favorite,
-                                      color: Colors.red,
-                                      size: 12.v,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 9.h),
-                                      child: Text(
-                                        "760",
-                                        style: CustomTextStyles
-                                            .labelLargeBluegray900,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 17.h),
-                                      child: Text(
-                                        "|",
-                                        style:
-                                            CustomTextStyles.titleSmallBlack900,
-                                      ),
-                                    ),
                                     Icon(
                                       Icons.calendar_month_outlined,
                                       color: Colors.black,
@@ -507,6 +437,28 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                     ),
                                   ],
                                 ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: List<Widget>.generate(
+                                    listPoint.length,
+                                        (index) {
+                                      return Row(
+                                        children: [
+                                          Radio(
+                                            value: listPoint[index],
+                                            groupValue: point[attempt.id], // Use pointMap value
+                                            onChanged: (value) {
+                                              setState(() {
+                                                point[attempt.id.toString()] = value.toString();
+                                                print(point[attempt.id.toString()]);
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -516,7 +468,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   },
                 ),
               // Pagination controls
-              if (_paginatedFeedback.length != 0)
+              if (_paginatedAssignmentAttempt.length != 0)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -535,7 +487,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                     IconButton(
                       icon: Icon(Icons.arrow_forward),
                       onPressed: _currentPage <
-                              (listFedback.length / _itemsPerPage).ceil()
+                              (listAssignmentAttempt.length / _itemsPerPage)
+                                  .ceil()
                           ? () {
                               setState(() {
                                 _currentPage++;
@@ -546,12 +499,12 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                     ),
                   ],
                 ),
-              if (_paginatedFeedback.length == 0)
-                Center(
-                  child: Container(
-                    child: Text('No one review yet'),
-                  ),
-                ),
+              // if (_paginatedAssignmentAttempt.length == 0)
+              //   Center(
+              //     child: Container(
+              //       child: Text('No one review yet'),
+              //     ),
+              //   ),
             ],
           );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/learners.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_checkbox_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
@@ -21,7 +22,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   TextEditingController passwordController = TextEditingController();
 
-  bool rememberMe = false;
+  bool rememberMe = true;
 
   bool isLoading = false;
 
@@ -43,13 +44,17 @@ class LoginScreenState extends State<LoginScreen> {
     });
 
     final loginSuccessful = await Network.loginUser(email, password);
-
     setState(() {
       isLoading = false;
     });
-
+    print("This is tutor" + SessionManager().getTutorId().toString());
+    print("This is learner" + SessionManager().getLearnerId().toString());
     if (loginSuccessful) {
-      onTapBtnSignin(context);
+      if (SessionManager().getLearnerId()?.isNotEmpty ?? false) {
+        onTapBtnSignin(context);
+      } else if (SessionManager().getTutorId()?.isNotEmpty ?? false) {
+        onTapSignin(context);
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -57,6 +62,7 @@ class LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
+
   }
 
   @override
@@ -217,16 +223,23 @@ class LoginScreenState extends State<LoginScreen> {
   /// Section Widget
   Widget _buildRememberMe(BuildContext context) {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Padding(
-          padding: EdgeInsets.only(bottom: 1.v),
-          child: CustomCheckboxButton(
-              text: "Remember Me",
-              value: rememberMe,
-              padding: EdgeInsets.symmetric(vertical: 1.v),
-              textStyle: CustomTextStyles.labelLargeExtraBold,
-              onChange: (value) {
-                rememberMe = value;
-              })),
+      Row(
+        children: [
+          Padding(
+              padding: EdgeInsets.only(bottom: 1.v),
+              child:  Checkbox(
+                value: rememberMe,
+                onChanged: (newValue) {
+                  setState(() {
+                    rememberMe = newValue!;
+                  });
+                },
+              ),
+          ),
+          Text('Remember Me', style: CustomTextStyles.labelLargeExtraBold),
+
+        ],
+      ),
       GestureDetector(
           onTap: () {
             onTapTxtForgotPassword(context);
@@ -303,6 +316,12 @@ class LoginScreenState extends State<LoginScreen> {
     Navigator.pushNamed(
       context,
       AppRoutes.homePage,
+    );
+  }
+  onTapSignin(BuildContext context) {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.mentorOpenScreen,
     );
   }
 }

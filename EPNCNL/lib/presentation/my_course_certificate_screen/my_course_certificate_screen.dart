@@ -1,21 +1,95 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/data/models/profilecertificates.dart';
+import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/home_page/home_page.dart';
+import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
+import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
+import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
+import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_search_view.dart';
 
-class MyCourseCertificateScreen extends StatelessWidget {
-  MyCourseCertificateScreen({Key? key})
-      : super(
-          key: key,
-        );
+import '../../data/models/accounts.dart';
+
+class MyCourseCertificateScreen extends StatefulWidget {
+  final String profileId;
+  const MyCourseCertificateScreen({super.key, required this.profileId});
+
+  @override
+  State<MyCourseCertificateScreen> createState() => _MyCourseCertificateScreenState();
+}
+
+class _MyCourseCertificateScreenState extends State<MyCourseCertificateScreen> {
+
 
   TextEditingController searchController = TextEditingController();
+  late Account? account = Account();
+  late ProfileCertificate? profile = ProfileCertificate();
+
+  int _currentIndex = 1;
+  String formattedDate = '';
+  @override
+  void initState() {
+    super.initState();
+    fetchAccountData();
+    fetchProfileId();
+  }
+
+  Future<void> fetchAccountData() async {
+    Account acc = await Network.getAccount();
+
+    setState(() {
+      // Set the list of pet containers in your state
+      account = acc;
+    });
+  }
+
+  Future<void> fetchProfileId() async {
+    ProfileCertificate acc = await Network.getProfileCertificate(widget.profileId);
+
+    setState(() {
+      // Set the list of pet containers in your state
+      profile = acc;
+      String dateStr = profile?.certificate?.createdDate ?? DateTime.now().toString();
+      // Parse the date
+      DateTime date = DateTime.parse(dateStr);
+      // Format the date
+      String convert = DateFormat.yMMMMd().format(date);
+      formattedDate = convert;
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          toolbarHeight: 65,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              width: 300,
+              height: 100, // Add margin
+              child: Text(
+                'Certificate',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
         body: Container(
           width: double.maxFinite,
           padding: EdgeInsets.symmetric(
@@ -25,39 +99,6 @@ class MyCourseCertificateScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 15.v),
-              Row(
-                children: [
-                  CustomImageView(
-                    imagePath: ImageConstant.imgArrowDownBlueGray900,
-                    height: 20.v,
-                    width: 26.h,
-                    margin: EdgeInsets.only(
-                      top: 4.v,
-                      bottom: 5.v,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 11.h),
-                    child: Text(
-                      "3D Design Illustration",
-                      style: theme.textTheme.titleLarge,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.v),
-              CustomSearchView(
-                controller: searchController,
-                hintText: "3D Design Illustration",
-                contentPadding: EdgeInsets.only(
-                  left: 21.h,
-                  top: 21.v,
-                  bottom: 21.v,
-                ),
-                context: context,
-              ),
-              SizedBox(height: 20.v),
               Container(
                 width: 360.h,
                 decoration: AppDecoration.outlineBlack.copyWith(
@@ -119,23 +160,26 @@ class MyCourseCertificateScreen extends StatelessWidget {
                             Align(
                               alignment: Alignment.bottomLeft,
                               child: Padding(
-                                padding: EdgeInsets.only(
-                                  left: 64.h,
-                                  bottom: 49.v,
-                                ),
-                                child: Text(
-                                  "Calvin E. McGinnis",
-                                  style: CustomTextStyles
-                                      .titleLargeMulishIndigo700,
+                                padding: const EdgeInsets.only(bottom: 30.0),
+                                child: SizedBox(
+                                  width: 305.h,
+                                  child: Text(
+                                    account?.fullName ?? '',
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                    style: CustomTextStyles
+                                        .titleLargeMulishIndigo700,
+                                  ),
                                 ),
                               ),
                             ),
+                            SizedBox(height: 28.v),
                             Align(
                               alignment: Alignment.bottomLeft,
                               child: SizedBox(
                                 width: 305.h,
                                 child: Text(
-                                  "Has Successfully Completed the Wallace Training Program, Entitled.",
+                                  "Has Successfully Completed ",
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.center,
@@ -151,22 +195,22 @@ class MyCourseCertificateScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 28.v),
                     Text(
-                      "3D Design Illustration Course",
+                      profile?.certificate?.course?.name ?? '',
                       style: CustomTextStyles.titleMediumMulish,
                     ),
                     SizedBox(height: 4.v),
                     Text(
-                      "Issued on November 24, 2022",
+                      "Issued on " + formattedDate,
                       style: theme.textTheme.labelLarge,
                     ),
-                    SizedBox(height: 15.v),
-                    Text(
-                      "ID: SK24568086",
-                      style: CustomTextStyles.labelLargeGray800,
-                    ),
+                    // SizedBox(height: 15.v),
+                    // Text(
+                    //   "ID: " + (profile?.certificate?.course?.id ??""),
+                    //   style: CustomTextStyles.labelLargeGray800,
+                    // ),
                     SizedBox(height: 25.v),
                     Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: Alignment.center,
                       child: SizedBox(
                         height: 172.v,
                         width: 277.h,
@@ -203,7 +247,7 @@ class MyCourseCertificateScreen extends StatelessWidget {
                                     ),
                                     SizedBox(height: 1.v),
                                     Text(
-                                      "Issued on November 24, 2022",
+                                      "Issued on " + formattedDate,
                                       style: theme.textTheme.labelLarge,
                                     ),
                                   ],
@@ -220,7 +264,64 @@ class MyCourseCertificateScreen extends StatelessWidget {
             ],
           ),
         ),
-        bottomNavigationBar: _buildDownloadCertificate(context),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 0) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            }
+            if (index == 1) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+              );
+            }
+            if (index == 2) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+              );
+            }
+            if (index == 3) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => TransactionsPage()),
+              );
+            }
+            if (index == 4) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ProfilesPage()),
+              );
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              label: 'My Courses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wallet),
+              label: 'Transaction',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          selectedItemColor: Color(0xbbff9300),
+          unselectedItemColor: Color(0xffff9300),
+        ),
+
       ),
     );
   }

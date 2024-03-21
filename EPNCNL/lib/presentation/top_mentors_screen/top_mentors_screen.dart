@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/tutors.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/home_page/home_page.dart';
+import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
+import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
+import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
+import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 
 import '../../widgets/custom_search_view.dart';
 
@@ -18,9 +24,13 @@ class TopMentorsScreen extends StatefulWidget {
 class TopMentorsScreenState extends State<TopMentorsScreen> {
   TextEditingController searchController = TextEditingController();
   late List<Tutor> listTutor = [];
+  int _currentIndex = 0;
+  late bool isLoadingTutor;
 
   @override
   void initState() {
+    isLoadingTutor = true;
+
     super.initState();
     loadTutor();
   }
@@ -29,6 +39,7 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
     List<Tutor> loadedTutor = await Network.getTutor();
     setState(() {
       listTutor = loadedTutor;
+      isLoadingTutor = false;
     });
   }
 
@@ -107,13 +118,129 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
             ),
           ),
         ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 0) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            }
+            if (index == 1) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+              );
+            }
+            if (index == 2) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+              );
+            }
+            if (index == 3) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => TransactionsPage()),
+              );
+            }
+            if (index == 4) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ProfilesPage()),
+              );
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              label: 'My Courses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wallet),
+              label: 'Transaction',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          selectedItemColor: Color(0xbbff9300),
+          unselectedItemColor: Color(0xffff9300),
+        ),
+
       ),
     );
   }
 
   /// Section Widget
   Widget _buildUserProfile(BuildContext context) {
-    return Padding(
+    return isLoadingTutor
+     ? Padding(
+      padding: EdgeInsets.only(left: 2.h),
+      child: ListView.separated(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        separatorBuilder: (
+          context,
+          index,
+        ) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 13.0.v),
+            child: SizedBox(
+              width: 360.h,
+              child: Divider(
+                height: 1.v,
+                thickness: 1.v,
+                color: appTheme.blue50,
+              ),
+            ),
+          );
+        },
+        itemCount: 6,
+        itemBuilder: (context, index) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 66.adaptSize,
+                width: 66.adaptSize,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(27.h)
+                ),
+                child: Skeleton(
+                  height: 66.adaptSize,
+                  width: 66.adaptSize,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 11.h,
+                  top: 9.v,
+                  bottom: 12.v,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Skeleton(width: 200),
+                    SizedBox(height: 1.v),
+                    Skeleton(width: 100)
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    )
+     : Padding(
       padding: EdgeInsets.only(left: 2.h),
       child: ListView.separated(
         physics: NeverScrollableScrollPhysics(),
@@ -137,7 +264,8 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
         itemCount: listTutor.length,
         itemBuilder: (context, index) {
           final tutors = listTutor[index];
-          return Row(
+          return
+            Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomImageView(
@@ -168,7 +296,7 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
                     ),
                     SizedBox(height: 1.v),
                     Text(
-                      "3D Design",
+                      tutors.account?.email ?? '',
                       style: theme.textTheme.labelLarge,
                     ),
                   ],

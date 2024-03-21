@@ -1,16 +1,18 @@
-import 'dart:ui';
-
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/courses.dart';
+import 'package:meowlish/data/models/feedbacks.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/home_page/search/search.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 
 class WriteAReviewsScreen extends StatefulWidget {
   final String courseID;
+
   const WriteAReviewsScreen({super.key, required this.courseID});
 
   @override
@@ -18,10 +20,12 @@ class WriteAReviewsScreen extends StatefulWidget {
 }
 
 class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
-
-  TextEditingController writeAnythingAboutProductController = TextEditingController();
+  TextEditingController writeAnythingAboutProductController =
+      TextEditingController();
   late Course chosenCourse = Course();
   double rating = 0;
+  FetchCourseList _userList = FetchCourseList();
+
   @override
   void initState() {
     loadCourseByCourseID();
@@ -68,92 +72,191 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         body: SingleChildScrollView(
-          child: Container(
-            width: double.maxFinite,
-            padding: EdgeInsets.symmetric(
-              horizontal: 34.h,
-              vertical: 69.v,
+          child: FutureBuilder<List<FedBack>>(
+            future: _userList.getFeedback(
+                query: SessionManager().getLearnerId().toString(),
+                courseId: widget.courseID
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildGraphicDesignSection(context),
-                SizedBox(height: 31.v),
-                Text(
-                  "Write your Review:",
-                  style: CustomTextStyles.titleMedium18,
-                ),
-                Container(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 80),
-                        child: Container(
-                          width: 210,
-                          child: RatingBar.builder(
-                              initialRating: (0).toDouble(),
-                              minRating: 1,
-                              direction: Axis.horizontal,
-                              allowHalfRating: true,
-                              itemCount: 5,
-                              itemPadding:
-                              EdgeInsets.symmetric(
-                                  horizontal: 4),
-                              itemBuilder: (context,
-                                  index) =>
-                                  Icon(Icons.star,
-                                      color: Colors
-                                          .amberAccent),
-                              onRatingUpdate: (rate) async {
-                                setState(() {
-                                  rating = rate;
-                                });
-                              },
-                              itemSize: 30),
-                        ),
-                      )
-                    ],
+            builder: (context, snapshot) {
+              List<FedBack>? data = snapshot.data;
+              print(data);
+              if(data?.isNotEmpty ?? false){
+                num vote = data?[0]?.rating ?? 0;
+                String feedbackContent = '${data?[0].feedbackContent}';
+                return Container(
+                  width: double.maxFinite,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 34.h,
+                    vertical: 69.v,
                   ),
-                ),
-
-                SizedBox(height: 10.v),
-                CustomTextFormField(
-                  controller: writeAnythingAboutProductController,
-                  hintText:
-                  "Would you like to write anything about this course?",
-                  textInputAction: TextInputAction.done,
-                  maxLines: 8,
-                  contentPadding: EdgeInsets.all(20.h),
-                  borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
-                ),
-                SizedBox(height: 97.v), // Adjust the height according to your need
-                CustomElevatedButton(
-                  onPressed: (){
-                    Network.createFeedback(feedbackContent: writeAnythingAboutProductController.text, courseId: widget.courseID, rating: rating.toString());
-                    AwesomeDialog(
-                      context: context,
-                      animType: AnimType.scale,
-                      dialogType: DialogType.success,
-                      body: Center(
-                        child: Text(
-                          'Thank you for your feedback!!',
-                          style: TextStyle(fontStyle: FontStyle.italic),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildGraphicDesignSection(context),
+                      SizedBox(height: 31.v),
+                      Text(
+                        "Write your Review:",
+                        style: CustomTextStyles.titleMedium18,
+                      ),
+                      Container(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 80),
+                              child: Container(
+                                width: 210,
+                                child: RatingBar.builder(
+                                    initialRating: (vote).toDouble(),
+                                    minRating: 1,
+                                    direction: Axis.horizontal,
+                                    allowHalfRating: true,
+                                    itemCount: 5,
+                                    itemPadding:
+                                    EdgeInsets.symmetric(
+                                        horizontal: 4),
+                                    itemBuilder: (context,
+                                        index) =>
+                                        Icon(Icons.star,
+                                            color: Colors
+                                                .amberAccent),
+                                    onRatingUpdate: (rate) async {
+                                      setState(() {
+                                        rating = rate;
+                                      });
+                                    },
+                                    itemSize: 30),
+                              ),
+                            )
+                          ],
                         ),
                       ),
-                      btnOkOnPress: () {
-                        setState(() {
-                          Navigator.pop(context);
-                        });
-                      },
-                    )..show();
-                  },
-                  text: "Submit Review",
-                  margin: EdgeInsets.symmetric(horizontal: 5.h),
+                      SizedBox(height: 10.v),
+                      CustomTextFormField(
+                        controller: writeAnythingAboutProductController,
+                        hintText: feedbackContent,
+                        textInputAction: TextInputAction.done,
+                        maxLines: 8,
+                        contentPadding: EdgeInsets.all(20.h),
+                        borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
+                      ),
+                      SizedBox(height: 97.v), // Adjust the height according to your need
+                      CustomElevatedButton(
+                        onPressed: (){
+                          Network.updateFeedback(feedbackId: data?[0]?.id ?? '',createdDate: data?[0]?.createdDate ?? '', feedbackContent: writeAnythingAboutProductController.text, courseId: widget.courseID, rating: rating.toString());
+                          AwesomeDialog(
+                            context: context,
+                            animType: AnimType.scale,
+                            dialogType: DialogType.success,
+                            body: Center(
+                              child: Text(
+                                'Thank you for your feedback!!',
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                              ),
+                            ),
+                            btnOkOnPress: () {
+                              setState(() {
+                                Navigator.pop(context);
+                              });
+                            },
+                          )..show();
+                        },
+                        text: "Edit Review",
+                        margin: EdgeInsets.symmetric(horizontal: 5.h),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return Container(
+                width: double.maxFinite,
+                padding: EdgeInsets.symmetric(
+                  horizontal: 34.h,
+                  vertical: 69.v,
                 ),
-              ],
-            ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildGraphicDesignSection(context),
+                    SizedBox(height: 31.v),
+                    Text(
+                      "Write your Review:",
+                      style: CustomTextStyles.titleMedium18,
+                    ),
+                    Container(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 80),
+                            child: Container(
+                              width: 210,
+                              child: RatingBar.builder(
+                                  initialRating: (0).toDouble(),
+                                  minRating: 1,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: true,
+                                  itemCount: 5,
+                                  itemPadding:
+                                  EdgeInsets.symmetric(
+                                      horizontal: 4),
+                                  itemBuilder: (context,
+                                      index) =>
+                                      Icon(Icons.star,
+                                          color: Colors
+                                              .amberAccent),
+                                  onRatingUpdate: (rate) async {
+                                    setState(() {
+                                      rating = rate;
+                                    });
+                                  },
+                                  itemSize: 30),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: 10.v),
+                    CustomTextFormField(
+                      controller: writeAnythingAboutProductController,
+                      hintText:
+                      "Would you like to write anything about this course?",
+                      textInputAction: TextInputAction.done,
+                      maxLines: 8,
+                      contentPadding: EdgeInsets.all(20.h),
+                      borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
+                    ),
+                    SizedBox(height: 97.v), // Adjust the height according to your need
+                    CustomElevatedButton(
+                      onPressed: (){
+                        Network.createFeedback(feedbackContent: writeAnythingAboutProductController.text, courseId: widget.courseID, rating: rating.toString());
+                        AwesomeDialog(
+                          context: context,
+                          animType: AnimType.scale,
+                          dialogType: DialogType.success,
+                          body: Center(
+                            child: Text(
+                              'Thank you for your feedback!!',
+                              style: TextStyle(fontStyle: FontStyle.italic),
+                            ),
+                          ),
+                          btnOkOnPress: () {
+                            setState(() {
+                              Navigator.pop(context);
+                            });
+                          },
+                        )..show();
+                      },
+                      text: "Submit Review",
+                      margin: EdgeInsets.symmetric(horizontal: 5.h),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
+
         ),
       ),
     );
@@ -181,10 +284,13 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
             margin: EdgeInsets.only(top: 6.v),
             child: imageUrl != null && imageUrl.isNotEmpty
                 ? Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-            )
-                : Center(child: Container(child: CircularProgressIndicator())), // Placeholder widget when imageUrl is empty or null
+                    imageUrl,
+                    fit: BoxFit.cover,
+                  )
+                : Center(
+                    child: Container(
+                        child:
+                            CircularProgressIndicator())), // Placeholder widget when imageUrl is empty or null
           ),
           Padding(
             padding: EdgeInsets.only(

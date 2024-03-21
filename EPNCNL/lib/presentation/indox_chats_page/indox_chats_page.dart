@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/accountforums.dart';
 import 'package:meowlish/data/models/forums.dart';
 import 'package:meowlish/network/network.dart';
@@ -9,8 +10,6 @@ import 'package:meowlish/presentation/indox_chats_messages_screen/indox_chats_me
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
-
-import '../indox_chats_page/widgets/userprofile6_item_widget.dart';
 
 // ignore_for_file: must_be_immutable
 class IndoxChatsPage extends StatefulWidget {
@@ -23,15 +22,19 @@ class IndoxChatsPage extends StatefulWidget {
   IndoxChatsPageState createState() => IndoxChatsPageState();
 }
 
-class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveClientMixin<IndoxChatsPage> {
+class IndoxChatsPageState extends State<IndoxChatsPage>
+    with AutomaticKeepAliveClientMixin<IndoxChatsPage> {
   late List<Forum> listForum = [];
   Map<String, List<AccountForum>> moduleAccountForumsMap = {};
   int _currentIndex = 2;
+
   @override
   bool get wantKeepAlive => true;
+  late bool isLoadingForum;
 
   @override
   void initState() {
+    isLoadingForum = true;
     loadForums();
     super.initState();
   }
@@ -40,14 +43,14 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
     List<Forum> loadedForum = await Network.getForumByLearner();
     setState(() {
       listForum = loadedForum;
+      isLoadingForum = false;
     });
     loadAllAccountForum();
   }
 
-
   Future<void> loadAccountForumByForumId(String forumId) async {
-    List<AccountForum> loadedLesson = await Network.getAccountForumByForum(
-        forumId);
+    List<AccountForum> loadedLesson =
+        await Network.getAccountForumByForum(forumId);
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
@@ -69,7 +72,6 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
       print('Error loading lessons: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +130,8 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
             }
             if (index == 1) {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+                MaterialPageRoute(
+                    builder: (context) => MyCourseCompletedPage()),
               );
             }
             if (index == 2) {
@@ -178,155 +181,248 @@ class IndoxChatsPageState extends State<IndoxChatsPage> with AutomaticKeepAliveC
 
   /// Section Widget
   Widget _buildUserProfile(BuildContext context) {
-    return ListView.separated(
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      separatorBuilder: (context, index) {
-        return Padding(
-          padding: EdgeInsets.symmetric(vertical: 10.0.v),
-          child: SizedBox(
-            width: 360.h,
-            child: Divider(
-              height: 1.v,
-              thickness: 1.v,
-              color: theme.colorScheme.onPrimaryContainer,
-            ),
-          ),
-        );
-      },
-      itemCount: listForum.length,
-      itemBuilder: (context, index) {
-        final forums = listForum[index];
-        return GestureDetector(
-          onTap: (){
-            onTapOne(context,forums.id.toString());
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 25.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-
-                  height: 50.adaptSize,
-                  width: 50.adaptSize,
-                  margin: EdgeInsets.only(bottom: 21.v),
-                  child: Image.network(
-                    // moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                    //     ? moduleAccountForumsMap[forums.id]!.last.tutor?.account?.imageUrl ??
-                    //     moduleAccountForumsMap[forums.id]!.last.learner?.account?.imageUrl ??
-                    //     ''
-                    //     : ''
-                    forums.course?.imageUrl ?? '',
-                    fit: BoxFit.cover,
+    return isLoadingForum
+        ? ListView.separated(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            separatorBuilder: (context, index) {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 10.0.v),
+                child: SizedBox(
+                  width: 360.h,
+                  child: Divider(
+                    height: 1.v,
+                    thickness: 1.v,
+                    color: theme.colorScheme.onPrimaryContainer,
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 8.h,
-                    top: 7.v,
-                    bottom: 23.v,
-                  ),
-                  child: IntrinsicWidth(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          constraints: const BoxConstraints(
-                            maxWidth: 150,
-                          ),
-                          child: Text(
-                            forums.course?.name ?? '',
-                            style: theme.textTheme.titleMedium,
-                            overflow: TextOverflow.fade,
-                            softWrap: true,
-                            maxLines: 2,
-                          ),
-                        ),
-                          Container(
-                            constraints: const BoxConstraints(
-                              maxWidth: 150,
-                            ),
-                            child: Text(
-                              moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                                  ? (moduleAccountForumsMap[forums.id]!
-                                  .where((element) => element.messagedDate != null) // Filter out elements with null messagedDate
-                                  .toList() // Convert to list to use sorting
-                                ..sort((a, b) => b.messagedDate!.compareTo(a.messagedDate!))) // Sort in descending order based on messagedDate
-                                  .firstWhere((element) => true) // Get the first element or null if the list is empty
-                                  ?.message ?? '' // Get the message of the first element, or '' if it's null
-                                  : '',
-                              style: theme.textTheme.labelLarge,
-                              overflow: TextOverflow.fade,
-                              softWrap: true,
-                              maxLines: 2,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                Spacer(),
-                Padding(
-                  padding: EdgeInsets.only(
-                    right: 3.h,
-                    bottom: 28.v,
-                  ),
-                  child: Column(
+              );
+            },
+            itemCount: 5,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {},
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 25.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          width: 24.adaptSize,
-                          margin: EdgeInsets.only(right: 1.h),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 5.h,
-                            vertical: 4.v,
-                          ),
-                          decoration: AppDecoration.outlineOnPrimaryContainer1
-                              .copyWith(
-                            borderRadius: BorderRadiusStyle.roundedBorder10,
-                          ),
-                          child: Text(
-                            "03",
-                            style: CustomTextStyles.labelMediumOnPrimaryContainer,
+                      Container(
+                          height: 50.adaptSize,
+                          width: 50.adaptSize,
+                          margin: EdgeInsets.only(bottom: 21.v),
+                          child: Skeleton(
+                            height: 50.adaptSize,
+                            width: 50.adaptSize,
+                          )),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: 8.h,
+                          top: 7.v,
+                          bottom: 23.v,
+                        ),
+                        child: IntrinsicWidth(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Skeleton(width: 140),
+                              Skeleton(width: 140)
+                            ],
                           ),
                         ),
                       ),
-                      SizedBox(height: 5.v),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            DateFormat('HH:mm').format(DateTime.parse(moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
-                                ? (moduleAccountForumsMap[forums.id]!
-                                .where((element) => element.messagedDate != null) // Filter out elements with null messagedDate
-                                .toList() // Convert to list to use sorting
-                              ..sort((a, b) => b.messagedDate!.compareTo(a.messagedDate!))) // Sort in descending order based on messagedDate
-                                .firstWhere((element) => true) // Get the first element or null if the list is empty
-                                ?.messagedDate ?? '' // Get the message of the first element, or '' if it's null
-                                : DateTime.now().toString()))
-                            ,
-                            style: CustomTextStyles.labelMediumGray700,
-                          ),
+                      Spacer(),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          right: 3.h,
+                          bottom: 28.v,
                         ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 5.v),
+                            Align(
+                              alignment: Alignment.center,
+                              child: Skeleton(width: 90)
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+              );
+            },
+          )
+        : ListView.separated(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            separatorBuilder: (context, index) {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 10.0.v),
+                child: SizedBox(
+                  width: 360.h,
+                  child: Divider(
+                    height: 1.v,
+                    thickness: 1.v,
+                    color: theme.colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              );
+            },
+            itemCount: listForum.length,
+            itemBuilder: (context, index) {
+              final forums = listForum[index];
+              return GestureDetector(
+                onTap: () {
+                  onTapOne(context, forums.id.toString());
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 25.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 50.adaptSize,
+                        width: 50.adaptSize,
+                        margin: EdgeInsets.only(bottom: 21.v),
+                        child: Image.network(
+                          // moduleAccountForumsMap[forums.id]?.isNotEmpty ?? false
+                          //     ? moduleAccountForumsMap[forums.id]!.last.tutor?.account?.imageUrl ??
+                          //     moduleAccountForumsMap[forums.id]!.last.learner?.account?.imageUrl ??
+                          //     ''
+                          //     : ''
+                          forums.course?.imageUrl ?? '',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: 8.h,
+                          top: 7.v,
+                          bottom: 23.v,
+                        ),
+                        child: IntrinsicWidth(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 150,
+                                ),
+                                child: Text(
+                                  forums.course?.name ?? '',
+                                  style: theme.textTheme.titleMedium,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: true,
+                                  maxLines: 2,
+                                ),
+                              ),
+                              Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 150,
+                                ),
+                                child: Text(
+                                  moduleAccountForumsMap[forums.id]
+                                              ?.isNotEmpty ??
+                                          false
+                                      ? (moduleAccountForumsMap[forums.id]!
+                                                  .where((element) =>
+                                                      element.messagedDate !=
+                                                      null) // Filter out elements with null messagedDate
+                                                  .toList() // Convert to list to use sorting
+                                                ..sort((a, b) => b.messagedDate!
+                                                    .compareTo(a
+                                                        .messagedDate!))) // Sort in descending order based on messagedDate
+                                              .firstWhere((element) =>
+                                                  true) // Get the first element or null if the list is empty
+                                              ?.message ??
+                                          '' // Get the message of the first element, or '' if it's null
+                                      : '',
+                                  style: theme.textTheme.labelLarge,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: true,
+                                  maxLines: 2,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          right: 3.h,
+                          bottom: 28.v,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Align(
+                            //   alignment: Alignment.centerRight,
+                            //   child: Container(
+                            //     width: 24.adaptSize,
+                            //     margin: EdgeInsets.only(right: 1.h),
+                            //     padding: EdgeInsets.symmetric(
+                            //       horizontal: 5.h,
+                            //       vertical: 4.v,
+                            //     ),
+                            //     decoration: AppDecoration.outlineOnPrimaryContainer1
+                            //         .copyWith(
+                            //       borderRadius: BorderRadiusStyle.roundedBorder10,
+                            //     ),
+                            //     child: Text(
+                            //       "03",
+                            //       style: CustomTextStyles.labelMediumOnPrimaryContainer,
+                            //     ),
+                            //   ),
+                            // ),
+                            SizedBox(height: 5.v),
+                            Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                DateFormat('HH:mm').format(DateTime.parse(moduleAccountForumsMap[
+                                                forums.id]
+                                            ?.isNotEmpty ??
+                                        false
+                                    ? (moduleAccountForumsMap[forums.id]!
+                                                .where((element) =>
+                                                    element.messagedDate !=
+                                                    null) // Filter out elements with null messagedDate
+                                                .toList() // Convert to list to use sorting
+                                              ..sort((a, b) => b.messagedDate!
+                                                  .compareTo(a
+                                                      .messagedDate!))) // Sort in descending order based on messagedDate
+                                            .firstWhere((element) =>
+                                                true) // Get the first element or null if the list is empty
+                                            ?.messagedDate ??
+                                        '' // Get the message of the first element, or '' if it's null
+                                    : DateTime.now().toString())),
+                                style: CustomTextStyles.labelMediumGray700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
   }
-  onTapOne(BuildContext context, String forumId)  {
-     Navigator.push(
+
+  onTapOne(BuildContext context, String forumId) {
+    Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => IndoxChatsMessagesScreen(forumId: forumId)),
-    ).then((value) {setState(() {
-      loadForums(); // Reload data after returning from EditProfilesScreen
-    });});
+      MaterialPageRoute(
+          builder: (context) => IndoxChatsMessagesScreen(forumId: forumId)),
+    ).then((value) {
+      setState(() {
+        loadForums(); // Reload data after returning from EditProfilesScreen
+      });
+    });
   }
 }

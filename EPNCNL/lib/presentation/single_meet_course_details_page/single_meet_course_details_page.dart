@@ -3,17 +3,20 @@ import 'dart:io';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meowlish/core/app_export.dart';
-import 'package:meowlish/data/models/classtopics.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
+import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/enrollments.dart';
-import 'package:meowlish/data/models/lessonmaterials.dart';
+import 'package:meowlish/data/models/lessons.dart';
+import 'package:meowlish/data/models/modules.dart';
+import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/curriculcum_screen/curriculcum_screen.dart';
 import 'package:meowlish/presentation/payment_methods_screen/payment_methods_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
-import 'package:readmore/readmore.dart';
 
 import '../../data/models/courses.dart';
 import '../../data/models/tutors.dart';
@@ -37,14 +40,33 @@ class SingleMeetCourseDetailsPageState
     extends State<SingleMeetCourseDetailsPage> {
   late Tutor chosenTutor = Tutor();
   late Course chosenCourse = Course();
-
+  late List<Module> listModuleByCourseId = [];
   late Enrollment enrollment = Enrollment();
 
+  Map<String, List<Lesson>> moduleLessonsMap = {};
+  Map<String, List<Quiz>> moduleQuizMap = {};
+  Map<String, List<Assignment>> moduleAssignmentMap = {};
+
+  late bool isLoadingCourse;
+  late bool isLoadingTutor;
+  late bool isLoadingModule;
+  late bool isLoadingLesson;
+  late bool isLoadingAssignment;
+  late bool isLoadingQuiz;
+  int sumAssignment = 0;
+  int sumQuiz = 0;
   @override
   void initState() {
+    isLoadingTutor = true;
+    isLoadingCourse = true;
+    isLoadingModule = true;
+    isLoadingLesson = true;
+    isLoadingAssignment = true;
+    isLoadingQuiz = true;
     super.initState();
     loadTutorByTutorID();
     loadCourseByCourseID();
+    loadModuleByCourseId();
     loadEnrollmentByLearnerAndCourseId();
   }
 
@@ -53,6 +75,7 @@ class SingleMeetCourseDetailsPageState
       final course = await Network.getCourseByCourseID(widget.courseID);
       setState(() {
         chosenCourse = course;
+        isLoadingCourse = false;
       });
     } catch (e) {
       // Handle errors here
@@ -65,6 +88,7 @@ class SingleMeetCourseDetailsPageState
       final tutor = await Network.getTutorByTutorID(widget.tutorID);
       setState(() {
         chosenTutor = tutor;
+        isLoadingTutor = false;
       });
     } catch (e) {
       // Handle errors here
@@ -90,10 +114,81 @@ class SingleMeetCourseDetailsPageState
     }
   }
 
+  Future<void> loadModuleByCourseId() async {
+    try {
+      List<Module> loadedModule =
+      await Network.getModulesByCourseId(widget.courseID);
+      setState(() {
+        listModuleByCourseId = loadedModule;
+        isLoadingModule = false;
+      });
+      // After loading modules, load all lessons
+      loadAllLessons();
+    } catch (e) {
+      // Handle errors here
+      print('Error loading modules: $e');
+    }
+  }
 
+  Future<void> loadAllLessons() async {
+    try {
+      // Load lessons for each module
+      for (final module in listModuleByCourseId) {
+        await loadLessonByModuleId(module.id.toString());
+        await loadQuizByModuleId(module.id.toString());
+        await loadAssignmentByModuleId(module.id.toString());
+        sumAssignment += moduleAssignmentMap[module.id]?.length ?? 0;
+        sumQuiz += moduleQuizMap[module.id]?.length ?? 0;
+
+      }
+
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {
+        isLoadingAssignment = false;
+        isLoadingQuiz = false;
+
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lessons: $e');
+    }
+  }
+
+  Future<void> loadLessonByModuleId(String moduleId) async {
+    List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleLessonsMap[moduleId] = loadedLesson;
+        isLoadingLesson = false;
+      });
+    }
+  }
+
+  Future<void> loadQuizByModuleId(String moduleId) async {
+    List<Quiz> loadedQuiz = await Network.getQuizByModuleId(moduleId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleQuizMap[moduleId] = loadedQuiz;
+      });
+    }
+  }
+
+  Future<void> loadAssignmentByModuleId(String moduleId) async {
+    List<Assignment> loadedAssignment =
+    await Network.getAssignmentByModuleId(moduleId);
+    if (mounted) {
+      setState(() {
+        // Store the lessons for this module in the map
+        moduleAssignmentMap[moduleId] = loadedAssignment;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(isLoadingAssignment);
     bool isEnrolled = enrollment.transaction?.learnerId != null && enrollment.transaction?.courseId != null;
     return SafeArea(
         child: Scaffold(
@@ -107,6 +202,7 @@ class SingleMeetCourseDetailsPageState
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            if(isLoadingCourse == false)
                             Container(
                                 width: 307.h,
                                 margin:
@@ -117,24 +213,10 @@ class SingleMeetCourseDetailsPageState
                                     overflow: TextOverflow.ellipsis,
                                     style: CustomTextStyles.labelLargeGray50001
                                         .copyWith(height: 1.46))),
-                            // SizedBox(height: 18.v),
-                            // Align(
-                            //     alignment: Alignment.center,
-                            //     child: SizedBox(
-                            //         width: 313.h,
-                            //         child: ReadMoreText(
-                            //             "${chosenCourse.description ?? ''}",
-                            //             trimLines: 4,
-                            //             colorClickableText:
-                            //                 theme.colorScheme.primary,
-                            //             trimMode: TrimMode.Line,
-                            //             trimCollapsedText: "Read More",
-                            //             moreStyle: CustomTextStyles
-                            //                 .labelLargeGray50001
-                            //                 .copyWith(height: 1.46),
-                            //             lessStyle: CustomTextStyles
-                            //                 .labelLargeGray50001
-                            //                 .copyWith(height: 1.46)))),
+                            if(isLoadingCourse == true)
+                              Skeleton(
+                                  width: 307.h,
+                                  ),
                             SizedBox(height: 50.v),
                             Padding(
                                 padding: EdgeInsets.only(left: 1.h),
@@ -153,93 +235,70 @@ class SingleMeetCourseDetailsPageState
                             Padding(
                                 padding: EdgeInsets.only(left: 4.h),
                                 child: Row(children: [
-                                  CustomImageView(
-                                      imagePath: ImageConstant.imgReply,
-                                      height: 20.v,
-                                      width: 15.h),
+                                  Icon(
+                                    Icons.video_camera_front,
+                                    size: 12,
+                                  ),
+                                  if(isLoadingModule == false)
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 17.h, top: 3.v),
-                                      child: Text("25 Meeting ",
-                                          style: theme.textTheme.titleSmall))
-                                ])),
-                            SizedBox(height: 30.v),
-                            Padding(
-                                padding: EdgeInsets.only(left: 4.h),
-                                child: Row(children: [
-                                  CustomImageView(
-                                      imagePath: ImageConstant.imgMinimize,
-                                      height: 22.v,
-                                      width: 14.h),
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.only(left: 18.h, top: 4.v),
-                                      child: Text("Access Mobile, Desktop & TV",
-                                          style: theme.textTheme.titleSmall))
+                                      child: Text(listModuleByCourseId.length.toString() +" Module",
+                                          style: theme.textTheme.titleSmall)),
+                                  if(isLoadingModule == true)
+                                    Padding(
+                                        padding:
+                                        EdgeInsets.only(left: 17.h, top: 3.v),
+                                        child: Skeleton(width: 50))
                                 ])),
                             SizedBox(height: 31.v),
                             Padding(
                                 padding: EdgeInsets.only(left: 2.h),
                                 child: Row(children: [
-                                  CustomImageView(
-                                      imagePath: ImageConstant.imgIcon,
-                                      height: 20.adaptSize,
-                                      width: 20.adaptSize),
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.only(left: 14.h, top: 3.v),
-                                      child: Text("Beginner Level",
-                                          style: theme.textTheme.titleSmall))
-                                ])),
-                            SizedBox(height: 30.v),
-                            Row(children: [
-                              CustomImageView(
-                                  imagePath: ImageConstant.imgIconOnprimary,
-                                  height: 13.v,
-                                  width: 24.h,
-                                  margin: EdgeInsets.symmetric(vertical: 2.v)),
-                              Padding(
-                                  padding: EdgeInsets.only(left: 11.h),
-                                  child: Text("Video",
-                                      style: theme.textTheme.titleSmall))
-                            ]),
-                            SizedBox(height: 29.v),
-                            Padding(
-                                padding: EdgeInsets.only(left: 2.h),
-                                child: Row(children: [
-                                  CustomImageView(
-                                      imagePath: ImageConstant.imgUserOnprimary,
-                                      height: 23.v,
-                                      width: 19.h),
+                                  Icon(
+                                    FontAwesomeIcons.pencilAlt,
+                                    size: 12,
+                                  ),
+                                  if(isLoadingAssignment == false)
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 15.h, top: 5.v),
-                                      child: Text("25 Assignment",
-                                          style: theme.textTheme.titleSmall))
-                                ])),
+                                      child: Text(sumAssignment.toString() + " Assignment",
+                                          style: theme.textTheme.titleSmall)),
+                                  if(isLoadingAssignment == true)
+                                    Padding(
+                                        padding:
+                                        EdgeInsets.only(left: 15.h, top: 5.v),
+                                        child: Skeleton(width: 50)
+                                    )])),
                             SizedBox(height: 32.v),
                             Padding(
                                 padding: EdgeInsets.only(left: 2.h),
                                 child: Row(children: [
-                                  CustomImageView(
-                                      imagePath:
-                                          ImageConstant.imgIconOnprimary21x22,
-                                      height: 21.v,
-                                      width: 22.h),
-                                  Padding(
+                                  Icon(
+                                    FontAwesomeIcons.book,
+                                    size: 12,
+                                  ),
+                                  if(isLoadingQuiz == false)
+                                    Padding(
                                       padding:
                                           EdgeInsets.only(left: 12.h, top: 3.v),
-                                      child: Text("100 Quizzes",
-                                          style: theme.textTheme.titleSmall))
+                                      child: Text(sumQuiz.toString() + " Quizzes",
+                                          style: theme.textTheme.titleSmall)),
+                                  if(isLoadingQuiz == true)
+                                    Padding(
+                                        padding:
+                                        EdgeInsets.only(left: 12.h, top: 3.v),
+                                        child: Skeleton(width: 50)),
                                 ])),
                             SizedBox(height: 30.v),
                             Padding(
                                 padding: EdgeInsets.only(left: 4.h),
                                 child: Row(children: [
-                                  CustomImageView(
-                                      imagePath: ImageConstant.imgReply,
-                                      height: 20.v,
-                                      width: 15.h),
+                                  Icon(
+                                    FontAwesomeIcons.certificate,
+                                    size: 12,
+                                  ),
                                   Padding(
                                       padding:
                                           EdgeInsets.only(left: 11.h, top: 3.v),
@@ -254,8 +313,8 @@ class SingleMeetCourseDetailsPageState
                               CustomElevatedButton(
                                 text:
                                     "Enroll Course - \$${chosenCourse.stockPrice}",
-                                onPressed: () {
-                                  Navigator.push(
+                                onPressed: () async{
+                                  await Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
@@ -264,6 +323,7 @@ class SingleMeetCourseDetailsPageState
                                       ),
                                     ),
                                   );
+                                  loadEnrollmentByLearnerAndCourseId();
                                 },
                               ),
                             if (isEnrolled &&
@@ -312,8 +372,7 @@ class SingleMeetCourseDetailsPageState
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        if (imageUrl != null &&
-            imageUrl.isNotEmpty) // Check if imageUrl is not null or empty
+        if (imageUrl != null && imageUrl.isNotEmpty && isLoadingTutor == false) // Check if imageUrl is not null or empty
           CustomImageView(
             imagePath: imageUrl,
             fit: BoxFit.cover,
@@ -321,8 +380,16 @@ class SingleMeetCourseDetailsPageState
             width: 54.adaptSize,
             radius: BorderRadius.circular(27.h),
           )
-        else
-          Center(child: CircularProgressIndicator()),
+        else Container(
+            decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(27.h)
+            ),
+            height: 54.adaptSize,
+            width: 54.adaptSize,
+            child: Skeleton(height: 54.adaptSize,
+              width: 54.adaptSize),
+          ),
+        if(isLoadingTutor == false)
         Padding(
           padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
           child: Column(
@@ -338,17 +405,28 @@ class SingleMeetCourseDetailsPageState
                     overflow: TextOverflow.ellipsis,
                     style: CustomTextStyles.titleMedium17),
               ),
-              Text("${chosenCourse.category?.description ?? ""}",
+              Text("${chosenTutor.account?.email ?? ""}",
                   style: theme.textTheme.labelLarge)
             ],
           ),
+        )
+        else  Padding(
+          padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Skeleton(width: 250),
+              Skeleton(width: 100)
+            ],
+          ),
         ),
+
         Spacer(),
-        Icon(
-          Icons.chat_outlined,
-          size: 17.0,
-          color: Colors.black,
-        ),
+        // Icon(
+        //   Icons.chat_outlined,
+        //   size: 17.0,
+        //   color: Colors.black,
+        // ),
       ],
     );
   }

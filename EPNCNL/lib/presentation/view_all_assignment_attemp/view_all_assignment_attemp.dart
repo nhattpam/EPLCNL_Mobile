@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/assignmentattemps.dart';
-import 'package:meowlish/data/models/courses.dart';
-import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/feedbacks.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
@@ -14,11 +10,8 @@ import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
-import 'package:meowlish/presentation/write_a_reviews_screen/write_a_reviews_screen.dart';
 import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
-import 'package:meowlish/widgets/custom_outlined_button.dart';
-import 'package:meowlish/widgets/custom_rating_bar.dart';
 
 class ViewAllAssignmentAttempt extends StatefulWidget {
   final String assignmentId;
@@ -169,8 +162,10 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                       CustomElevatedButton(
                         onPressed: () {
                           for(int index = 0; index < _paginatedAssignmentAttempt.length; index++){
-                            final attemmpt = _paginatedAssignmentAttempt[index];
-                            print("Submit point" + point[attemmpt.id].toString());
+                            final attempt = _paginatedAssignmentAttempt[index];
+                            Network.createPeerReview(assignmentAttemptId: attempt.id.toString(), grade: point[attempt.id].toString());
+                            print("Submit point" + point[attempt.id].toString());
+                            print("Assignment point" + attempt.id.toString());
                           }
                         },
                         text: "Submit",

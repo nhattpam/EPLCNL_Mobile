@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
-import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/profilecertificates.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
@@ -13,7 +12,6 @@ import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 
 import '../../widgets/custom_search_view.dart';
-import '../my_course_completed_page/widgets/userprofile4_item_widget.dart';
 
 // ignore_for_file: must_be_immutable
 class MyCourseCompletedPage extends StatefulWidget {

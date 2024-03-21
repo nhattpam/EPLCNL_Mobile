@@ -65,6 +65,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     _timer.cancel();
     super.dispose();
   }
+
   Future<void> fetchWalletData() async {
     Wallet wlet = await Network.getWalletByAccountId();
 
@@ -262,7 +263,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
 
   /// Section Widget
   Widget _buildPaymentOption(String title, String value) {
-    if(title == "Wallet"){
+    if (title == "Wallet") {
       return Container(
         margin: EdgeInsets.only(right: 6.h),
         padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 17.v),
@@ -274,33 +275,38 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: EdgeInsets.only(top: 5.v, bottom: 2.v),
+              padding: EdgeInsets.only(
+                  top: 5, bottom: 2), // sử dụng đơn vị thích hợp
               child: Container(
-                width: 290,
+                // remove width restriction
                 child: Row(
                   children: [
                     Container(
                       width: 100,
                       child: Text(
-                        "Your Balance: " + (wallet.balance ?? 0).toString() + "\$" ,
+                        "Your Balance: " +
+                            (wallet.balance ?? 0).toString() +
+                            "\$",
                         style: CustomTextStyles.titleSmallBluegray900ExtraBold,
                       ),
                     ),
-                     Padding(
-                       padding: EdgeInsets.only(left: 120),
-                       child: Text(
-                        title,
-                        style: CustomTextStyles.titleSmallBluegray900ExtraBold,
+                    SizedBox(
+                        width:
+                            105), // thay vì sử dụng Padding với giá trị cố định
+                    Text(
+                      title,
+                      style: CustomTextStyles.titleSmallBluegray900ExtraBold,
                     ),
-                     ),
+                    SizedBox(
+                        width:
+                            0), // thay vì sử dụng Padding với giá trị cố định
                     Container(
-                      margin: EdgeInsets.only(left: 11.h),
-                      padding: EdgeInsets.all(5.h),
+                      padding: EdgeInsets.all(5),
                       child: Container(
-                        height: 12.adaptSize,
-                        width: 12.adaptSize,
+                        height: 12,
+                        width: 12,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6.h),
+                          borderRadius: BorderRadius.circular(6),
                         ),
                         child: Radio(
                           value: value,
@@ -321,46 +327,46 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         ),
       );
     }
-      return Container(
-        margin: EdgeInsets.only(right: 6.h),
-        padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 17.v),
-        decoration: AppDecoration.outlineBlack.copyWith(
-          borderRadius: BorderRadiusStyle.circleBorder15,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 231.h, top: 5.v, bottom: 2.v),
-              child: Text(
-                title,
-                style: CustomTextStyles.titleSmallBluegray900ExtraBold,
+    return Container(
+      margin: EdgeInsets.only(right: 6.h),
+      padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 17.v),
+      decoration: AppDecoration.outlineBlack.copyWith(
+        borderRadius: BorderRadiusStyle.circleBorder15,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 231.h, top: 5.v, bottom: 2.v),
+            child: Text(
+              title,
+              style: CustomTextStyles.titleSmallBluegray900ExtraBold,
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 11.h),
+            padding: EdgeInsets.all(5.h),
+            child: Container(
+              height: 12.adaptSize,
+              width: 12.adaptSize,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6.h),
+              ),
+              child: Radio(
+                value: value,
+                groupValue: _selectedOption,
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedOption = newValue!;
+                  });
+                },
               ),
             ),
-            Container(
-              margin: EdgeInsets.only(left: 11.h),
-              padding: EdgeInsets.all(5.h),
-              child: Container(
-                height: 12.adaptSize,
-                width: 12.adaptSize,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6.h),
-                ),
-                child: Radio(
-                  value: value,
-                  groupValue: _selectedOption,
-                  onChanged: (newValue) {
-                    setState(() {
-                      _selectedOption = newValue!;
-                    });
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildPaymentOptionsRow(BuildContext context) {
@@ -380,7 +386,8 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     try {
       transactionId = await Network.createTransaction(
           courseId: widget.courseID,
-          amount: chosenCourse.stockPrice!.toDouble() * 24000, paymentMethodId: _selectedOption);
+          amount: chosenCourse.stockPrice!.toDouble() * 24000,
+          paymentMethodId: _selectedOption);
       // orderId now contains the order ID returned from the API
       print('Transaction ID pro : $transactionId');
       return transactionId;
@@ -394,24 +401,22 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   Widget _buildEnrollCourseButton(BuildContext context) {
     return CustomElevatedButton(
       onPressed: () async {
-        if(_selectedOption == '2968c869-dceb-4b3e-8c6d-720fccb89a88' && (wallet.balance ?? 0)  < (chosenCourse.stockPrice ?? 0)){
+        if (_selectedOption == '2968c869-dceb-4b3e-8c6d-720fccb89a88' &&
+            (wallet.balance ?? 0) < (chosenCourse.stockPrice ?? 0)) {
           AwesomeDialog(
-            context: context,
-            animType: AnimType.scale,
-            dialogType: DialogType.error,
-            body: Center(
-              child: Text(
-                "Your balance doesn't enough to do this",
-                style: TextStyle(fontStyle: FontStyle.italic),
+              context: context,
+              animType: AnimType.scale,
+              dialogType: DialogType.error,
+              body: Center(
+                child: Text(
+                  "Your balance doesn't enough to do this",
+                  style: TextStyle(fontStyle: FontStyle.italic),
+                ),
               ),
-            ),
-            btnCancelText: 'OK',
-            btnCancelOnPress: (){
-            }
-
-          )..show();
-        }
-        else{
+              btnCancelText: 'OK',
+              btnCancelOnPress: () {})
+            ..show();
+        } else {
           String? transactionId = await _createTransaction();
           if (transactionId != null) {
             // Set loading state when the transaction is being processed
@@ -421,7 +426,7 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
 
             try {
               Transaction transaction =
-              await Network.getTransactionByTransactionId(transactionId);
+                  await Network.getTransactionByTransactionId(transactionId);
 
               // Start the periodic timer to check transaction status every 5 seconds
               _timer = Timer.periodic(Duration(seconds: 5), (timer) {
@@ -446,17 +451,16 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                     );
                   },
                 );
-                if(transaction.paymentMethod?.name == 'VnPay'){
+                if (transaction.paymentMethod?.name == 'VnPay') {
                   paymentUrl = await Network.payTransaction(transactionId);
                   print("VnPay: " + paymentUrl);
                   launch(paymentUrl);
                 }
-                if(transaction.paymentMethod?.name == 'Wallet'){
+                if (transaction.paymentMethod?.name == 'Wallet') {
                   status = await Network.payTransactionByWallet(transactionId);
                   print("Wallet: " + status.toString());
                 }
                 // Call payTransaction only if the status is not "DONE"
-
               }
             } catch (e) {
               // Handle the error, e.g., show an error message
@@ -524,12 +528,12 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         setState(() {
           isLoading = true;
         });
-        if(transaction.paymentMethod?.name == 'VnPay'){
+        if (transaction.paymentMethod?.name == 'VnPay') {
           paymentUrl = await Network.payTransaction(transactionId);
           print("VnPay: " + paymentUrl);
           launch(paymentUrl);
         }
-        if(transaction.paymentMethod?.name == 'Wallet'){
+        if (transaction.paymentMethod?.name == 'Wallet') {
           status = await Network.payTransactionByWallet(transactionId);
           print("Wallet: " + status.toString());
         }

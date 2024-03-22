@@ -19,7 +19,8 @@ import 'package:meowlish/widgets/custom_search_view.dart';
 class FilterResultScreen extends StatefulWidget {
   final List<Category> category;
   final RangeValues values;
-  FilterResultScreen({Key? key, required this.category, required this.values}) : super(key: key);
+  final String date;
+  FilterResultScreen({Key? key, required this.category, required this.values, required this.date}) : super(key: key);
 
   @override
   FilterResultState createState() => FilterResultState();
@@ -94,7 +95,7 @@ class FilterResultState extends State<FilterResultScreen> {
             width: 300,
             height: 100, // Add margin
             child: Text(
-              'Online Courses',
+              'Courses',
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 25,
@@ -217,7 +218,7 @@ class FilterResultState extends State<FilterResultScreen> {
   Widget _buildHeading(BuildContext context) {
     List<String> categoryIds = widget.category.map((category) => category.id.toString()).toList();
     return FutureBuilder<List<Course>>(
-      future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt()),
+      future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt(), date: widget.date),
       builder: (context, snapshot) {
         List<Course>? data = snapshot.data;
         return Row(
@@ -268,7 +269,7 @@ class FilterResultState extends State<FilterResultScreen> {
     // Extracting category IDs
     List<String> categoryIds = widget.category.map((category) => category.id.toString()).toList();
     return FutureBuilder<List<Course>>(
-      future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt()),
+      future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt(), date: widget.date),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Center(

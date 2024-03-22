@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
@@ -167,6 +168,26 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                             print("Submit point" + point[attempt.id].toString());
                             print("Assignment point" + attempt.id.toString());
                           }
+                          AwesomeDialog(
+                            context: context,
+                            animType: AnimType.scale,
+                            dialogType: DialogType.success,
+                            body: Center(
+                              child: Text(
+                                'Submit Success!!!',
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                              ),
+                            ),
+                            btnOkOnPress: () {
+                              setState(() {
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              });
+                              // if(isSelected == true){
+                              //   nextQuestion();
+                              // }
+                            },
+                          )..show();
                         },
                         text: "Submit",
                       ),
@@ -449,6 +470,7 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                                               });
                                             },
                                           ),
+                                          Text(listPoint[index])
                                         ],
                                       );
                                     },

@@ -6,6 +6,7 @@ environment:
 dependencies: 
   flutter: 
     sdk: flutter
+  syncfusion_flutter_calendar: ^20.4.44
   font_awesome_flutter: ^9.1.0
   cached_network_image: ^3.3.0
   flutter_svg: ^2.0.9

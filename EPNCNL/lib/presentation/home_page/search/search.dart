@@ -148,6 +148,31 @@ class FetchCourseList {
     return results;
   }
 
+  static Future<List<ClassModule>> getClassModuleByTutorWithoutDate({List<String>? courseIds}) async {
+    var data = [];
+    List<ClassModule> results = [];
+    if (courseIds == null || courseIds.isEmpty) {
+      return results;
+    }
+    for (var courseId in courseIds) {
+      String urlList = 'https://nhatpmse.twentytwo.asia/api/courses/$courseId/class-modules';
+      var url = Uri.parse(urlList);
+      try {
+        var response = await http.get(url);
+        if (response.statusCode == 200) {
+          data = json.decode(response.body);
+          results.addAll(data.map((e) => ClassModule.fromJson(e)).toList());
+        } else {
+          print("fetch error for course ID: $courseId");
+        }
+      } on Exception catch (e) {
+        print('error fetching data for course ID $courseId: $e');
+      }
+    }
+    return results;
+  }
+
+
   Future<List<Course>> getCourseListById({List<String>? query, int? minPrice, int? maxPrice, String? date}) async {
     var data = [];
     List<Course> results = [];

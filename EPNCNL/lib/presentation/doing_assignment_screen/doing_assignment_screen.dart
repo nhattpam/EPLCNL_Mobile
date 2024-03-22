@@ -84,6 +84,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
           elevation: 0.0,
           toolbarHeight: 65,
@@ -102,6 +103,10 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                 ),
               ),
             ),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
         backgroundColor: Colors.white,
@@ -206,7 +211,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ViewAllAssignmentAttempt(assignmentId: widget.assignmentID,
+                              builder: (context) => ViewAllAssignmentAttempt(assignmentId: widget.assignmentID, navigateTime: 2,
                               ),
                             ),
                           );

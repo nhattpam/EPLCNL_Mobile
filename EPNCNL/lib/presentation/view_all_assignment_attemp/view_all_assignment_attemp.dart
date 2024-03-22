@@ -16,8 +16,8 @@ import 'package:meowlish/widgets/custom_elevated_button.dart';
 
 class ViewAllAssignmentAttempt extends StatefulWidget {
   final String assignmentId;
-
-  const ViewAllAssignmentAttempt({super.key, required this.assignmentId});
+  final int navigateTime;
+  const ViewAllAssignmentAttempt({super.key, required this.assignmentId, required this.navigateTime});
 
   @override
   State<ViewAllAssignmentAttempt> createState() =>
@@ -54,7 +54,7 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
 
   Future<void> loadAssignmentAttemptByAssignmentId() async {
     try {
-      final assignment = await Network.getAssignmentAttemptByAssignmentId(
+      final assignment = await Network.getAssignmentAttemptByAssignmentIdAndLearnerId(
         widget.assignmentId,
       );
 
@@ -179,9 +179,15 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                               ),
                             ),
                             btnOkOnPress: () {
+
                               setState(() {
-                                Navigator.pop(context);
-                                Navigator.pop(context);
+                                if(widget.navigateTime == 2){
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                }
+                                if(widget.navigateTime == 1){
+                                  Navigator.pop(context);
+                                }
                               });
                               // if(isSelected == true){
                               //   nextQuestion();

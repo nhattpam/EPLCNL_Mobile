@@ -152,7 +152,7 @@ class FetchCourseList {
     var data = [];
     List<Course> results = [];
     String urlList = 'https://nhatpmse.twentytwo.asia/api/categories/';
-
+    print(date);
     if (query != null && query.isNotEmpty) {
       for (var courseId in query) {
         var url = Uri.parse('$urlList$courseId/courses');
@@ -164,8 +164,13 @@ class FetchCourseList {
               print('');
             } else {
               results.addAll(data.map((e) => Course.fromJson(e)).where((course) {
-                int price = course.stockPrice as int; // Assuming 'price' is a property of the Course class
-                return (minPrice == null || price >= minPrice) && (maxPrice == null || price <= maxPrice);
+                final dateMatches = course.createdDate != null &&
+                    course.createdDate!.split('T')[0].contains(date.toString().split(' ')[0]);
+                int price = course.stockPrice as int;
+                if(date == "null"){
+                  return (minPrice == null || price >= minPrice) && (maxPrice == null || price <= maxPrice);
+                }
+                return ((minPrice == null || price >= minPrice) && (maxPrice == null || price <= maxPrice) && dateMatches);
               }));
             }
           } else {
@@ -176,7 +181,7 @@ class FetchCourseList {
         }
       }
     } else {
-      urlList += 'courses';
+      String urlList = 'https://nhatpmse.twentytwo.asia/api/courses';
       var url = Uri.parse(urlList);
       print(url);
       try {
@@ -184,8 +189,13 @@ class FetchCourseList {
         if (response.statusCode == 200) {
           data = json.decode(response.body);
           results = data.map((e) => Course.fromJson(e)).where((course) {
-            int price = course.stockPrice as int; // Assuming 'price' is a property of the Course class
-            return (minPrice == null || price >= minPrice) && (maxPrice == null || price <= maxPrice);
+            final dateMatches = course.createdDate != null &&
+                course.createdDate!.split('T')[0].contains(date.toString().split(' ')[0]);
+            int price = course.stockPrice as int;
+            if(date == "null"){
+              return (minPrice == null || price >= minPrice) && (maxPrice == null || price <= maxPrice);
+            }
+            return ((minPrice == null || price >= minPrice) && (maxPrice == null || price <= maxPrice) && dateMatches);
           }).toList();
         } else {
           print("fetch error");

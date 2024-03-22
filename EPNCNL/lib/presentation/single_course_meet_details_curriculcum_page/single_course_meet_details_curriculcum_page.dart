@@ -839,12 +839,18 @@ class _MultiTopicState extends State<MultiTopic> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "Topic:" + " " +
-                                listClassTopic[index].name.toString(),
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.primary),
+                          Container(
+                            constraints:
+                            const BoxConstraints(
+                              maxWidth: 200,
+                            ),
+                            child: Text(
+                              "Topic:" + " " +
+                                  listClassTopic[index].name.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary),
+                            ),
                           ),
                         ],
                       ),
@@ -872,14 +878,20 @@ class _MultiTopicState extends State<MultiTopic> {
                                 );
                                 loadQuizAttemptsByLearnerId();
                               },
-                              child: Text(
-                                  moduleQuizMap[listClassTopic[index]
-                                      .id]![assignmentIndex]
-                                      .name
-                                      .toString(),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black)),
+                              child: Container(
+                                constraints:
+                                const BoxConstraints(
+                                  maxWidth: 200,
+                                ),
+                                child: Text(
+                                    moduleQuizMap[listClassTopic[index]
+                                        .id]![assignmentIndex]
+                                        .name
+                                        .toString(),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black)),
+                              ),
 
                             ),
                             if (listQuizAttempt.isNotEmpty &&

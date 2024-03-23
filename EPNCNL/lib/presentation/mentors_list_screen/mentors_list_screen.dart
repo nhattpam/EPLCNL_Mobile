@@ -16,7 +16,8 @@ import 'package:meowlish/widgets/custom_search_view.dart';
 class MentorsListScreen extends StatefulWidget {
   final List<Category> category;
   final RangeValues values;
-  const MentorsListScreen({super.key, required this.category, required this.values});
+  final String date;
+  const MentorsListScreen({super.key, required this.category, required this.values, required this.date});
 
   @override
   State<MentorsListScreen> createState() => _MentorsListScreenState();
@@ -198,9 +199,9 @@ class _MentorsListScreenState extends State<MentorsListScreen> {
   Widget _buildHEADING(BuildContext context) {
     List<String> categoryIds = widget.category.map((category) => category.id.toString()).toList();
     return FutureBuilder<List<Course>>(
-      future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt()),
+      future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt(), date: widget.date),
       builder: (context, snapshot) {
-        List<Course>? data = snapshot.data;
+        List<Course>? data = snapshot.data?.where((element) => element.isActive == true).toList();
         return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,7 +232,7 @@ class _MentorsListScreenState extends State<MentorsListScreen> {
     // Extracting category IDs
     List<String> categoryIds = widget.category.map((category) => category.id.toString()).toList();
     return FutureBuilder<List<Course>>(
-      future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt()),
+      future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt(), date: widget.date),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Center(
@@ -259,7 +260,9 @@ class _MentorsListScreenState extends State<MentorsListScreen> {
                 itemBuilder: (context, index) {
                   String image = '${data?[index].tutor?.account?.imageUrl}';
                   String name = '${data?[index].tutor?.account?.fullName}';
-                  return Row(
+                  bool isActive = data?[index].isActive ?? false;
+                  return isActive
+                      ? Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
@@ -305,8 +308,8 @@ class _MentorsListScreenState extends State<MentorsListScreen> {
                         ),
                       ),
                     ],
-                  );
-
+                  )
+                      : Container();
                 }));
       },
     );

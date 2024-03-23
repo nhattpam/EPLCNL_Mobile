@@ -526,7 +526,9 @@ class HomePageState extends State<HomePage> {
                           itemCount: listCourse.length,
                           itemBuilder: (context, index) {
                             final course = listCourse[index];
-                            return GestureDetector(
+                            bool isActive = course?.isActive ?? false;
+                            return isActive
+                              ? GestureDetector(
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -687,7 +689,8 @@ class HomePageState extends State<HomePage> {
                                   ),
                                 ),
                               ),
-                            );
+                            )
+                                : Container();
 
                           }))
                 ])));

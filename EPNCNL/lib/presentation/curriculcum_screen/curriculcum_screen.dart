@@ -21,7 +21,6 @@ import 'package:meowlish/presentation/my_course_completed_page/my_course_complet
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/presentation/view_all_assignment_attemp/view_all_assignment_attemp.dart';
-import 'package:meowlish/session/session.dart';
 
 class CurriculumScreen extends StatefulWidget {
   final courseID;

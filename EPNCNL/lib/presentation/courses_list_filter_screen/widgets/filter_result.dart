@@ -220,7 +220,7 @@ class FilterResultState extends State<FilterResultScreen> {
     return FutureBuilder<List<Course>>(
       future: _userList.getCourseListById(query: categoryIds, maxPrice: widget.values.end.toInt(), minPrice: widget.values.start.toInt(), date: widget.date),
       builder: (context, snapshot) {
-        List<Course>? data = snapshot.data;
+        List<Course>? data = snapshot.data?.where((element) => element.isActive == true).toList();
         return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,7 +260,7 @@ class FilterResultState extends State<FilterResultScreen> {
       context,
       MaterialPageRoute(
           builder: (context) =>
-              MentorsListScreen(category: widget.category, values: widget.values,)),
+              MentorsListScreen(category: widget.category, values: widget.values, date: widget.date)),
     );
     loadCourse();
   }
@@ -277,7 +277,6 @@ class FilterResultState extends State<FilterResultScreen> {
           );
         }
         List<Course>? data = snapshot.data;
-
         return ListView.separated(
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -290,7 +289,9 @@ class FilterResultState extends State<FilterResultScreen> {
             String courseId = '${data?[index].id}';
             String courseTutor = '${data?[index].tutorId}';
             String courseImage = '${data?[index].imageUrl}';
-            return GestureDetector(
+            bool isActive = data?[index].isActive ?? false;
+            return isActive
+                ? GestureDetector(
               onTap: (){
                 Navigator.push(
                   context,
@@ -430,7 +431,8 @@ class FilterResultState extends State<FilterResultScreen> {
                   ],
                 ),
               ),
-            );
+            )
+                : Container();
           },
         );
       },

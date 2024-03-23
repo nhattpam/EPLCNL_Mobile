@@ -1144,6 +1144,37 @@ class Network {
     }
   }
 
+  static Future<AssignmentAttempt> getAssignmentAttemptById(
+      String attemptId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/assignment-attempts/$attemptId'; // Replace with your API URL
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic assignmentJson = jsonDecode(response.body);
+
+        // Map the JSON object to a User object and return it
+        return AssignmentAttempt.fromJson(assignmentJson);
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch assignment by assignment id. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+
   // quiz
   static Future<List<Quiz>> getQuizByModuleId(String moduleId) async {
     final apiUrl =

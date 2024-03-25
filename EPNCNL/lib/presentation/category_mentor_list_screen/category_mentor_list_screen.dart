@@ -112,7 +112,7 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
                                   padding: EdgeInsets.only(left: 2.h),
                                   child: CustomSearchView(
                                     controller: searchController,
-                                    hintText: "3D Design",
+                                    hintText: "Search for",
                                     context: context,
                                   )),
                               SizedBox(height: 25.v),
@@ -238,7 +238,7 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        chosenCategory.length.toString() +
+                        chosenCategory.where((element) => element.isActive == true).length.toString() +
                             " Founds".toUpperCase(),
                         style: CustomTextStyles.labelLargePrimary),
                   ]))
@@ -265,7 +265,10 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
             itemBuilder: (context, index) {
               String image = '${chosenCategory?[index].tutor?.account?.imageUrl}';
               String name = '${chosenCategory?[index].tutor?.account?.fullName}';
-              return Row(
+              String email = '${chosenCategory?[index].tutor?.account?.email}';
+              bool isActive = chosenCategory?[index]?.isActive ?? false;
+              return isActive
+              ? Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
@@ -304,14 +307,15 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
                         ),
                         SizedBox(height: 2.v),
                         Text(
-                          "3D Design",
+                          email,
                           style: theme.textTheme.labelLarge,
                         ),
                       ],
                     ),
                   ),
                 ],
-              );
+              )
+                  : Container();
             }));
   }
 

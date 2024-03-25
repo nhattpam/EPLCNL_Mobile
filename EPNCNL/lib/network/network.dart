@@ -22,6 +22,7 @@ import 'package:meowlish/data/models/questions.dart';
 import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/data/models/refundrequests.dart';
+import 'package:meowlish/data/models/refundsurveys.dart';
 import 'package:meowlish/data/models/topics.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/tutors.dart';
@@ -1084,6 +1085,97 @@ class Network {
     }
   }
 
+  static Future<List<AssignmentAttempt>>
+      getAssignmentAttemptByAssignmentId(String assignmentId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/assignments/$assignmentId/assignment-attempts';
+    print(apiUrl); // Replace with your API URL
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> assignmentListJson = jsonDecode(response.body);
+
+        return assignmentListJson
+            .map((json) => AssignmentAttempt.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<List<AssignmentAttempt>>
+      getAssignmentAttemptByAssignmentIdAndLearnerId(String assignmentId) async {
+    String lid = SessionManager().getLearnerId().toString();
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/assignment-attempts/$assignmentId/assignments/$lid/learners';
+    print(apiUrl); // Replace with your API URL
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> assignmentListJson = jsonDecode(response.body);
+
+        return assignmentListJson
+            .map((json) => AssignmentAttempt.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+  static Future<AssignmentAttempt> getAssignmentAttemptById(
+      String attemptId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/assignment-attempts/$attemptId'; // Replace with your API URL
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the JSON response
+        final dynamic assignmentJson = jsonDecode(response.body);
+
+        // Map the JSON object to a User object and return it
+        return AssignmentAttempt.fromJson(assignmentJson);
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch assignment by assignment id. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+
   // quiz
   static Future<List<Quiz>> getQuizByModuleId(String moduleId) async {
     final apiUrl =
@@ -1297,9 +1389,10 @@ class Network {
   static Future<String> createTransaction({
     required String courseId,
     required double amount,
+    required String paymentMethodId
   }) async {
     final userData = {
-      "paymentMethodId": "1dffb0d3-f5a5-4725-98fc-b4dea22f4b0e",
+      "paymentMethodId": paymentMethodId,
       "amount": amount,
       "learnerId": SessionManager().getLearnerId(),
       "courseId": courseId,
@@ -1358,11 +1451,37 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+  static Future<bool> payTransactionByWallet(String? transactionId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/transactions/$transactionId/wallet-payment'; // Replace with your API URL
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Map the JSON object to a User object and return it
+        return json.decode(json.encode(response.body));
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to retrieve payment link. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
 
   static Future<Transaction> getTransactionByTransactionId(
       String? transactionId) async {
     final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/transactions/$transactionId'; // Replace with your API URL
+        'https://nhatpmse.twentytwo.asia/api/transactions/$transactionId';
+    print(apiUrl);// Replace with your API URL
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -1897,15 +2016,13 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
-
-  ////RefundRequest
-  static Future<void> createRefundRequest({
-    required String enrollmentId,
+  ////Refund-Survey
+  static Future<void> createRefundSurvey({
+    required String refundRequestId,
     required String reason,
   }) async {
-    final leanerId = SessionManager().getLearnerId() ?? 0;
     final learnerData = {
-      "enrollmentId": enrollmentId,
+      "refundRequestId": refundRequestId,
       "reason": reason,
     };
 
@@ -1914,7 +2031,7 @@ class Network {
     // Print the JSON data before making the API call
 
     final response = await http.post(
-      Uri.parse('https://nhatpmse.twentytwo.asia/api/refund-requests'),
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/refund-surveys'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -1928,6 +2045,42 @@ class Network {
       print('Create report failed');
       // Print the JSON data before making the API call
       print('JSON Data: $jsonData');
+    }
+  }
+
+  ////RefundRequest
+  static Future<String> createRefundRequest({
+    required String enrollmentId,
+  }) async {
+    final userData = {
+      "enrollmentId": enrollmentId,
+    };
+    final jsonData = jsonEncode(userData);
+
+    // Print the JSON data before making the API call
+    print('JSON Data: $jsonData');
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/refund-requests'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+      // Extract the authCode
+      final refundId = jsonResponse['id'];
+      //set accountId to create learner
+      print("After create refund:  " + refundId.toString());
+      return refundId;
+    } else {
+      print('Create refund failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
+      return "null refundId";
     }
   }
 
@@ -1960,7 +2113,6 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
-
   static Future<RefundRequest> getRefundRequestById(String refundId) async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/refund-requests/$refundId';
 
@@ -1995,6 +2147,34 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
+  static Future<List<RefundSurvey>> getRefundSurveyByRefundRequestId(String refundId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/refund-requests/$refundId/refund-surveys';
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> refundSurveyListJson = jsonDecode(response.body);
+
+        return refundSurveyListJson
+            .map((json) => RefundSurvey.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
   /////Profile-Certificates
   static Future<List<ProfileCertificate>> getProfileCertificateByLearnerId() async {
     String lid = SessionManager().getLearnerId().toString();
@@ -2057,6 +2237,39 @@ class Network {
       }
     } catch (e) {
       throw Exception('An error occurred: $e');
+    }
+  }
+////Peer Review
+  static Future<void> createPeerReview({
+    required String assignmentAttemptId,
+    required String grade,
+  }) async {
+    final leanerId = SessionManager().getLearnerId() ?? 0;
+    final learnerData = {
+      "assignmentAttemptId": assignmentAttemptId,
+      "learnerId": leanerId,
+      "grade": grade,
+    };
+
+    final jsonData = jsonEncode(learnerData);
+
+    // Print the JSON data before making the API call
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/peer-reviews'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+    } else {
+      print('Create report failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
     }
   }
 

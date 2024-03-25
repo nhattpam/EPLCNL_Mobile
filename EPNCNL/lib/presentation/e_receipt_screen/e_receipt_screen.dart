@@ -1,4 +1,3 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,11 +5,12 @@ import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/refund_curriculum_class_course/refund_curriculum_class_course.dart';
+import 'package:meowlish/presentation/refund_curriculum_video_course/refund_curriculum_video_course.dart';
 import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_outlined_button.dart';
-import 'package:meowlish/widgets/custom_text_form_field.dart';
 
 import '../../data/models/accounts.dart';
 
@@ -85,13 +85,13 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
   }
 
 
-  void _showMultiSelect() async {
-    final List<String>? result = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return RequestRefund(enrollmentId: enrollment.id.toString());
-        });
-  }
+  // void _showMultiSelect() async {
+  //   final List<String>? result = await showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return RequestRefund(enrollmentId: enrollment.id.toString());
+  //       });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -245,12 +245,27 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
               Divider(),
               SizedBox(height: 15.v),
               if (chosenTransaction.transactionDate != null && DateTime.parse(chosenTransaction.transactionDate.toString()).isAfter(DateTime.now().subtract(Duration(days: 7))) || enrollment.refundStatus == true)
+                if(chosenTransaction.course?.isOnlineClass == false)
                 CustomElevatedButton(
                   onPressed: () {
-                    _showMultiSelect();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => RefundCurriculum(courseID: widget.courseID)),
+                    );
+                    // _showMultiSelect();
                   },
                   text: "Refund request",
-                )
+                ),
+              if (chosenTransaction.transactionDate != null && DateTime.parse(chosenTransaction.transactionDate.toString()).isAfter(DateTime.now().subtract(Duration(days: 7))) || enrollment.refundStatus == true)
+                if(chosenTransaction.course?.isOnlineClass == true)
+                  CustomElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => RefundCurriculumClassCourse(courseID: widget.courseID)),
+                      );
+                      // _showMultiSelect();
+                    },
+                    text: "Refund request",
+                  ),
             ],
           ),
         ),
@@ -340,97 +355,97 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
     );
   }
 }
-
-class RequestRefund extends StatefulWidget {
-  final String enrollmentId;
-
-  const RequestRefund({super.key, required this.enrollmentId});
-
-  @override
-  State<RequestRefund> createState() => _RequestRefundState();
-}
-
-class _RequestRefundState extends State<RequestRefund> {
-  TextEditingController additionalInfoController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Center(child: Text('Report')),
-      content: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Adjust the height as needed
-              Center(child: Text('Your Reason:')),
-              SizedBox(height: 24.v),
-              Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: CustomTextFormField(
-                  controller: additionalInfoController,
-                  hintText: "Your Reason",
-                  hintStyle: CustomTextStyles.titleSmallGray80001,
-                  textInputAction: TextInputAction.done,
-                  maxLines: 14,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 15.h,
-                    vertical: 28.v,
-                  ),
-                  borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
-                ),
-              ),
-              SizedBox(height: 24.v),
-            ],
-          ),
-        ),
-      ),
-      actions: [
-        TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text('Cancel')),
-        TextButton(
-            onPressed: () {
-              Network.createRefundRequest(
-                  enrollmentId: widget.enrollmentId,
-                  reason: additionalInfoController.text);
-              AwesomeDialog(
-                context: context,
-                animType: AnimType.scale,
-                dialogType: DialogType.success,
-                body: Center(
-                  child: Text(
-                    'Request Refund success!!!',
-                    style: TextStyle(fontStyle: FontStyle.italic),
-                  ),
-                ),
-                btnOkOnPress: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-              )..show();
-            },
-            child: Text('Report'))
-      ],
-    );
-  }
-}
+//
+// class RequestRefund extends StatefulWidget {
+//   final String enrollmentId;
+//
+//   const RequestRefund({super.key, required this.enrollmentId});
+//
+//   @override
+//   State<RequestRefund> createState() => _RequestRefundState();
+// }
+//
+// class _RequestRefundState extends State<RequestRefund> {
+//   TextEditingController additionalInfoController = TextEditingController();
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return AlertDialog(
+//       title: Center(child: Text('Report')),
+//       content: SingleChildScrollView(
+//         child: Padding(
+//           padding: EdgeInsets.all(8.0),
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             crossAxisAlignment: CrossAxisAlignment.stretch,
+//             children: [
+//               // Adjust the height as needed
+//               Center(child: Text('Your Reason:')),
+//               SizedBox(height: 24.v),
+//               Container(
+//                 decoration: BoxDecoration(
+//                   boxShadow: [
+//                     BoxShadow(
+//                       color: Colors.grey.withOpacity(0.5),
+//                       spreadRadius: 2,
+//                       blurRadius: 5,
+//                       offset: Offset(0, 3),
+//                     ),
+//                   ],
+//                 ),
+//                 child: CustomTextFormField(
+//                   controller: additionalInfoController,
+//                   hintText: "Your Reason",
+//                   hintStyle: CustomTextStyles.titleSmallGray80001,
+//                   textInputAction: TextInputAction.done,
+//                   maxLines: 14,
+//                   contentPadding: EdgeInsets.symmetric(
+//                     horizontal: 15.h,
+//                     vertical: 28.v,
+//                   ),
+//                   borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
+//                 ),
+//               ),
+//               SizedBox(height: 24.v),
+//             ],
+//           ),
+//         ),
+//       ),
+//       actions: [
+//         TextButton(
+//             onPressed: () {
+//               Navigator.pop(context);
+//             },
+//             child: Text('Cancel')),
+//         TextButton(
+//             onPressed: () {
+//               Network.createRefundRequest(
+//                   enrollmentId: widget.enrollmentId,
+//                   reason: additionalInfoController.text);
+//               AwesomeDialog(
+//                 context: context,
+//                 animType: AnimType.scale,
+//                 dialogType: DialogType.success,
+//                 body: Center(
+//                   child: Text(
+//                     'Request Refund success!!!',
+//                     style: TextStyle(fontStyle: FontStyle.italic),
+//                   ),
+//                 ),
+//                 btnOkOnPress: () {
+//                   setState(() {
+//                     Navigator.pop(context);
+//                   });
+//                 },
+//               )..show();
+//             },
+//             child: Text('Report'))
+//       ],
+//     );
+//   }
+// }

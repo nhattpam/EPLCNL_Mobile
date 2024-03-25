@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/tutors.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
@@ -24,9 +25,12 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
   TextEditingController searchController = TextEditingController();
   late List<Tutor> listTutor = [];
   int _currentIndex = 0;
+  late bool isLoadingTutor;
 
   @override
   void initState() {
+    isLoadingTutor = true;
+
     super.initState();
     loadTutor();
   }
@@ -35,6 +39,7 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
     List<Tutor> loadedTutor = await Network.getTutor();
     setState(() {
       listTutor = loadedTutor;
+      isLoadingTutor = false;
     });
   }
 
@@ -177,7 +182,65 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
 
   /// Section Widget
   Widget _buildUserProfile(BuildContext context) {
-    return Padding(
+    return isLoadingTutor
+     ? Padding(
+      padding: EdgeInsets.only(left: 2.h),
+      child: ListView.separated(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        separatorBuilder: (
+          context,
+          index,
+        ) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 13.0.v),
+            child: SizedBox(
+              width: 360.h,
+              child: Divider(
+                height: 1.v,
+                thickness: 1.v,
+                color: appTheme.blue50,
+              ),
+            ),
+          );
+        },
+        itemCount: 6,
+        itemBuilder: (context, index) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 66.adaptSize,
+                width: 66.adaptSize,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(27.h)
+                ),
+                child: Skeleton(
+                  height: 66.adaptSize,
+                  width: 66.adaptSize,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 11.h,
+                  top: 9.v,
+                  bottom: 12.v,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Skeleton(width: 200),
+                    SizedBox(height: 1.v),
+                    Skeleton(width: 100)
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    )
+     : Padding(
       padding: EdgeInsets.only(left: 2.h),
       child: ListView.separated(
         physics: NeverScrollableScrollPhysics(),
@@ -201,7 +264,8 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
         itemCount: listTutor.length,
         itemBuilder: (context, index) {
           final tutors = listTutor[index];
-          return Row(
+          return
+            Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomImageView(
@@ -232,7 +296,7 @@ class TopMentorsScreenState extends State<TopMentorsScreen> {
                     ),
                     SizedBox(height: 1.v),
                     Text(
-                      "3D Design",
+                      tutors.account?.email ?? '',
                       style: theme.textTheme.labelLarge,
                     ),
                   ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
@@ -30,9 +31,14 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
   int _currentIndex = 1;
   Map<String, int> moduleLearningscoreMap = {};
   Map<String, int> moduleCoursescoreMap = {};
-
+  late bool isLoadingEnrollment;
+  late bool isCourseScore;
+  late bool isLearningScore;
   @override
   void initState() {
+    isLoadingEnrollment = true;
+    isCourseScore = true;
+    isLearningScore = true;
     loadEnrollments();
     super.initState();
   }
@@ -41,6 +47,7 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
     List<Enrollment> loadedEnrollment = await Network.getEnrollmentByLearner();
     setState(() {
       listEnrollment = loadedEnrollment;
+      isLoadingEnrollment = false;
     });
     loadAllScore();
   }
@@ -50,6 +57,7 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
 
     setState(() {
       moduleLearningscoreMap[enrollmentId] = acc;
+      isLearningScore = false;
     });
   }
 
@@ -59,6 +67,7 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
     setState(() {
       // Set the list of pet containers in your state
       moduleCoursescoreMap[enrollmentId] = acc;
+      isCourseScore = false;
     });
   }
 
@@ -66,8 +75,8 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
     try {
       // Load lessons for each module
       for (final module in listEnrollment) {
-        await fetchLearningScoreByEnrollmentId(module.id.toString());
         await fetchCourseScoreByEnrollmentId(module.id.toString());
+        await fetchLearningScoreByEnrollmentId(module.id.toString());
       }
       setState(() {});
     } catch (e) {
@@ -218,7 +227,118 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
 
   /// Section Widget
   Widget _buildUserProfile(BuildContext context) {
-    return ListView.separated(
+    return isLoadingEnrollment
+    ? ListView.separated(
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      separatorBuilder: (context, index) {
+        return SizedBox(height: 20.v);
+      },
+      itemCount: 4,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () {
+
+          },
+          child: Container(
+            decoration: AppDecoration.outlineBlack.copyWith(
+              borderRadius: BorderRadiusStyle.circleBorder15,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  height: 134.v,
+                  width: 130.h,
+                  child: Skeleton(
+                    height: 134.v,
+                    width: 130.h,
+                  ), // Placeholder widget when imageUrl is empty or null
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 14.h,
+                    top: 19.v,
+                    bottom: 19.v,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Skeleton(width: 180),
+                      SizedBox(height: 4.v),
+                      Skeleton(width: 180),
+                      SizedBox(height: 9.v),
+                      Row(
+                        children: [
+                          Container(
+                            width: 32.h,
+                            margin: EdgeInsets.only(top: 3.v),
+                            child: Skeleton(width: 30)
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 16.h),
+                            child: Text(
+                              '',
+                              style: CustomTextStyles.titleSmallBlack900,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              left: 16.h,
+                              top: 3.v,
+                            ),
+                            child: Skeleton(width: 30)
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10.v),
+                      Padding(
+                        padding: EdgeInsets.only(left: 3.h),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: 3.v,
+                                bottom: 4.v,
+                              ),
+                              child: Container(
+                                height: 6.v,
+                                width: 144.h,
+                                decoration: BoxDecoration(
+                                  color: appTheme.gray5001,
+                                  borderRadius: BorderRadius.circular(
+                                    3.h,
+                                  ),
+                                  border: Border.all(
+                                    color: appTheme.blue50,
+                                    width: 6.h,
+                                    strokeAlign: strokeAlignOutside,
+                                  ),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                    3.h,
+                                  ),
+                                  child: Skeleton(width: 50)
+                                ),
+                              ),
+                            ),
+                              Padding(
+                              padding: EdgeInsets.only(left: 12.h),
+                                child: Skeleton(width: 50)
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    )
+    : ListView.separated(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       separatorBuilder: (context, index) {
@@ -372,8 +492,11 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                                   borderRadius: BorderRadius.circular(
                                     3.h,
                                   ),
-                                  child: LinearProgressIndicator(
-                                    value: (moduleLearningscoreMap[enrolls.id.toString()] ?? 0) / (moduleCoursescoreMap[enrolls.id.toString()] ?? 0),
+
+                                  child: isCourseScore && isLearningScore
+                                   ? Skeleton(width: 50)
+                                   : LinearProgressIndicator(
+                                    value: (moduleLearningscoreMap[enrolls.id.toString()] ?? 1) / (moduleCoursescoreMap[enrolls.id.toString()] ?? 1),
                                     backgroundColor: appTheme.gray5001,
                                     valueColor: AlwaysStoppedAnimation<Color>(
                                       appTheme.teal700,
@@ -384,7 +507,9 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
                             ),
                               Padding(
                               padding: EdgeInsets.only(left: 12.h),
-                                child: Text(
+                                child: isLearningScore && isCourseScore
+                                ? Skeleton(width: 50)
+                                : Text(
                                   (moduleLearningscoreMap[enrolls.id.toString()] ?? 0).toString() + "/" + (moduleCoursescoreMap[enrolls.id.toString()] ?? 0).toString(),
                                   style: theme.textTheme.labelMedium,
                                 ),

@@ -6,6 +6,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/view_all_assignment_attemp/view_all_assignment_attemp.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 
@@ -83,6 +84,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
           elevation: 0.0,
           toolbarHeight: 65,
@@ -101,6 +103,10 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                 ),
               ),
             ),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
         backgroundColor: Colors.white,
@@ -201,7 +207,14 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                       ),
                       btnOkOnPress: () {
                         setState(() {
-                          Navigator.pop(context);
+                          // Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ViewAllAssignmentAttempt(assignmentId: widget.assignmentID, navigateTime: 2,
+                              ),
+                            ),
+                          );
                           _timer?.cancel();
                           _timer = null;
                         });

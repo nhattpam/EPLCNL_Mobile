@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/feedbacks.dart';
@@ -15,6 +15,7 @@ import 'package:meowlish/widgets/custom_rating_bar.dart';
 
 class ReviewsScreen extends StatefulWidget {
   final String courseID;
+
   const ReviewsScreen({super.key, required this.courseID});
 
   @override
@@ -30,8 +31,13 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   String lid = '';
   bool _ascendingOrder = true;
   List<FedBack> _paginatedFeedback = [];
+  late bool isLoadingFeedback;
+  late bool isLoadingCourse;
+
   @override
   void initState() {
+    isLoadingFeedback = true;
+    isLoadingCourse = true;
     loadFeedback();
     loadCourseByCourseID();
     loadEnrollmentByLearnerAndCourseId();
@@ -43,7 +49,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
         await Network.getFeedbackByCourse(widget.courseID);
     setState(() {
       listFedback = loadedFedback;
-      _loadPage(_currentPage); // Load initial page after feedback is loaded
+      _loadPage(_currentPage);
     });
     loadLearner();
   }
@@ -82,6 +88,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       // Ensure endIndex does not exceed the length of the list
       _paginatedFeedback = listFedback.sublist(
           startIndex, endIndex.clamp(0, listFedback.length));
+      isLoadingFeedback = false;
     }
   }
 
@@ -102,6 +109,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       var course = await Network.getCourseByCourseID(widget.courseID);
       setState(() {
         chosenCourse = course;
+        isLoadingCourse = false;
       });
     } catch (e) {
       // Handle errors here
@@ -195,34 +203,51 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 63.v,
-                        width: 102.h,
-                        child: Stack(
-                          alignment: Alignment.bottomCenter,
-                          children: [
-                            Align(
-                              alignment: Alignment.topCenter,
-                              child: Text(
-                                chosenCourse.rating?.toStringAsFixed(1) ?? '',
-                                style: theme.textTheme.displaySmall,
+                      if (isLoadingCourse == true)
+                        SizedBox(
+                          height: 63.v,
+                          width: 102.h,
+                          child: Skeleton(height: 63.v, width: 102.h),
+                        ),
+                      if (isLoadingCourse == false)
+                        SizedBox(
+                          height: 63.v,
+                          width: 102.h,
+                          child: Stack(
+                            alignment: Alignment.bottomCenter,
+                            children: [
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: Text(
+                                  chosenCourse.rating?.toStringAsFixed(1) ?? '',
+                                  style: theme.textTheme.displaySmall,
+                                ),
                               ),
-                            ),
-                            CustomRatingBar(
-                              alignment: Alignment.bottomCenter,
-                              initialRating: chosenCourse.rating?.toDouble(),
-                            ),
-                          ],
+                              CustomRatingBar(
+                                alignment: Alignment.bottomCenter,
+                                initialRating: chosenCourse.rating?.toDouble(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      SizedBox(height: 4.v),
+                      if (isLoadingCourse == true) Skeleton(width: 100),
+                      if (isLoadingCourse == false)
+                        Text(
+                          "Based on " +
+                              listFedback.length.toString() +
+                              " Review",
+                          style: theme.textTheme.labelLarge,
+                        ),
+                      SizedBox(height: 71.v),
+                     listFedback.isNotEmpty
+                      ? SingleChildScrollView(
+                          child: _buildCourseReviewList(context))
+                      : Center(
+                        child: Container(
+                          child: Text('No one review yet'),
                         ),
                       ),
-                      SizedBox(height: 4.v),
-                      Text(
-                        "Based on " + listFedback.length.toString() + " Review",
-                        style: theme.textTheme.labelLarge,
-                      ),
-                      SizedBox(height: 71.v),
-                      SingleChildScrollView(
-                          child: _buildCourseReviewList(context)),
                       SizedBox(height: 12),
                       Divider(),
                       SizedBox(height: 30.v),
@@ -270,43 +295,35 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   }
 
   Widget _buildCourseReviewList(BuildContext context) {
-    return Column(
-      children: [
-        if (_paginatedFeedback.length != 0)
-          ListView.separated(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            separatorBuilder: (
-              context,
-              index,
-            ) {
-              return Padding(
-                padding: EdgeInsets.symmetric(vertical: 11.5.v),
-                child: SizedBox(
-                  width: 360.h,
-                  child: Divider(
-                    height: 1.v,
-                    thickness: 1.v,
-                    color: appTheme.blue50,
-                  ),
-                ),
-              );
-            },
-            itemCount: _paginatedFeedback.length,
-            itemBuilder: (context, index) {
-              final feedback = _paginatedFeedback[index];
-              String originalDateString = feedback.createdDate.toString();
-              DateTime originalDate =
-                  DateTime.parse(originalDateString.split('T')[0]);
-              String formattedDate =
-                  DateFormat('dd-MM-yyyy').format(originalDate);
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  feedback.learner?.account?.imageUrl != null &&
-                          feedback.learner!.account!.imageUrl!.isNotEmpty
-                      ? Container(
+    return isLoadingFeedback
+        ? Column(
+            children: [
+              ListView.separated(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                separatorBuilder: (
+                  context,
+                  index,
+                ) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 11.5.v),
+                    child: SizedBox(
+                      width: 360.h,
+                      child: Divider(
+                        height: 1.v,
+                        thickness: 1.v,
+                        color: appTheme.blue50,
+                      ),
+                    ),
+                  );
+                },
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
                           height: 46.adaptSize,
                           width: 46.adaptSize,
                           margin: EdgeInsets.only(
@@ -319,137 +336,228 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                               23.h,
                             ),
                           ),
-                          child: Image.network(
-                            feedback.learner!.account!.imageUrl!,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      : Center(
-                          child: Container(
-                              child:
-                                  CircularProgressIndicator())), // Placeholder widget when feedback.learner.account.imageUrl is empty or null
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 12.h),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          child: Skeleton(width: 20)),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 12.h),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                removeAllHtmlTags(
-                                    feedback.learner?.account?.fullName ?? ''),
-                                style: CustomTextStyles.titleMedium17,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Skeleton(width: 30),
+                                  Skeleton(width: 60),
+                                ],
                               ),
-                              CustomOutlinedButton(
-                                width: 60.h,
-                                text: feedback.rating.toString(),
-                                leftIcon: Container(
-                                    margin: EdgeInsets.only(right: 2.h),
-                                    child: Icon(
-                                      Icons.star,
-                                      color: Colors.yellow,
-                                      size: 12.v,
-                                    )),
-                                buttonStyle: CustomButtonStyles.outlinePrimary,
+                              SizedBox(height: 9.v),
+                              Skeleton(width: 244),
+                              SizedBox(height: 11.v),
+                              Row(
+                                children: [
+                                  Skeleton(width: 30),
+                                  Padding(
+                                      padding: EdgeInsets.only(left: 10.h),
+                                      child: Skeleton(width: 30)),
+                                ],
                               ),
                             ],
                           ),
-                          SizedBox(height: 9.v),
-                          Container(
-                            width: 244.h,
-                            margin: EdgeInsets.only(right: 12.h),
-                            child: Text(
-                              removeAllHtmlTags(
-                                  feedback.feedbackContent.toString()),
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.labelLarge,
-                            ),
-                          ),
-                          SizedBox(height: 11.v),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.favorite,
-                                color: Colors.red,
-                                size: 12.v,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 9.h),
-                                child: Text(
-                                  "760",
-                                  style: CustomTextStyles.labelLargeBluegray900,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 17.h),
-                                child: Text(
-                                  "|",
-                                  style: CustomTextStyles.titleSmallBlack900,
-                                ),
-                              ),
-                              Icon(
-                                Icons.calendar_month_outlined,
-                                color: Colors.black,
-                                size: 12.v,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 10.h),
-                                child: Text(
-                                  formattedDate,
-                                  style: CustomTextStyles.labelLargeBluegray900,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        // Pagination controls
-        if (_paginatedFeedback.length != 0)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: _currentPage > 1
-                    ? () {
-                        setState(() {
-                          _currentPage--;
-                          _loadPage(_currentPage);
-                        });
-                      }
-                    : null,
-              ),
-              Text('Page $_currentPage'),
-              IconButton(
-                icon: Icon(Icons.arrow_forward),
-                onPressed:
-                    _currentPage < (listFedback.length / _itemsPerPage).ceil()
-                        ? () {
-                            setState(() {
-                              _currentPage++;
-                              _loadPage(_currentPage);
-                            });
-                          }
-                        : null,
+                    ],
+                  );
+                },
               ),
             ],
-          ),
-        if (_paginatedFeedback.length == 0)
-          Center(
-            child: Container(
-              child: Text('No one review yet'),
-            ),
-          ),
-      ],
-    );
+          )
+        : Column(
+            children: [
+              if (_paginatedFeedback.isNotEmpty)
+                ListView.separated(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  separatorBuilder: (
+                    context,
+                    index,
+                  ) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 11.5.v),
+                      child: SizedBox(
+                        width: 360.h,
+                        child: Divider(
+                          height: 1.v,
+                          thickness: 1.v,
+                          color: appTheme.blue50,
+                        ),
+                      ),
+                    );
+                  },
+                  itemCount: _paginatedFeedback.length,
+                  itemBuilder: (context, index) {
+                    final feedback = _paginatedFeedback[index];
+                    String originalDateString = feedback.createdDate.toString();
+                    DateTime originalDate =
+                        DateTime.parse(originalDateString.split('T')[0]);
+                    String formattedDate =
+                        DateFormat('dd-MM-yyyy').format(originalDate);
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        feedback.learner?.account?.imageUrl != null &&
+                                feedback.learner!.account!.imageUrl!.isNotEmpty
+                            ? Container(
+                                height: 46.adaptSize,
+                                width: 46.adaptSize,
+                                margin: EdgeInsets.only(
+                                  top: 3.v,
+                                  bottom: 65.v,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: appTheme.black900,
+                                  borderRadius: BorderRadius.circular(
+                                    23.h,
+                                  ),
+                                ),
+                                child: Image.network(
+                                  feedback.learner!.account!.imageUrl!,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Center(
+                                child: Container(
+                                    child: CircularProgressIndicator())),
+                        // Placeholder widget when feedback.learner.account.imageUrl is empty or null
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 12.h),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      removeAllHtmlTags(
+                                          feedback.learner?.account?.fullName ??
+                                              ''),
+                                      style: CustomTextStyles.titleMedium17,
+                                    ),
+                                    CustomOutlinedButton(
+                                      width: 60.h,
+                                      text: feedback.rating.toString(),
+                                      leftIcon: Container(
+                                          margin: EdgeInsets.only(right: 2.h),
+                                          child: Icon(
+                                            Icons.star,
+                                            color: Colors.yellow,
+                                            size: 12.v,
+                                          )),
+                                      buttonStyle:
+                                          CustomButtonStyles.outlinePrimary,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 9.v),
+                                Container(
+                                  width: 244.h,
+                                  margin: EdgeInsets.only(right: 12.h),
+                                  child: Text(
+                                    removeAllHtmlTags(
+                                        feedback.feedbackContent.toString()),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.labelLarge,
+                                  ),
+                                ),
+                                SizedBox(height: 11.v),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.favorite,
+                                      color: Colors.red,
+                                      size: 12.v,
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 9.h),
+                                      child: Text(
+                                        "760",
+                                        style: CustomTextStyles
+                                            .labelLargeBluegray900,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 17.h),
+                                      child: Text(
+                                        "|",
+                                        style:
+                                            CustomTextStyles.titleSmallBlack900,
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.calendar_month_outlined,
+                                      color: Colors.black,
+                                      size: 12.v,
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 10.h),
+                                      child: Text(
+                                        formattedDate,
+                                        style: CustomTextStyles
+                                            .labelLargeBluegray900,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              // Pagination controls
+              if (_paginatedFeedback.isNotEmpty)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: _currentPage > 1
+                          ? () {
+                              setState(() {
+                                _currentPage--;
+                                _loadPage(_currentPage);
+                              });
+                            }
+                          : null,
+                    ),
+                    Text('Page $_currentPage'),
+                    IconButton(
+                      icon: Icon(Icons.arrow_forward),
+                      onPressed: _currentPage <
+                              (listFedback.length / _itemsPerPage).ceil()
+                          ? () {
+                              setState(() {
+                                _currentPage++;
+                                _loadPage(_currentPage);
+                              });
+                            }
+                          : null,
+                    ),
+                  ],
+                ),
+              if (_paginatedFeedback.isEmpty)
+                Center(
+                  child: Container(
+                    child: Text('No one review yet'),
+                  ),
+                ),
+            ],
+          );
   }
 }

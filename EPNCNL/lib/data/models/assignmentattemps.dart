@@ -1,9 +1,13 @@
+import 'package:meowlish/data/models/accounts.dart';
+import 'package:meowlish/data/models/learners.dart';
+
 class AssignmentAttempt {
   String? id;
   String? assignmentId;
   String? learnerId;
   String? answerText;
   String? attemptedDate;
+  Leaner? learner;
   int? totalGrade;
 
   AssignmentAttempt(
@@ -12,6 +16,7 @@ class AssignmentAttempt {
       this.learnerId,
       this.answerText,
       this.attemptedDate,
+        this.learner,
       this.totalGrade});
 
   AssignmentAttempt.fromJson(Map<String, dynamic> json) {
@@ -21,6 +26,8 @@ class AssignmentAttempt {
     answerText = json['answerText'];
     attemptedDate = json['attemptedDate'];
     totalGrade = json['totalGrade'];
+    learner = json['learner'] != null ? new Leaner.fromJson(json['learner']) : null;
+
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +38,9 @@ class AssignmentAttempt {
     data['answerText'] = this.answerText;
     data['attemptedDate'] = this.attemptedDate;
     data['totalGrade'] = this.totalGrade;
+    if (this.learner != null) {
+      data['learner'] = this.learner!.toJson();
+    }
     return data;
   }
 }

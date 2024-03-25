@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/assignmentattemps.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/classmodules.dart';
@@ -25,7 +26,6 @@ import 'package:meowlish/widgets/custom_icon_button.dart';
 import '../../data/models/lessons.dart';
 import '../../data/models/modules.dart';
 import '../../network/network.dart';
-
 
 class SingleCourseDetailsTabContainerScreen extends StatefulWidget {
   final String courseID;
@@ -49,8 +49,11 @@ class SingleCourseDetailsTabContainerScreenState
   late Course chosenCourse = Course();
   late Enrollment enrollment = Enrollment();
   int _currentIndex = 0;
+  late bool isLoading;
+
   @override
   void initState() {
+    isLoading = true;
     super.initState();
     tabviewController = TabController(length: 3, vsync: this);
     loadCourseByCourseID();
@@ -68,6 +71,7 @@ class SingleCourseDetailsTabContainerScreenState
       final course = await Network.getCourseByCourseID(widget.courseID);
       setState(() {
         chosenCourse = course;
+        isLoading = false;
       });
     } catch (e) {
       // Handle errors here
@@ -86,7 +90,7 @@ class SingleCourseDetailsTabContainerScreenState
   Future<void> loadEnrollmentByLearnerAndCourseId() async {
     try {
       final enrollmentResponse =
-      await Network.getEnrollmentByLearnerAndCourseId(
+          await Network.getEnrollmentByLearnerAndCourseId(
         SessionManager().getLearnerId().toString(),
         widget.courseID,
       );
@@ -155,7 +159,8 @@ class SingleCourseDetailsTabContainerScreenState
             }
             if (index == 1) {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+                MaterialPageRoute(
+                    builder: (context) => MyCourseCompletedPage()),
               );
             }
             if (index == 2) {
@@ -199,7 +204,6 @@ class SingleCourseDetailsTabContainerScreenState
           selectedItemColor: Color(0xbbff9300),
           unselectedItemColor: Color(0xffff9300),
         ),
-
       ),
     );
   }
@@ -207,7 +211,8 @@ class SingleCourseDetailsTabContainerScreenState
   /// Section Widget
   Widget _buildArrowDown(BuildContext context) {
     String? imageUrl = chosenCourse.imageUrl;
-    bool isEnrolled = enrollment.transaction?.learnerId != null && enrollment.transaction?.courseId != null;
+    bool isEnrolled = enrollment.transaction?.learnerId != null &&
+        enrollment.transaction?.courseId != null;
     return SizedBox(
       height: 595.v,
       width: double.maxFinite,
@@ -230,7 +235,7 @@ class SingleCourseDetailsTabContainerScreenState
                   backgroundColor: Colors.white.withOpacity(0.1),
                 ),
               ),
-              if(imageUrl != null && imageUrl.isNotEmpty)
+              if (imageUrl != null && imageUrl.isNotEmpty && isLoading == false)
                 Positioned(
                   top: 0,
                   right: 0,
@@ -241,7 +246,14 @@ class SingleCourseDetailsTabContainerScreenState
                     fit: BoxFit.cover, // Adjust the fit based on your needs
                   ),
                 )
-              else Center(child: CircularProgressIndicator())
+              else
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Skeleton(
+                    height: 595.v,
+                  ),
+                )
             ],
           ),
           Align(
@@ -263,49 +275,65 @@ class SingleCourseDetailsTabContainerScreenState
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          constraints: const BoxConstraints(
-                            maxWidth: 260,
-                          ),
-                          child: Text(
-                            "${chosenCourse.category?.description ?? ''}",
-                            style: CustomTextStyles.labelLargeOrangeA700,
-                            softWrap: true,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.star,
-                              color: Colors
-                                  .yellow, // Replace with the desired icon
-                              size: 12.0, // Adjust the size as needed
+                        if (isLoading == false)
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 256,
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 3.h),
-                              child: Text(
-                                "${chosenCourse.rating?.toStringAsFixed(1) ?? ''}",
-                                style: theme.textTheme.labelMedium,
+                            child: Text(
+                              "${chosenCourse.category?.description ?? ''}",
+                              style: CustomTextStyles.labelLargeOrangeA700,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        if (isLoading == true) Skeleton(width: 256),
+                        if (isLoading == false)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.star,
+                                color: Colors
+                                    .yellow, // Replace with the desired icon
+                                size: 12.0, // Adjust the size as needed
                               ),
-                            ),
-                          ],
-                        ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 3.h),
+                                child: Text(
+                                  "${chosenCourse.rating?.toStringAsFixed(1) ?? ''}",
+                                  style: theme.textTheme.labelMedium,
+                                ),
+                              ),
+                            ],
+                          ),
+                        if (isLoading == true)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [Skeleton(width: 30)],
+                          ),
                       ],
                     ),
                   ),
                   SizedBox(height: 6.v),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 20.h),
-                      child: Text(
-                        "${chosenCourse.name}",
-                        style: CustomTextStyles.titleLarge20,
+                  if (isLoading == false)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 20.h),
+                        child: Text(
+                          "${chosenCourse.name}",
+                          style: CustomTextStyles.titleLarge20,
+                        ),
                       ),
                     ),
-                  ),
+                  if (isLoading == true)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                          padding: EdgeInsets.only(left: 20.h),
+                          child: Skeleton(width: 20)),
+                    ),
                   SizedBox(height: 6.v),
                   Padding(
                     padding: EdgeInsets.only(
@@ -316,64 +344,66 @@ class SingleCourseDetailsTabContainerScreenState
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Icon(
-                          Icons.video_camera_front_outlined,
-                          // Replace with the desired icon
-                          size: 17.0, // Adjust the size as needed
-                          color: Colors.black, // Adjust the color as needed
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: 9.h,
-                            top: 7.v,
-                            bottom: 5.v,
-                          ),
-                          child: Text(
-                            "21 Class",
-                            style: theme.textTheme.labelMedium,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: 10.h,
-                            top: 7.v,
-                          ),
-                          child: Text(
-                            "|",
-                            style: CustomTextStyles.titleSmallBlack900,
-                          ),
-                        ),
-                        Container(
-                            height: 16.adaptSize,
-                            width: 16.adaptSize,
-                            margin: EdgeInsets.only(
-                              left: 10.h,
-                              top: 6.v,
-                              bottom: 4.v,
-                            ),
-                            padding: EdgeInsets.all(4.h),
-                            child: Icon(
-                              Icons.hourglass_empty,
-                              // Replace with the desired icon
-                              size: 17.0, // Adjust the size as needed
-                              color: Colors.black, // Adjust the color as needed
-                            )),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: 8.h,
-                            top: 8.v,
-                            bottom: 4.v,
-                          ),
-                          child: Text(
-                            "42 Hours",
-                            style: theme.textTheme.labelMedium,
-                          ),
-                        ),
+                        // Icon(
+                        //   Icons.video_camera_front_outlined,
+                        //   // Replace with the desired icon
+                        //   size: 17.0, // Adjust the size as needed
+                        //   color: Colors.black, // Adjust the color as needed
+                        // ),
+                        // Padding(
+                        //   padding: EdgeInsets.only(
+                        //     left: 9.h,
+                        //     top: 7.v,
+                        //     bottom: 5.v,
+                        //   ),
+                        //   child: Text(
+                        //     "21 Class",
+                        //     style: theme.textTheme.labelMedium,
+                        //   ),
+                        // ),
+                        // Padding(
+                        //   padding: EdgeInsets.only(
+                        //     left: 10.h,
+                        //     top: 7.v,
+                        //   ),
+                        //   child: Text(
+                        //     "|",
+                        //     style: CustomTextStyles.titleSmallBlack900,
+                        //   ),
+                        // ),
+                        // Container(
+                        //     height: 16.adaptSize,
+                        //     width: 16.adaptSize,
+                        //     margin: EdgeInsets.only(
+                        //       left: 10.h,
+                        //       top: 6.v,
+                        //       bottom: 4.v,
+                        //     ),
+                        //     padding: EdgeInsets.all(4.h),
+                        //     child: Icon(
+                        //       Icons.hourglass_empty,
+                        //       // Replace with the desired icon
+                        //       size: 17.0, // Adjust the size as needed
+                        //       color: Colors.black, // Adjust the color as needed
+                        //     )),
+                        // Padding(
+                        //   padding: EdgeInsets.only(
+                        //     left: 8.h,
+                        //     top: 8.v,
+                        //     bottom: 4.v,
+                        //   ),
+                        //   child: Text(
+                        //     "42 Hours",
+                        //     style: theme.textTheme.labelMedium,
+                        //   ),
+                        // ),
                         Spacer(),
-                        Text(
-                          "\$${chosenCourse.stockPrice.toString()}",
-                          style: CustomTextStyles.titleLargeMulishPrimary,
-                        ),
+                        if (isLoading == false)
+                          Text(
+                            "\$${chosenCourse.stockPrice.toString()}",
+                            style: CustomTextStyles.titleLargeMulishPrimary,
+                          ),
+                        if (isLoading == true) Skeleton(width: 30)
                       ],
                     ),
                   ),
@@ -426,7 +456,11 @@ class SingleCourseDetailsTabContainerScreenState
               ),
             ),
           ),
-          if (isEnrolled || chosenCourse.id == enrollment.transaction?.courseId && SessionManager().getLearnerId() == enrollment.transaction?.learnerId || enrollment.refundStatus == false)
+          if (isEnrolled ||
+              chosenCourse.id == enrollment.transaction?.courseId &&
+                  SessionManager().getLearnerId() ==
+                      enrollment.transaction?.learnerId ||
+              enrollment.refundStatus == false)
             Padding(
               padding: EdgeInsets.only(
                 right: 49.h,
@@ -439,7 +473,7 @@ class SingleCourseDetailsTabContainerScreenState
                 decoration: IconButtonStyleHelper.outlineBlack,
                 alignment: Alignment.bottomRight,
                 child: GestureDetector(
-                  onTap: (){
+                  onTap: () {
                     _showMultiSelect();
                   },
                   child: Icon(
@@ -448,7 +482,6 @@ class SingleCourseDetailsTabContainerScreenState
                     color: Colors.white,
                   ),
                 ),
-
               ),
             ),
         ],
@@ -487,9 +520,19 @@ class SingleCourseDetailsCurriculumPageState
   Map<String, bool> minimizedAssignmentsMap = {};
   Map<String, bool> minimizedQuizzesMap = {};
   Map<String, List<Topic>> moduleClassTopicMap = {};
+  late bool isLoadingModule;
+  late bool isLoadingClassModule;
+  late bool isLoadingLesson;
+  late bool isLoadingAssignment;
+  late bool isLoadingQuiz;
 
   @override
   void initState() {
+    isLoadingModule = true;
+    isLoadingClassModule = true;
+    isLoadingLesson = true;
+    isLoadingAssignment = true;
+    isLoadingQuiz = true;
     super.initState();
     loadCourseByCourseID();
     loadModuleByCourseId();
@@ -505,9 +548,10 @@ class SingleCourseDetailsCurriculumPageState
   Future<void> loadModuleByCourseId() async {
     try {
       List<Module> loadedModule =
-      await Network.getModulesByCourseId(widget.courseID);
+          await Network.getModulesByCourseId(widget.courseID);
       setState(() {
         listModuleByCourseId = loadedModule;
+        isLoadingModule = false;
       });
       // After loading modules, load all lessons
       loadAllLessons();
@@ -529,10 +573,9 @@ class SingleCourseDetailsCurriculumPageState
     }
   }
 
-
   Future<void> loadAssignmentAttemptsByLearnerId() async {
     List<AssignmentAttempt> loadedAssignmentAttempt =
-    await Network.getAssignmentAttemptByLearnerId();
+        await Network.getAssignmentAttemptByLearnerId();
     setState(() {
       listAssignmentAttempt = loadedAssignmentAttempt;
     });
@@ -544,6 +587,7 @@ class SingleCourseDetailsCurriculumPageState
       setState(() {
         // Store the lessons for this module in the map
         moduleLessonsMap[moduleId] = loadedLesson;
+        isLoadingLesson = false;
       });
     }
   }
@@ -554,17 +598,19 @@ class SingleCourseDetailsCurriculumPageState
       setState(() {
         // Store the lessons for this module in the map
         moduleQuizMap[moduleId] = loadedQuiz;
+        isLoadingQuiz = false;
       });
     }
   }
 
   Future<void> loadAssignmentByModuleId(String moduleId) async {
     List<Assignment> loadedAssignment =
-    await Network.getAssignmentByModuleId(moduleId);
+        await Network.getAssignmentByModuleId(moduleId);
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
         moduleAssignmentMap[moduleId] = loadedAssignment;
+        isLoadingAssignment = false;
       });
     }
   }
@@ -587,7 +633,7 @@ class SingleCourseDetailsCurriculumPageState
 
   Future<void> loadTopicsByClassLessonId(String classlessonId) async {
     List<Topic> loadedClassTopicMaterial =
-    await Network.getTopicsByClassLessonId(classlessonId);
+        await Network.getTopicsByClassLessonId(classlessonId);
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
@@ -595,6 +641,7 @@ class SingleCourseDetailsCurriculumPageState
       });
     }
   }
+
   Future<void> loadClassTopic() async {
     try {
       listClassModuleByCourseId.sort((a, b) =>
@@ -611,15 +658,16 @@ class SingleCourseDetailsCurriculumPageState
       print('Error loading lessons: $e');
     }
   }
+
   Future<void> loadClassModuleByCourseId() async {
     List<ClassModule> loadedModule =
-    await Network.getClassModulesByCourseId(widget.courseID);
+        await Network.getClassModulesByCourseId(widget.courseID);
     setState(() {
       listClassModuleByCourseId = loadedModule;
+      isLoadingClassModule = false;
     });
     loadClassTopic();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -653,53 +701,117 @@ class SingleCourseDetailsCurriculumPageState
   }
 
   Widget _buildVideoCourseListView() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: listModuleByCourseId.length,
-      itemBuilder: (context, index) {
-        final module = listModuleByCourseId[index];
-        final number = index + 1;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 1.h),
-              child: Row(
+    return isLoadingModule
+        ? ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: 2,
+            itemBuilder: (context, index) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Module $number - ",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
+                  Padding(
+                    padding: EdgeInsets.only(left: 1.h),
+                    child: Row(
+                      children: [
+                        Skeleton(width: 40),
+                        SizedBox(width: 30),
+                        Skeleton(width: 200)
+                      ],
                     ),
                   ),
-                  Text(
-                    module.name.toString(),
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  Divider(),
                 ],
-              ),
-            ),
-            _buildLessonsMenu(module),
-            _buildAssignmentsMenu(module),
-            _buildQuizzesMenu(module),
-            Divider(),
-          ],
-        );
-      },
-    );
+              );
+            },
+          )
+        : ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: listModuleByCourseId.length,
+            itemBuilder: (context, index) {
+              final module = listModuleByCourseId[index];
+              final number = index + 1;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 1.h),
+                    child: Row(
+                      children: [
+                        Container(
+                          constraints: const BoxConstraints(
+                            maxWidth: 100,
+                          ),
+                          child: Text(
+                            "Module $number - ",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          constraints: const BoxConstraints(
+                            maxWidth: 220,
+                          ),
+                          child: Text(
+                            module.name.toString(),
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              overflow: TextOverflow.ellipsis,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildLessonsMenu(module),
+                  _buildAssignmentsMenu(module),
+                  _buildQuizzesMenu(module),
+                  Divider(),
+                ],
+              );
+            },
+          );
   }
 
   Widget _buildLessonsMenu(Module module) {
-    return Visibility(
+    return isLoadingLesson
+      ? Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Skeleton(width: 20),
+              IconButton(
+                icon: Icon(minimizedLessonsMap[module.id.toString()] ?? false
+                    ? Icons.arrow_drop_down_outlined
+                    : Icons.minimize),
+                onPressed: () {
+                  setState(() {
+                    minimizedLessonsMap[module.id.toString()] =
+                        !(minimizedLessonsMap[module.id.toString()] ?? false);
+                  });
+                },
+              ),
+            ],
+          ),
+          // Only show the lessons if the module is not minimized
+          if (!(minimizedLessonsMap[module.id.toString()] ?? false))
+              TextButton(
+                onPressed: () {},
+                child: Skeleton(width: 200),
+              ),
+        ],
+      )
+      : Visibility(
       visible: moduleLessonsMap[module.id.toString()] != null &&
           moduleLessonsMap[module.id.toString()]!.isNotEmpty,
       child: Column(
@@ -721,7 +833,7 @@ class SingleCourseDetailsCurriculumPageState
                 onPressed: () {
                   setState(() {
                     minimizedLessonsMap[module.id.toString()] =
-                    !(minimizedLessonsMap[module.id.toString()] ?? false);
+                        !(minimizedLessonsMap[module.id.toString()] ?? false);
                   });
                 },
               ),
@@ -730,12 +842,11 @@ class SingleCourseDetailsCurriculumPageState
           // Only show the lessons if the module is not minimized
           if (!(minimizedLessonsMap[module.id.toString()] ?? false))
             for (int lessonIndex = 0;
-            lessonIndex <
-                (moduleLessonsMap[module.id.toString()]?.length ?? 0);
-            lessonIndex++)
+                lessonIndex <
+                    (moduleLessonsMap[module.id.toString()]?.length ?? 0);
+                lessonIndex++)
               TextButton(
-                onPressed: () {
-                },
+                onPressed: () {},
                 child: Text(
                     moduleLessonsMap[module.id.toString()]![lessonIndex]
                         .name
@@ -749,7 +860,50 @@ class SingleCourseDetailsCurriculumPageState
   }
 
   Widget _buildAssignmentsMenu(Module module) {
-    return Visibility(
+    return isLoadingAssignment
+      ? Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Skeleton(width: 20),
+              IconButton(
+                icon: Icon(
+                    minimizedAssignmentsMap[module.id.toString()] ?? false
+                        ? Icons.arrow_drop_down_outlined
+                        : Icons.minimize),
+                onPressed: () {
+                  setState(() {
+                    minimizedAssignmentsMap[module.id.toString()] =
+                        !(minimizedAssignmentsMap[module.id.toString()] ??
+                            false);
+                  });
+                },
+              ),
+            ],
+          ),
+          // Only show the assignments if the module is not minimized
+          if (!(minimizedAssignmentsMap[module.id.toString()] ?? false))
+            for (int assignmentIndex = 0;
+                assignmentIndex <
+                    (moduleAssignmentMap[module.id.toString()]?.length ?? 0);
+                assignmentIndex++)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () async {
+                      },
+                      child: Skeleton(width: 200)
+                    ),
+                  ),
+                ],
+              ),
+        ],
+      )
+      : Visibility(
       visible: moduleAssignmentMap[module.id.toString()] != null &&
           moduleAssignmentMap[module.id.toString()]!.isNotEmpty,
       child: Column(
@@ -772,8 +926,8 @@ class SingleCourseDetailsCurriculumPageState
                 onPressed: () {
                   setState(() {
                     minimizedAssignmentsMap[module.id.toString()] =
-                    !(minimizedAssignmentsMap[module.id.toString()] ??
-                        false);
+                        !(minimizedAssignmentsMap[module.id.toString()] ??
+                            false);
                   });
                 },
               ),
@@ -781,7 +935,10 @@ class SingleCourseDetailsCurriculumPageState
           ),
           // Only show the assignments if the module is not minimized
           if (!(minimizedAssignmentsMap[module.id.toString()] ?? false))
-            for (int assignmentIndex = 0; assignmentIndex < (moduleAssignmentMap[module.id.toString()]?.length ?? 0); assignmentIndex++)
+            for (int assignmentIndex = 0;
+                assignmentIndex <
+                    (moduleAssignmentMap[module.id.toString()]?.length ?? 0);
+                assignmentIndex++)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -800,14 +957,14 @@ class SingleCourseDetailsCurriculumPageState
                         // );
                         // loadAssignmentAttemptsByLearnerId();
                       },
-                      child:
-                      Html(
-                        data: moduleAssignmentMap[module.id.toString()]![assignmentIndex].questionText
+                      child: Html(
+                        data: moduleAssignmentMap[module.id.toString()]![
+                                assignmentIndex]
+                            .questionText
                             .toString(),
                         style: {
                           "body": Style(
-                              fontWeight: FontWeight.bold, color: Colors.black
-                          ),
+                              fontWeight: FontWeight.bold, color: Colors.black),
                         },
                       ),
                     ),
@@ -820,7 +977,43 @@ class SingleCourseDetailsCurriculumPageState
   }
 
   Widget _buildQuizzesMenu(Module module) {
-    return Visibility(
+    return isLoadingQuiz
+      ? Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Skeleton(width: 20),
+              IconButton(
+                icon: Icon(
+                  minimizedQuizzesMap[module.id.toString()] ?? false
+                      ? Icons.arrow_drop_down_outlined
+                      : Icons.minimize,
+                ),
+                onPressed: () {
+                  setState(() {
+                    minimizedQuizzesMap[module.id.toString()] =
+                        !(minimizedQuizzesMap[module.id.toString()] ?? false);
+                  });
+                },
+              ),
+            ],
+          ),
+          // Only show the quizzes if the module is not minimized
+          if (!(minimizedQuizzesMap[module.id.toString()] ?? false))
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () async {},
+                    child: Skeleton(width: 200)
+                  ),
+                ],
+              ),
+        ],
+      )
+      : Visibility(
       visible: moduleQuizMap[module.id.toString()] != null &&
           moduleQuizMap[module.id.toString()]!.isNotEmpty,
       child: Column(
@@ -845,7 +1038,7 @@ class SingleCourseDetailsCurriculumPageState
                 onPressed: () {
                   setState(() {
                     minimizedQuizzesMap[module.id.toString()] =
-                    !(minimizedQuizzesMap[module.id.toString()] ?? false);
+                        !(minimizedQuizzesMap[module.id.toString()] ?? false);
                   });
                 },
               ),
@@ -854,17 +1047,17 @@ class SingleCourseDetailsCurriculumPageState
           // Only show the quizzes if the module is not minimized
           if (!(minimizedQuizzesMap[module.id.toString()] ?? false))
             for (int quizIndex = 0;
-            quizIndex <
-                (moduleQuizMap[module.id.toString()]?.length ?? 0);
-            quizIndex++)
+                quizIndex < (moduleQuizMap[module.id.toString()]?.length ?? 0);
+                quizIndex++)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
-                    onPressed: ()  async{
-                    },
+                    onPressed: () async {},
                     child: Text(
-                      moduleQuizMap[module.id.toString()]![quizIndex].name.toString(),
+                      moduleQuizMap[module.id.toString()]![quizIndex]
+                          .name
+                          .toString(),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
@@ -877,9 +1070,55 @@ class SingleCourseDetailsCurriculumPageState
       ),
     );
   }
-  Widget _buildClassCourseListView() {
 
-    return ListView.builder(
+  Widget _buildClassCourseListView() {
+    return isLoadingClassModule
+        ? ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: 2,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 1.h),
+              child: Row(
+                children: [
+                  Skeleton(width: 30),
+                  SizedBox(width: 30),
+                  Skeleton(width: 100)
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                // Handle the onTap action for each video session
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Skeleton(width: 20),
+                  Padding(
+                    padding:
+                    EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Skeleton(width: 250)
+                        // Add other information about the video session here
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 21.v),
+            Divider(),
+          ],
+        );
+      },
+    )
+        : ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemCount: listClassModuleByCourseId.length,
@@ -894,20 +1133,46 @@ class SingleCourseDetailsCurriculumPageState
           children: [
             Padding(
               padding: EdgeInsets.only(left: 1.h),
-              child: Row(
+              child: Column(
                 children: [
-                  Text("Day $number - ", style: theme.textTheme.labelMedium),
-                  Text(formattedDate, style: CustomTextStyles.labelLargeOrangeA700),
+                  Row(
+                    children: [
+                      Text("Day $number - ", style: theme.textTheme.labelMedium),
+                      Text("$formattedDate - ",
+                          style: CustomTextStyles.labelLargeOrangeA700),
+                      Container(
+                        constraints: const BoxConstraints(
+                          maxWidth: 270,
+                        ),
+                        child: Text(
+                          module.classLesson?.classHours ?? '',
+                          style: theme.textTheme.labelMedium,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ), // Add other information about the video session here
+
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Class Topic: " , style: CustomTextStyles.labelLargeOrangeA700)),
                 ],
               ),
             ),
-            for (int lessonIndex = 0; lessonIndex < (moduleClassTopicMap[module.classLesson?.id.toString()]?.length ?? 0); lessonIndex++)
+            for (int lessonIndex = 0;
+            lessonIndex <
+                (moduleClassTopicMap[module.classLesson?.id.toString()]
+                    ?.length ??
+                    0);
+            lessonIndex++)
               GestureDetector(
                 onTap: () {
                   // Handle the onTap action for each video session
                 },
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleWithNumber(number: lessonIndex + 1),
                     Padding(
@@ -921,27 +1186,20 @@ class SingleCourseDetailsCurriculumPageState
                               maxWidth: 270,
                             ),
                             child: Text(
-                                moduleClassTopicMap[module.classLesson?.id.toString()]![
-                                lessonIndex]
-                                    .name
-                                    .toString(),
-                                style: CustomTextStyles.titleMedium17,
+                              moduleClassTopicMap[module.classLesson?.id
+                                  .toString()]![lessonIndex]
+                                  .name
+                                  .toString(),
+                              style: CustomTextStyles.titleMedium17,
                               softWrap: true,
                               overflow: TextOverflow.ellipsis,
                             ),
-
                           ),
-                          // Add other information about the video session here
                         ],
                       ),
                     ),
-                    // Spacer(),
-                    // Icon(
-                    //   Icons.play_arrow,
-                    //   size: 17.0,
-                    //   color: Colors.orange,
-                    // ),
                   ],
+
                 ),
               ),
             SizedBox(height: 21.v),
@@ -950,7 +1208,8 @@ class SingleCourseDetailsCurriculumPageState
         );
       },
     );
-  }}
+  }
+}
 
 class CircleWithNumber extends StatelessWidget {
   final int number;

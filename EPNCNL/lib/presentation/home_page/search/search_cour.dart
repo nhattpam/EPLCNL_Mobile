@@ -58,7 +58,10 @@ class SearchCourse extends SearchDelegate {
               String courseId = '${data?[index].id}';
               String courseTutorId = '${data?[index].tutorId}';
               String courseImage = '${data?[index].imageUrl}';
-              return GestureDetector(
+              bool isActive = data?[index].isActive ?? false;
+
+              return isActive
+                ? GestureDetector(
                 onTap: (){
                   Navigator.push(
                     context,
@@ -182,7 +185,8 @@ class SearchCourse extends SearchDelegate {
                     ],
                   ),
                 ),
-              );
+              )
+                  : Container();
             },
           );
         });

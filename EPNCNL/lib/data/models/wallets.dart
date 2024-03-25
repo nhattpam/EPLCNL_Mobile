@@ -1,6 +1,6 @@
 class Wallet {
   String? id;
-  int? balance;
+  num? balance;
   String? transactionDate;
   String? accountId;
 

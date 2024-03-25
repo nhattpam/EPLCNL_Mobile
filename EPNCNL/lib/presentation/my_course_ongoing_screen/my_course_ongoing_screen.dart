@@ -75,8 +75,8 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
     try {
       // Load lessons for each module
       for (final module in listEnrollment) {
-        await fetchLearningScoreByEnrollmentId(module.id.toString());
         await fetchCourseScoreByEnrollmentId(module.id.toString());
+        await fetchLearningScoreByEnrollmentId(module.id.toString());
       }
       setState(() {});
     } catch (e) {

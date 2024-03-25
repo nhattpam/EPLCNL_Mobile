@@ -219,7 +219,7 @@ class SingleMentorDetailsPageState extends State<SingleMentorDetailsPage>
                                             top: 3.v,
                                           ),
                                           child: Text(
-                                            (moduleEnrollmentMap[courses.id]?.length).toString() + " Enroll",
+                                            (moduleEnrollmentMap[courses.id]?.length).toString() + " Enrollment",
                                             style: theme.textTheme.labelMedium,
                                           ),
                                         ),

@@ -238,7 +238,7 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        chosenCategory.length.toString() +
+                        chosenCategory.where((element) => element.isActive == true).length.toString() +
                             " Founds".toUpperCase(),
                         style: CustomTextStyles.labelLargePrimary),
                   ]))
@@ -266,7 +266,9 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
               String image = '${chosenCategory?[index].tutor?.account?.imageUrl}';
               String name = '${chosenCategory?[index].tutor?.account?.fullName}';
               String email = '${chosenCategory?[index].tutor?.account?.email}';
-              return Row(
+              bool isActive = chosenCategory?[index]?.isActive ?? false;
+              return isActive
+              ? Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
@@ -312,7 +314,8 @@ class _CategoryMentorsListScreenState extends State<CategoryMentorsListScreen> {
                     ),
                   ),
                 ],
-              );
+              )
+                  : Container();
             }));
   }
 

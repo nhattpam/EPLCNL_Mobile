@@ -13,11 +13,7 @@ import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
-import 'package:meowlish/data/models/refundrequests.dart';
 import 'package:meowlish/network/network.dart';
-import 'package:meowlish/presentation/curriculcum_screen/widgets/videoplayer_widget.dart';
-import 'package:meowlish/presentation/doing_assignment_screen/doing_assignment_screen.dart';
-import 'package:meowlish/presentation/doing_quiz_screen/doing_quiz_screen.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
@@ -408,13 +404,20 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text(
-                    module.name.toString(),
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
+                  Container(
+                    constraints:
+                    const BoxConstraints(
+                      maxWidth: 220,
+                    ),
+                    child: Text(
+                      module.name.toString(),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        overflow: TextOverflow.ellipsis,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],

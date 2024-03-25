@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
-import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:internet_file/internet_file.dart';
@@ -8,22 +7,19 @@ import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/classmodules.dart';
-import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
-import 'package:meowlish/presentation/doing_quiz_screen/doing_quiz_screen.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
-import 'package:meowlish/session/session.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../data/models/topics.dart';
 import '../../../network/network.dart';
@@ -41,6 +37,7 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
   DateTime selectedDatesFromCalendar1 = DateTime.now();
   FetchCourseList _classmoduleList = FetchCourseList();
   late List<Topic> listClassTopic = [];
+  late List<ClassModule> listClassModule = [];
   late ClassModule chosenCourse = ClassModule();
   String query = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
@@ -48,9 +45,12 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
   bool get wantKeepAlive => true;
   late List<Enrollment> listEnrollment = [];
   int _currentIndex = 0;
-
+  CalendarController _calendarController = CalendarController();
+  late _AppointmentDataSource _dataSource;
+  late bool isLoading;
   @override
   void initState() {
+    isLoading = true;
     super.initState();
     // loadClassModuleByCourseId();
     loadEnrollmentByLearner();
@@ -77,6 +77,36 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
       final enroll = await Network.getEnrollmentByLearner();
       setState(() {
         listEnrollment = enroll;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+    loadAllLessons();
+  }
+  Future<void> loadAllLessons() async {
+    try {
+      // Load lessons for each module
+      for (final module in listEnrollment) {
+       await loadModuleByCourseId(module.transaction?.course?.id ?? '');
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {
+        _dataSource = _getCalendarDataSource();
+        isLoading = false;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lessons: $e');
+    }
+  }
+
+  Future<void> loadModuleByCourseId(String courseId) async {
+    try {
+
+      final enroll = await Network.getClassModulesByCourseId(courseId);
+      setState(() {
+        listClassModule = enroll;
       });
     } catch (e) {
       // Handle errors here
@@ -112,246 +142,17 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
           ),
         ),
         backgroundColor: Colors.white,
-        body: SizedBox(
-          width: SizeUtils.width,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 23.v),
-                Column(
-                  children: [
-                    _buildCalendar(context),
-                    SizedBox(height: 5.v),
-                    Divider(
-                      color: appTheme.gray50,
-                    ),
-                    FutureBuilder<List<ClassModule>>(
-                      future: _classmoduleList.getClassModuleByTutor(query: query, courseIds: listEnrollment.map((course) => course.transaction?.course?.id ?? '').toList()),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            // itemCount: listClassModule.length,
-                            itemCount: 4,
-                            itemBuilder: (context, index) {
-                              return Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      children: [
-                                        Skeleton(width: 100),
-                                        lineGen(
-                                          lines: [20.0, 30.0, 40.0, 10.0],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(width: 12),
-                                  Expanded(
-                                    child: Container(
-                                      padding: EdgeInsets.only(left: 16, top: 8),
-                                      height: 150,
-                                      decoration: BoxDecoration(
-                                        color: Color(0xfff6f6f5),
-                                        borderRadius:
-                                        BorderRadius.all(Radius.circular(20.0)),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Skeleton(width: 70),
-                                          SizedBox(height: 5.v),
-                                          Skeleton(width: 70),
-                                          SizedBox(height: 5.v),
-                                          Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Skeleton(width: 50),
-                                                  Padding(
-                                                    padding:
-                                                    const EdgeInsets.only(left: 8.0),
-                                                    child: Skeleton(width: 50)
-                                                  )
-                                                ],
-                                              ),
-                                              SizedBox(height: 5.v),
-                                              Row(
-                                                children: [
-                                                  Skeleton(width: 50,)
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              );
-                            },
-                          );
-                        }
-                        if(snapshot.connectionState == ConnectionState.done){
-                          List<ClassModule>? data = snapshot.data;
-                          return ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            // itemCount: listClassModule.length,
-                            itemCount: data?.length?? 0,
-                            itemBuilder: (context, index) {
-                              final classModule = data?[index];
-                              // loadClassTopicsByClassLessonId();
-                              return Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          classModule?.classLesson?.classHours ?? "",
-                                          style:
-                                          TextStyle(fontWeight: FontWeight.bold),
-                                        ),
-                                        lineGen(
-                                          lines: [20.0, 30.0, 40.0, 10.0],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(width: 12),
-                                  Expanded(
-                                    child: Container(
-                                      padding: EdgeInsets.only(left: 16, top: 8),
-                                      height: 150,
-                                      decoration: BoxDecoration(
-                                        color: Color(0xfff6f6f5),
-                                        borderRadius:
-                                        BorderRadius.all(Radius.circular(20.0)),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                              child: Text(classModule?.course?.name ?? "",
-                                                  style: TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                  overflow: TextOverflow.fade,
-                                                  softWrap: true)
-                                          ),
-                                          Text(
-                                            listClassTopic.isNotEmpty
-                                                ? listClassTopic[index]
-                                                .name
-                                                .toString()
-                                                : "", // Assuming 'name' is the property you want to display
-                                          ),
-                                          Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      launch(classModule
-                                                          ?.classLesson?.classUrl ??
-                                                          "");
-                                                    },
-                                                    style: ElevatedButton.styleFrom(
-                                                      minimumSize: Size(100, 50),
-                                                      primary: Color(0xffbfe25c),
-                                                      // Background color
-                                                      onPrimary: Colors.white,
-                                                      // Text color
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius:
-                                                        BorderRadius.circular(10.0),
-                                                      ),
-                                                    ),
-                                                    child: Text('Meet URL'),
-                                                  ),
-                                                  VerticalDivider(),
-                                                  Padding(
-                                                    padding:
-                                                    const EdgeInsets.only(left: 8.0),
-                                                    child: ElevatedButton(
-                                                      onPressed: () {
-                                                        // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
-                                                        //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
-                                                        // }
-                                                        _showMultiSelect(
-                                                            data?[index]
-                                                                .classLesson
-                                                                ?.id ??
-                                                                '');
-                                                      },
-                                                      style: ElevatedButton.styleFrom(
-                                                        minimumSize: Size(100, 50),
-                                                        primary: Color(0xffefc83c),
-                                                        // Background color
-                                                        onPrimary: Colors.white,
-                                                        // Text color
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius:
-                                                          BorderRadius.circular(10.0),
-                                                        ),
-                                                      ),
-                                                      child: Text('Materials'),
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                              SizedBox(height: 5.v),
-                                              Row(
-                                                children: [
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      _showTopic(classModule?.classLesson?.id ?? '');
-                                                    },
-                                                    style: ElevatedButton.styleFrom(
-                                                      minimumSize: Size(100, 50),
-                                                      primary: Color(0xFFF887A8),
-                                                      // Background color
-                                                      onPrimary: Colors.white,
-                                                      // Text color
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius:
-                                                        BorderRadius.circular(10.0),
-                                                      ),
-                                                    ),
-                                                    child: Text('Topic'),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              );
-                            },
-                          );
-                        }
-                        return Container();
-                      },
-                    ),
-                    // SizedBox(height: 50.v),
-                    // CustomElevatedButton(
-                    //   text: "Enroll Course",
-                    // ),
-                  ],
-                ),
-              ],
-
-            ),
-          ),
+        body: isLoading
+        ? Center(child: Container(child: CircularProgressIndicator()))
+        : SfCalendar(
+          view: CalendarView.week,
+          firstDayOfWeek: 1,
+          allowedViews: [
+            CalendarView.week,
+            CalendarView.timelineDay,
+            CalendarView.timelineMonth
+          ],
+          dataSource: _dataSource,
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -366,7 +167,8 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
             }
             if (index == 1) {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+                MaterialPageRoute(
+                    builder: (context) => MyCourseCompletedPage()),
               );
             }
             if (index == 2) {
@@ -414,109 +216,34 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
     );
   }
 
-  /// Section Widget
-  Widget _buildCalendar(BuildContext context) {
-    return SizedBox(
-      height: 130.v,
-      width: 368.h,
-      child: EasyDateTimeLine(
-        initialDate: selectedDatesFromCalendar1,
-        locale: 'en_US',
-        headerProps: EasyHeaderProps(
-          selectedDateFormat: SelectedDateFormat.fullDateDMY,
-          monthPickerType: MonthPickerType.switcher,
-          showHeader: true,
-        ),
+  // List<Appointment> getAppointments() {
+  //   List<Appointment> appointments = <Appointment>[];
+  //
+  //
+  //
+  //   return appointments;
+  // }
+  _AppointmentDataSource _getCalendarDataSource() {
+    List<Appointment> appointments = <Appointment>[];
+    for (var enrollment in listClassModule) {
+          Appointment appointment = Appointment(
+            startTime: DateTime.parse(enrollment.startDate.toString()),
+            endTime: DateTime.parse(enrollment.startDate.toString()).add(const Duration(hours: 2)),
+            subject: enrollment.course?.name ?? '',
+            color: Colors.blue,
 
-        dayProps: EasyDayProps(
-          width: 46.h,
-          height: 64.v,
-        ),
-        onDateChange: (selectedDate) {
-          print(selectedDate);
-          setState(() {
-            String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
-            query = formattedDate;
-          });
-        },
-        itemBuilder:
-            (context, dayNumber, dayName, monthName, fullDate, isSelected) {
-          return isSelected
-              ? Container(
-            width: 70.h,
-            padding: EdgeInsets.symmetric(
-              horizontal: 12.h,
-              vertical: 8.v,
-            ),
-            decoration: BoxDecoration(
-              color: appTheme.deepOrange400,
-              borderRadius: BorderRadius.circular(
-                10.h,
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 3.h),
-                  child: Text(
-                    dayName.toString(),
-                    style: CustomTextStyles
-                        .labelLargePoppinsOnPrimaryContainer
-                        .copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 5.v),
-                  child: Text(
-                    dayNumber.toString(),
-                    style: CustomTextStyles
-                        .titleMediumPoppinsOnPrimaryContainer
-                        .copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
-              : SizedBox(
-            width: 46.h,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 4.h),
-                  child: Text(
-                    dayName.toString(),
-                    style: CustomTextStyles.labelLargePoppinsBluegray20001
-                        .copyWith(
-                      color: appTheme.blueGray20001,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 1.v),
-                  child: Text(
-                    dayNumber.toString(),
-                    style: CustomTextStyles.titleMediumPoppinsGray90002
-                        .copyWith(
-                      color: appTheme.gray90002,
-                    ),
-                  ),
-                ),
-              ],
-            ),
           );
-        },
-      ),
-    );
+          appointments.add(appointment);
+        }
+    print(_AppointmentDataSource(appointments));
+    return _AppointmentDataSource(appointments);
+  }
+
+}
+
+class _AppointmentDataSource extends CalendarDataSource {
+  _AppointmentDataSource(List<Appointment> source) {
+    appointments = source;
   }
 }
 
@@ -534,12 +261,13 @@ class lineGen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(
           4,
-              (index) => Container(
-            height: 2,
-            width: lines[index],
-            color: Color(0xffd02d8),
-            margin: EdgeInsets.symmetric(vertical: 14),
-          )),
+              (index) =>
+              Container(
+                height: 2,
+                width: lines[index],
+                color: Color(0xffd02d8),
+                margin: EdgeInsets.symmetric(vertical: 14),
+              )),
     );
   }
 }
@@ -557,6 +285,7 @@ class _MultiSelectState extends State<MultiSelect> {
   List<Topic> listClassTopic = [];
   Map<String, List<LessonMaterial>> moduleLessonsMaterialMap = {};
   late bool isLoading;
+
   @override
   void initState() {
     isLoading = true;
@@ -662,57 +391,61 @@ class _MultiSelectState extends State<MultiSelect> {
           Center(child: Text('Choose Topic to Down')),
           SingleChildScrollView(
             child: isLoading
-           ? Skeleton(width: 100)
-           : ListBody(children: listClassTopic.asMap().entries.map((entry) {
-                final index = entry.key;
-                final item = entry.value;
-                return TextButton(
-                  onPressed: () {
-                    for (int lessonIndex = 0;
-                    lessonIndex <
-                        (moduleLessonsMaterialMap[listClassTopic[index].id]
-                            ?.length ??
-                            0);
-                    lessonIndex++)
-                      downloadFile(
-                          moduleLessonsMaterialMap[listClassTopic[index].id]![
-                          lessonIndex]
-                              .materialUrl
-                              .toString(),
-                          moduleLessonsMaterialMap[listClassTopic[index].id]![
-                          lessonIndex]
-                              .name
-                              .toString());
-                  },
-                  child: Row(
-                    children: [
-                      Text(item.name.toString()),
-                      IconButton(
-                        onPressed: () {
-                          for (int lessonIndex = 0;
-                          lessonIndex <
-                              (moduleLessonsMaterialMap[
-                              listClassTopic[index].id]
-                                  ?.length ??
-                                  0);
-                          lessonIndex++)
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => MaterialView(
-                                      url: moduleLessonsMaterialMap[
-                                      listClassTopic[index]
-                                          .id]![lessonIndex]
-                                          .materialUrl
-                                          .toString())),
-                            );
-                        },
-                        icon: Icon(Icons.remove_red_eye_outlined),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),),
+                ? Skeleton(width: 100)
+                : ListBody(children: listClassTopic
+                .asMap()
+                .entries
+                .map((entry) {
+              final index = entry.key;
+              final item = entry.value;
+              return TextButton(
+                onPressed: () {
+                  for (int lessonIndex = 0;
+                  lessonIndex <
+                      (moduleLessonsMaterialMap[listClassTopic[index].id]
+                          ?.length ??
+                          0);
+                  lessonIndex++)
+                    downloadFile(
+                        moduleLessonsMaterialMap[listClassTopic[index].id]![
+                        lessonIndex]
+                            .materialUrl
+                            .toString(),
+                        moduleLessonsMaterialMap[listClassTopic[index].id]![
+                        lessonIndex]
+                            .name
+                            .toString());
+                },
+                child: Row(
+                  children: [
+                    Text(item.name.toString()),
+                    IconButton(
+                      onPressed: () {
+                        for (int lessonIndex = 0;
+                        lessonIndex <
+                            (moduleLessonsMaterialMap[
+                            listClassTopic[index].id]
+                                ?.length ??
+                                0);
+                        lessonIndex++)
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    MaterialView(
+                                        url: moduleLessonsMaterialMap[
+                                        listClassTopic[index]
+                                            .id]![lessonIndex]
+                                            .materialUrl
+                                            .toString())),
+                          );
+                      },
+                      icon: Icon(Icons.remove_red_eye_outlined),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),),
           ),
         ],
       ),
@@ -722,6 +455,7 @@ class _MultiSelectState extends State<MultiSelect> {
 
 class MultiTopic extends StatefulWidget {
   final String lessonId;
+
   const MultiTopic({super.key, required this.lessonId});
 
   @override
@@ -796,7 +530,10 @@ class _MultiTopicState extends State<MultiTopic> {
           Center(child: Text('Choose quiz to do')),
           SingleChildScrollView(
             child: ListBody(
-              children: listClassTopic.asMap().entries.map((entry) {
+              children: listClassTopic
+                  .asMap()
+                  .entries
+                  .map((entry) {
                 final index = entry.key;
                 final item = entry.value;
                 return Visibility(
@@ -809,7 +546,8 @@ class _MultiTopicState extends State<MultiTopic> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Topic:" +" "+ listClassTopic[index].name.toString(),
+                            "Topic:" + " " +
+                                listClassTopic[index].name.toString(),
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.primary),
@@ -817,11 +555,13 @@ class _MultiTopicState extends State<MultiTopic> {
                         ],
                       ),
                       // Only show the assignments if the module is not minimized
-                      for (int assignmentIndex = 0; assignmentIndex < (moduleQuizMap[listClassTopic[index].id]?.length ?? 0); assignmentIndex++)
+                      for (int assignmentIndex = 0; assignmentIndex <
+                          (moduleQuizMap[listClassTopic[index].id]?.length ??
+                              0); assignmentIndex++)
                         Row(
                           children: [
                             TextButton(
-                              onPressed: () async{
+                              onPressed: () async {
                                 // await Navigator.push(
                                 //   context,
                                 //   MaterialPageRoute(
@@ -835,39 +575,60 @@ class _MultiTopicState extends State<MultiTopic> {
                                 // loadQuizAttemptsByLearnerId();
                               },
                               child: Text(
-                                  moduleQuizMap[listClassTopic[index].id]![assignmentIndex]
+                                  moduleQuizMap[listClassTopic[index]
+                                      .id]![assignmentIndex]
                                       .name
                                       .toString(),
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold, color: Colors.black)),
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black)),
 
                             ),
                             if(listQuizAttempt.isNotEmpty &&
                                 listQuizAttempt.lastIndexWhere((attempt) =>
                                 attempt.id ==
-                                    moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
+                                    moduleQuizMap[listClassTopic[index]
+                                        .id]![assignmentIndex].id) !=
                                     null)
                               Icon(
                                 listQuizAttempt.isNotEmpty &&
                                     listQuizAttempt.lastIndexWhere((attempt) =>
                                     attempt.id ==
-                                        moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
+                                        moduleQuizMap[listClassTopic[index]
+                                            .id]![assignmentIndex].id) !=
                                         null &&
-                                    moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
+                                    moduleQuizMap[listClassTopic[index]
+                                        .id]![assignmentIndex].gradeToPass !=
                                         null &&
-                                    listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
-                                        moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
+                                    listQuizAttempt
+                                        .reduce((a, b) =>
+                                    DateTime.parse(a.attemptedDate!).isAfter(
+                                        DateTime.parse(b.attemptedDate!))
+                                        ? a
+                                        : b)
+                                        .totalGrade! >
+                                        moduleQuizMap[listClassTopic[index]
+                                            .id]![assignmentIndex].gradeToPass!
                                     ? FontAwesomeIcons.check
                                     : Icons.dangerous_outlined,
                                 color: listQuizAttempt.isNotEmpty &&
                                     listQuizAttempt.lastIndexWhere((attempt) =>
                                     attempt.id ==
-                                        moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
+                                        moduleQuizMap[listClassTopic[index]
+                                            .id]![assignmentIndex].id) !=
                                         null &&
-                                    moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
+                                    moduleQuizMap[listClassTopic[index]
+                                        .id]![assignmentIndex].gradeToPass !=
                                         null &&
-                                    listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
-                                        moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
+                                    listQuizAttempt
+                                        .reduce((a, b) =>
+                                    DateTime.parse(a.attemptedDate!).isAfter(
+                                        DateTime.parse(b.attemptedDate!))
+                                        ? a
+                                        : b)
+                                        .totalGrade! >
+                                        moduleQuizMap[listClassTopic[index]
+                                            .id]![assignmentIndex].gradeToPass!
                                     ? Colors.green
                                     : Colors.red,
                                 size: 20.v,
@@ -877,7 +638,6 @@ class _MultiTopicState extends State<MultiTopic> {
                     ],
                   ),
                 );
-
               }).toList(),
             ),
           ),
@@ -898,7 +658,8 @@ class MaterialView extends StatefulWidget {
 
 class _MaterialViewState extends State<MaterialView> {
   late PdfControllerPinch pdfControllerPinch;
-  int totalPageCount = 0, currentPage = 1;
+  int totalPageCount = 0,
+      currentPage = 1;
 
   @override
   void initState() {

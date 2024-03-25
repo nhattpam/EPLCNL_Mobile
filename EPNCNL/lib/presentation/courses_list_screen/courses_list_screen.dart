@@ -254,7 +254,7 @@ class CoursesListScreenState extends State<CoursesListScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        chosenCategory.length.toString() +
+                        chosenCategory.where((element) => element.isActive == true).length.toString() +
                             " Founds".toUpperCase(),
                         style: CustomTextStyles.labelLargePrimary),
                   ]))
@@ -272,7 +272,9 @@ class CoursesListScreenState extends State<CoursesListScreen> {
         itemCount: chosenCategory.length,
         itemBuilder: (context, index) {
           final course = chosenCategory[index];
-          return GestureDetector(
+          bool isActive = course?.isActive ?? false;
+          return isActive
+          ? GestureDetector(
             onTap: (){
               Navigator.push(
                 context,
@@ -397,7 +399,7 @@ class CoursesListScreenState extends State<CoursesListScreen> {
                                 top: 3.v,
                               ),
                               child: Text(
-                                (moduleEnrollmentMap[course.id]?.length).toString() + " Enroll",
+                                (moduleEnrollmentMap[course.id]?.length).toString() + " Enrollment",
                                 style: theme.textTheme.labelMedium,
                               ),
                             ),
@@ -409,7 +411,8 @@ class CoursesListScreenState extends State<CoursesListScreen> {
                 ],
               ),
             ),
-          );
+          )
+              : Container();
         });
   }
 

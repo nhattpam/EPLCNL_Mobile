@@ -9,7 +9,6 @@ import 'package:meowlish/presentation/my_course_completed_page/my_course_complet
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
-import 'package:meowlish/widgets/custom_search_view.dart';
 
 import '../../data/models/accounts.dart';
 

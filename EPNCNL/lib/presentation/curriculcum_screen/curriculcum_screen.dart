@@ -20,6 +20,7 @@ import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
+import 'package:meowlish/presentation/view_all_assignment_attemp/view_all_assignment_attemp.dart';
 
 class CurriculumScreen extends StatefulWidget {
   final courseID;
@@ -45,6 +46,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   Map<String, List<Lesson>> moduleLessonsMap = {};
   Map<String, List<Quiz>> moduleQuizMap = {};
   Map<String, List<Assignment>> moduleAssignmentMap = {};
+  Map<String, List<AssignmentAttempt>> moduleUngradeAssignmentAttempt = {};
 
   // Maps to track minimized states for each type of content within each module
   Map<String, bool> minimizedLessonsMap = {};
@@ -155,6 +157,9 @@ class CurriculumScreenState extends State<CurriculumScreen> {
       setState(() {
         // Store the lessons for this module in the map
         moduleAssignmentMap[moduleId] = loadedAssignment;
+        for(var assignment in (moduleAssignmentMap[moduleId] as List) ){
+          loadAssignmentAttemptByAssignmentId(assignment.id.toString());
+        }
         isLoadingAssignment = false;
       });
     }
@@ -173,6 +178,22 @@ class CurriculumScreenState extends State<CurriculumScreen> {
     } catch (e) {
       // Handle errors here
       print('Error loading lessons: $e');
+    }
+  }
+
+  Future<void> loadAssignmentAttemptByAssignmentId(String assignmentId) async {
+    try {
+      final assignment = await Network.getAssignmentAttemptByAssignmentIdAndLearnerId(
+        assignmentId,
+      );
+
+      setState(() {
+        moduleUngradeAssignmentAttempt[assignmentId] = assignment;
+        // Add more print statements for other properties if needed
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
     }
   }
 
@@ -319,22 +340,32 @@ class CurriculumScreenState extends State<CurriculumScreen> {
               padding: EdgeInsets.only(left: 1.h),
               child: Row(
                 children: [
-                  Text(
-                    "Module $number - ",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
+                  Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 100,
+                    ),
+                    child: Text(
+                      "Module $number - ",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                  Text(
-                    module.name.toString(),
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
+                  Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 220,
+                    ),
+                    child: Text(
+                      module.name.toString(),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
@@ -530,21 +561,43 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                   Expanded(
                     child: TextButton(
                       onPressed: () async {
+                        if(moduleUngradeAssignmentAttempt[moduleAssignmentMap[module
+                            .id.toString()]![assignmentIndex].id]?.isEmpty ?? false){
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    DoingAssignmentScreen(
+                                        assignmentID: moduleAssignmentMap[module
+                                            .id.toString()]![assignmentIndex].id
+                                            .toString(),
+                                        cooldownTime: Duration(
+                                            minutes: moduleAssignmentMap[
+                                            module.id
+                                                .toString()]![assignmentIndex]
+                                                .deadline as int))),
+                          );
+                          loadAssignmentAttemptByAssignmentId(moduleAssignmentMap[module
+                              .id.toString()]![assignmentIndex].id
+                              .toString());
+                          loadAssignmentAttemptsByLearnerId();
+                        }
+                        if(moduleUngradeAssignmentAttempt[moduleAssignmentMap[module
+                            .id.toString()]![assignmentIndex].id]?.isNotEmpty ?? true){
                         await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  DoingAssignmentScreen(
-                                      assignmentID: moduleAssignmentMap[module
-                                          .id.toString()]![assignmentIndex].id
-                                          .toString(),
-                                      cooldownTime: Duration(
-                                          minutes: moduleAssignmentMap[
-                                          module.id
-                                              .toString()]![assignmentIndex]
-                                              .deadline as int))),
-                        );
+                        context,
+                        MaterialPageRoute(
+                        builder: (context) =>
+                        ViewAllAssignmentAttempt(
+                        assignmentId: moduleAssignmentMap[module
+                            .id.toString()]![assignmentIndex].id
+                            .toString(), navigateTime: 1,)));
+                        loadAssignmentAttemptByAssignmentId(moduleAssignmentMap[module
+                            .id.toString()]![assignmentIndex].id
+                            .toString());
                         loadAssignmentAttemptsByLearnerId();
+                        }
+
                       },
                       child:
                       Html(

@@ -32,6 +32,8 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
   RangeLabels labels = RangeLabels('10\$', '200\$');
   int _currentIndex = 0;
   late bool isLoading;
+  DateTime? selectedDate;
+
   List<Widget> textWidgets = [
     Skeleton(width: 100),
     SizedBox(height: 40),
@@ -46,6 +48,7 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
     Skeleton(width: 100),
     SizedBox(height: 40)
   ];
+
   @override
   void initState() {
     isLoading = true;
@@ -77,6 +80,20 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
     setState(() {
       listCourse = loadedCourse;
     });
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
   }
 
   @override
@@ -119,24 +136,22 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Category'),
-                        if(isLoading == true)
+                        if (isLoading == true) ListBody(children: textWidgets),
+                        if (isLoading == false)
                           ListBody(
-                            children: textWidgets
+                            children: listCategory
+                                .map((item) => CheckboxListTile(
+                                      value: _selectedItems.contains(item),
+                                      title: Text(item.description.toString()),
+                                      controlAffinity:
+                                          ListTileControlAffinity.leading,
+                                      onChanged: (isChecked) =>
+                                          _itemChange(item, isChecked!),
+                                    ))
+                                .toList(),
                           ),
-                        if(isLoading == false)
-                        ListBody(
-                          children: listCategory
-                              .map((item) => CheckboxListTile(
-                                    value: _selectedItems.contains(item),
-                                    title: Text(item.description.toString()),
-                                    controlAffinity:
-                                        ListTileControlAffinity.leading,
-                                    onChanged: (isChecked) =>
-                                        _itemChange(item, isChecked!),
-                                  ))
-                              .toList(),
-                        ),
                         Divider(),
+                        SizedBox(height: 12),
                         Text('Price'),
                         RangeSlider(
                             min: 10,
@@ -144,12 +159,19 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
                             values: values,
                             divisions: 10,
                             labels: labels,
-                            onChanged: (value){
+                            onChanged: (value) {
                               setState(() {
                                 values = value;
-                                labels = RangeLabels('${value.start.toInt().toString()}\$', '${value.end.toInt().toString()}\$');
+                                labels = RangeLabels(
+                                    '${value.start.toInt().toString()}\$',
+                                    '${value.end.toInt().toString()}\$');
                               });
                             }),
+                        Divider(),
+                        SizedBox(height: 12),
+                        Text('Date'),
+                        SizedBox(height: 12),
+                        _buildDateOfBirth(context),
                         Divider(),
                         SizedBox(height: 12),
                         _buildApplyButton(context),
@@ -174,7 +196,8 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
             }
             if (index == 1) {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+                MaterialPageRoute(
+                    builder: (context) => MyCourseCompletedPage()),
               );
             }
             if (index == 2) {
@@ -218,7 +241,6 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
           selectedItemColor: Color(0xbbff9300),
           unselectedItemColor: Color(0xffff9300),
         ),
-
       ),
     );
   }
@@ -236,10 +258,73 @@ class CoursesListFilterScreenState extends State<CoursesListFilterScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  FilterResultScreen(category: _selectedItems, values: values,)),
+              builder: (context) => FilterResultScreen(
+                    category: _selectedItems,
+                    values: values, date: selectedDate.toString(),
+                  )),
         );
       },
     );
   }
+
+  Widget _buildDateOfBirth(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            // Adjust the color and opacity as needed
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(
+                0, 3), // Adjust the offset to control the shadow's position
+          ),
+        ],
+      ),
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Date',
+                filled: true,
+                fillColor: Colors.white,
+                labelStyle: CustomTextStyles.titleSmallGray80001,
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                ),
+                prefixIcon: IconButton(
+                  icon: Icon(
+                    Icons.calendar_today,
+                    size: 20.v,
+                  ),
+                  onPressed: () {
+                    _selectDate(context);
+                    print(selectedDate);
+                  },
+                ),
+              ),
+              readOnly: true,
+              controller: TextEditingController(
+                text: selectedDate != null
+                    ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
+                    : "",
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'DOB is required';
+                }
+                return null;
+              },
+              onTap: () {
+                _selectDate(context);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

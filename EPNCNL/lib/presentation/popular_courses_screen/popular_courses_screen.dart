@@ -573,18 +573,21 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
             itemCount: chosenCategory.length,
             itemBuilder: (context, index) {
               final courses = chosenCategory[index];
+              bool isActive = courses.isActive ?? false;
+
               switch (cateid) {
                 case '5bc12c1a-f6e7-4de8-bb42-2cd727cffe69':
-                  return GestureDetector(
+                  return isActive
+                      ? GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
                               SingleCourseDetailsTabContainerScreen(
-                            courseID: courses.id.toString(),
-                            tutorID: courses.tutorId.toString(),
-                          ),
+                                courseID: courses.id.toString(),
+                                tutorID: courses.tutorId.toString(),
+                              ),
                         ),
                       );
                     },
@@ -614,7 +617,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                   width: 195.h,
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(
                                         constraints: const BoxConstraints(
@@ -669,7 +672,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       margin: EdgeInsets.only(top: 3.v),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                         children: [
                                           Icon(
                                             Icons.star,
@@ -679,7 +682,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                           ),
                                           Text(
                                             courses.rating
-                                                    ?.toStringAsFixed(1) ??
+                                                ?.toStringAsFixed(1) ??
                                                 '',
                                             style: theme.textTheme.labelMedium,
                                           ),
@@ -691,7 +694,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       child: Text(
                                         "|",
                                         style:
-                                            CustomTextStyles.titleSmallBlack900,
+                                        CustomTextStyles.titleSmallBlack900,
                                       ),
                                     ),
                                     Padding(
@@ -701,9 +704,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       ),
                                       child: Text(
                                         (moduleEnrollmentMap[courses.id]
-                                                    ?.length)
-                                                .toString() +
-                                            " Enroll",
+                                            ?.length)
+                                            .toString() +
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -715,18 +718,20 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                         ],
                       ),
                     ),
-                  );
+                  )
+                      : Container();
                 case '7b433f46-9f3a-46eb-9124-3c85c0ee017a':
-                  return GestureDetector(
+                  return isActive
+                      ? GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
                               SingleCourseDetailsTabContainerScreen(
-                            courseID: courses.id.toString(),
-                            tutorID: courses.tutorId.toString(),
-                          ),
+                                courseID: courses.id.toString(),
+                                tutorID: courses.tutorId.toString(),
+                              ),
                         ),
                       );
                     },
@@ -756,7 +761,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                   width: 195.h,
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(
                                         constraints: const BoxConstraints(
@@ -811,7 +816,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       margin: EdgeInsets.only(top: 3.v),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                         children: [
                                           Icon(
                                             Icons.star,
@@ -821,7 +826,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                           ),
                                           Text(
                                             courses.rating
-                                                    ?.toStringAsFixed(1) ??
+                                                ?.toStringAsFixed(1) ??
                                                 '',
                                             style: theme.textTheme.labelMedium,
                                           ),
@@ -833,7 +838,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       child: Text(
                                         "|",
                                         style:
-                                            CustomTextStyles.titleSmallBlack900,
+                                        CustomTextStyles.titleSmallBlack900,
                                       ),
                                     ),
                                     Padding(
@@ -843,9 +848,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       ),
                                       child: Text(
                                         (moduleEnrollmentMap[courses.id]
-                                                    ?.length)
-                                                .toString() +
-                                            " Enroll",
+                                            ?.length)
+                                            .toString() +
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -857,9 +862,11 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                         ],
                       ),
                     ),
-                  );
+                  )
+                      : Container();
                 case '881bc11f-fabe-40ae-bc2e-a896a9ce9075':
-                  return GestureDetector(
+                  return isActive
+                      ? GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
@@ -987,7 +994,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                         (moduleEnrollmentMap[courses.id]
                                                     ?.length)
                                                 .toString() +
-                                            " Enroll",
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -999,18 +1006,20 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                         ],
                       ),
                     ),
-                  );
+                  )
+                      : Container();
                 case '7b0aa823-f310-4427-b604-a95c08e0f23a':
-                  return GestureDetector(
+                  return isActive
+                      ? GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
                               SingleCourseDetailsTabContainerScreen(
-                            courseID: courses.id.toString(),
-                            tutorID: courses.tutorId.toString(),
-                          ),
+                                courseID: courses.id.toString(),
+                                tutorID: courses.tutorId.toString(),
+                              ),
                         ),
                       );
                     },
@@ -1040,7 +1049,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                   width: 195.h,
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(
                                         constraints: const BoxConstraints(
@@ -1095,7 +1104,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       margin: EdgeInsets.only(top: 3.v),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                         children: [
                                           Icon(
                                             Icons.star,
@@ -1105,7 +1114,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                           ),
                                           Text(
                                             courses.rating
-                                                    ?.toStringAsFixed(1) ??
+                                                ?.toStringAsFixed(1) ??
                                                 '',
                                             style: theme.textTheme.labelMedium,
                                           ),
@@ -1117,7 +1126,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       child: Text(
                                         "|",
                                         style:
-                                            CustomTextStyles.titleSmallBlack900,
+                                        CustomTextStyles.titleSmallBlack900,
                                       ),
                                     ),
                                     Padding(
@@ -1127,9 +1136,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       ),
                                       child: Text(
                                         (moduleEnrollmentMap[courses.id]
-                                                    ?.length)
-                                                .toString() +
-                                            " Enroll",
+                                            ?.length)
+                                            .toString() +
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -1141,18 +1150,20 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                         ],
                       ),
                     ),
-                  );
+                  )
+                      : Container();
                 case '444925cf-4df0-4193-9158-bbdb9a28ed02':
-                  return GestureDetector(
+                  return isActive
+                      ? GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
                               SingleCourseDetailsTabContainerScreen(
-                            courseID: courses.id.toString(),
-                            tutorID: courses.tutorId.toString(),
-                          ),
+                                courseID: courses.id.toString(),
+                                tutorID: courses.tutorId.toString(),
+                              ),
                         ),
                       );
                     },
@@ -1182,7 +1193,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                   width: 195.h,
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(
                                         constraints: const BoxConstraints(
@@ -1237,7 +1248,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       margin: EdgeInsets.only(top: 3.v),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                         children: [
                                           Icon(
                                             Icons.star,
@@ -1247,7 +1258,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                           ),
                                           Text(
                                             courses.rating
-                                                    ?.toStringAsFixed(1) ??
+                                                ?.toStringAsFixed(1) ??
                                                 '',
                                             style: theme.textTheme.labelMedium,
                                           ),
@@ -1259,7 +1270,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       child: Text(
                                         "|",
                                         style:
-                                            CustomTextStyles.titleSmallBlack900,
+                                        CustomTextStyles.titleSmallBlack900,
                                       ),
                                     ),
                                     Padding(
@@ -1269,9 +1280,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       ),
                                       child: Text(
                                         (moduleEnrollmentMap[courses.id]
-                                                    ?.length)
-                                                .toString() +
-                                            " Enroll",
+                                            ?.length)
+                                            .toString() +
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -1283,18 +1294,20 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                         ],
                       ),
                     ),
-                  );
+                  )
+                      : Container();
                 case 'b763589b-81c9-4341-aae5-cd9719084724':
-                  return GestureDetector(
+                  return isActive
+                      ? GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
                               SingleCourseDetailsTabContainerScreen(
-                            courseID: courses.id.toString(),
-                            tutorID: courses.tutorId.toString(),
-                          ),
+                                courseID: courses.id.toString(),
+                                tutorID: courses.tutorId.toString(),
+                              ),
                         ),
                       );
                     },
@@ -1324,7 +1337,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                   width: 195.h,
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(
                                         constraints: const BoxConstraints(
@@ -1379,7 +1392,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       margin: EdgeInsets.only(top: 3.v),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                         children: [
                                           Icon(
                                             Icons.star,
@@ -1389,7 +1402,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                           ),
                                           Text(
                                             courses.rating
-                                                    ?.toStringAsFixed(1) ??
+                                                ?.toStringAsFixed(1) ??
                                                 '',
                                             style: theme.textTheme.labelMedium,
                                           ),
@@ -1401,7 +1414,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       child: Text(
                                         "|",
                                         style:
-                                            CustomTextStyles.titleSmallBlack900,
+                                        CustomTextStyles.titleSmallBlack900,
                                       ),
                                     ),
                                     Padding(
@@ -1411,9 +1424,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       ),
                                       child: Text(
                                         (moduleEnrollmentMap[courses.id]
-                                                    ?.length)
-                                                .toString() +
-                                            " Enroll",
+                                            ?.length)
+                                            .toString() +
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -1425,18 +1438,20 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                         ],
                       ),
                     ),
-                  );
+                  )
+                      : Container();
                 default:
-                  return GestureDetector(
+                  return isActive
+                      ? GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
                               SingleCourseDetailsTabContainerScreen(
-                            courseID: courses.id.toString(),
-                            tutorID: courses.tutorId.toString(),
-                          ),
+                                courseID: courses.id.toString(),
+                                tutorID: courses.tutorId.toString(),
+                              ),
                         ),
                       );
                     },
@@ -1466,7 +1481,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                   width: 195.h,
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(
                                         constraints: const BoxConstraints(
@@ -1521,7 +1536,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       margin: EdgeInsets.only(top: 3.v),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                         children: [
                                           Icon(
                                             Icons.star,
@@ -1531,7 +1546,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                           ),
                                           Text(
                                             courses.rating
-                                                    ?.toStringAsFixed(1) ??
+                                                ?.toStringAsFixed(1) ??
                                                 '',
                                             style: theme.textTheme.labelMedium,
                                           ),
@@ -1543,7 +1558,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       child: Text(
                                         "|",
                                         style:
-                                            CustomTextStyles.titleSmallBlack900,
+                                        CustomTextStyles.titleSmallBlack900,
                                       ),
                                     ),
                                     Padding(
@@ -1553,9 +1568,9 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                                       ),
                                       child: Text(
                                         (moduleEnrollmentMap[courses.id]
-                                                    ?.length)
-                                                .toString() +
-                                            " Enroll",
+                                            ?.length)
+                                            .toString() +
+                                            " Enrollment",
                                         style: theme.textTheme.labelMedium,
                                       ),
                                     ),
@@ -1567,7 +1582,8 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
                         ],
                       ),
                     ),
-                  );
+                  )
+                      : Container();
               }
             },
           );

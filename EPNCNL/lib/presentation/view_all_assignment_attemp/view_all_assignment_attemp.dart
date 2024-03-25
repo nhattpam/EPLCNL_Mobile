@@ -1,12 +1,9 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/assignmentattemps.dart';
-import 'package:meowlish/data/models/courses.dart';
-import 'package:meowlish/data/models/enrollments.dart';
 import 'package:meowlish/data/models/feedbacks.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
@@ -14,16 +11,15 @@ import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
-import 'package:meowlish/presentation/write_a_reviews_screen/write_a_reviews_screen.dart';
 import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
-import 'package:meowlish/widgets/custom_outlined_button.dart';
-import 'package:meowlish/widgets/custom_rating_bar.dart';
 
 class ViewAllAssignmentAttempt extends StatefulWidget {
   final String assignmentId;
+  final int navigateTime;
 
-  const ViewAllAssignmentAttempt({super.key, required this.assignmentId});
+  const ViewAllAssignmentAttempt(
+      {super.key, required this.assignmentId, required this.navigateTime});
 
   @override
   State<ViewAllAssignmentAttempt> createState() =>
@@ -50,6 +46,7 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
     '10',
   ];
   late Map<String, String> point;
+
   @override
   void initState() {
     point = {};
@@ -60,13 +57,15 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
 
   Future<void> loadAssignmentAttemptByAssignmentId() async {
     try {
-      final assignment = await Network.getAssignmentAttemptByAssignmentId(
+      final assignment =
+          await Network.getAssignmentAttemptByAssignmentIdAndLearnerId(
         widget.assignmentId,
       );
 
       setState(() {
         listAssignmentAttempt = assignment;
-        listAssignmentAttempt.removeWhere((element) => element.learnerId == SessionManager().getLearnerId());
+        listAssignmentAttempt.removeWhere(
+            (element) => element.learnerId == SessionManager().getLearnerId());
         _loadPage(_currentPage);
         isLoadingAssignmentAttempt = false;
         // Add more print statements for other properties if needed
@@ -119,6 +118,14 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
     return htmlText.replaceAll(exp, '');
   }
 
+  void _showMultiSelect(String attemptId) async {
+    final List<String>? result = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ReportPopUp(attemptId: attemptId);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -168,10 +175,42 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                       SizedBox(height: 30.v),
                       CustomElevatedButton(
                         onPressed: () {
-                          for(int index = 0; index < _paginatedAssignmentAttempt.length; index++){
-                            final attemmpt = _paginatedAssignmentAttempt[index];
-                            print("Submit point" + point[attemmpt.id].toString());
+                          for (int index = 0;
+                              index < _paginatedAssignmentAttempt.length;
+                              index++) {
+                            final attempt = _paginatedAssignmentAttempt[index];
+                            Network.createPeerReview(
+                                assignmentAttemptId: attempt.id.toString(),
+                                grade: point[attempt.id].toString());
+                            print(
+                                "Submit point" + point[attempt.id].toString());
+                            print("Assignment point" + attempt.id.toString());
                           }
+                          AwesomeDialog(
+                            context: context,
+                            animType: AnimType.scale,
+                            dialogType: DialogType.success,
+                            body: Center(
+                              child: Text(
+                                'Submit Success!!!',
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                              ),
+                            ),
+                            btnOkOnPress: () {
+                              setState(() {
+                                if (widget.navigateTime == 2) {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                }
+                                if (widget.navigateTime == 1) {
+                                  Navigator.pop(context);
+                                }
+                              });
+                              // if(isSelected == true){
+                              //   nextQuestion();
+                              // }
+                            },
+                          )..show();
                         },
                         text: "Submit",
                       ),
@@ -348,10 +387,10 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                   },
                   itemCount: _paginatedAssignmentAttempt.length,
                   itemBuilder: (context, index) {
-
                     final attempt = _paginatedAssignmentAttempt[index];
                     if (!point.containsKey(attempt.id)) {
-                      point[attempt.id.toString()] = ''; // Set default value to 2
+                      point[attempt.id.toString()] =
+                          ''; // Set default value to 2
                     }
                     String originalDateString =
                         attempt.attemptedDate.toString();
@@ -359,111 +398,121 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                         DateTime.parse(originalDateString.split('T')[0]);
                     String formattedDate =
                         DateFormat('dd-MM-yyyy').format(originalDate);
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        attempt.learner?.account?.imageUrl != null &&
-                                attempt.learner!.account!.imageUrl!.isNotEmpty
-                            ? Container(
-                                height: 46.adaptSize,
-                                width: 46.adaptSize,
-                                margin: EdgeInsets.only(
-                                  top: 3.v,
-                                  bottom: 65.v,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: appTheme.black900,
-                                  borderRadius: BorderRadius.circular(
-                                    23.h,
+                    return GestureDetector(
+                      onTap: () {
+                        _showMultiSelect(attempt.id.toString());
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          attempt.learner?.account?.imageUrl != null &&
+                                  attempt.learner!.account!.imageUrl!.isNotEmpty
+                              ? Container(
+                                  height: 46.adaptSize,
+                                  width: 46.adaptSize,
+                                  margin: EdgeInsets.only(
+                                    top: 3.v,
+                                    bottom: 65.v,
                                   ),
-                                ),
-                                child: Image.network(
-                                  attempt.learner!.account!.imageUrl!,
-                                  fit: BoxFit.cover,
-                                ),
-                              )
-                            : Center(
-                                child: Container(
-                                    child: CircularProgressIndicator())),
-                        // Placeholder widget when feedback.learner.account.imageUrl is empty or null
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 12.h),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      removeAllHtmlTags(
-                                          attempt.learner?.account?.fullName ??
-                                              ''),
-                                      style: CustomTextStyles.titleMedium17,
+                                  decoration: BoxDecoration(
+                                    color: appTheme.black900,
+                                    borderRadius: BorderRadius.circular(
+                                      23.h,
                                     ),
-                                  ],
-                                ),
-                                SizedBox(height: 9.v),
-                                Container(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 244,
                                   ),
-                                  margin: EdgeInsets.only(right: 12.h),
-                                  child: Text(
-                                    removeAllHtmlTags(
-                                        attempt.answerText.toString()),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.labelLarge,
+                                  child: Image.network(
+                                    attempt.learner!.account!.imageUrl!,
+                                    fit: BoxFit.cover,
                                   ),
-                                ),
-                                SizedBox(height: 11.v),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.calendar_month_outlined,
-                                      color: Colors.black,
-                                      size: 12.v,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 10.h),
-                                      child: Text(
-                                        formattedDate,
-                                        style: CustomTextStyles
-                                            .labelLargeBluegray900,
+                                )
+                              : Center(
+                                  child: Container(
+                                      child: CircularProgressIndicator())),
+                          // Placeholder widget when feedback.learner.account.imageUrl is empty or null
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 12.h),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        removeAllHtmlTags(attempt
+                                                .learner?.account?.fullName ??
+                                            ''),
+                                        style: CustomTextStyles.titleMedium17,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: List<Widget>.generate(
-                                    listPoint.length,
-                                        (index) {
-                                      return Row(
-                                        children: [
-                                          Radio(
-                                            value: listPoint[index],
-                                            groupValue: point[attempt.id], // Use pointMap value
-                                            onChanged: (value) {
-                                              setState(() {
-                                                point[attempt.id.toString()] = value.toString();
-                                                print(point[attempt.id.toString()]);
-                                              });
-                                            },
-                                          ),
-                                        ],
-                                      );
-                                    },
+                                    ],
                                   ),
-                                ),
-                              ],
+                                  SizedBox(height: 9.v),
+                                  Container(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 244,
+                                    ),
+                                    margin: EdgeInsets.only(right: 12.h),
+                                    child: Text(
+                                      removeAllHtmlTags(
+                                          attempt.answerText.toString()),
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: theme.textTheme.labelLarge,
+                                    ),
+                                  ),
+                                  SizedBox(height: 11.v),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.calendar_month_outlined,
+                                        color: Colors.black,
+                                        size: 12.v,
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10.h),
+                                        child: Text(
+                                          formattedDate,
+                                          style: CustomTextStyles
+                                              .labelLargeBluegray900,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: List<Widget>.generate(
+                                      listPoint.length,
+                                      (index) {
+                                        return Row(
+                                          children: [
+                                            Radio(
+                                              value: listPoint[index],
+                                              groupValue: point[attempt.id],
+                                              // Use pointMap value
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  point[attempt.id.toString()] =
+                                                      value.toString();
+                                                  print(point[
+                                                      attempt.id.toString()]);
+                                                });
+                                              },
+                                            ),
+                                            Text(listPoint[index])
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     );
                   },
                 ),
@@ -507,5 +556,70 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
               //   ),
             ],
           );
+  }
+}
+
+class ReportPopUp extends StatefulWidget {
+  final attemptId;
+
+  const ReportPopUp({super.key, this.attemptId});
+
+  @override
+  State<ReportPopUp> createState() => _ReportPopUpState();
+}
+
+class _ReportPopUpState extends State<ReportPopUp> {
+  late AssignmentAttempt chosenAttempt = AssignmentAttempt();
+
+  @override
+  void initState() {
+    loadAssignmentAttemptById();
+    super.initState();
+  }
+
+  Future<void> loadAssignmentAttemptById() async {
+    try {
+      final attempt = await Network.getAssignmentAttemptById(widget.attemptId);
+      setState(() {
+        chosenAttempt = attempt;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+  String removeAllHtmlTags(String htmlText) {
+    RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+
+    return htmlText.replaceAll(exp, '');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                      removeAllHtmlTags(chosenAttempt.answerText.toString())))
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Center(child: Text('Cancel'))),
+      ],
+    );
   }
 }

@@ -240,8 +240,14 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                           style: theme.textTheme.labelLarge,
                         ),
                       SizedBox(height: 71.v),
-                      SingleChildScrollView(
-                          child: _buildCourseReviewList(context)),
+                     listFedback.isNotEmpty
+                      ? SingleChildScrollView(
+                          child: _buildCourseReviewList(context))
+                      : Center(
+                        child: Container(
+                          child: Text('No one review yet'),
+                        ),
+                      ),
                       SizedBox(height: 12),
                       Divider(),
                       SizedBox(height: 30.v),
@@ -368,7 +374,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           )
         : Column(
             children: [
-              if (_paginatedFeedback.length != 0)
+              if (_paginatedFeedback.isNotEmpty)
                 ListView.separated(
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
@@ -515,7 +521,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   },
                 ),
               // Pagination controls
-              if (_paginatedFeedback.length != 0)
+              if (_paginatedFeedback.isNotEmpty)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -545,7 +551,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                     ),
                   ],
                 ),
-              if (_paginatedFeedback.length == 0)
+              if (_paginatedFeedback.isEmpty)
                 Center(
                   child: Container(
                     child: Text('No one review yet'),

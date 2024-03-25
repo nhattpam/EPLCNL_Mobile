@@ -739,22 +739,33 @@ class SingleCourseDetailsCurriculumPageState
                     padding: EdgeInsets.only(left: 1.h),
                     child: Row(
                       children: [
-                        Text(
-                          "Module $number - ",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w600,
+                        Container(
+                          constraints: const BoxConstraints(
+                            maxWidth: 100,
+                          ),
+                          child: Text(
+                            "Module $number - ",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                        Text(
-                          module.name.toString(),
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w600,
+                        Container(
+                          constraints: const BoxConstraints(
+                            maxWidth: 220,
+                          ),
+                          child: Text(
+                            module.name.toString(),
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              overflow: TextOverflow.ellipsis,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ],

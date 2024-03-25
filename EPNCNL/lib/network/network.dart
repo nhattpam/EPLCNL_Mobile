@@ -22,6 +22,7 @@ import 'package:meowlish/data/models/questions.dart';
 import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/data/models/refundrequests.dart';
+import 'package:meowlish/data/models/refundsurveys.dart';
 import 'package:meowlish/data/models/topics.dart';
 import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/tutors.dart';
@@ -2112,7 +2113,6 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
-
   static Future<RefundRequest> getRefundRequestById(String refundId) async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/refund-requests/$refundId';
 
@@ -2147,6 +2147,34 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
+  static Future<List<RefundSurvey>> getRefundSurveyByRefundRequestId(String refundId) async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/refund-requests/$refundId/refund-surveys';
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> refundSurveyListJson = jsonDecode(response.body);
+
+        return refundSurveyListJson
+            .map((json) => RefundSurvey.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
   /////Profile-Certificates
   static Future<List<ProfileCertificate>> getProfileCertificateByLearnerId() async {
     String lid = SessionManager().getLearnerId().toString();

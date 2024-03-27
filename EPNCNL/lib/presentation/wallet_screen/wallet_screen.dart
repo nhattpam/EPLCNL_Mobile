@@ -91,6 +91,7 @@ class _WalletScreenState extends State<WalletScreen> {
           return ReportPopUp();
         });
   }
+
   @override
   Widget build(BuildContext context) {
     listRefundRequests.sort((a, b) => DateTime.parse(b.requestedDate.toString())
@@ -320,9 +321,19 @@ class _ReportPopUpState extends State<ReportPopUp> {
   late String paymentUrl;
   bool isLoading = false;
   late Timer _timer;
+  late Wallet? wallet = Wallet();
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<void> fetchWalletData() async {
+    Wallet wlet = await Network.getWalletByAccountId();
+
+    setState(() {
+      // Set the list of pet containers in your state
+      wallet = wlet;
+    });
   }
   Future<void> _checkTransactionStatus(String transactionId) async {
     try {
@@ -351,6 +362,7 @@ class _ReportPopUpState extends State<ReportPopUp> {
             setState(() {
               Navigator.pop(context);
               Navigator.pop(context);
+              fetchWalletData();
             });
             // if(isSelected == true){
             //   nextQuestion();
@@ -489,22 +501,6 @@ class _ReportPopUpState extends State<ReportPopUp> {
             } else {
                 value = 0; // or handle it according to your requirements
               }
-              AwesomeDialog(
-                context: context,
-                animType: AnimType.scale,
-                dialogType: DialogType.success,
-                body: Center(
-                  child: Text(
-                    'Add money success!!!',
-                    style: TextStyle(fontStyle: FontStyle.italic),
-                  ),
-                ),
-                btnOkOnPress: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-              )..show();
             },
             child: Text('Add'))
       ],

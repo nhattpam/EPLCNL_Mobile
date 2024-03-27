@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
@@ -12,14 +15,17 @@ import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/data/models/refundrequests.dart';
 import 'package:meowlish/data/models/refundsurveys.dart';
 import 'package:meowlish/data/models/topics.dart';
+import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/wallets.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/theme/custom_text_style.dart';
 import 'package:meowlish/theme/theme_helper.dart';
+import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_image_view.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/models/accounts.dart';
 
@@ -78,7 +84,13 @@ class _WalletScreenState extends State<WalletScreen> {
               refundId: refundId, isOnlineClass: isOnlineClass);
         });
   }
-
+  void _showMultiSelect() async {
+    final List<String>? result = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ReportPopUp();
+        });
+  }
   @override
   Widget build(BuildContext context) {
     listRefundRequests.sort((a, b) => DateTime.parse(b.requestedDate.toString())
@@ -191,7 +203,8 @@ class _WalletScreenState extends State<WalletScreen> {
                                   false);
                         },
                       ),
-                    )
+                    ),
+                    _buildEnrollCourseButton(context)
                   ],
                 ),
               ),
@@ -202,6 +215,19 @@ class _WalletScreenState extends State<WalletScreen> {
     );
   }
 
+  Widget _buildEnrollCourseButton(BuildContext context) {
+    return CustomElevatedButton(
+      onPressed: () async {
+          _showMultiSelect();
+      },
+      margin: EdgeInsets.only(
+        left: 39.h,
+        right: 39.h,
+        bottom: 53.v,
+      ),
+      text: "Add Money",
+    );
+  }
   Widget listTile(String imageurl, Color color, String type, String tittle,
       num value, String date, String id, bool isOnlineClass) {
     DateTime dateTime = DateTime.parse(date);
@@ -276,6 +302,212 @@ class _WalletScreenState extends State<WalletScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class ReportPopUp extends StatefulWidget {
+  final courseId;
+
+  const ReportPopUp({super.key, this.courseId});
+
+  @override
+  State<ReportPopUp> createState() => _ReportPopUpState();
+}
+
+class _ReportPopUpState extends State<ReportPopUp> {
+  TextEditingController additionalInfoController = TextEditingController();
+  late String paymentUrl;
+  bool isLoading = false;
+  late Timer _timer;
+  @override
+  void initState() {
+    super.initState();
+  }
+  Future<void> _checkTransactionStatus(String transactionId) async {
+    try {
+      Transaction transaction =
+      await Network.getTransactionByTransactionId(transactionId);
+
+      // Status is "DONE", proceed with payment
+      if (transaction.status == "DONE") {
+        print("DONE ");
+        // Do something with paymentUrl if needed
+        // Change the button text to "Enroll Course" and show the button
+        // Cancel the timer as the status is now "DONE"
+        _timer.cancel();
+        print("this is" + transactionId.toString());
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.scale,
+          dialogType: DialogType.success,
+          body: Center(
+            child: Text(
+              'Payment Success!!!',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+          btnOkOnPress: () {
+            setState(() {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            });
+            // if(isSelected == true){
+            //   nextQuestion();
+            // }
+          },
+        )..show();
+      } else {
+        print("NOT DONE YET");
+        // If status is not "DONE", show loading indicator or perform other actions
+        setState(() {
+          isLoading = true;
+        });
+        if(transaction.paymentMethod?.name == 'VnPay'){
+          paymentUrl = await Network.payTransaction(transactionId);
+          print("VnPay: " + paymentUrl);
+          launch(paymentUrl);
+        }
+      }
+    } catch (e) {
+      // Handle the error, e.g., show an error message
+      print('Error during payment transaction: $e');
+    } finally {
+      // Set loading state to false after the transaction processing is complete
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Center(child: Text('Add Money to Wallet')),
+      content: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: CustomTextFormField(
+                  controller: additionalInfoController,
+                  hintText: "How much",
+                  hintStyle: CustomTextStyles.titleSmallGray80001,
+                  textInputAction: TextInputAction.done,
+                  maxLines: 1,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 15.h,
+                    vertical: 28.v,
+                  ),
+                  borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
+                ),
+              ),
+              SizedBox(height: 24.v),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Cancel')),
+        TextButton(
+            onPressed: () async {
+              double value;
+              String input = additionalInfoController.text;
+              if (input.isNotEmpty) {
+                value = double.parse(input) * 24000;
+                Network.createTransactionInWallet(
+                    amount: value);
+                String? transactionId = await Network.createTransactionInWallet(
+                    amount: value);
+                if (transactionId != null) {
+                  // Set loading state when the transaction is being processed
+                  setState(() {
+                    isLoading = true;
+                  });
+                  try {
+                    Transaction transaction =
+                        await Network.getTransactionByTransactionId(transactionId);
+
+                    // Start the periodic timer to check transaction status every 5 seconds
+                    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+                      if (!isLoading) {
+                        _checkTransactionStatus(transactionId);
+                      }
+                    });
+
+                    // Status is "DONE", proceed with payment
+                    if (transaction.status == "DONE") {
+                      print("DONE ");
+                      // Do something with paymentUrl if needed
+                      // Change the button text to "Enroll Course" and show the button
+                    } else {
+                      print("NOT DONE YET");
+                      // If status is not "DONE", show loading indicator or perform other actions
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                      );
+                      if(transaction.paymentMethod?.name == 'VnPay'){
+                        paymentUrl = await Network.payTransaction(transactionId);
+                        print("VnPay: " + paymentUrl);
+                        launch(paymentUrl);
+                      }
+                      // Call payTransaction only if the status is not "DONE"
+
+                    }
+                  } catch (e) {
+                    // Handle the error, e.g., show an error message
+                    print('Error during payment transaction: $e');
+                  } finally {
+                    // Set loading state to false after the transaction processing is complete
+                    setState(() {
+                      isLoading = false;
+                    });
+                  }
+                }
+            } else {
+                value = 0; // or handle it according to your requirements
+              }
+              AwesomeDialog(
+                context: context,
+                animType: AnimType.scale,
+                dialogType: DialogType.success,
+                body: Center(
+                  child: Text(
+                    'Add money success!!!',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+                btnOkOnPress: () {
+                  setState(() {
+                    Navigator.pop(context);
+                  });
+                },
+              )..show();
+            },
+            child: Text('Add'))
+      ],
     );
   }
 }

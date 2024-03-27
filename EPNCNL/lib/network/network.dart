@@ -1425,6 +1425,43 @@ class Network {
       return "null transactionId";
     }
   }
+  ////Create money in wallet
+static Future<String> createTransactionInWallet({
+    required double amount,
+  }) async {
+    final userData = {
+      "paymentMethodId": "1dffb0d3-f5a5-4725-98fc-b4dea22f4b0e",
+      "amount": amount,
+      "learnerId": SessionManager().getLearnerId(),
+    };
+    final jsonData = jsonEncode(userData);
+
+    // Print the JSON data before making the API call
+    print('JSON Data: $jsonData');
+
+    final response = await http.post(
+      Uri.parse('https://nhatpmse.twentytwo.asia/api/transactions'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    );
+
+    if (response.statusCode == 201) {
+      // Parse the JSON response
+      final jsonResponse = jsonDecode(response.body);
+      // Extract the authCode
+      final transactionId = jsonResponse['id'];
+      //set accountId to create learner
+      print("After create transaction:  " + transactionId.toString());
+      return transactionId;
+    } else {
+      print('Create transaction failed');
+      // Print the JSON data before making the API call
+      print('JSON Data: $jsonData');
+      return "null transactionId";
+    }
+  }
 
   static Future<String> payTransaction(String? transactionId) async {
     final apiUrl =

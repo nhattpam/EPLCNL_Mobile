@@ -87,7 +87,6 @@ class _OTPForgotOpenScreenState extends State<OTPForgotOpenScreen> {
               otp3Controller.text +
               otp4Controller.text) ==
           true) {
-        Network.activeAccount(widget.email);
         AwesomeDialog(
           context: context,
           animType: AnimType.scale,

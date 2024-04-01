@@ -33,8 +33,8 @@ class _ForgotPasswordOpenScreenState extends State<ForgotPasswordOpenScreen> {
         myauth.setSMTP(
             host: "smtp.gmail.com",
             auth: true,
-            username: "westory.system@gmail.com",
-            password: "srwt hych lidh tlpz",
+            username: "meowlish.company@gmail.com",
+            password: "ybpy zzfk taaa glbd",
             secure: "TLS",
             port: 587);
         myauth.setConfig(

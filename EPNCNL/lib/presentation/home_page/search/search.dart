@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:meowlish/data/models/assignmentattemps.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/feedbacks.dart';
 
@@ -118,7 +119,6 @@ class FetchCourseList {
     }
     return results;
   }
-
   Future<List<FedBack>> getFeedback({String? query, String? courseId}) async {
     var data = [];
     List<FedBack> results = [];
@@ -147,7 +147,6 @@ class FetchCourseList {
     }
     return results;
   }
-
   static Future<List<ClassModule>> getClassModuleByTutorWithoutDate({List<String>? courseIds}) async {
     var data = [];
     List<ClassModule> results = [];
@@ -171,8 +170,6 @@ class FetchCourseList {
     }
     return results;
   }
-
-
   Future<List<Course>> getCourseListById({List<String>? query, int? minPrice, int? maxPrice, String? date}) async {
     var data = [];
     List<Course> results = [];
@@ -231,4 +228,31 @@ class FetchCourseList {
     }
     return results;
   }
+  static Future<List<AssignmentAttempt>> getPeerReviewByLearnerId({String? query, String? assignmentId}) async {
+    var data = [];
+    List<AssignmentAttempt> results = [];
+    String urlList = 'https://nhatpmse.twentytwo.asia/api/assignments/$assignmentId/assignment-attempts';
+    print(urlList);
+    var url = Uri.parse(urlList);
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        data = json.decode(response.body);
+        results = data.map((e) => AssignmentAttempt.fromJson(e)).toList();
+        if (query != null) {
+          results = results.where((element) {
+            final courseNameMatches = element.learnerId != null &&
+                element.learnerId!.toLowerCase().contains(query.toLowerCase());
+            return courseNameMatches;
+          }).toList();
+        }
+      } else {
+        print("fetch error");
+      }
+    } on Exception catch (e) {
+      print('error: $e');
+    }
+    return results;
+  }
+
 }

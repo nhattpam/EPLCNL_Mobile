@@ -170,7 +170,7 @@ class _WalletScreenState extends State<WalletScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Request Refund",
+                      "Refunds",
                       style: TextStyle(
                           color: Color(0xffff9300),
                           fontSize: 26,
@@ -226,7 +226,7 @@ class _WalletScreenState extends State<WalletScreen> {
         right: 39.h,
         bottom: 53.v,
       ),
-      text: "Add Money",
+      text: "Deposit",
     );
   }
   Widget listTile(String imageurl, Color color, String type, String tittle,
@@ -360,9 +360,10 @@ class _ReportPopUpState extends State<ReportPopUp> {
           ),
           btnOkOnPress: () {
             setState(() {
-              Navigator.pop(context);
-              Navigator.pop(context);
-              fetchWalletData();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => WalletScreen()),
+              );
             });
             // if(isSelected == true){
             //   nextQuestion();
@@ -395,7 +396,7 @@ class _ReportPopUpState extends State<ReportPopUp> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Center(child: Text('Add Money to Wallet')),
+      title: Center(child: Text('Deposit')),
       content: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(8.0),
@@ -444,8 +445,6 @@ class _ReportPopUpState extends State<ReportPopUp> {
               String input = additionalInfoController.text;
               if (input.isNotEmpty) {
                 value = double.parse(input) * 24000;
-                Network.createTransactionInWallet(
-                    amount: value);
                 String? transactionId = await Network.createTransactionInWallet(
                     amount: value);
                 if (transactionId != null) {

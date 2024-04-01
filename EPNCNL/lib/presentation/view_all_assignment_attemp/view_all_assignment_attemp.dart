@@ -61,7 +61,6 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
           await Network.getAssignmentAttemptByAssignmentIdAndLearnerId(
         widget.assignmentId,
       );
-
       setState(() {
         listAssignmentAttempt = assignment;
         listAssignmentAttempt.removeWhere(
@@ -152,7 +151,8 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
             ),
           ),
         ),
-        body: SizedBox(
+        body:
+        SizedBox(
           height: SizeUtils.height,
           width: double.maxFinite,
           child: Stack(

@@ -1028,7 +1028,6 @@ class Network {
       "assignmentId": assignmentId,
       "learnerId": leanerId,
       "answerText": answerText,
-      "attemptedDate": DateTime.now().toString(),
       "totalGrade": 0
     };
 
@@ -1043,7 +1042,7 @@ class Network {
       },
       body: jsonData,
     );
-
+    print(jsonData);
     if (response.statusCode == 201) {
       // Parse the JSON response
       final jsonResponse = jsonDecode(response.body);
@@ -2304,7 +2303,7 @@ static Future<String> createTransactionInWallet({
       // Parse the JSON response
       final jsonResponse = jsonDecode(response.body);
     } else {
-      print('Create report failed');
+      print('Create peer-review failed' + response.statusCode.toString());
       // Print the JSON data before making the API call
       print('JSON Data: $jsonData');
     }

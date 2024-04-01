@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -16,11 +17,14 @@ import 'package:meowlish/presentation/curriculcum_screen/widgets/videoplayer_wid
 import 'package:meowlish/presentation/doing_assignment_screen/doing_assignment_screen.dart';
 import 'package:meowlish/presentation/doing_quiz_screen/doing_quiz_screen.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
+import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
+import 'package:meowlish/presentation/review_assignment_screen/review_assignment_screen.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/presentation/view_all_assignment_attemp/view_all_assignment_attemp.dart';
+import 'package:meowlish/session/session.dart';
 
 class CurriculumScreen extends StatefulWidget {
   final courseID;
@@ -47,6 +51,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   Map<String, List<Quiz>> moduleQuizMap = {};
   Map<String, List<Assignment>> moduleAssignmentMap = {};
   Map<String, List<AssignmentAttempt>> moduleUngradeAssignmentAttempt = {};
+  Map<String, List<AssignmentAttempt>> moduleUndoAssignmentAttempt = {};
 
   // Maps to track minimized states for each type of content within each module
   Map<String, bool> minimizedLessonsMap = {};
@@ -158,6 +163,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
         // Store the lessons for this module in the map
         moduleAssignmentMap[moduleId] = loadedAssignment;
         for(var assignment in (moduleAssignmentMap[moduleId] as List) ){
+          loadAssignmentAttemptByLearnerId(assignment.id.toString());
           loadAssignmentAttemptByAssignmentId(assignment.id.toString());
         }
         isLoadingAssignment = false;
@@ -189,6 +195,19 @@ class CurriculumScreenState extends State<CurriculumScreen> {
 
       setState(() {
         moduleUngradeAssignmentAttempt[assignmentId] = assignment;
+        // Add more print statements for other properties if needed
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+  Future<void> loadAssignmentAttemptByLearnerId(String assignmentId) async {
+    final lid = SessionManager().getLearnerId();
+    try {
+      final assignment = await FetchCourseList.getPeerReviewByLearnerId(assignmentId: assignmentId, query: lid);
+      setState(() {
+        moduleUndoAssignmentAttempt[assignmentId] = assignment;
         // Add more print statements for other properties if needed
       });
     } catch (e) {
@@ -561,7 +580,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                   Expanded(
                     child: TextButton(
                       onPressed: () async {
-                        if(moduleUngradeAssignmentAttempt[moduleAssignmentMap[module
+                        if(moduleUndoAssignmentAttempt[moduleAssignmentMap[module
                             .id.toString()]![assignmentIndex].id]?.isEmpty ?? false){
                           await Navigator.push(
                             context,
@@ -577,27 +596,25 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                                                 .toString()]![assignmentIndex]
                                                 .deadline as int))),
                           );
-                          loadAssignmentAttemptByAssignmentId(moduleAssignmentMap[module
-                              .id.toString()]![assignmentIndex].id
-                              .toString());
-                          loadAssignmentAttemptsByLearnerId();
                         }
-                        if(moduleUngradeAssignmentAttempt[moduleAssignmentMap[module
-                            .id.toString()]![assignmentIndex].id]?.isNotEmpty ?? true){
-                        await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                        builder: (context) =>
-                        ViewAllAssignmentAttempt(
-                        assignmentId: moduleAssignmentMap[module
-                            .id.toString()]![assignmentIndex].id
-                            .toString(), navigateTime: 1,)));
+                        if(moduleUndoAssignmentAttempt[moduleAssignmentMap[module
+                            .id.toString()]![assignmentIndex].id]?.isNotEmpty ?? false) {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ReviewAssignment(
+                                          assignmentID: moduleAssignmentMap[module
+                                              .id.toString()]![assignmentIndex].id
+                                              .toString(),
+                                          )),
+                            );
+
+                          }
                         loadAssignmentAttemptByAssignmentId(moduleAssignmentMap[module
                             .id.toString()]![assignmentIndex].id
                             .toString());
                         loadAssignmentAttemptsByLearnerId();
-                        }
-
                       },
                       child:
                       Html(

@@ -27,6 +27,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
   late Assignment chosenAssignment = Assignment();
   Timer? _timer;
   int _remainingSeconds = 0;
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -52,6 +53,12 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
       // Handle errors here
       print('Error: $e');
     }
+  }
+  String? validateAssignment(String? assignment) {
+    if (assignment == null || assignment.isEmpty) {
+      return 'Assignment cannot be empty';
+    }
+    return null; // Return null if the password is valid.
   }
 
   void _startCooldownTimer() {
@@ -165,64 +172,71 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                 ),
                 SizedBox(height: 24.v),
                 Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: Offset(0, 3),
+                  child: Form(
+                    key: _formKey,
+                    child: CustomTextFormField(
+                      controller: additionalInfoController,
+                      hintText: "Your Answer",
+                      hintStyle: CustomTextStyles.titleSmallGray80001,
+                      textInputAction: TextInputAction.done,
+                      maxLines: 14,
+                      prefix: Container(
+                        margin: EdgeInsets.fromLTRB(20.h, 22.v, 7.h, 23.v),
+                        child: CustomImageView(
+                            imagePath: ImageConstant.imgLock,
+                            height: 14.v,
+                            width: 18.h),
                       ),
-                    ],
-                  ),
-                  child: CustomTextFormField(
-                    controller: additionalInfoController,
-                    hintText: "Your Answer",
-                    hintStyle: CustomTextStyles.titleSmallGray80001,
-                    textInputAction: TextInputAction.done,
-                    maxLines: 14,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 15.h,
-                      vertical: 28.v,
+                      prefixConstraints: BoxConstraints(maxHeight: 60.v),
+                      contentPadding:
+                      EdgeInsets.only(top: 21.v, right: 30.h, bottom: 21.v),
+                      borderDecoration: TextFormFieldStyleHelper
+                          .outlineBlack,
+                      validator: validateAssignment,
                     ),
-                    borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
                   ),
                 ),
                 SizedBox(height: 93.v),
                 CustomElevatedButton(
                   onPressed: () async {
-                    await Network.createAssignmentAttempt(
-                      assignmentId: widget.assignmentID,
-                      answerText: additionalInfoController.text.toString(),
-                    );
-                    AwesomeDialog(
-                      context: context,
-                      animType: AnimType.scale,
-                      dialogType: DialogType.success,
-                      body: Center(
-                        child: Text(
-                          'Submit successfully',
-                          style: TextStyle(fontStyle: FontStyle.italic),
+                    if(_formKey.currentState!.validate()) {
+                      await Network.createAssignmentAttempt(
+                        assignmentId: widget.assignmentID,
+                        answerText: additionalInfoController.text.toString(),
+                      );
+                      AwesomeDialog(
+                        context: context,
+                        animType: AnimType.scale,
+                        dialogType: DialogType.success,
+                        body: Center(
+                          child: Text(
+                            'Submit successfully',
+                            style: TextStyle(fontStyle: FontStyle.italic),
+                          ),
                         ),
-                      ),
-                      btnOkOnPress: () {
-                        setState(() {
-                          // Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ViewAllAssignmentAttempt(assignmentId: widget.assignmentID, navigateTime: 2,
+                        btnOkOnPress: () {
+                          setState(() {
+                            // Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ViewAllAssignmentAttempt(
+                                      assignmentId: widget.assignmentID,
+                                      navigateTime: 2,
+                                    ),
                               ),
-                            ),
-                          );
-                          _timer?.cancel();
-                          _timer = null;
-                        });
-                        // if(isSelected == true){
-                        //   nextQuestion();
-                        // }
-                      },
-                    )..show();
+                            );
+                            _timer?.cancel();
+                            _timer = null;
+                          });
+                          // if(isSelected == true){
+                          //   nextQuestion();
+                          // }
+                        },
+                      )
+                        ..show();
+                    }
                   },
                   text: "Submit Assignment",
                 )

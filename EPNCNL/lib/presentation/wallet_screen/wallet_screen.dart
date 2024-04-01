@@ -19,6 +19,7 @@ import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/wallets.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
+import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/theme/custom_text_style.dart';
 import 'package:meowlish/theme/theme_helper.dart';
@@ -101,6 +102,19 @@ class _WalletScreenState extends State<WalletScreen> {
         backgroundColor: Color(0xffff9300),
         elevation: 0.0,
         toolbarHeight: 65,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back, // You can change this to any custom icon you prefer
+            color: Colors.black,
+            size: 30,
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfilesPage()),
+            );
+          },
+        ),
         flexibleSpace: FlexibleSpaceBar(
           title: Container(
             margin: EdgeInsets.fromLTRB(0, 45, 0, 0),
@@ -322,9 +336,17 @@ class _ReportPopUpState extends State<ReportPopUp> {
   bool isLoading = false;
   late Timer _timer;
   late Wallet? wallet = Wallet();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
+  }
+  String? validateDeposit(String? deposit) {
+    if (deposit == null || deposit.isEmpty) {
+      return 'Deposit cannot be empty';
+    }
+
+    return null; // Return null if the password is valid.
   }
 
   Future<void> fetchWalletData() async {
@@ -360,6 +382,8 @@ class _ReportPopUpState extends State<ReportPopUp> {
           ),
           btnOkOnPress: () {
             setState(() {
+              Navigator.pop(context);
+              Navigator.pop(context);
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => WalletScreen()),
@@ -405,27 +429,29 @@ class _ReportPopUpState extends State<ReportPopUp> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
+                child: Form(
+                  key: _formKey,
+                  child: CustomTextFormField(
+                    controller: additionalInfoController,
+                    hintText: "How much",
+                    textInputType: TextInputType.number,
+                    hintStyle: CustomTextStyles.titleSmallGray80001,
+                    textInputAction: TextInputAction.done,
+                    prefix: Container(
+                      margin: EdgeInsets.fromLTRB(20.h, 22.v, 7.h, 23.v),
+                      child: CustomImageView(
+                          imagePath: ImageConstant.imgLock,
+                          height: 14.v,
+                          width: 18.h),
                     ),
-                  ],
-                ),
-                child: CustomTextFormField(
-                  controller: additionalInfoController,
-                  hintText: "How much",
-                  hintStyle: CustomTextStyles.titleSmallGray80001,
-                  textInputAction: TextInputAction.done,
-                  maxLines: 1,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 15.h,
-                    vertical: 28.v,
+                    prefixConstraints: BoxConstraints(maxHeight: 60.v),
+                    contentPadding:
+                    EdgeInsets.only(top: 21.v, right: 30.h, bottom: 21.v),
+                    borderDecoration: TextFormFieldStyleHelper
+                        .outlineBlack,
+                    validator: validateDeposit,
+                    maxLines: 1,
                   ),
-                  borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
                 ),
               ),
               SizedBox(height: 24.v),
@@ -443,7 +469,7 @@ class _ReportPopUpState extends State<ReportPopUp> {
             onPressed: () async {
               double value;
               String input = additionalInfoController.text;
-              if (input.isNotEmpty) {
+              if (_formKey.currentState!.validate()) {
                 value = double.parse(input) * 24000;
                 String? transactionId = await Network.createTransactionInWallet(
                     amount: value);
@@ -497,9 +523,7 @@ class _ReportPopUpState extends State<ReportPopUp> {
                     });
                   }
                 }
-            } else {
-                value = 0; // or handle it according to your requirements
-              }
+            }
             },
             child: Text('Add'))
       ],

@@ -1157,7 +1157,7 @@ class SingleCourseDetailsCurriculumPageState
                   SizedBox(height: 10),
                   Align(
                       alignment: Alignment.centerLeft,
-                      child: Text("Class Topic: " , style: CustomTextStyles.labelLargeOrangeA700)),
+                      child: Text("Topic: " , style: CustomTextStyles.labelLargeOrangeA700)),
                 ],
               ),
             ),

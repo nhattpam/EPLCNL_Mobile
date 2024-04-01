@@ -452,6 +452,7 @@ class _ReportPopUpState extends State<ReportPopUp> {
   String _image = "";
   final picker = ImagePicker();
   Dio dio = Dio();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -497,6 +498,13 @@ class _ReportPopUpState extends State<ReportPopUp> {
 
       await _uploadImage(File(_imagePath));
     }
+  }
+  String? validateReport(String? report) {
+    if (report == null || report.isEmpty) {
+      return 'Report cannot be empty';
+    }
+
+    return null; // Return null if the password is valid.
   }
 
   @override
@@ -565,27 +573,28 @@ class _ReportPopUpState extends State<ReportPopUp> {
               ),
               SizedBox(height: 24.v),
               Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
+                child: Form(
+                  key: _formKey,
+                  child: CustomTextFormField(
+                    controller: additionalInfoController,
+                    hintText: "Your Reason",
+                    hintStyle: CustomTextStyles.titleSmallGray80001,
+                    textInputAction: TextInputAction.done,
+                    maxLines: 14,
+                    prefix: Container(
+                      margin: EdgeInsets.fromLTRB(20.h, 22.v, 7.h, 23.v),
+                      child: CustomImageView(
+                          imagePath: ImageConstant.imgLock,
+                          height: 14.v,
+                          width: 18.h),
                     ),
-                  ],
-                ),
-                child: CustomTextFormField(
-                  controller: additionalInfoController,
-                  hintText: "Your Reason",
-                  hintStyle: CustomTextStyles.titleSmallGray80001,
-                  textInputAction: TextInputAction.done,
-                  maxLines: 14,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 15.h,
-                    vertical: 28.v,
+                    prefixConstraints: BoxConstraints(maxHeight: 60.v),
+                    contentPadding:
+                    EdgeInsets.only(top: 21.v, right: 30.h, bottom: 21.v),
+                    borderDecoration: TextFormFieldStyleHelper
+                        .outlineBlack,
+                    validator: validateReport,
                   ),
-                  borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
                 ),
               ),
               SizedBox(height: 24.v),
@@ -601,26 +610,29 @@ class _ReportPopUpState extends State<ReportPopUp> {
             child: Text('Cancel')),
         TextButton(
             onPressed: () {
-              Network.createReport(
-                  courseId: widget.courseId,
-                  reason: additionalInfoController.text,
-                  imageUrl: _image);
-              AwesomeDialog(
-                context: context,
-                animType: AnimType.scale,
-                dialogType: DialogType.success,
-                body: Center(
-                  child: Text(
-                    'Report success!!!',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+              if(_formKey.currentState!.validate()) {
+                Network.createReport(
+                    courseId: widget.courseId,
+                    reason: additionalInfoController.text,
+                    imageUrl: _image);
+                AwesomeDialog(
+                  context: context,
+                  animType: AnimType.scale,
+                  dialogType: DialogType.success,
+                  body: Center(
+                    child: Text(
+                      'Report success!!!',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
                   ),
-                ),
-                btnOkOnPress: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-              )..show();
+                  btnOkOnPress: () {
+                    setState(() {
+                      Navigator.pop(context);
+                    });
+                  },
+                )
+                  ..show();
+              }
             },
             child: Text('Report'))
       ],

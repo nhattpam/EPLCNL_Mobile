@@ -89,7 +89,6 @@ class _CreateNewPasswordOpenScreenState extends State<CreateNewPasswordOpenScree
             listAccount[0]?.note ?? '');
         if (update) {
           if (context != null) {
-            Navigator.of(context).pop();
             AwesomeDialog(
               context: context,
               animType: AnimType.scale,

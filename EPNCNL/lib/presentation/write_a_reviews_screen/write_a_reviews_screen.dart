@@ -25,6 +25,7 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
   late Course chosenCourse = Course();
   double rating = 0;
   FetchCourseList _userList = FetchCourseList();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -42,6 +43,14 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
       // Handle errors here
       print('Error: $e');
     }
+  }
+
+  String? validateReview(String? review) {
+    if (review == null || review.isEmpty) {
+      return 'Review cannot be empty';
+    }
+
+    return null; // Return null if the password is valid.
   }
 
   @override
@@ -132,34 +141,62 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                         ),
                       ),
                       SizedBox(height: 10.v),
-                      CustomTextFormField(
-                        controller: writeAnythingAboutProductController,
-                        hintText: feedbackContent,
-                        textInputAction: TextInputAction.done,
-                        maxLines: 8,
-                        contentPadding: EdgeInsets.all(20.h),
-                        borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
+                      Form(
+                        key: _formKey,
+                        child: CustomTextFormField(
+                          controller: writeAnythingAboutProductController,
+                          hintText: feedbackContent,
+                          textInputAction: TextInputAction.done,
+                          maxLines: 8,
+                          contentPadding: EdgeInsets.all(20.h),
+                          borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
+                          validator: validateReview,
+                        ),
                       ),
                       SizedBox(height: 97.v), // Adjust the height according to your need
                       CustomElevatedButton(
                         onPressed: (){
-                          Network.updateFeedback(feedbackId: data?[0]?.id ?? '',createdDate: data?[0]?.createdDate ?? '', feedbackContent: writeAnythingAboutProductController.text, courseId: widget.courseID, rating: rating.toString());
-                          AwesomeDialog(
-                            context: context,
-                            animType: AnimType.scale,
-                            dialogType: DialogType.success,
-                            body: Center(
-                              child: Text(
-                                'Thank you for your feedback!!',
-                                style: TextStyle(fontStyle: FontStyle.italic),
-                              ),
-                            ),
-                            btnOkOnPress: () {
-                              setState(() {
-                                Navigator.pop(context);
-                              });
-                            },
-                          )..show();
+                          if (_formKey.currentState!.validate()){
+                            if (rating >= 1 && rating <= 5) {
+                              Network.updateFeedback(feedbackId: data?[0]?.id ?? '',createdDate: data?[0]?.createdDate ?? '', feedbackContent: writeAnythingAboutProductController.text, courseId: widget.courseID, rating: rating.toString());
+                              AwesomeDialog(
+                                context: context,
+                                animType: AnimType.scale,
+                                dialogType: DialogType.success,
+                                body: Center(
+                                  child: Text(
+                                    'Thank you for your feedback!!',
+                                    style: TextStyle(fontStyle: FontStyle.italic),
+                                  ),
+                                ),
+                                btnOkOnPress: () {
+                                  setState(() {
+                                    Navigator.pop(context);
+                                  });
+                                },
+                              )..show();
+                            } else {
+                              // Show an error message or handle invalid rating
+                              // For example, you can display a snackbar or a dialog
+                              AwesomeDialog(
+                                context: context,
+                                animType: AnimType.scale,
+                                dialogType: DialogType.error,
+                                body: Center(
+                                  child: Text(
+                                    'Please select a rating between 1 and 5!!!',
+                                    style: TextStyle(fontStyle: FontStyle.italic),
+                                  ),
+                                ),
+                                btnOkOnPress: () {
+                                  setState(() {
+                                  });
+                                },
+                                btnOkColor: Colors.red,
+                              )..show();
+
+                            }
+                          }
                         },
                         text: "Edit Review",
                         margin: EdgeInsets.symmetric(horizontal: 5.h),
@@ -206,9 +243,30 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                                           color: Colors
                                               .amberAccent),
                                   onRatingUpdate: (rate) async {
-                                    setState(() {
-                                      rating = rate;
-                                    });
+                                    if (rate >= 1 && rate <= 5) {
+                                      setState(() {
+                                        rating = rate;
+                                      });
+                                    } else {
+                                      // Show an error message or handle invalid rating
+                                      // For example, you can display a snackbar or a dialog
+                                      AwesomeDialog(
+                                        context: context,
+                                        animType: AnimType.scale,
+                                        dialogType: DialogType.error,
+                                        body: Center(
+                                          child: Text(
+                                            'Please select a rating between 1 and 5!!!!',
+                                            style: TextStyle(fontStyle: FontStyle.italic),
+                                          ),
+                                        ),
+                                        btnOkOnPress: () {
+                                          setState(() {
+                                          });
+                                        },
+                                        btnOkColor: Colors.red,
+                                      )..show();
+                                    }
                                   },
                                   itemSize: 30),
                             ),
@@ -218,35 +276,62 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                     ),
 
                     SizedBox(height: 10.v),
-                    CustomTextFormField(
-                      controller: writeAnythingAboutProductController,
-                      hintText:
-                      "Would you like to write anything about this course?",
-                      textInputAction: TextInputAction.done,
-                      maxLines: 8,
-                      contentPadding: EdgeInsets.all(20.h),
-                      borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
+                    Form(
+                      key: _formKey,
+                      child: CustomTextFormField(
+                        controller: writeAnythingAboutProductController,
+                        hintText:
+                        "Would you like to write anything about this course?",
+                        textInputAction: TextInputAction.done,
+                        maxLines: 8,
+                        contentPadding: EdgeInsets.all(20.h),
+                        borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
+                        validator: validateReview,
+                      ),
                     ),
                     SizedBox(height: 97.v), // Adjust the height according to your need
                     CustomElevatedButton(
                       onPressed: (){
-                        Network.createFeedback(feedbackContent: writeAnythingAboutProductController.text, courseId: widget.courseID, rating: rating.toString());
-                        AwesomeDialog(
-                          context: context,
-                          animType: AnimType.scale,
-                          dialogType: DialogType.success,
-                          body: Center(
-                            child: Text(
-                              'Thank you for your feedback!!',
-                              style: TextStyle(fontStyle: FontStyle.italic),
-                            ),
-                          ),
-                          btnOkOnPress: () {
-                            setState(() {
-                              Navigator.pop(context);
-                            });
-                          },
-                        )..show();
+                        if (_formKey.currentState!.validate()){
+                          if (rating >= 1 && rating <= 5) {
+                            Network.createFeedback(feedbackContent: writeAnythingAboutProductController.text, courseId: widget.courseID, rating: rating.toString());
+                            AwesomeDialog(
+                              context: context,
+                              animType: AnimType.scale,
+                              dialogType: DialogType.success,
+                              body: Center(
+                                child: Text(
+                                  'Thank you for your feedback!!',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                              btnOkOnPress: () {
+                                setState(() {
+                                  Navigator.pop(context);
+                                });
+                              },
+                            )..show();
+                          } else {
+                            // Show an error message or handle invalid rating
+                            // For example, you can display a snackbar or a dialog
+                            AwesomeDialog(
+                              context: context,
+                              animType: AnimType.scale,
+                              dialogType: DialogType.error,
+                              body: Center(
+                                child: Text(
+                                  'Please select a rating between 1 and 5!!!',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                              btnOkOnPress: () {
+                                setState(() {
+                                });
+                              },
+                              btnOkColor: Colors.red,
+                            )..show();
+                          }
+                        }
                       },
                       text: "Submit Review",
                       margin: EdgeInsets.symmetric(horizontal: 5.h),

@@ -48,6 +48,7 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
     '10',
   ];
   late Map<String, String> point;
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -62,7 +63,7 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
   Future<void> loadAssignmentByAssignmentId() async {
     try {
       final assignment =
-      await Network.getAssignmentByAssignmentId(widget.assignmentID);
+          await Network.getAssignmentByAssignmentId(widget.assignmentID);
       setState(() {
         chosenAssignment = assignment;
       });
@@ -71,10 +72,12 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
       print('Error: $e');
     }
   }
+
   Future<void> loadAssignmentAttemptByLearnerId(String assignmentId) async {
     final lid = SessionManager().getLearnerId();
     try {
-      final assignment = await FetchCourseList.getPeerReviewByLearnerId(assignmentId: assignmentId, query: lid);
+      final assignment = await FetchCourseList.getPeerReviewByLearnerId(
+          assignmentId: assignmentId, query: lid);
       setState(() {
         moduleUndoAssignmentAttempt[assignmentId] = assignment;
         // Add more print statements for other properties if needed
@@ -84,9 +87,11 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
       print('Error: $e');
     }
   }
+
   Future<void> loadAssignmentAttemptByAssignmentId(String assignmentId) async {
     try {
-      final assignment = await Network.getAssignmentAttemptByAssignmentIdAndLearnerId(
+      final assignment =
+          await Network.getAssignmentAttemptByAssignmentIdAndLearnerId(
         assignmentId,
       );
 
@@ -109,14 +114,19 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
 
     int startIndex = (page - 1) * _itemsPerPage;
     int endIndex = startIndex + _itemsPerPage;
-    if (startIndex < moduleUngradeAssignmentAttempt[widget.assignmentID]!.length) {
+    if (startIndex <
+        moduleUngradeAssignmentAttempt[widget.assignmentID]!.length) {
       // Ensure endIndex does not exceed the length of the list
-      _paginatedAssignmentAttempt = moduleUngradeAssignmentAttempt[widget.assignmentID]!.sublist(
-          startIndex, endIndex.clamp(0, moduleUngradeAssignmentAttempt[widget.assignmentID]!.length));
+      _paginatedAssignmentAttempt =
+          moduleUngradeAssignmentAttempt[widget.assignmentID]!.sublist(
+              startIndex,
+              endIndex.clamp(0,
+                  moduleUngradeAssignmentAttempt[widget.assignmentID]!.length));
       // isLoadingFeedback = false;
       isLoadingAssignmentAttempt = false;
     }
   }
+
   String removeAllHtmlTags(String htmlText) {
     RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
 
@@ -130,6 +140,14 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
           return ReportPopUp(attemptId: attemptId);
         });
   }
+
+  String? validateAssignment(String? assignment) {
+    if (assignment == null || assignment.isEmpty) {
+      return 'Assignment cannot be empty';
+    }
+    return null; // Return null if the password is valid.
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -173,8 +191,7 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
               // Ensure children stretch horizontally
               children: [
                 Center(
-                  child:
-                  Html(
+                  child: Html(
                     data: chosenAssignment.questionText.toString(),
                     style: {
                       "body": Style(
@@ -197,7 +214,11 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                             fontWeight: FontWeight.w800,
                           )),
                       Text(
-                        (moduleUndoAssignmentAttempt[widget.assignmentID]?.first?.totalGrade ?? 0).toString() ,
+                        (moduleUndoAssignmentAttempt[widget.assignmentID]
+                                    ?.first
+                                    ?.totalGrade ??
+                                0)
+                            .toString(),
                         style: CustomTextStyles.titleSmallPrimary,
                       ),
                     ],
@@ -216,13 +237,144 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                 ),
                 SizedBox(height: 24.v),
                 Container(
-                  child: Text(
-                    moduleUndoAssignmentAttempt[widget.assignmentID]?.first?.answerText ?? '',
-                    maxLines: 14,
+                  constraints: const BoxConstraints(
+                    maxWidth: 244,
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Container(
+                                  padding: EdgeInsets.all(20),
+                                  child: Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        CustomTextFormField(
+                                          controller: additionalInfoController,
+                                          hintText: "Your Answer",
+                                          hintStyle: CustomTextStyles.titleSmallGray80001,
+                                          textInputAction: TextInputAction.done,
+                                          maxLines: 14,
+                                          prefix: Container(
+                                            margin: EdgeInsets.fromLTRB(20.h, 22.v, 7.h, 23.v),
+                                            child: CustomImageView(
+                                              imagePath: ImageConstant.imgLock,
+                                              height: 14.v,
+                                              width: 18.h,
+                                            ),
+                                          ),
+                                          prefixConstraints: BoxConstraints(maxHeight: 60.v),
+                                          contentPadding: EdgeInsets.only(
+                                            top: 21.v,
+                                            right: 30.h,
+                                            bottom: 21.v,
+                                          ),
+                                          borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+                                          validator: validateAssignment,
+                                        ),
+                                        SizedBox(height: 20),
+                                        CustomElevatedButton(
+                                          onPressed: () async {
+                                            if(_formKey.currentState!.validate()) {
+                                              await Network.updateAssignmentAttempt(
+                                                attemptId: (moduleUndoAssignmentAttempt[widget.assignmentID]?.first.id).toString(),
+                                                answerText: additionalInfoController.text.toString(), assignmentId: widget.assignmentID,
+                                              );
+                                              AwesomeDialog(
+                                                context: context,
+                                                animType: AnimType.scale,
+                                                dialogType: DialogType.success,
+                                                body: Center(
+                                                  child: Text(
+                                                    'Submit successfully',
+                                                    style: TextStyle(fontStyle: FontStyle.italic),
+                                                  ),
+                                                ),
+                                                btnOkOnPress: () {
+                                                  setState(() {
+                                                    // Navigator.pop(context);
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ViewAllAssignmentAttempt(
+                                                              assignmentId: widget.assignmentID,
+                                                              navigateTime: 2,
+                                                            ),
+                                                      ),
+                                                    );
+                                                  });
+                                                  // if(isSelected == true){
+                                                  //   nextQuestion();
+                                                  // }
+                                                },
+                                              )
+                                                ..show();
+                                            }
+                                          },
+                                          text: "Edit Assignment",
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            constraints: BoxConstraints(
+                              maxWidth: 200
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 10),
+                            decoration: AppDecoration
+                                .outlineBlack9001
+                                .copyWith(
+                              borderRadius: BorderRadiusStyle
+                                  .roundedBorder10,
+
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.edit,
+                                  size: 20,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(width: 4.v),
+                                SingleChildScrollView(
+                                  child: Container(
+                                    constraints: BoxConstraints(
+                                      maxWidth: 280
+                                    ),
+                                    child: Text(
+                                      moduleUndoAssignmentAttempt[widget.assignmentID]
+                                          ?.first
+                                          ?.answerText ??
+                                          '',
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 6,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(height: 24.v),
-                if(moduleUngradeAssignmentAttempt[widget.assignmentID]?.isNotEmpty ?? false)
+                if (moduleUngradeAssignmentAttempt[widget.assignmentID]
+                        ?.isNotEmpty ??
+                    false)
                   SizedBox(
                     height: SizeUtils.height,
                     width: double.maxFinite,
@@ -247,12 +399,15 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                                 CustomElevatedButton(
                                   onPressed: () async {
                                     for (int index = 0;
-                                    index < _paginatedAssignmentAttempt.length;
-                                    index++) {
-                                      final attempt = _paginatedAssignmentAttempt[index];
+                                        index <
+                                            _paginatedAssignmentAttempt.length;
+                                        index++) {
+                                      final attempt =
+                                          _paginatedAssignmentAttempt[index];
                                       // print("This is"+ index.toString());
                                       await Network.createPeerReview(
-                                          assignmentAttemptId: attempt.id.toString(),
+                                          assignmentAttemptId:
+                                              attempt.id.toString(),
                                           grade: point[attempt.id].toString());
                                     }
                                     AwesomeDialog(
@@ -262,7 +417,8 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                                       body: Center(
                                         child: Text(
                                           'Submit Success!!!',
-                                          style: TextStyle(fontStyle: FontStyle.italic),
+                                          style: TextStyle(
+                                              fontStyle: FontStyle.italic),
                                         ),
                                       ),
                                       btnOkOnPress: () {
@@ -351,239 +507,240 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
       ),
     );
   }
+
   Widget _buildCourseReviewList(BuildContext context) {
     return isLoadingAssignmentAttempt
         ? Column(
-      children: [
-        ListView.separated(
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          separatorBuilder: (
-              context,
-              index,
-              ) {
-            return Padding(
-              padding: EdgeInsets.symmetric(vertical: 11.5.v),
-              child: SizedBox(
-                width: 360.h,
-                child: Divider(
-                  height: 1.v,
-                  thickness: 1.v,
-                  color: appTheme.blue50,
-                ),
-              ),
-            );
-          },
-          itemCount: 3,
-          itemBuilder: (context, index) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                    height: 46.adaptSize,
-                    width: 46.adaptSize,
-                    margin: EdgeInsets.only(
-                      top: 3.v,
-                      bottom: 65.v,
-                    ),
-                    decoration: BoxDecoration(
-                      color: appTheme.black900,
-                      borderRadius: BorderRadius.circular(
-                        23.h,
-                      ),
-                    ),
-                    child: Skeleton(width: 20)),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 12.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                          children: [
-                            Skeleton(width: 30),
-                            Skeleton(width: 60),
-                          ],
-                        ),
-                        SizedBox(height: 9.v),
-                        Skeleton(width: 244),
-                        SizedBox(height: 11.v),
-                        Row(
-                          children: [
-                            Skeleton(width: 30),
-                            Padding(
-                                padding: EdgeInsets.only(left: 10.h),
-                                child: Skeleton(width: 30)),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      ],
-    )
-        : Column(
-      children: [
-        if (_paginatedAssignmentAttempt.length != 0)
-          ListView.separated(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            separatorBuilder: (
-                context,
-                index,
+            children: [
+              ListView.separated(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                separatorBuilder: (
+                  context,
+                  index,
                 ) {
-              return Padding(
-                padding: EdgeInsets.symmetric(vertical: 11.5.v),
-                child: SizedBox(
-                  width: 360.h,
-                  child: Divider(
-                    height: 1.v,
-                    thickness: 1.v,
-                    color: appTheme.blue50,
-                  ),
-                ),
-              );
-            },
-            itemCount: _paginatedAssignmentAttempt.length,
-            itemBuilder: (context, index) {
-              final attempt = _paginatedAssignmentAttempt[index];
-              if (!point.containsKey(attempt.id)) {
-                point[attempt.id.toString()] =
-                ''; // Set default value to 2
-              }
-              String originalDateString =
-              attempt.attemptedDate.toString();
-              DateTime originalDate =
-              DateTime.parse(originalDateString.split('T')[0]);
-              String formattedDate =
-              DateFormat('dd-MM-yyyy').format(originalDate);
-              return GestureDetector(
-                onTap: () {
-                  _showMultiSelect(attempt.id.toString());
-                },
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    attempt.learner?.account?.imageUrl != null &&
-                        attempt.learner!.account!.imageUrl!.isNotEmpty
-                        ? Container(
-                      height: 46.adaptSize,
-                      width: 46.adaptSize,
-                      margin: EdgeInsets.only(
-                        top: 3.v,
-                        bottom: 65.v,
-                      ),
-                      decoration: BoxDecoration(
-                        color: appTheme.black900,
-                        borderRadius: BorderRadius.circular(
-                          23.h,
-                        ),
-                      ),
-                      child: Image.network(
-                        attempt.learner!.account!.imageUrl!,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                        : Center(
-                        child: Container(
-                            child: CircularProgressIndicator())),
-                    // Placeholder widget when feedback.learner.account.imageUrl is empty or null
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 12.h),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  removeAllHtmlTags(attempt
-                                      .learner?.account?.fullName ??
-                                      ''),
-                                  style: CustomTextStyles.titleMedium17,
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 9.v),
-                            Container(
-                              constraints: const BoxConstraints(
-                                maxWidth: 244,
-                              ),
-                              margin: EdgeInsets.only(right: 12.h),
-                              child: Text(
-                                removeAllHtmlTags(
-                                    attempt.answerText.toString()),
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.labelLarge,
-                              ),
-                            ),
-                            SizedBox(height: 11.v),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.calendar_month_outlined,
-                                  color: Colors.black,
-                                  size: 12.v,
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 10.h),
-                                  child: Text(
-                                    formattedDate,
-                                    style: CustomTextStyles
-                                        .labelLargeBluegray900,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: List<Widget>.generate(
-                                listPoint.length,
-                                    (index) {
-                                  return Row(
-                                    children: [
-                                      Radio(
-                                        value: listPoint[index],
-                                        groupValue: point[attempt.id],
-                                        // Use pointMap value
-                                        onChanged: (value) {
-                                          setState(() {
-                                            point[attempt.id.toString()] =
-                                                value.toString();
-                                            print(point[
-                                            attempt.id.toString()]);
-                                          });
-                                        },
-                                      ),
-                                      Text(listPoint[index])
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 11.5.v),
+                    child: SizedBox(
+                      width: 360.h,
+                      child: Divider(
+                        height: 1.v,
+                        thickness: 1.v,
+                        color: appTheme.blue50,
                       ),
                     ),
-                  ],
+                  );
+                },
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                          height: 46.adaptSize,
+                          width: 46.adaptSize,
+                          margin: EdgeInsets.only(
+                            top: 3.v,
+                            bottom: 65.v,
+                          ),
+                          decoration: BoxDecoration(
+                            color: appTheme.black900,
+                            borderRadius: BorderRadius.circular(
+                              23.h,
+                            ),
+                          ),
+                          child: Skeleton(width: 20)),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 12.h),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Skeleton(width: 30),
+                                  Skeleton(width: 60),
+                                ],
+                              ),
+                              SizedBox(height: 9.v),
+                              Skeleton(width: 244),
+                              SizedBox(height: 11.v),
+                              Row(
+                                children: [
+                                  Skeleton(width: 30),
+                                  Padding(
+                                      padding: EdgeInsets.only(left: 10.h),
+                                      child: Skeleton(width: 30)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          )
+        : Column(
+            children: [
+              if (_paginatedAssignmentAttempt.length != 0)
+                ListView.separated(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  separatorBuilder: (
+                    context,
+                    index,
+                  ) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 11.5.v),
+                      child: SizedBox(
+                        width: 360.h,
+                        child: Divider(
+                          height: 1.v,
+                          thickness: 1.v,
+                          color: appTheme.blue50,
+                        ),
+                      ),
+                    );
+                  },
+                  itemCount: _paginatedAssignmentAttempt.length,
+                  itemBuilder: (context, index) {
+                    final attempt = _paginatedAssignmentAttempt[index];
+                    if (!point.containsKey(attempt.id)) {
+                      point[attempt.id.toString()] =
+                          ''; // Set default value to 2
+                    }
+                    String originalDateString =
+                        attempt.attemptedDate.toString();
+                    DateTime originalDate =
+                        DateTime.parse(originalDateString.split('T')[0]);
+                    String formattedDate =
+                        DateFormat('dd-MM-yyyy').format(originalDate);
+                    return GestureDetector(
+                      onTap: () {
+                        _showMultiSelect(attempt.id.toString());
+                      },
+                      child: Row(
+                        // mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          attempt.learner?.account?.imageUrl != null &&
+                                  attempt.learner!.account!.imageUrl!.isNotEmpty
+                              ? Container(
+                                  height: 46.adaptSize,
+                                  width: 46.adaptSize,
+                                  margin: EdgeInsets.only(
+                                    top: 3.v,
+                                    bottom: 65.v,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: appTheme.black900,
+                                    borderRadius: BorderRadius.circular(
+                                      23.h,
+                                    ),
+                                  ),
+                                  child: Image.network(
+                                    attempt.learner!.account!.imageUrl!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : Center(
+                                  child: Container(
+                                      child: CircularProgressIndicator())),
+                          // Placeholder widget when feedback.learner.account.imageUrl is empty or null
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 12.h),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        removeAllHtmlTags(attempt
+                                                .learner?.account?.fullName ??
+                                            ''),
+                                        style: CustomTextStyles.titleMedium17,
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 9.v),
+                                  Container(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 244,
+                                    ),
+                                    margin: EdgeInsets.only(right: 12.h),
+                                    child: Text(
+                                      removeAllHtmlTags(
+                                          attempt.answerText.toString()),
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: theme.textTheme.labelLarge,
+                                    ),
+                                  ),
+                                  SizedBox(height: 11.v),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.calendar_month_outlined,
+                                        color: Colors.black,
+                                        size: 12.v,
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10.h),
+                                        child: Text(
+                                          formattedDate,
+                                          style: CustomTextStyles
+                                              .labelLargeBluegray900,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: List<Widget>.generate(
+                                      listPoint.length,
+                                      (index) {
+                                        return Row(
+                                          children: [
+                                            Radio(
+                                              value: listPoint[index],
+                                              groupValue: point[attempt.id],
+                                              // Use pointMap value
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  point[attempt.id.toString()] =
+                                                      value.toString();
+                                                  print(point[
+                                                      attempt.id.toString()]);
+                                                });
+                                              },
+                                            ),
+                                            Text(listPoint[index])
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-        // Pagination controls
-      ],
-    );
+              // Pagination controls
+            ],
+          );
   }
 }

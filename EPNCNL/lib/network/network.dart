@@ -1018,6 +1018,42 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+  static Future<bool> updateAssignmentAttempt(
+      {required String attemptId,
+        required String answerText,
+        required String assignmentId,
+       }) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/assignment-attempts/$attemptId';
+    print(apiUrl);// Replace with your API URL
+    try {
+      final Map<String, dynamic> updateData = {
+        "answerText": answerText,
+        "totalGrade": 0,
+        "assignmentId": assignmentId,
+        "learnerId": SessionManager().getLearnerId().toString(),
+      };
+      final response = await http.put(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any authentication headers here
+        },
+        body: jsonEncode(updateData),
+      );
+        print(jsonEncode(updateData));
+      if (response.statusCode == 200) {
+        print('Assignment Attempt updated successfully.');
+        return true; // Password updated successfully, return true.
+      } else {
+        print('Failed to Assignment Attempt. Status code: ${response.statusCode}');
+        return false; // Password update failed, return false.
+      }
+    } catch (e) {
+      print('An error occurred: $e');
+      return false; // Handle any exceptions and return false.
+    }
+  }
 
   static Future<void> createAssignmentAttempt({
     required String assignmentId,

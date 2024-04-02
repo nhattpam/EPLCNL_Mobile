@@ -250,7 +250,8 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                                     index < _paginatedAssignmentAttempt.length;
                                     index++) {
                                       final attempt = _paginatedAssignmentAttempt[index];
-                                     await Network.createPeerReview(
+                                      // print("This is"+ index.toString());
+                                      await Network.createPeerReview(
                                           assignmentAttemptId: attempt.id.toString(),
                                           grade: point[attempt.id].toString());
                                     }
@@ -266,7 +267,7 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                                       ),
                                       btnOkOnPress: () {
                                         setState(() {
-                                            Navigator.pop(context);
+                                          Navigator.pop(context);
                                         });
                                         // if(isSelected == true){
                                         //   nextQuestion();

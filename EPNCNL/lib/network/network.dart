@@ -2298,7 +2298,7 @@ static Future<String> createTransactionInWallet({
       },
       body: jsonData,
     );
-
+    print(jsonData);
     if (response.statusCode == 201) {
       // Parse the JSON response
       final jsonResponse = jsonDecode(response.body);

@@ -29,7 +29,7 @@ class ViewAllAssignmentAttempt extends StatefulWidget {
 class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
   late List<AssignmentAttempt> listAssignmentAttempt = [];
   int _currentPage = 1;
-  int _itemsPerPage = 4; // Define the number of items per page
+  int _itemsPerPage = 3; // Define the number of items per page
   String lid = '';
   bool _ascendingOrder = true;
   List<AssignmentAttempt> _paginatedAssignmentAttempt = [];
@@ -174,17 +174,15 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                       Divider(),
                       SizedBox(height: 30.v),
                       CustomElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           for (int index = 0;
-                              index < _paginatedAssignmentAttempt.length;
-                              index++) {
+                          index < _paginatedAssignmentAttempt.length;
+                          index++) {
                             final attempt = _paginatedAssignmentAttempt[index];
-                            Network.createPeerReview(
+                            // print("This is"+ index.toString());
+                            await Network.createPeerReview(
                                 assignmentAttemptId: attempt.id.toString(),
                                 grade: point[attempt.id].toString());
-                            print(
-                                "Submit point" + point[attempt.id].toString());
-                            print("Assignment point" + attempt.id.toString());
                           }
                           AwesomeDialog(
                             context: context,
@@ -198,13 +196,7 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                             ),
                             btnOkOnPress: () {
                               setState(() {
-                                if (widget.navigateTime == 2) {
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
-                                }
-                                if (widget.navigateTime == 1) {
-                                  Navigator.pop(context);
-                                }
+                                Navigator.pop(context);
                               });
                               // if(isSelected == true){
                               //   nextQuestion();

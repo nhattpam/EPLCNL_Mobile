@@ -20,9 +20,12 @@ import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../data/models/topics.dart';
 import '../../../network/network.dart';
+import '../mentor_curiculum/mentor_curiculum.dart';
 
 // ignore_for_file: must_be_immutable
 class AllCourseCurriculum extends StatefulWidget {
@@ -40,7 +43,7 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
   late List<ClassModule> listClassModule = [];
   late ClassModule chosenCourse = ClassModule();
   String query = DateFormat('yyyy-MM-dd').format(DateTime.now());
-
+  CalendarFormat _calendarFormat = CalendarFormat.month;
   @override
   bool get wantKeepAlive => true;
   late List<Enrollment> listEnrollment = [];
@@ -48,8 +51,17 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
   CalendarController _calendarController = CalendarController();
   late _AppointmentDataSource _dataSource;
   late bool isLoading;
+  DateTime today = DateTime.now();
+  Map<DateTime, List<ClassModule>> events = {};
+  void _onSelectedDay(DateTime day, DateTime focusedDay){
+    setState(() {
+      today = day;
+      query = day.toString();
+    });
+  }
   @override
   void initState() {
+    print("Start from here");
     isLoading = true;
     super.initState();
     // loadClassModuleByCourseId();
@@ -92,7 +104,6 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
       }
       // After all lessons are loaded, proceed with building the UI
       setState(() {
-        _dataSource = _getCalendarDataSource();
         isLoading = false;
       });
     } catch (e) {
@@ -103,17 +114,36 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
 
   Future<void> loadModuleByCourseId(String courseId) async {
     try {
-
       final enroll = await Network.getClassModulesByCourseId(courseId);
       setState(() {
         listClassModule = enroll;
+      });
+      enroll.forEach((module) {
+        DateTime moduleDate = DateTime.parse(module.startDate.toString());
+        DateTime convertedDate = DateTime.utc(moduleDate.year, moduleDate.month, moduleDate.day);
+        print(convertedDate.toUtc()); // Output: 2024-04-10 00:00:00.000Z
+
+        // Check if the list associated with moduleDate key is null
+        if (events[convertedDate.toUtc()] == null) {
+          events[convertedDate.toUtc()] = []; // Initialize the list
+        }
+        events[convertedDate.toUtc()]?.add(module); // Add module to the list
+        print("This is after add" + events[convertedDate.toUtc()].toString());
       });
     } catch (e) {
       // Handle errors here
       print('Error: $e');
     }
-    // loadAllCourse();
   }
+
+  List<ClassModule> _getEventsForDay(DateTime day) {
+    print(day);
+    // Return the events for the trimmed day
+    print("Check");
+    print(events[day]);
+    return events[day] ?? [];
+  }
+
 
 
   @override
@@ -144,15 +174,270 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
         backgroundColor: Colors.white,
         body: isLoading
         ? Center(child: Container(child: CircularProgressIndicator()))
-        : SfCalendar(
-          view: CalendarView.week,
-          firstDayOfWeek: 1,
-          allowedViews: [
-            CalendarView.week,
-            CalendarView.timelineDay,
-            CalendarView.timelineMonth
+        : Column(
+          children: [
+            TableCalendar(
+              firstDay: DateTime.utc(2010, 10, 16),
+              lastDay: DateTime.utc(2030, 3, 14),
+              focusedDay: today,
+              calendarFormat: _calendarFormat,
+              eventLoader: _getEventsForDay,
+              headerStyle:
+              HeaderStyle(formatButtonVisible: false, titleCentered: true),
+              selectedDayPredicate: (day) => isSameDay(day, today),
+              availableGestures: AvailableGestures.all,
+              onDaySelected: _onSelectedDay,
+              onFormatChanged: (format){
+                if(_calendarFormat != format){
+                  setState(() {
+                    _calendarFormat = format;
+                  });
+                }
+              },
+            ),
+            SizedBox(
+              width: SizeUtils.width,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(height: 23.v),
+                    Column(
+                      children: [
+                        SizedBox(height: 5.v),
+                        Divider(
+                          color: appTheme.gray50,
+                        ),
+                        FutureBuilder<List<ClassModule>>(
+                          future: _classmoduleList.getClassModuleByTutor(query: query, courseIds: listEnrollment.map((course) => course.transaction?.course?.id ?? '').toList()),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                // itemCount: listClassModule.length,
+                                itemCount: 1,
+                                itemBuilder: (context, index) {
+                                  return SingleChildScrollView(
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Column(
+                                            children: [
+                                              Skeleton(width: 100),
+                                              lineGen(
+                                                lines: [20.0, 30.0, 40.0, 10.0],
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(width: 12),
+                                        Expanded(
+                                          child: Container(
+                                            padding: EdgeInsets.only(left: 16, top: 8),
+                                            height: 150,
+                                            decoration: BoxDecoration(
+                                              color: Color(0xfff6f6f5),
+                                              borderRadius:
+                                              BorderRadius.all(Radius.circular(20.0)),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Skeleton(width: 70),
+                                                SizedBox(height: 5.v),
+                                                Skeleton(width: 70),
+                                                SizedBox(height: 5.v),
+                                                Column(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Skeleton(width: 50),
+                                                        Padding(
+                                                            padding:
+                                                            const EdgeInsets.only(left: 8.0),
+                                                            child: Skeleton(width: 50)
+                                                        )
+                                                      ],
+                                                    ),
+                                                    SizedBox(height: 5.v),
+                                                    Row(
+                                                      children: [
+                                                        Skeleton(width: 50,)
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            }
+                            if(snapshot.connectionState == ConnectionState.done){
+                              List<ClassModule>? data = snapshot.data;
+                              return ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                // itemCount: listClassModule.length,
+                                itemCount: data?.length?? 0,
+                                itemBuilder: (context, index) {
+                                  final classModule = data?[index];
+                                  // loadClassTopicsByClassLessonId();
+                                  return Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              classModule?.classLesson?.classHours ?? "",
+                                              style:
+                                              TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                            lineGen(
+                                              lines: [20.0, 30.0, 40.0, 10.0],
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(width: 12),
+                                      Expanded(
+                                        child: Container(
+                                          padding: EdgeInsets.only(left: 16, top: 8),
+                                          height: 150,
+                                          decoration: BoxDecoration(
+                                            color: Color(0xfff6f6f5),
+                                            borderRadius:
+                                            BorderRadius.all(Radius.circular(20.0)),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                  child: Text(classModule?.course?.name ?? "",
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                      overflow: TextOverflow.fade,
+                                                      softWrap: true)
+                                              ),
+                                              Text(
+                                                listClassTopic.isNotEmpty
+                                                    ? listClassTopic[index]
+                                                    .name
+                                                    .toString()
+                                                    : "", // Assuming 'name' is the property you want to display
+                                              ),
+                                              Column(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          launch(classModule
+                                                              ?.classLesson?.classUrl ??
+                                                              "");
+                                                        },
+                                                        style: ElevatedButton.styleFrom(
+                                                          minimumSize: Size(100, 50),
+                                                          primary: Color(0xffbfe25c),
+                                                          // Background color
+                                                          onPrimary: Colors.white,
+                                                          // Text color
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                            BorderRadius.circular(10.0),
+                                                          ),
+                                                        ),
+                                                        child: Text('Meet URL'),
+                                                      ),
+                                                      VerticalDivider(),
+                                                      Padding(
+                                                        padding:
+                                                        const EdgeInsets.only(left: 8.0),
+                                                        child: ElevatedButton(
+                                                          onPressed: () {
+                                                            // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
+                                                            //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
+                                                            // }
+                                                            _showMultiSelect(
+                                                                data?[index]
+                                                                    .classLesson
+                                                                    ?.id ??
+                                                                    '');
+                                                          },
+                                                          style: ElevatedButton.styleFrom(
+                                                            minimumSize: Size(100, 50),
+                                                            primary: Color(0xffefc83c),
+                                                            // Background color
+                                                            onPrimary: Colors.white,
+                                                            // Text color
+                                                            shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                              BorderRadius.circular(10.0),
+                                                            ),
+                                                          ),
+                                                          child: Text('Materials'),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 5.v),
+                                                  Row(
+                                                    children: [
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          _showTopic(classModule?.classLesson?.id ?? '');
+                                                        },
+                                                        style: ElevatedButton.styleFrom(
+                                                          minimumSize: Size(100, 50),
+                                                          primary: Color(0xFFF887A8),
+                                                          // Background color
+                                                          onPrimary: Colors.white,
+                                                          // Text color
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                            BorderRadius.circular(10.0),
+                                                          ),
+                                                        ),
+                                                        child: Text('Topic'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                            return Container();
+                          },
+                        ),
+                        // SizedBox(height: 50.v),
+                        // CustomElevatedButton(
+                        //   text: "Enroll Course",
+                        // ),
+                      ],
+                    ),
+                  ],
+
+                ),
+              ),
+            ),
           ],
-          dataSource: _dataSource,
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -216,13 +501,6 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
     );
   }
 
-  // List<Appointment> getAppointments() {
-  //   List<Appointment> appointments = <Appointment>[];
-  //
-  //
-  //
-  //   return appointments;
-  // }
   _AppointmentDataSource _getCalendarDataSource() {
     List<Appointment> appointments = <Appointment>[];
     for (var enrollment in listClassModule) {
@@ -244,31 +522,6 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
 class _AppointmentDataSource extends CalendarDataSource {
   _AppointmentDataSource(List<Appointment> source) {
     appointments = source;
-  }
-}
-
-class lineGen extends StatelessWidget {
-  final List lines;
-
-  const lineGen({
-    super.key,
-    required this.lines,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: List.generate(
-          4,
-              (index) =>
-              Container(
-                height: 2,
-                width: lines[index],
-                color: Color(0xffd02d8),
-                margin: EdgeInsets.symmetric(vertical: 14),
-              )),
-    );
   }
 }
 

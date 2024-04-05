@@ -990,7 +990,7 @@ class _MultiTopicState extends State<MultiTopic> {
                                                     minutes: moduleAssignmentMap[
                                                     listClassTopic[index]
                                                         .id]![assignmentIndex]
-                                                        .deadline as int))),
+                                                        .deadline as int), isOnlineClass: true,)),
                                   );
                                 }
                                 if(moduleUndoAssignmentAttempt[moduleAssignmentMap[listClassTopic[index]
@@ -1003,6 +1003,7 @@ class _MultiTopicState extends State<MultiTopic> {
                                               assignmentID: moduleAssignmentMap[listClassTopic[index]
                                                   .id]![assignmentIndex].id
                                                   .toString(),
+                                              isOnlineClass: true,
                                             )),
                                   );
                                 }

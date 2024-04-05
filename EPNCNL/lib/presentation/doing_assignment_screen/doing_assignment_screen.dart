@@ -13,9 +13,9 @@ import 'package:meowlish/widgets/custom_text_form_field.dart';
 class DoingAssignmentScreen extends StatefulWidget {
   final String assignmentID;
   final Duration cooldownTime;
-
+  final bool isOnlineClass;
   const DoingAssignmentScreen(
-      {Key? key, required this.assignmentID, required this.cooldownTime})
+      {Key? key, required this.assignmentID, required this.cooldownTime, required this.isOnlineClass})
       : super(key: key);
 
   @override
@@ -216,8 +216,9 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                         ),
                         btnOkOnPress: () {
                           setState(() {
-                            // Navigator.pop(context);
-                            Navigator.push(
+                            widget.isOnlineClass
+                            ? Navigator.pop(context)
+                            : Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>

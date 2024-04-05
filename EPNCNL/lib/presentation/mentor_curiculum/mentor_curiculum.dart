@@ -148,13 +148,40 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
         body: Column(
           children: [
             TableCalendar(
+              calendarBuilders: CalendarBuilders(
+                markerBuilder: (BuildContext context, date, events) {
+                  final isPastDay = date.isBefore(today) ||
+                      (date.year == today.year &&
+                          date.month == today.month &&
+                          date.day == today.day);
+                  if (events.isEmpty) return SizedBox();
+                  return ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: events.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: const EdgeInsets.only(top: 20),
+                          padding: const EdgeInsets.all(1),
+                          child: Container(
+                            // height: 7,
+                            width: 5,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isPastDay ? Colors.green : Colors.red,
+                            ),
+                          ),
+                        );
+                      });
+                },
+              ),
               firstDay: DateTime.utc(2010, 10, 16),
               lastDay: DateTime.utc(2030, 3, 14),
               focusedDay: today,
               calendarFormat: _calendarFormat,
               eventLoader: _getEventsForDay,
-              headerStyle:
-              HeaderStyle(formatButtonVisible: false, titleCentered: true),
+              headerStyle: HeaderStyle(
+                  formatButtonVisible: false, titleCentered: true),
               selectedDayPredicate: (day) => isSameDay(day, today),
               availableGestures: AvailableGestures.all,
               onDaySelected: _onSelectedDay,

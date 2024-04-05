@@ -594,7 +594,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                                             minutes: moduleAssignmentMap[
                                             module.id
                                                 .toString()]![assignmentIndex]
-                                                .deadline as int))),
+                                                .deadline as int), isOnlineClass: false,)),
                           );
                         }
                         if(moduleUndoAssignmentAttempt[moduleAssignmentMap[module
@@ -607,6 +607,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                                           assignmentID: moduleAssignmentMap[module
                                               .id.toString()]![assignmentIndex].id
                                               .toString(),
+                                        isOnlineClass: false,
                                           )),
                             );
 

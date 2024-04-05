@@ -22,8 +22,8 @@ import 'package:meowlish/widgets/custom_text_form_field.dart';
 
 class ReviewAssignment extends StatefulWidget {
   final String assignmentID;
-
-  const ReviewAssignment({super.key, required this.assignmentID});
+  final bool isOnlineClass;
+  const ReviewAssignment({super.key, required this.assignmentID, required this.isOnlineClass});
 
   @override
   State<ReviewAssignment> createState() => _ReviewAssignmentState();
@@ -240,7 +240,23 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                   constraints: const BoxConstraints(
                     maxWidth: 244,
                   ),
-                  child: Row(
+                  child: widget.isOnlineClass
+                    ? SingleChildScrollView(
+                    child: Container(
+                      constraints: BoxConstraints(
+                          maxWidth: 280
+                      ),
+                      child: Text(
+                        moduleUndoAssignmentAttempt[widget.assignmentID]
+                            ?.first
+                            ?.answerText ??
+                            '',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 6,
+                      ),
+                    ),
+                  )
+                    : Row(
                     children: <Widget>[
                       Expanded(
                         child: GestureDetector(
@@ -375,7 +391,9 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                 if (moduleUngradeAssignmentAttempt[widget.assignmentID]
                         ?.isNotEmpty ??
                     false)
-                  SizedBox(
+                  widget.isOnlineClass
+                  ? Container()
+                  : SizedBox(
                     height: SizeUtils.height,
                     width: double.maxFinite,
                     child: Stack(
@@ -399,15 +417,15 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                                 CustomElevatedButton(
                                   onPressed: () async {
                                     for (int index = 0;
-                                        index <
-                                            _paginatedAssignmentAttempt.length;
-                                        index++) {
+                                    index <
+                                        _paginatedAssignmentAttempt.length;
+                                    index++) {
                                       final attempt =
-                                          _paginatedAssignmentAttempt[index];
+                                      _paginatedAssignmentAttempt[index];
                                       // print("This is"+ index.toString());
                                       await Network.createPeerReview(
                                           assignmentAttemptId:
-                                              attempt.id.toString(),
+                                          attempt.id.toString(),
                                           grade: point[attempt.id].toString());
                                     }
                                     AwesomeDialog(
@@ -441,7 +459,7 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                         SizedBox(height: 50.v),
                       ],
                     ),
-                  ),
+                  )
               ],
             ),
           ),

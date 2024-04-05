@@ -16,6 +16,7 @@ import 'package:meowlish/presentation/single_course_meet_details_curriculcum_pag
 import 'package:meowlish/session/session.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../data/models/topics.dart';
@@ -35,10 +36,21 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
   late List<Topic> listClassTopic = [];
   late ClassModule chosenCourse = ClassModule();
   String query = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  late List<ClassModule> listClassModule = [];
 
   @override
   bool get wantKeepAlive => true;
   late List<Course> chosenTutor = [];
+  DateTime today = DateTime.now();
+  Map<DateTime, List<ClassModule>> events = {};
+
+  void _onSelectedDay(DateTime day, DateTime focusedDay) {
+    setState(() {
+      today = day;
+      query = day.toString();
+    });
+  }
 
   @override
   void initState() {
@@ -69,26 +81,43 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
       setState(() {
         chosenTutor = tutors;
       });
+      tutors.forEach((element) {
+        loadModuleByCourseId(element.id.toString());
+      });
     } catch (e) {
       // Handle errors here
       print('Error: $e');
     }
     // loadAllCourse();
   }
+  Future<void> loadModuleByCourseId(String courseId) async {
+    try {
+      final enroll = await Network.getClassModulesByCourseId(courseId);
+      setState(() {
+        listClassModule = enroll;
+      });
+      enroll.forEach((module) {
+        DateTime moduleDate = DateTime.parse(module.startDate.toString());
+        DateTime convertedDate = DateTime.utc(
+            moduleDate.year, moduleDate.month, moduleDate.day);
 
-  // Future<void> loadAllCourse() async {
-  //   try {
-  //     // Load lessons for each module
-  //     for (final course in chosenTutor) {
-  //       await loadFeedback(course.id.toString());
-  //     }
-  //     // After all lessons are loaded, proceed with building the UI
-  //     setState(() {});
-  //   } catch (e) {
-  //     // Handle errors here
-  //     print('Error loading lessons: $e');
-  //   }
-  // }
+        // Check if the list associated with moduleDate key is null
+        if (events[convertedDate.toUtc()] == null) {
+          events[convertedDate.toUtc()] = []; // Initialize the list
+        }
+        events[convertedDate.toUtc()]?.add(module); // Add module to the list
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+
+  List<ClassModule> _getEventsForDay(DateTime day) {
+    return events[day] ?? [];
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -116,209 +145,230 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
           ),
         ),
         backgroundColor: Colors.white,
-        body: SizedBox(
-          width: SizeUtils.width,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 23.v),
-                Column(
+        body: Column(
+          children: [
+            TableCalendar(
+              firstDay: DateTime.utc(2010, 10, 16),
+              lastDay: DateTime.utc(2030, 3, 14),
+              focusedDay: today,
+              calendarFormat: _calendarFormat,
+              eventLoader: _getEventsForDay,
+              headerStyle:
+              HeaderStyle(formatButtonVisible: false, titleCentered: true),
+              selectedDayPredicate: (day) => isSameDay(day, today),
+              availableGestures: AvailableGestures.all,
+              onDaySelected: _onSelectedDay,
+              onFormatChanged: (format) {
+                if (_calendarFormat != format) {
+                  setState(() {
+                    _calendarFormat = format;
+                  });
+                }
+              },
+            ),
+            SizedBox(
+              width: SizeUtils.width,
+              child: SingleChildScrollView(
+                child: Column(
                   children: [
-                    _buildCalendar(context),
-                    SizedBox(height: 5.v),
-                    Divider(
-                      color: appTheme.gray50,
-                    ),
-                    FutureBuilder<List<ClassModule>>(
-                      future: _classmoduleList.getClassModuleByTutor(query: query, courseIds: chosenTutor.map((course) => course.id.toString()).toList()),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        List<ClassModule>? data = snapshot.data;
-                        return ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          // itemCount: listClassModule.length,
-                          itemCount: data?.length?? 0,
-                          itemBuilder: (context, index) {
-                            final classModule = data?[index];
-                            // loadClassTopicsByClassLessonId();
-                            return Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        classModule?.classLesson?.classHours ?? "",
-                                        style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                    SizedBox(height: 23.v),
+                    Column(
+                      children: [
+                        Divider(
+                          color: appTheme.gray50,
+                        ),
+                        FutureBuilder<List<ClassModule>>(
+                          future: _classmoduleList.getClassModuleByTutor(query: query, courseIds: chosenTutor.map((course) => course.id.toString()).toList()),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            List<ClassModule>? data = snapshot.data;
+                            return ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              // itemCount: listClassModule.length,
+                              itemCount: data?.length?? 0,
+                              itemBuilder: (context, index) {
+                                final classModule = data?[index];
+                                // loadClassTopicsByClassLessonId();
+                                return Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            classModule?.classLesson?.classHours ?? "",
+                                            style:
+                                            TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          lineGen(
+                                            lines: [20.0, 30.0, 40.0, 10.0],
+                                          )
+                                        ],
                                       ),
-                                      lineGen(
-                                        lines: [20.0, 30.0, 40.0, 10.0],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(width: 12),
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.only(left: 16, top: 8),
-                                    height: 150,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xfff6f6f5),
-                                      borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0)),
                                     ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                            child: Text(classModule?.course?.name ?? "",
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                overflow: TextOverflow.fade,
-                                                softWrap: true)
+                                    SizedBox(width: 12),
+                                    Expanded(
+                                      child: Container(
+                                        padding: EdgeInsets.only(left: 16, top: 8),
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          color: Color(0xfff6f6f5),
+                                          borderRadius:
+                                          BorderRadius.all(Radius.circular(20.0)),
                                         ),
-                                        Text(
-                                          listClassTopic.isNotEmpty
-                                              ? listClassTopic[index]
-                                              .name
-                                              .toString()
-                                              : "", // Assuming 'name' is the property you want to display
-                                        ),
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Row(
-                                              children: [
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    launch(classModule
-                                                        ?.classLesson?.classUrl ??
-                                                        "");
-                                                  },
-                                                  style: ElevatedButton.styleFrom(
-                                                    minimumSize: Size(100, 50),
-                                                    primary: Color(0xffbfe25c),
-                                                    // Background color
-                                                    onPrimary: Colors.white,
-                                                    // Text color
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                      BorderRadius.circular(10.0),
+                                            Expanded(
+                                                child: Text(classModule?.course?.name ?? "",
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight: FontWeight.bold,
                                                     ),
-                                                  ),
-                                                  child: Text('Meet URL'),
-                                                ),
-                                                VerticalDivider(),
-                                                Padding(
-                                                  padding:
-                                                  const EdgeInsets.only(left: 8.0),
-                                                  child: ElevatedButton(
-                                                    onPressed: () {
-                                                      // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
-                                                      //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
-                                                      // }
-                                                      _showMultiSelect(
-                                                          data?[index]
-                                                              .classLesson
-                                                              ?.id ??
-                                                              '');
-                                                    },
-                                                    style: ElevatedButton.styleFrom(
-                                                      minimumSize: Size(100, 50),
-                                                      primary: Color(0xffefc83c),
-                                                      // Background color
-                                                      onPrimary: Colors.white,
-                                                      // Text color
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius:
-                                                        BorderRadius.circular(10.0),
-                                                      ),
-                                                    ),
-                                                    child: Text('Materials'),
-                                                  ),
-                                                )
-                                              ],
+                                                    overflow: TextOverflow.fade,
+                                                    softWrap: true)
                                             ),
-                                            SizedBox(height: 5.v),
-                                            Row(
+                                            Text(
+                                              listClassTopic.isNotEmpty
+                                                  ? listClassTopic[index]
+                                                  .name
+                                                  .toString()
+                                                  : "", // Assuming 'name' is the property you want to display
+                                            ),
+                                            Column(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    _showTopic(classModule?.classLesson?.id ?? '', false);
-                                                  },
-                                                  style: ElevatedButton.styleFrom(
-                                                    minimumSize: Size(100, 50),
-                                                    primary: Color(0xFFF887A8),
-                                                    // Background color
-                                                    onPrimary: Colors.white,
-                                                    // Text color
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                      BorderRadius.circular(10.0),
+                                                Row(
+                                                  children: [
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        launch(classModule
+                                                            ?.classLesson?.classUrl ??
+                                                            "");
+                                                      },
+                                                      style: ElevatedButton.styleFrom(
+                                                        minimumSize: Size(100, 50),
+                                                        primary: Color(0xffbfe25c),
+                                                        // Background color
+                                                        onPrimary: Colors.white,
+                                                        // Text color
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                          BorderRadius.circular(10.0),
+                                                        ),
+                                                      ),
+                                                      child: Text('Meet URL'),
                                                     ),
-                                                  ),
-                                                  child: Text('Topic'),
+                                                    VerticalDivider(),
+                                                    Padding(
+                                                      padding:
+                                                      const EdgeInsets.only(left: 8.0),
+                                                      child: ElevatedButton(
+                                                        onPressed: () {
+                                                          // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
+                                                          //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
+                                                          // }
+                                                          _showMultiSelect(
+                                                              data?[index]
+                                                                  .classLesson
+                                                                  ?.id ??
+                                                                  '');
+                                                        },
+                                                        style: ElevatedButton.styleFrom(
+                                                          minimumSize: Size(100, 50),
+                                                          primary: Color(0xffefc83c),
+                                                          // Background color
+                                                          onPrimary: Colors.white,
+                                                          // Text color
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                            BorderRadius.circular(10.0),
+                                                          ),
+                                                        ),
+                                                        child: Text('Materials'),
+                                                      ),
+                                                    )
+                                                  ],
                                                 ),
-                                                VerticalDivider(),
-                                                Padding(
-                                                  padding:
-                                                  const EdgeInsets.only(
-                                                      left: 8.0),
-                                                  child: ElevatedButton(
-                                                    onPressed: () {
-                                                      _showTopic(classModule
-                                                          ?.classLesson?.id ??
-                                                          '', true);
-                                                    },
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      minimumSize: Size(
-                                                          100, 50),
-                                                      primary: Colors
-                                                          .redAccent,
-                                                      // Background color
-                                                      onPrimary: Colors.white,
-                                                      // Text color
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius:
-                                                        BorderRadius.circular(
-                                                            10.0),
+                                                SizedBox(height: 5.v),
+                                                Row(
+                                                  children: [
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        _showTopic(classModule?.classLesson?.id ?? '', false);
+                                                      },
+                                                      style: ElevatedButton.styleFrom(
+                                                        minimumSize: Size(100, 50),
+                                                        primary: Color(0xFFF887A8),
+                                                        // Background color
+                                                        onPrimary: Colors.white,
+                                                        // Text color
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                          BorderRadius.circular(10.0),
+                                                        ),
+                                                      ),
+                                                      child: Text('Topic'),
+                                                    ),
+                                                    VerticalDivider(),
+                                                    Padding(
+                                                      padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                      child: ElevatedButton(
+                                                        onPressed: () {
+                                                          _showTopic(classModule
+                                                              ?.classLesson?.id ??
+                                                              '', true);
+                                                        },
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          minimumSize: Size(
+                                                              100, 50),
+                                                          primary: Colors
+                                                              .redAccent,
+                                                          // Background color
+                                                          onPrimary: Colors.white,
+                                                          // Text color
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                            BorderRadius.circular(
+                                                                10.0),
+                                                          ),
+                                                        ),
+                                                        child: Text('Assignment'),
                                                       ),
                                                     ),
-                                                    child: Text('Assignment'),
-                                                  ),
+                                                  ],
                                                 ),
                                               ],
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
+                                      ),
+                                    )
+                                  ],
+                                );
+                              },
                             );
                           },
-                        );
-                      },
+                        ),
+                        // SizedBox(height: 50.v),
+                        // CustomElevatedButton(
+                        //   text: "Enroll Course",
+                        // ),
+                      ],
                     ),
-                    // SizedBox(height: 50.v),
-                    // CustomElevatedButton(
-                    //   text: "Enroll Course",
-                    // ),
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

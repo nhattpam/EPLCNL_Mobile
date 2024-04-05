@@ -12,6 +12,7 @@ import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
+import 'package:meowlish/presentation/single_course_meet_details_curriculcum_page/single_course_meet_details_curriculcum_page.dart';
 import 'package:meowlish/session/session.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -54,11 +55,11 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
         });
   }
 
-  void _showTopic(String lessonId) async {
+  void _showTopic(String lessonId, bool isAssignment) async {
     final List<String>? result = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return MultiTopic(lessonId: lessonId);
+          return MultiTopic(lessonId: lessonId, isAssignment: isAssignment);
         });
   }
 
@@ -251,7 +252,7 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
                                               children: [
                                                 ElevatedButton(
                                                   onPressed: () {
-                                                    _showTopic(classModule?.classLesson?.id ?? '');
+                                                    _showTopic(classModule?.classLesson?.id ?? '', false);
                                                   },
                                                   style: ElevatedButton.styleFrom(
                                                     minimumSize: Size(100, 50),
@@ -265,6 +266,35 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
                                                     ),
                                                   ),
                                                   child: Text('Topic'),
+                                                ),
+                                                VerticalDivider(),
+                                                Padding(
+                                                  padding:
+                                                  const EdgeInsets.only(
+                                                      left: 8.0),
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      _showTopic(classModule
+                                                          ?.classLesson?.id ??
+                                                          '', true);
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      minimumSize: Size(
+                                                          100, 50),
+                                                      primary: Colors
+                                                          .redAccent,
+                                                      // Background color
+                                                      onPrimary: Colors.white,
+                                                      // Text color
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0),
+                                                      ),
+                                                    ),
+                                                    child: Text('Assignment'),
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -598,251 +628,5 @@ class _MultiSelectState extends State<MultiSelect> {
         ],
       ),
     );
-  }
-}
-
-class MultiTopic extends StatefulWidget {
-  final String lessonId;
-  const MultiTopic({super.key, required this.lessonId});
-
-  @override
-  State<MultiTopic> createState() => _MultiTopicState();
-}
-
-class _MultiTopicState extends State<MultiTopic> {
-
-  List<Topic> listClassTopic = [];
-  Map<String, List<Quiz>> moduleQuizMap = {};
-  late List<QuizAttempt> listQuizAttempt = [];
-
-  @override
-  void initState() {
-    super.initState();
-    loadClassModuleByCourseId();
-    loadQuizAttemptsByLearnerId();
-  }
-
-  void loadClassModuleByCourseId() async {
-    List<Topic> loadedClassTopic =
-    await Network.getTopicsByClassLessonId(widget.lessonId);
-    setState(() {
-      listClassTopic = loadedClassTopic;
-    });
-    loadQuiz();
-  }
-
-  Future<void> loadQuizByClassTopicId(String classtopicId) async {
-    try {
-      List<Quiz> loadedQuiz =
-      await Network.getQuizByTopicId(classtopicId);
-      setState(() {
-        moduleQuizMap[classtopicId] = loadedQuiz;
-      });
-    } catch (e) {
-      // Handle errors here
-      print('Error: $e');
-    }
-  }
-
-  Future<void> loadQuiz() async {
-    try {
-      for (final classTopic in listClassTopic) {
-        await loadQuizByClassTopicId(classTopic.id.toString());
-      }
-      // After all lessons are loaded, proceed with building the UI
-      setState(() {});
-    } catch (e) {
-      // Handle errors here
-      print('Error loading lesson material: $e');
-    }
-  }
-
-  Future<void> loadQuizAttemptsByLearnerId() async {
-    List<QuizAttempt> loadedQuizAttempt =
-    await Network.getQuizAttemptByLearnerId();
-    setState(() {
-      listQuizAttempt = loadedQuizAttempt;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Center(child: Text('Class Topic')),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Adjust the height as needed
-          Center(child: Text('Choose quiz to do')),
-          SingleChildScrollView(
-            child: ListBody(
-              children: listClassTopic.asMap().entries.map((entry) {
-                final index = entry.key;
-                final item = entry.value;
-                return Visibility(
-                  visible: moduleQuizMap[listClassTopic[index].id] != null &&
-                      moduleQuizMap[listClassTopic[index].id]!.isNotEmpty,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Topic:" +" "+ listClassTopic[index].name.toString(),
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.primary),
-                          ),
-                        ],
-                      ),
-                      // Only show the assignments if the module is not minimized
-                      for (int assignmentIndex = 0; assignmentIndex < (moduleQuizMap[listClassTopic[index].id]?.length ?? 0); assignmentIndex++)
-                        Row(
-                          children: [
-                            TextButton(
-                              onPressed: () async{
-                                // await Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //       builder: (context) => DoingQuizScreen(
-                                //           quizId: moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id.toString(),
-                                //           cooldownTime: Duration(
-                                //               minutes: moduleQuizMap[
-                                //               listClassTopic[index].id]![assignmentIndex]
-                                //                   .deadline as int))),
-                                // );
-                                // loadQuizAttemptsByLearnerId();
-                              },
-                              child: Text(
-                                  moduleQuizMap[listClassTopic[index].id]![assignmentIndex]
-                                      .name
-                                      .toString(),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold, color: Colors.black)),
-
-                            ),
-                            if(listQuizAttempt.isNotEmpty &&
-                                listQuizAttempt.lastIndexWhere((attempt) =>
-                                attempt.id ==
-                                    moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
-                                    null)
-                              Icon(
-                                listQuizAttempt.isNotEmpty &&
-                                    listQuizAttempt.lastIndexWhere((attempt) =>
-                                    attempt.id ==
-                                        moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
-                                        null &&
-                                    moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
-                                        null &&
-                                    listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
-                                        moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
-                                    ? FontAwesomeIcons.check
-                                    : Icons.dangerous_outlined,
-                                color: listQuizAttempt.isNotEmpty &&
-                                    listQuizAttempt.lastIndexWhere((attempt) =>
-                                    attempt.id ==
-                                        moduleQuizMap[listClassTopic[index].id]![assignmentIndex].id) !=
-                                        null &&
-                                    moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass !=
-                                        null &&
-                                    listQuizAttempt.reduce((a, b) => DateTime.parse(a.attemptedDate!).isAfter(DateTime.parse(b.attemptedDate!)) ? a : b).totalGrade! >
-                                        moduleQuizMap[listClassTopic[index].id]![assignmentIndex].gradeToPass!
-                                    ? Colors.green
-                                    : Colors.red,
-                                size: 20.v,
-                              ),
-                          ],
-                        ),
-                    ],
-                  ),
-                );
-
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class MaterialView extends StatefulWidget {
-  final String url;
-
-  const MaterialView({super.key, required this.url});
-
-  @override
-  State<MaterialView> createState() => _MaterialViewState();
-}
-
-class _MaterialViewState extends State<MaterialView> {
-  late PdfControllerPinch pdfControllerPinch;
-  int totalPageCount = 0, currentPage = 1;
-
-  @override
-  void initState() {
-    openPdf();
-    super.initState();
-  }
-
-  void openPdf() {
-    final document = PdfDocument.openData(InternetFile.get(widget.url));
-    pdfControllerPinch = PdfControllerPinch(document: document);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'PDF Viewer',
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Colors.red,
-        ),
-        body: Column(
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('Total Pages: ${totalPageCount}'),
-                IconButton(
-                    onPressed: () {
-                      pdfControllerPinch.previousPage(
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.linear);
-                    },
-                    icon: Icon(Icons.arrow_back)),
-                Text('Current Page: ${currentPage}'),
-                IconButton(
-                    onPressed: () {
-                      pdfControllerPinch.nextPage(
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.linear);
-                    },
-                    icon: Icon(Icons.arrow_forward))
-              ],
-            ),
-            Expanded(
-                child: PdfViewPinch(
-                  scrollDirection: Axis.vertical,
-                  controller: pdfControllerPinch,
-                  onDocumentLoaded: (doc) {
-                    setState(() {
-                      totalPageCount = doc.pagesCount;
-                    });
-                  },
-                  onPageChanged: (page) {
-                    setState(() {
-                      currentPage = page;
-                    });
-                  },
-                ))
-          ],
-        ));
   }
 }

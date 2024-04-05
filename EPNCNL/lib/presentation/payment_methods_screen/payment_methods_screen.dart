@@ -248,9 +248,14 @@ class PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 SizedBox(height: 7.v),
                 if (isLoadingCourse == true) Skeleton(width: 150),
                 if (isLoadingCourse == false)
-                  Text(
-                    chosenCourse?.name ?? '',
-                    style: theme.textTheme.titleMedium,
+                  Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 170,
+                    ),
+                    child: Text(
+                      chosenCourse?.name ?? '',
+                      style: theme.textTheme.titleMedium,
+                    ),
                   ),
               ],
             ),

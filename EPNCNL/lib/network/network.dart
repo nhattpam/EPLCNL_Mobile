@@ -959,6 +959,36 @@ class Network {
   }
 
   // assignment
+  static Future<List<Assignment>> getAssignmentByTopicId(
+      String topicId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/topics/$topicId/assignments'; // Replace with your API URL
+      print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> assignmentListJson = jsonDecode(response.body);
+
+        return assignmentListJson
+            .map((json) => Assignment.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
   static Future<List<Assignment>> getAssignmentByModuleId(
       String moduleId) async {
     final apiUrl =

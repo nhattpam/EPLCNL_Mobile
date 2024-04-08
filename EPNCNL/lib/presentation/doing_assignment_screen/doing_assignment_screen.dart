@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:meowlish/core/app_export.dart';
@@ -9,13 +10,18 @@ import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/view_all_assignment_attemp/view_all_assignment_attemp.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
+import 'package:video_player/video_player.dart';
 
 class DoingAssignmentScreen extends StatefulWidget {
   final String assignmentID;
   final Duration cooldownTime;
   final bool isOnlineClass;
+
   const DoingAssignmentScreen(
-      {Key? key, required this.assignmentID, required this.cooldownTime, required this.isOnlineClass})
+      {Key? key,
+      required this.assignmentID,
+      required this.cooldownTime,
+      required this.isOnlineClass})
       : super(key: key);
 
   @override
@@ -28,18 +34,41 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
   Timer? _timer;
   int _remainingSeconds = 0;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String radioGroup = "";
+  bool isLoading = true;
+  late VideoPlayerController _videoPlayerController;
+  late ChewieAudioController _chewieController;
 
   @override
   void initState() {
     super.initState();
     loadAssignmentByAssignmentId();
-    _startCooldownTimer();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _videoPlayerController.dispose();
+    _chewieController.dispose();
     super.dispose();
+  }
+
+  Future<void> _initializeVideoPlayer(String audioUrl) async {
+    _videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(audioUrl));
+    await _videoPlayerController.initialize();
+    setState(() {
+      if (_videoPlayerController.value.isInitialized) {
+        _chewieController = ChewieAudioController(
+          autoInitialize: true,
+          videoPlayerController: _videoPlayerController,
+          autoPlay: false,
+          looping: true,
+          allowMuting: true,
+        );
+      }
+      isLoading = false;
+    });
   }
 
   Future<void> loadAssignmentByAssignmentId() async {
@@ -49,11 +78,17 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
       setState(() {
         chosenAssignment = assignment;
       });
+      if (chosenAssignment.questionAudioUrl != '') {
+        await _initializeVideoPlayer(
+            chosenAssignment.questionAudioUrl.toString());
+      }
+      _startCooldownTimer();
     } catch (e) {
       // Handle errors here
       print('Error: $e');
     }
   }
+
   String? validateAssignment(String? assignment) {
     if (assignment == null || assignment.isEmpty) {
       return 'Assignment cannot be empty';
@@ -128,21 +163,29 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               // Ensure children stretch horizontally
               children: [
-                Center(
-                  child:
-                  Html(
-                    data: chosenAssignment.questionText.toString(),
-                    style: {
-                      "body": Style(
-                        textAlign: TextAlign.center,
-                        fontSize: FontSize(20),
-                        fontWeight: FontWeight.w400,
-                        lineHeight: LineHeight(1.2125),
-                        color: Color(0xff6c6363),
-                      ),
-                    },
+                if (chosenAssignment.questionText != null &&
+                    chosenAssignment.questionText!.isNotEmpty)
+                  Center(
+                    child: Html(
+                      data: chosenAssignment.questionText.toString(),
+                      style: {
+                        "body": Style(
+                          textAlign: TextAlign.center,
+                          fontSize: FontSize(20),
+                          fontWeight: FontWeight.w400,
+                          lineHeight: LineHeight(1.2125),
+                          color: Color(0xff6c6363),
+                        ),
+                      },
+                    ),
                   ),
-                ),
+                if (chosenAssignment.questionAudioUrl != null &&
+                    chosenAssignment.questionAudioUrl!.isNotEmpty)
+                  isLoading
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : ChewieAudio(controller: _chewieController),
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -189,9 +232,8 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                       ),
                       prefixConstraints: BoxConstraints(maxHeight: 60.v),
                       contentPadding:
-                      EdgeInsets.only(top: 21.v, right: 30.h, bottom: 21.v),
-                      borderDecoration: TextFormFieldStyleHelper
-                          .outlineBlack,
+                          EdgeInsets.only(top: 21.v, right: 30.h, bottom: 21.v),
+                      borderDecoration: TextFormFieldStyleHelper.outlineBlack,
                       validator: validateAssignment,
                     ),
                   ),
@@ -199,7 +241,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                 SizedBox(height: 93.v),
                 CustomElevatedButton(
                   onPressed: () async {
-                    if(_formKey.currentState!.validate()) {
+                    if (_formKey.currentState!.validate()) {
                       await Network.createAssignmentAttempt(
                         assignmentId: widget.assignmentID,
                         answerText: additionalInfoController.text.toString(),
@@ -217,17 +259,17 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                         btnOkOnPress: () {
                           setState(() {
                             widget.isOnlineClass
-                            ? Navigator.pop(context)
-                            : Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ViewAllAssignmentAttempt(
-                                      assignmentId: widget.assignmentID,
-                                      navigateTime: 2,
+                                ? Navigator.pop(context)
+                                : Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ViewAllAssignmentAttempt(
+                                        assignmentId: widget.assignmentID,
+                                        navigateTime: 2,
+                                      ),
                                     ),
-                              ),
-                            );
+                                  );
                             _timer?.cancel();
                             _timer = null;
                           });
@@ -235,8 +277,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                           //   nextQuestion();
                           // }
                         },
-                      )
-                        ..show();
+                      )..show();
                     }
                   },
                   text: "Submit Assignment",

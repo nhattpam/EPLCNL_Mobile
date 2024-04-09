@@ -1088,12 +1088,14 @@ class Network {
   static Future<void> createAssignmentAttempt({
     required String assignmentId,
     required String answerText,
+    required String answerAudioUrl,
   }) async {
     final leanerId = SessionManager().getLearnerId() ?? 0;
     final learnerData = {
       "assignmentId": assignmentId,
       "learnerId": leanerId,
       "answerText": answerText,
+      "answerAudioUrl": answerAudioUrl,
       "totalGrade": 0
     };
 

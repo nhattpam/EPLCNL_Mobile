@@ -1,16 +1,23 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:chewie_audio/chewie_audio.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/doing_assignment_screen/audio_item.dart';
 import 'package:meowlish/presentation/view_all_assignment_attemp/view_all_assignment_attemp.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
+import 'package:on_audio_query/on_audio_query.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:record/record.dart';
 
 class DoingAssignmentScreen extends StatefulWidget {
   final String assignmentID;
@@ -39,15 +46,31 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
   late VideoPlayerController _videoPlayerController;
   late ChewieAudioController _chewieController;
 
+  /////Record
+  final _record = Record();
+  final OnAudioQuery _audioQuery = OnAudioQuery();
+  final TextEditingController _controller = TextEditingController();
+
+  Timer? timer;
+  int time = 0;
+  bool _isRecording = true;
+  String? _audioPath;
+  Dio dio = Dio();
+  String _image = "";
+
   @override
   void initState() {
     super.initState();
+    requestPermission();
     loadAssignmentByAssignmentId();
   }
 
   @override
   void dispose() {
+    timer?.cancel();
     _timer?.cancel();
+    _record.dispose();
+    _controller.dispose();
     _videoPlayerController.dispose();
     _chewieController.dispose();
     super.dispose();
@@ -111,15 +134,98 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
       });
 
       if (_remainingSeconds <= 0) {
+        if (chosenAssignment.questionAudioUrl != null &&
+            chosenAssignment.questionAudioUrl!.isNotEmpty){
+           _uploadAudio(File(_audioPath.toString()));
+        }
         Network.createAssignmentAttempt(
           assignmentId: widget.assignmentID,
-          answerText: additionalInfoController.text.toString(),
+          answerText: additionalInfoController.text.toString(), answerAudioUrl: _image,
         );
         _timer?.cancel();
         _timer = null;
       }
     });
   }
+
+  requestPermission() async {
+    if (!kIsWeb) {
+      bool permissionStatus = await _audioQuery.permissionsStatus();
+      if (!permissionStatus) {
+        await _audioQuery.permissionsRequest();
+      }
+      setState(() {});
+    }
+  }
+
+  void _startTimer() {
+    const oneSec = Duration(seconds: 1);
+    timer = Timer.periodic(oneSec, (Timer timer) {
+      setState(() {
+        time++;
+      });
+    });
+  }
+
+  Future<void> _start() async {
+    try {
+      if (await _record.hasPermission()) {
+        Directory? dir;
+        dir = Directory('/storage/emulated/0/Download/');
+        if (!await dir.exists()) {
+          dir = (await getExternalStorageDirectory());
+        }
+        await _record.start(path: '${dir?.path}${_controller.text}.m4a');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> stop() async {
+    final path = await _record.stop();
+    _audioPath = path;
+    if (_audioPath?.isNotEmpty ?? false) {
+      print(path ?? '');
+    }
+  }
+
+  String formattedTime({required int timeInSecond}) {
+    int sec = timeInSecond % 60;
+    int min = (timeInSecond / 60).floor();
+    String minute = min.toString().length <= 1 ? '0$min' : '$min';
+    String seconds = sec.toString().length <= 1 ? '0$sec' : '$sec';
+    return '$minute:$seconds';
+  }
+
+  Future<String> _uploadAudio(File audioFile) async {
+    try {
+      String url =
+          "https://nhatpmse.twentytwo.asia/api/questions/audio"; // Replace with your API endpoint
+      FormData formData = FormData.fromMap({
+        "file": await MultipartFile.fromFile(audioFile.path),
+      });
+
+      Response response = await dio.post(url, data: formData);
+
+      if (response.statusCode == 200) {
+        // Image uploaded successfully, you can handle the response here
+        print("Image uploaded successfully. Link: ${response.data}");
+        setState(() {
+          _image = response.data;
+        });
+        return response.data;
+      } else {
+        // Handle error
+        print("Error uploading audio. StatusCode: ${response.statusCode}");
+      }
+    } catch (error) {
+      // Handle error
+      print("Error uploading audio: $error");
+    }
+    return "";
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -203,48 +309,311 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                   ),
                 ),
                 SizedBox(height: 73.v),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 2.h),
-                    child: Text(
-                      "Write your Answer",
-                      style: CustomTextStyles.titleMedium18,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 24.v),
-                Container(
-                  child: Form(
-                    key: _formKey,
-                    child: CustomTextFormField(
-                      controller: additionalInfoController,
-                      hintText: "Your Answer",
-                      hintStyle: CustomTextStyles.titleSmallGray80001,
-                      textInputAction: TextInputAction.done,
-                      maxLines: 14,
-                      prefix: Container(
-                        margin: EdgeInsets.fromLTRB(20.h, 22.v, 7.h, 23.v),
-                        child: CustomImageView(
-                            imagePath: ImageConstant.imgLock,
-                            height: 14.v,
-                            width: 18.h),
+                if (chosenAssignment.questionText != null &&
+                    chosenAssignment.questionText!.isNotEmpty &&
+                    chosenAssignment.questionAudioUrl!.isEmpty)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 2.h),
+                      child: Text(
+                        "Write your Answer",
+                        style: CustomTextStyles.titleMedium18,
                       ),
-                      prefixConstraints: BoxConstraints(maxHeight: 60.v),
-                      contentPadding:
-                          EdgeInsets.only(top: 21.v, right: 30.h, bottom: 21.v),
-                      borderDecoration: TextFormFieldStyleHelper.outlineBlack,
-                      validator: validateAssignment,
                     ),
                   ),
-                ),
-                SizedBox(height: 93.v),
+                if (chosenAssignment.questionAudioUrl != null &&
+                    chosenAssignment.questionAudioUrl!.isNotEmpty)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 2.h),
+                      child: Text(
+                        "Click Icon to record your Answer",
+                        style: CustomTextStyles.titleMedium18,
+                      ),
+                    ),
+                  ),
+                SizedBox(height: 24.v),
+                if (chosenAssignment.questionText != null &&
+                    chosenAssignment.questionText!.isNotEmpty &&
+                    chosenAssignment.questionAudioUrl!.isEmpty)
+                  Container(
+                    child: Form(
+                      key: _formKey,
+                      child: CustomTextFormField(
+                        controller: additionalInfoController,
+                        hintText: "Your Answer",
+                        hintStyle: CustomTextStyles.titleSmallGray80001,
+                        textInputAction: TextInputAction.done,
+                        maxLines: 14,
+                        prefix: Container(
+                          margin: EdgeInsets.fromLTRB(20.h, 22.v, 7.h, 23.v),
+                          child: CustomImageView(
+                              imagePath: ImageConstant.imgLock,
+                              height: 14.v,
+                              width: 18.h),
+                        ),
+                        prefixConstraints: BoxConstraints(maxHeight: 60.v),
+                        contentPadding: EdgeInsets.only(
+                            top: 21.v, right: 30.h, bottom: 21.v),
+                        borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+                        validator: validateAssignment,
+                      ),
+                    ),
+                  ),
+                if (chosenAssignment.questionAudioUrl != null &&
+                    chosenAssignment.questionAudioUrl!.isNotEmpty)
+                  isLoading
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : ListView(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          children: [
+                            SizedBox(
+                              /////Demo Record Voice
+                              // height: 520,
+                              height: 100,
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: IconButton(
+                                      iconSize: 30,
+                                      onPressed: () {
+                                        if (_isRecording) {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      height: 150,
+                                                      width: 350,
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15),
+                                                      ),
+                                                      child: Column(
+                                                        children: [
+                                                          Container(
+                                                            margin:
+                                                                EdgeInsets.all(
+                                                                    20),
+                                                            height: 50,
+                                                            child: Material(
+                                                              child: TextField(
+                                                                controller:
+                                                                    _controller,
+                                                                textAlignVertical:
+                                                                    TextAlignVertical
+                                                                        .center,
+                                                                decoration: InputDecoration(
+                                                                    isDense:
+                                                                        true,
+                                                                    fillColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    border:
+                                                                        OutlineInputBorder(),
+                                                                    contentPadding:
+                                                                        EdgeInsets.all(
+                                                                            12)),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    left: 20,
+                                                                    right: 20),
+                                                            child: Row(
+                                                              children: [
+                                                                GestureDetector(
+                                                                  child:
+                                                                      Container(
+                                                                    height: 40,
+                                                                    width: 80,
+                                                                    color: Colors
+                                                                        .blue,
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .center,
+                                                                    child: Text(
+                                                                      'Cancel',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              14,
+                                                                          color: Colors
+                                                                              .white,
+                                                                          decoration:
+                                                                              TextDecoration.none),
+                                                                    ),
+                                                                  ),
+                                                                  onTap: () {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  },
+                                                                ),
+                                                                GestureDetector(
+                                                                  child:
+                                                                      Container(
+                                                                    height: 40,
+                                                                    width: 80,
+                                                                    color: Colors
+                                                                        .blue,
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .center,
+                                                                    child: Text(
+                                                                      'Save',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              14,
+                                                                          color: Colors
+                                                                              .white,
+                                                                          decoration:
+                                                                              TextDecoration.none),
+                                                                    ),
+                                                                  ),
+                                                                  onTap: () {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    if (_controller
+                                                                        .text
+                                                                        .isNotEmpty) {
+                                                                      _startTimer();
+                                                                      _start();
+                                                                      setState(
+                                                                          () {
+                                                                        _isRecording =
+                                                                            false;
+                                                                      });
+                                                                    }
+                                                                  },
+                                                                )
+                                                              ],
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    )
+                                                  ],
+                                                );
+                                              });
+                                        } else {
+                                          stop();
+                                          timer?.cancel();
+                                          setState(() {
+                                            _isRecording = true;
+                                            time = 0;
+                                          });
+                                        }
+                                      },
+                                      icon: Icon(Icons.mic),
+                                    ),
+                                  ),
+                                  Text(
+                                    formattedTime(timeInSecond: time),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 15.fSize,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.blue,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            //////Display Demo Record
+                            // SizedBox(
+                            //   height: MediaQuery.of(context).size.height - 550,
+                            //   child: FutureBuilder<List<SongModel>>(
+                            //       future: _audioQuery.querySongs(
+                            //         sortType: null,
+                            //         orderType: OrderType.ASC_OR_SMALLER,
+                            //         uriType: UriType.EXTERNAL,
+                            //         ignoreCase: true,
+                            //       ),
+                            //       builder: (context, item) {
+                            //         if (item.data == null) return CircularProgressIndicator();
+                            //         if (item.data!.isEmpty) return Text('Nothing found!');
+                            //         final data = item.data
+                            //             ?.where(
+                            //                 (element) => element.fileExtension == 'm4a')
+                            //             .toList() ??
+                            //             [];
+                            //         return Stack(
+                            //           alignment: AlignmentDirectional.bottomEnd,
+                            //           children: [
+                            //             ListView.builder(
+                            //                 itemCount: data.length,
+                            //                 itemBuilder: (context, index) {
+                            //                   return AudioItem(item: data[index]);
+                            //                 })
+                            //           ],
+                            //         );
+                            //       }),
+                            // )
+                          ],
+                        ),
+                SizedBox(height: 30.v),
                 CustomElevatedButton(
                   onPressed: () async {
+                    if (chosenAssignment.questionAudioUrl != null &&
+                        chosenAssignment.questionAudioUrl!.isNotEmpty){
+                      await _uploadAudio(File(_audioPath.toString()));
+                      await Network.createAssignmentAttempt(
+                        assignmentId: widget.assignmentID,
+                        answerText: additionalInfoController.text.toString(), answerAudioUrl: _image,
+                      );
+                      AwesomeDialog(
+                        context: context,
+                        animType: AnimType.scale,
+                        dialogType: DialogType.success,
+                        body: Center(
+                          child: Text(
+                            'Submit successfully',
+                            style: TextStyle(fontStyle: FontStyle.italic),
+                          ),
+                        ),
+                        btnOkOnPress: () {
+                          setState(() {
+                            widget.isOnlineClass
+                                ? Navigator.pop(context)
+                                : Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ViewAllAssignmentAttempt(
+                                      assignmentId: widget.assignmentID,
+                                      navigateTime: 2,
+                                    ),
+                              ),
+                            );
+                            _timer?.cancel();
+                            _timer = null;
+                          });
+                          // if(isSelected == true){
+                          //   nextQuestion();
+                          // }
+                        },
+                      )..show();
+                    }
                     if (_formKey.currentState!.validate()) {
                       await Network.createAssignmentAttempt(
                         assignmentId: widget.assignmentID,
-                        answerText: additionalInfoController.text.toString(),
+                        answerText: additionalInfoController.text.toString(), answerAudioUrl: _image,
                       );
                       AwesomeDialog(
                         context: context,

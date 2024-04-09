@@ -38,6 +38,10 @@ dependencies:
   pdfx: 2.6.0
   internet_file: ^1.2.0
   barcode_widget: ^2.0.4
+  record: ^4.4.4
+  just_audio: ^0.9.37
+  path_provider: any
+  on_audio_query: ^2.9.0
 dev_dependencies: 
   flutter_test: 
     sdk: flutter

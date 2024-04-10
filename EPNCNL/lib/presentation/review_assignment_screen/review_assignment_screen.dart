@@ -26,7 +26,9 @@ import 'package:video_player/video_player.dart';
 class ReviewAssignment extends StatefulWidget {
   final String assignmentID;
   final bool isOnlineClass;
-  const ReviewAssignment({super.key, required this.assignmentID, required this.isOnlineClass});
+
+  const ReviewAssignment(
+      {super.key, required this.assignmentID, required this.isOnlineClass});
 
   @override
   State<ReviewAssignment> createState() => _ReviewAssignmentState();
@@ -52,11 +54,14 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
   ];
   late Map<String, String> point;
   late VideoPlayerController _videoPlayerController;
+  late VideoPlayerController _videoQuestionPlayerController;
   late ChewieAudioController _chewieController;
-  // late VideoPlayerController videoPlayerController;
-  // late ChewieAudioController chewieController;
+  late ChewieAudioController _chewieQuestionController;
+  late List<VideoPlayerController> _videoPlayerControllers = [];
+  late List<ChewieAudioController> _chewieControllers = [];
   bool isLoading = true;
-  // bool _isLoading = true;
+  bool isLoadingQuestion = true;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -71,9 +76,15 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
   @override
   void dispose() {
     _videoPlayerController.dispose();
+    _videoQuestionPlayerController.dispose();
     _chewieController.dispose();
-    // videoPlayerController.dispose();
-    // chewieController.dispose();
+    _chewieQuestionController.dispose();
+    for (var controller in _videoPlayerControllers) {
+      controller.dispose();
+    }
+    for (var controller in _chewieControllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -81,7 +92,7 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
     _videoPlayerController =
         VideoPlayerController.networkUrl(Uri.parse(audioUrl));
     await _videoPlayerController.initialize();
-    if(mounted){
+    if (mounted) {
       setState(() {
         if (_videoPlayerController.value.isInitialized) {
           _chewieController = ChewieAudioController(
@@ -96,26 +107,26 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
       });
     }
   }
-  // Future<void> _initializeVideoPlayerForPeer(String audioUrl) async {
-  //   videoPlayerController =
-  //       VideoPlayerController.networkUrl(Uri.parse(audioUrl));
-  //   await videoPlayerController.initialize();
-  //   if(mounted){
-  //     setState(() {
-  //       if (videoPlayerController.value.isInitialized) {
-  //         chewieController = ChewieAudioController(
-  //           autoInitialize: true,
-  //           videoPlayerController: videoPlayerController,
-  //           autoPlay: false,
-  //           looping: true,
-  //           allowMuting: true,
-  //         );
-  //       }
-  //       _isLoading = false;
-  //     });
-  //   }
-  // }
 
+  Future<void> _initializeVideoPlayerQuestion(String audioUrl) async {
+    _videoQuestionPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(audioUrl));
+    await _videoQuestionPlayerController.initialize();
+    if (mounted) {
+      setState(() {
+        if (_videoQuestionPlayerController.value.isInitialized) {
+          _chewieQuestionController = ChewieAudioController(
+            autoInitialize: true,
+            videoPlayerController: _videoQuestionPlayerController,
+            autoPlay: false,
+            looping: true,
+            allowMuting: true,
+          );
+        }
+        isLoadingQuestion = false;
+      });
+    }
+  }
 
   Future<void> loadAssignmentByAssignmentId() async {
     try {
@@ -124,7 +135,7 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
       setState(() {
         chosenAssignment = assignment;
       });
-
+      _initializeVideoPlayerQuestion(chosenAssignment.questionAudioUrl.toString());
     } catch (e) {
       // Handle errors here
       print('Error: $e');
@@ -141,7 +152,8 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
 
         // Add more print statements for other properties if needed
       });
-      if (moduleUndoAssignmentAttempt[assignmentId]?.first.answerAudioUrl != '') {
+      if (moduleUndoAssignmentAttempt[assignmentId]?.first.answerAudioUrl !=
+          '') {
         _initializeVideoPlayer(chosenAssignment.questionAudioUrl.toString());
       }
     } catch (e) {
@@ -186,6 +198,19 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                   moduleUngradeAssignmentAttempt[widget.assignmentID]!.length));
       // isLoadingFeedback = false;
       isLoadingAssignmentAttempt = false;
+    }
+    for (var url in _paginatedAssignmentAttempt) {
+      final videoController = VideoPlayerController.networkUrl(Uri.parse(url.answerAudioUrl.toString()));
+      final chewieController = ChewieAudioController(
+        videoPlayerController: videoController,
+        autoInitialize: true,
+        autoPlay: false,
+        looping: true,
+        allowMuting: true,
+      );
+      _videoPlayerControllers.add(videoController);
+      _chewieControllers.add(chewieController);
+      _isLoading = false;
     }
   }
 
@@ -252,20 +277,29 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               // Ensure children stretch horizontally
               children: [
-                Center(
-                  child: Html(
-                    data: chosenAssignment.questionText.toString(),
-                    style: {
-                      "body": Style(
-                        textAlign: TextAlign.center,
-                        fontSize: FontSize(20),
-                        fontWeight: FontWeight.w400,
-                        lineHeight: LineHeight(1.2125),
-                        color: Color(0xff6c6363),
-                      ),
-                    },
+                if (chosenAssignment.questionText != null &&
+                    chosenAssignment.questionText!.isNotEmpty)
+                  Center(
+                    child: Html(
+                      data: chosenAssignment.questionText.toString(),
+                      style: {
+                        "body": Style(
+                          textAlign: TextAlign.center,
+                          fontSize: FontSize(20),
+                          fontWeight: FontWeight.w400,
+                          lineHeight: LineHeight(1.2125),
+                          color: Color(0xff6c6363),
+                        ),
+                      },
+                    ),
                   ),
-                ),
+                if (chosenAssignment.questionAudioUrl != null &&
+                    chosenAssignment.questionAudioUrl!.isNotEmpty)
+                  isLoading
+                      ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                      : ChewieAudio(controller: _chewieQuestionController),
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -303,186 +337,195 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                     maxWidth: 244,
                   ),
                   child: widget.isOnlineClass
-                    ? SingleChildScrollView(
-                    child: Container(
-                      constraints: BoxConstraints(
-                          maxWidth: 280
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            moduleUndoAssignmentAttempt[widget.assignmentID]
-                                ?.first
-                                ?.answerText ??
-                                '',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 6,
-                          ),
-                          if (moduleUndoAssignmentAttempt[widget.assignmentID]
-                              ?.first
-                              ?.answerAudioUrl != null &&
-                              moduleUndoAssignmentAttempt[widget.assignmentID]
-                                  !.first.answerAudioUrl!.isNotEmpty)
-                            isLoading
-                                ? Center(
-                              child: CircularProgressIndicator(),
-                            )
-                                : ChewieAudio(controller: _chewieController),
-                        ],
-                      ),
-                    ),
-                  )
-                    : Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      EditDoingAssignmnetScreen(
-                                        assignmentID: widget.assignmentID,
-                                        cooldownTime: Duration(
-                                            minutes: chosenAssignment?.deadline ?? 0), isOnlineClass: false),
-
-                              )
-                            );
-                          },
+                      ? SingleChildScrollView(
                           child: Container(
-                            constraints: BoxConstraints(
-                              maxWidth: 200
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 10),
-                            decoration: AppDecoration
-                                .outlineBlack9001
-                                .copyWith(
-                              borderRadius: BorderRadiusStyle
-                                  .roundedBorder10,
-
-                            ),
-                            child: Row(
+                            constraints: BoxConstraints(maxWidth: 280),
+                            child: Column(
                               children: [
-                                Icon(
-                                  Icons.edit,
-                                  size: 20,
-                                  color: Colors.grey,
+                                Text(
+                                  moduleUndoAssignmentAttempt[
+                                              widget.assignmentID]
+                                          ?.first
+                                          ?.answerText ??
+                                      '',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 6,
                                 ),
-                                SizedBox(width: 4.v),
-                                SingleChildScrollView(
-                                  child: Container(
-                                    constraints: BoxConstraints(
-                                      maxWidth: 280
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          moduleUndoAssignmentAttempt[widget.assignmentID]
-                                              ?.first
-                                              ?.answerText ??
-                                              '',
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 6,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                if (moduleUndoAssignmentAttempt[
+                                                widget.assignmentID]
+                                            ?.first
+                                            ?.answerAudioUrl !=
+                                        null &&
+                                    moduleUndoAssignmentAttempt[
+                                            widget.assignmentID]!
+                                        .first
+                                        .answerAudioUrl!
+                                        .isNotEmpty)
+                                  isLoading
+                                      ? Center(
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : ChewieAudio(
+                                          controller: _chewieController),
                               ],
                             ),
                           ),
+                        )
+                      : Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () async {
+                                  await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditDoingAssignmnetScreen(
+                                                assignmentID:
+                                                    widget.assignmentID,
+                                                cooldownTime: Duration(
+                                                    minutes: chosenAssignment
+                                                            ?.deadline ??
+                                                        0),
+                                                isOnlineClass: false),
+                                      ));
+                                },
+                                child: Container(
+                                  constraints: BoxConstraints(maxWidth: 200),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 12, horizontal: 10),
+                                  decoration:
+                                      AppDecoration.outlineBlack9001.copyWith(
+                                    borderRadius:
+                                        BorderRadiusStyle.roundedBorder10,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.edit,
+                                        size: 20,
+                                        color: Colors.grey,
+                                      ),
+                                      SizedBox(width: 4.v),
+                                      SingleChildScrollView(
+                                        child: Container(
+                                          constraints:
+                                              BoxConstraints(maxWidth: 280),
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                moduleUndoAssignmentAttempt[
+                                                            widget.assignmentID]
+                                                        ?.first
+                                                        ?.answerText ??
+                                                    '',
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 6,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-
-                      ),
-                    ],
-                  ),
                 ),
                 SizedBox(height: 24.v),
                 if (moduleUndoAssignmentAttempt[widget.assignmentID]
-                    ?.first
-                    ?.answerAudioUrl != null &&
-                    moduleUndoAssignmentAttempt[widget.assignmentID]
-                    !.first.answerAudioUrl!.isNotEmpty)
+                            ?.first
+                            ?.answerAudioUrl !=
+                        null &&
+                    moduleUndoAssignmentAttempt[widget.assignmentID]!
+                        .first
+                        .answerAudioUrl!
+                        .isNotEmpty)
                   isLoading
                       ? Center(
-                    child: CircularProgressIndicator(),
-                  )
+                          child: CircularProgressIndicator(),
+                        )
                       : ChewieAudio(controller: _chewieController),
-
                 SizedBox(height: 24.v),
                 if (moduleUngradeAssignmentAttempt[widget.assignmentID]
                         ?.isNotEmpty ??
                     false)
                   widget.isOnlineClass
-                  ? Container()
-                  : SizedBox(
-                    height: SizeUtils.height,
-                    width: double.maxFinite,
-                    child: Stack(
-                      alignment: Alignment.topRight,
-                      children: [
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 34.h,
-                              vertical: 10.v,
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SingleChildScrollView(
-                                    child: _buildCourseReviewList(context)),
-                                SizedBox(height: 12),
-                                Divider(),
-                                SizedBox(height: 30.v),
-                                CustomElevatedButton(
-                                  onPressed: () async {
-                                    for (int index = 0;
-                                    index <
-                                        _paginatedAssignmentAttempt.length;
-                                    index++) {
-                                      final attempt =
-                                      _paginatedAssignmentAttempt[index];
-                                      // print("This is"+ index.toString());
-                                      await Network.createPeerReview(
-                                          assignmentAttemptId:
-                                          attempt.id.toString(),
-                                          grade: point[attempt.id].toString());
-                                    }
-                                    AwesomeDialog(
-                                      context: context,
-                                      animType: AnimType.scale,
-                                      dialogType: DialogType.success,
-                                      body: Center(
-                                        child: Text(
-                                          'Submit Success!!!',
-                                          style: TextStyle(
-                                              fontStyle: FontStyle.italic),
-                                        ),
+                      ? Container()
+                      : SizedBox(
+                          height: SizeUtils.height,
+                          width: double.maxFinite,
+                          child: Stack(
+                            alignment: Alignment.topRight,
+                            children: [
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 34.h,
+                                    vertical: 10.v,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SingleChildScrollView(
+                                          child:
+                                              _buildCourseReviewList(context)),
+                                      SizedBox(height: 12),
+                                      Divider(),
+                                      SizedBox(height: 30.v),
+                                      CustomElevatedButton(
+                                        onPressed: () async {
+                                          for (int index = 0;
+                                              index <
+                                                  _paginatedAssignmentAttempt
+                                                      .length;
+                                              index++) {
+                                            final attempt =
+                                                _paginatedAssignmentAttempt[
+                                                    index];
+                                            // print("This is"+ index.toString());
+                                            await Network.createPeerReview(
+                                                assignmentAttemptId:
+                                                    attempt.id.toString(),
+                                                grade: point[attempt.id]
+                                                    .toString());
+                                          }
+                                          AwesomeDialog(
+                                            context: context,
+                                            animType: AnimType.scale,
+                                            dialogType: DialogType.success,
+                                            body: Center(
+                                              child: Text(
+                                                'Submit Success!!!',
+                                                style: TextStyle(
+                                                    fontStyle:
+                                                        FontStyle.italic),
+                                              ),
+                                            ),
+                                            btnOkOnPress: () {
+                                              setState(() {
+                                                Navigator.pop(context);
+                                              });
+                                              // if(isSelected == true){
+                                              //   nextQuestion();
+                                              // }
+                                            },
+                                          )..show();
+                                        },
+                                        text: "Submit",
                                       ),
-                                      btnOkOnPress: () {
-                                        setState(() {
-                                          Navigator.pop(context);
-                                        });
-                                        // if(isSelected == true){
-                                        //   nextQuestion();
-                                        // }
-                                      },
-                                    )..show();
-                                  },
-                                  text: "Submit",
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                              // _buildCategoryList(context),
+                              SizedBox(height: 50.v),
+                            ],
                           ),
-                        ),
-                        // _buildCategoryList(context),
-                        SizedBox(height: 50.v),
-                      ],
-                    ),
-                  )
+                        )
               ],
             ),
           ),
@@ -652,7 +695,6 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                   itemCount: _paginatedAssignmentAttempt.length,
                   itemBuilder: (context, index) {
                     final attempt = _paginatedAssignmentAttempt[index];
-                    // _initializeVideoPlayerForPeer(attempt.answerAudioUrl.toString());
                     if (!point.containsKey(attempt.id)) {
                       point[attempt.id.toString()] =
                           ''; // Set default value to 2
@@ -668,7 +710,6 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                         _showMultiSelect(attempt.id.toString());
                       },
                       child: Row(
-                        // mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           attempt.learner?.account?.imageUrl != null &&
@@ -727,13 +768,13 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                                       style: theme.textTheme.labelLarge,
                                     ),
                                   ),
-                                  // if (attempt.answerAudioUrl != null &&
-                                  //     attempt.answerAudioUrl!.isNotEmpty)
-                                  //   _isLoading
-                                  //       ? Center(
-                                  //     child: CircularProgressIndicator(),
-                                  //   )
-                                  //       : ChewieAudio(controller: chewieController),
+                                  if (attempt.answerAudioUrl != null &&
+                                      attempt.answerAudioUrl!.isNotEmpty)
+                                    _isLoading
+                                        ? Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                        : ChewieAudio(controller: _chewieControllers[index]),
                                   SizedBox(height: 11.v),
                                   Row(
                                     children: [

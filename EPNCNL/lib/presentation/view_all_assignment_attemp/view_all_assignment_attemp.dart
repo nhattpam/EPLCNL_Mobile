@@ -68,9 +68,6 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
     super.dispose();
   }
 
-  Future<void> _initializeVideoPlayer(String audioUrl) async {
-
-  }
 
   Future<void> loadAssignmentAttemptByAssignmentId() async {
     try {
@@ -110,8 +107,10 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
       final videoController = VideoPlayerController.networkUrl(Uri.parse(url.answerAudioUrl.toString()));
       final chewieController = ChewieAudioController(
         videoPlayerController: videoController,
+        autoInitialize: true,
         autoPlay: false,
-        looping: false,
+        looping: true,
+        allowMuting: true,
       );
       _videoPlayerControllers.add(videoController);
       _chewieControllers.add(chewieController);
@@ -398,7 +397,6 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                         DateTime.parse(originalDateString.split('T')[0]);
                     String formattedDate =
                         DateFormat('dd-MM-yyyy').format(originalDate);
-                    _initializeVideoPlayer(attempt.answerAudioUrl.toString());
                     return GestureDetector(
                       onTap: () {
                         _showMultiSelect(attempt.id.toString());

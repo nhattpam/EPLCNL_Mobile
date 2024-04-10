@@ -80,18 +80,20 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
     _videoPlayerController =
         VideoPlayerController.networkUrl(Uri.parse(audioUrl));
     await _videoPlayerController.initialize();
-    setState(() {
-      if (_videoPlayerController.value.isInitialized) {
-        _chewieController = ChewieAudioController(
-          autoInitialize: true,
-          videoPlayerController: _videoPlayerController,
-          autoPlay: false,
-          looping: true,
-          allowMuting: true,
-        );
-      }
-      isLoading = false;
-    });
+    if(mounted){
+      setState(() {
+        if (_videoPlayerController.value.isInitialized) {
+          _chewieController = ChewieAudioController(
+            autoInitialize: true,
+            videoPlayerController: _videoPlayerController,
+            autoPlay: false,
+            looping: true,
+            allowMuting: true,
+          );
+        }
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> loadAssignmentByAssignmentId() async {
@@ -105,7 +107,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
         await _initializeVideoPlayer(
             chosenAssignment.questionAudioUrl.toString());
       }
-      // _startCooldownTimer();
+      _startCooldownTimer();
     } catch (e) {
       // Handle errors here
       print('Error: $e');

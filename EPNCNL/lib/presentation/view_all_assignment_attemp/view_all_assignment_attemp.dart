@@ -33,12 +33,10 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
   int _currentPage = 1;
   int _itemsPerPage = 3; // Define the number of items per page
   String lid = '';
-  bool _ascendingOrder = true;
   List<AssignmentAttempt> _paginatedAssignmentAttempt = [];
-  late VideoPlayerController _videoPlayerController;
-  late ChewieAudioController _chewieController;
   bool isLoading = true;
-
+  late List<VideoPlayerController> _videoPlayerControllers = [];
+  late List<ChewieAudioController> _chewieControllers = [];
   // late bool isLoadingFeedback;
   // late bool isLoadingCourse;
   int _currentIndex = 0;
@@ -61,27 +59,17 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
   }
   @override
   void dispose() {
-    _videoPlayerController.dispose();
-    _chewieController.dispose();
+    for (var controller in _videoPlayerControllers) {
+      controller.dispose();
+    }
+    for (var controller in _chewieControllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
   Future<void> _initializeVideoPlayer(String audioUrl) async {
-    _videoPlayerController =
-        VideoPlayerController.networkUrl(Uri.parse(audioUrl));
-    await _videoPlayerController.initialize();
-    setState(() {
-      if (_videoPlayerController.value.isInitialized) {
-        _chewieController = ChewieAudioController(
-          autoInitialize: true,
-          videoPlayerController: _videoPlayerController,
-          autoPlay: false,
-          looping: true,
-          allowMuting: true,
-        );
-      }
-      isLoading = false;
-    });
+
   }
 
   Future<void> loadAssignmentAttemptByAssignmentId() async {
@@ -118,25 +106,16 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
           startIndex, endIndex.clamp(0, listAssignmentAttempt.length));
       // isLoadingFeedback = false;
     }
-  }
-
-  void _loadPageBySort(int page) {
-    // Sort feedback list by the newest date
-
-    int startIndex = (page - 1) * _itemsPerPage;
-    int endIndex = startIndex + _itemsPerPage;
-    if (startIndex < listAssignmentAttempt.length) {
-      // Ensure endIndex does not exceed the length of the list
-      _paginatedAssignmentAttempt = listAssignmentAttempt.sublist(
-          startIndex, endIndex.clamp(0, listAssignmentAttempt.length));
-    }
-  }
-
-  int _compareFeedback(FedBack a, FedBack b) {
-    if (_ascendingOrder) {
-      return b.rating.toString().compareTo(a.rating.toString());
-    } else {
-      return a.rating.toString().compareTo(b.rating.toString());
+    for (var url in _paginatedAssignmentAttempt) {
+      final videoController = VideoPlayerController.networkUrl(Uri.parse(url.answerAudioUrl.toString()));
+      final chewieController = ChewieAudioController(
+        videoPlayerController: videoController,
+        autoPlay: false,
+        looping: false,
+      );
+      _videoPlayerControllers.add(videoController);
+      _chewieControllers.add(chewieController);
+      isLoading = false;
     }
   }
 
@@ -490,7 +469,7 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                                         ? Center(
                                       child: CircularProgressIndicator(),
                                     )
-                                        : ChewieAudio(controller: _chewieController),
+                                        : ChewieAudio(controller: _chewieControllers[index]),
                                   SizedBox(height: 11.v),
                                   Row(
                                     children: [

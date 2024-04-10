@@ -100,18 +100,20 @@ class _EditDoingAssignmnetScreenState extends State<EditDoingAssignmnetScreen> {
     _videoPlayerController =
         VideoPlayerController.networkUrl(Uri.parse(audioUrl));
     await _videoPlayerController.initialize();
-    setState(() {
-      if (_videoPlayerController.value.isInitialized) {
-        _chewieController = ChewieAudioController(
-          autoInitialize: true,
-          videoPlayerController: _videoPlayerController,
-          autoPlay: false,
-          looping: true,
-          allowMuting: true,
-        );
-      }
-      isLoading = false;
-    });
+    if(mounted){
+      setState(() {
+        if (_videoPlayerController.value.isInitialized) {
+          _chewieController = ChewieAudioController(
+            autoInitialize: true,
+            videoPlayerController: _videoPlayerController,
+            autoPlay: false,
+            looping: true,
+            allowMuting: true,
+          );
+        }
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> loadAssignmentByAssignmentId() async {

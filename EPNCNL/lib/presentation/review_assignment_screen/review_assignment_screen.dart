@@ -53,10 +53,10 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
   late Map<String, String> point;
   late VideoPlayerController _videoPlayerController;
   late ChewieAudioController _chewieController;
-  late VideoPlayerController videoPlayerController;
-  late ChewieAudioController chewieController;
+  // late VideoPlayerController videoPlayerController;
+  // late ChewieAudioController chewieController;
   bool isLoading = true;
-  bool _isLoading = true;
+  // bool _isLoading = true;
 
   @override
   void initState() {
@@ -67,12 +67,13 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
     loadAssignmentAttemptByLearnerId(widget.assignmentID);
     loadAssignmentAttemptByAssignmentId(widget.assignmentID);
   }
+
   @override
   void dispose() {
     _videoPlayerController.dispose();
     _chewieController.dispose();
-    videoPlayerController.dispose();
-    chewieController.dispose();
+    // videoPlayerController.dispose();
+    // chewieController.dispose();
     super.dispose();
   }
 
@@ -80,36 +81,40 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
     _videoPlayerController =
         VideoPlayerController.networkUrl(Uri.parse(audioUrl));
     await _videoPlayerController.initialize();
-    setState(() {
-      if (_videoPlayerController.value.isInitialized) {
-        _chewieController = ChewieAudioController(
-          autoInitialize: true,
-          videoPlayerController: _videoPlayerController,
-          autoPlay: false,
-          looping: true,
-          allowMuting: true,
-        );
-      }
-      isLoading = false;
-    });
+    if(mounted){
+      setState(() {
+        if (_videoPlayerController.value.isInitialized) {
+          _chewieController = ChewieAudioController(
+            autoInitialize: true,
+            videoPlayerController: _videoPlayerController,
+            autoPlay: false,
+            looping: true,
+            allowMuting: true,
+          );
+        }
+        isLoading = false;
+      });
+    }
   }
-  Future<void> _initializeVideoPlayerForPeer(String audioUrl) async {
-    videoPlayerController =
-        VideoPlayerController.networkUrl(Uri.parse(audioUrl));
-    await videoPlayerController.initialize();
-    setState(() {
-      if (videoPlayerController.value.isInitialized) {
-        chewieController = ChewieAudioController(
-          autoInitialize: true,
-          videoPlayerController: videoPlayerController,
-          autoPlay: false,
-          looping: true,
-          allowMuting: true,
-        );
-      }
-      _isLoading = false;
-    });
-  }
+  // Future<void> _initializeVideoPlayerForPeer(String audioUrl) async {
+  //   videoPlayerController =
+  //       VideoPlayerController.networkUrl(Uri.parse(audioUrl));
+  //   await videoPlayerController.initialize();
+  //   if(mounted){
+  //     setState(() {
+  //       if (videoPlayerController.value.isInitialized) {
+  //         chewieController = ChewieAudioController(
+  //           autoInitialize: true,
+  //           videoPlayerController: videoPlayerController,
+  //           autoPlay: false,
+  //           looping: true,
+  //           allowMuting: true,
+  //         );
+  //       }
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
 
 
   Future<void> loadAssignmentByAssignmentId() async {
@@ -647,7 +652,7 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                   itemCount: _paginatedAssignmentAttempt.length,
                   itemBuilder: (context, index) {
                     final attempt = _paginatedAssignmentAttempt[index];
-                    _initializeVideoPlayerForPeer(attempt.answerAudioUrl.toString());
+                    // _initializeVideoPlayerForPeer(attempt.answerAudioUrl.toString());
                     if (!point.containsKey(attempt.id)) {
                       point[attempt.id.toString()] =
                           ''; // Set default value to 2
@@ -722,13 +727,13 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                                       style: theme.textTheme.labelLarge,
                                     ),
                                   ),
-                                  if (attempt.answerAudioUrl != null &&
-                                      attempt.answerAudioUrl!.isNotEmpty)
-                                    _isLoading
-                                        ? Center(
-                                      child: CircularProgressIndicator(),
-                                    )
-                                        : ChewieAudio(controller: chewieController),
+                                  // if (attempt.answerAudioUrl != null &&
+                                  //     attempt.answerAudioUrl!.isNotEmpty)
+                                  //   _isLoading
+                                  //       ? Center(
+                                  //     child: CircularProgressIndicator(),
+                                  //   )
+                                  //       : ChewieAudio(controller: chewieController),
                                   SizedBox(height: 11.v),
                                   Row(
                                     children: [

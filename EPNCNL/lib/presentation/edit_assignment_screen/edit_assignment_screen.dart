@@ -197,7 +197,7 @@ class _EditDoingAssignmnetScreenState extends State<EditDoingAssignmnetScreen> {
         if (!await dir.exists()) {
           dir = (await getExternalStorageDirectory());
         }
-        await _record.start(path: '${dir?.path}${_controller.text}.m4a');
+        await _record.start(path: '${dir?.path}${_controller.text}.mp3');
       }
     } catch (e) {
       print(e);
@@ -548,7 +548,7 @@ class _EditDoingAssignmnetScreenState extends State<EditDoingAssignmnetScreen> {
                             if (item.data!.isEmpty) return Text('Nothing found!');
                             final data = item.data
                                 ?.where(
-                                    (element) => element.fileExtension == 'm4a')
+                                    (element) => element.fileExtension == 'mp3')
                                 .toList() ??
                                 [];
                             return Stack(

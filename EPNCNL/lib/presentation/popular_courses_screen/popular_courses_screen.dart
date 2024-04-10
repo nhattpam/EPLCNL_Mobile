@@ -43,6 +43,7 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
     super.initState();
     loadCategories();
     loadCourse();
+    loadCourseByCategory('5bc12c1a-f6e7-4de8-bb42-2cd727cffe69');
   }
 
   void loadCategories() async {
@@ -574,7 +575,6 @@ class PopularCoursesScreenState extends State<PopularCoursesScreen> {
             itemBuilder: (context, index) {
               final courses = chosenCategory[index];
               bool isActive = courses.isActive ?? false;
-
               switch (cateid) {
                 case '5bc12c1a-f6e7-4de8-bb42-2cd727cffe69':
                   return isActive

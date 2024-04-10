@@ -177,7 +177,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
         if (!await dir.exists()) {
           dir = (await getExternalStorageDirectory());
         }
-        await _record.start(path: '${dir?.path}${_controller.text}.m4a');
+        await _record.start(path: '${dir?.path}${_controller.text}.mp3');
       }
     } catch (e) {
       print(e);
@@ -352,8 +352,8 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                           children: [
                             SizedBox(
                               /////Demo Record Voice
-                              height: 520,
-                              // height: 100,
+                              // height: 520,
+                              height: 100,
                               child: Column(
                                 children: [
                                   Padding(
@@ -517,31 +517,41 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                             SizedBox(
                               height: MediaQuery.of(context).size.height - 550,
                               child: FutureBuilder<List<SongModel>>(
-                                  future: _audioQuery.querySongs(
-                                    sortType: null,
-                                    orderType: OrderType.ASC_OR_SMALLER,
-                                    uriType: UriType.EXTERNAL,
-                                    ignoreCase: true,
-                                  ),
-                                  builder: (context, item) {
-                                    if (item.data == null) return CircularProgressIndicator();
-                                    if (item.data!.isEmpty) return Text('Nothing found!');
-                                    final data = item.data
-                                        ?.where(
-                                            (element) => element.fileExtension == 'm4a')
-                                        .toList() ??
-                                        [];
-                                    return Stack(
-                                      alignment: AlignmentDirectional.bottomEnd,
-                                      children: [
-                                        ListView.builder(
-                                            itemCount: data.length,
-                                            itemBuilder: (context, index) {
-                                              return AudioItem(item: data[index]);
-                                            })
-                                      ],
-                                    );
-                                  }),
+                                // Default values:
+                                future: _audioQuery.querySongs(
+                                  sortType: null,
+                                  orderType: OrderType.ASC_OR_SMALLER,
+                                  uriType: UriType.EXTERNAL,
+                                  ignoreCase: true,
+                                ),
+                                builder: (context, item) {
+                                  // Display error, if any.
+                                  if (item.hasError) {
+                                    return Text(item.error.toString());
+                                  }
+                                  // Waiting content.
+                                  if (item.data == null) {
+                                    return const CircularProgressIndicator();
+                                  }
+                                  // 'Library' is empty.
+                                  if (item.data!.isEmpty) return const Text("Nothing found!");
+                                  final data = item.data
+                                      ?.where(
+                                          (element) => element.fileExtension == 'mp3')
+                                      .toList() ??
+                                      [];
+                                  return Stack(
+                                    alignment: AlignmentDirectional.bottomEnd,
+                                    children: [
+                                      ListView.builder(
+                                          itemCount: data.length,
+                                          itemBuilder: (context, index) {
+                                            return AudioItem(item: data[index]);
+                                          })
+                                    ],
+                                  );
+                                },
+                              ),
                             )
                           ],
                         ),

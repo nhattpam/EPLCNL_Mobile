@@ -1,4 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
@@ -13,6 +14,7 @@ import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
+import 'package:video_player/video_player.dart';
 
 class ViewAllAssignmentAttempt extends StatefulWidget {
   final String assignmentId;
@@ -33,6 +35,9 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
   String lid = '';
   bool _ascendingOrder = true;
   List<AssignmentAttempt> _paginatedAssignmentAttempt = [];
+  late VideoPlayerController _videoPlayerController;
+  late ChewieAudioController _chewieController;
+  bool isLoading = true;
 
   // late bool isLoadingFeedback;
   // late bool isLoadingCourse;
@@ -53,6 +58,30 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
     isLoadingAssignmentAttempt = true;
     loadAssignmentAttemptByAssignmentId();
     super.initState();
+  }
+  @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    _chewieController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _initializeVideoPlayer(String audioUrl) async {
+    _videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(audioUrl));
+    await _videoPlayerController.initialize();
+    setState(() {
+      if (_videoPlayerController.value.isInitialized) {
+        _chewieController = ChewieAudioController(
+          autoInitialize: true,
+          videoPlayerController: _videoPlayerController,
+          autoPlay: false,
+          looping: true,
+          allowMuting: true,
+        );
+      }
+      isLoading = false;
+    });
   }
 
   Future<void> loadAssignmentAttemptByAssignmentId() async {
@@ -390,6 +419,7 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                         DateTime.parse(originalDateString.split('T')[0]);
                     String formattedDate =
                         DateFormat('dd-MM-yyyy').format(originalDate);
+                    _initializeVideoPlayer(attempt.answerAudioUrl.toString());
                     return GestureDetector(
                       onTap: () {
                         _showMultiSelect(attempt.id.toString());
@@ -454,6 +484,13 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                                       style: theme.textTheme.labelLarge,
                                     ),
                                   ),
+                                  if (attempt.answerAudioUrl != null &&
+                                      attempt.answerAudioUrl!.isNotEmpty)
+                                    isLoading
+                                        ? Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                        : ChewieAudio(controller: _chewieController),
                                   SizedBox(height: 11.v),
                                   Row(
                                     children: [

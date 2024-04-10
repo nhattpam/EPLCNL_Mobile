@@ -983,14 +983,14 @@ class _MultiTopicState extends State<MultiTopic> {
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             DoingAssignmentScreen(
-                                                assignmentID: moduleAssignmentMap[listClassTopic[index]
-                                                    .id]![assignmentIndex].id
-                                                    .toString(),
-                                                cooldownTime: Duration(
-                                                    minutes: moduleAssignmentMap[
-                                                    listClassTopic[index]
-                                                        .id]![assignmentIndex]
-                                                        .deadline as int), isOnlineClass: true,)),
+                                              assignmentID: moduleAssignmentMap[listClassTopic[index]
+                                                  .id]![assignmentIndex].id
+                                                  .toString(),
+                                              cooldownTime: Duration(
+                                                  minutes: moduleAssignmentMap[
+                                                  listClassTopic[index]
+                                                      .id]![assignmentIndex]
+                                                      .deadline as int), isOnlineClass: true,)),
                                   );
                                 }
                                 if(moduleUndoAssignmentAttempt[moduleAssignmentMap[listClassTopic[index]

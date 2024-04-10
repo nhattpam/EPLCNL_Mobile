@@ -1051,6 +1051,7 @@ class Network {
   static Future<bool> updateAssignmentAttempt(
       {required String attemptId,
         required String answerText,
+        required String answerAudioUrl,
         required String assignmentId,
        }) async {
     final apiUrl =
@@ -1059,8 +1060,10 @@ class Network {
     try {
       final Map<String, dynamic> updateData = {
         "answerText": answerText,
+        "answerAudioUrl": answerAudioUrl,
         "totalGrade": 0,
         "assignmentId": assignmentId,
+        "attemptedDate": DateTime.now.toString(),
         "learnerId": SessionManager().getLearnerId().toString(),
       };
       final response = await http.put(

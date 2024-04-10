@@ -105,7 +105,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
         await _initializeVideoPlayer(
             chosenAssignment.questionAudioUrl.toString());
       }
-      _startCooldownTimer();
+      // _startCooldownTimer();
     } catch (e) {
       // Handle errors here
       print('Error: $e');
@@ -309,9 +309,6 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                   ),
                 ),
                 SizedBox(height: 73.v),
-                if (chosenAssignment.questionText != null &&
-                    chosenAssignment.questionText!.isNotEmpty &&
-                    chosenAssignment.questionAudioUrl!.isEmpty)
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Padding(
@@ -322,22 +319,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                       ),
                     ),
                   ),
-                if (chosenAssignment.questionAudioUrl != null &&
-                    chosenAssignment.questionAudioUrl!.isNotEmpty)
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 2.h),
-                      child: Text(
-                        "Click Icon to record your Answer",
-                        style: CustomTextStyles.titleMedium18,
-                      ),
-                    ),
-                  ),
                 SizedBox(height: 24.v),
-                if (chosenAssignment.questionText != null &&
-                    chosenAssignment.questionText!.isNotEmpty &&
-                    chosenAssignment.questionAudioUrl!.isEmpty)
                   Container(
                     child: Form(
                       key: _formKey,
@@ -362,20 +344,14 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                       ),
                     ),
                   ),
-                if (chosenAssignment.questionAudioUrl != null &&
-                    chosenAssignment.questionAudioUrl!.isNotEmpty)
-                  isLoading
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : ListView(
+                      ListView(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           children: [
                             SizedBox(
                               /////Demo Record Voice
-                              // height: 520,
-                              height: 100,
+                              height: 520,
+                              // height: 100,
                               child: Column(
                                 children: [
                                   Padding(
@@ -535,43 +511,42 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                                 ],
                               ),
                             ),
-                            //////Display Demo Record
-                            // SizedBox(
-                            //   height: MediaQuery.of(context).size.height - 550,
-                            //   child: FutureBuilder<List<SongModel>>(
-                            //       future: _audioQuery.querySongs(
-                            //         sortType: null,
-                            //         orderType: OrderType.ASC_OR_SMALLER,
-                            //         uriType: UriType.EXTERNAL,
-                            //         ignoreCase: true,
-                            //       ),
-                            //       builder: (context, item) {
-                            //         if (item.data == null) return CircularProgressIndicator();
-                            //         if (item.data!.isEmpty) return Text('Nothing found!');
-                            //         final data = item.data
-                            //             ?.where(
-                            //                 (element) => element.fileExtension == 'm4a')
-                            //             .toList() ??
-                            //             [];
-                            //         return Stack(
-                            //           alignment: AlignmentDirectional.bottomEnd,
-                            //           children: [
-                            //             ListView.builder(
-                            //                 itemCount: data.length,
-                            //                 itemBuilder: (context, index) {
-                            //                   return AudioItem(item: data[index]);
-                            //                 })
-                            //           ],
-                            //         );
-                            //       }),
-                            // )
+                            ////Display Demo Record
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height - 550,
+                              child: FutureBuilder<List<SongModel>>(
+                                  future: _audioQuery.querySongs(
+                                    sortType: null,
+                                    orderType: OrderType.ASC_OR_SMALLER,
+                                    uriType: UriType.EXTERNAL,
+                                    ignoreCase: true,
+                                  ),
+                                  builder: (context, item) {
+                                    if (item.data == null) return CircularProgressIndicator();
+                                    if (item.data!.isEmpty) return Text('Nothing found!');
+                                    final data = item.data
+                                        ?.where(
+                                            (element) => element.fileExtension == 'm4a')
+                                        .toList() ??
+                                        [];
+                                    return Stack(
+                                      alignment: AlignmentDirectional.bottomEnd,
+                                      children: [
+                                        ListView.builder(
+                                            itemCount: data.length,
+                                            itemBuilder: (context, index) {
+                                              return AudioItem(item: data[index]);
+                                            })
+                                      ],
+                                    );
+                                  }),
+                            )
                           ],
                         ),
                 SizedBox(height: 30.v),
                 CustomElevatedButton(
                   onPressed: () async {
-                    if (chosenAssignment.questionAudioUrl != null &&
-                        chosenAssignment.questionAudioUrl!.isNotEmpty){
+                    if (_formKey.currentState!.validate() || _audioPath!.isNotEmpty){
                       await _uploadAudio(File(_audioPath.toString()));
                       await Network.createAssignmentAttempt(
                         assignmentId: widget.assignmentID,
@@ -601,44 +576,6 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                                     ),
                               ),
                             );
-                            _timer?.cancel();
-                            _timer = null;
-                          });
-                          // if(isSelected == true){
-                          //   nextQuestion();
-                          // }
-                        },
-                      )..show();
-                    }
-                    if (_formKey.currentState!.validate()) {
-                      await Network.createAssignmentAttempt(
-                        assignmentId: widget.assignmentID,
-                        answerText: additionalInfoController.text.toString(), answerAudioUrl: _image,
-                      );
-                      AwesomeDialog(
-                        context: context,
-                        animType: AnimType.scale,
-                        dialogType: DialogType.success,
-                        body: Center(
-                          child: Text(
-                            'Submit successfully',
-                            style: TextStyle(fontStyle: FontStyle.italic),
-                          ),
-                        ),
-                        btnOkOnPress: () {
-                          setState(() {
-                            widget.isOnlineClass
-                                ? Navigator.pop(context)
-                                : Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ViewAllAssignmentAttempt(
-                                        assignmentId: widget.assignmentID,
-                                        navigateTime: 2,
-                                      ),
-                                    ),
-                                  );
                             _timer?.cancel();
                             _timer = null;
                           });

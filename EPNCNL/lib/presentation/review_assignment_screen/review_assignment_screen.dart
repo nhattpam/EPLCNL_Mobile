@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +10,7 @@ import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/assignmentattemps.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/network/network.dart';
+import 'package:meowlish/presentation/edit_assignment_screen/edit_assignment_screen.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
@@ -19,6 +21,7 @@ import 'package:meowlish/presentation/view_all_assignment_attemp/view_all_assign
 import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
+import 'package:video_player/video_player.dart';
 
 class ReviewAssignment extends StatefulWidget {
   final String assignmentID;
@@ -48,7 +51,12 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
     '10',
   ];
   late Map<String, String> point;
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late VideoPlayerController _videoPlayerController;
+  late ChewieAudioController _chewieController;
+  late VideoPlayerController videoPlayerController;
+  late ChewieAudioController chewieController;
+  bool isLoading = true;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -59,6 +67,50 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
     loadAssignmentAttemptByLearnerId(widget.assignmentID);
     loadAssignmentAttemptByAssignmentId(widget.assignmentID);
   }
+  @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    _chewieController.dispose();
+    videoPlayerController.dispose();
+    chewieController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _initializeVideoPlayer(String audioUrl) async {
+    _videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(audioUrl));
+    await _videoPlayerController.initialize();
+    setState(() {
+      if (_videoPlayerController.value.isInitialized) {
+        _chewieController = ChewieAudioController(
+          autoInitialize: true,
+          videoPlayerController: _videoPlayerController,
+          autoPlay: false,
+          looping: true,
+          allowMuting: true,
+        );
+      }
+      isLoading = false;
+    });
+  }
+  Future<void> _initializeVideoPlayerForPeer(String audioUrl) async {
+    videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(audioUrl));
+    await videoPlayerController.initialize();
+    setState(() {
+      if (videoPlayerController.value.isInitialized) {
+        chewieController = ChewieAudioController(
+          autoInitialize: true,
+          videoPlayerController: videoPlayerController,
+          autoPlay: false,
+          looping: true,
+          allowMuting: true,
+        );
+      }
+      _isLoading = false;
+    });
+  }
+
 
   Future<void> loadAssignmentByAssignmentId() async {
     try {
@@ -67,6 +119,7 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
       setState(() {
         chosenAssignment = assignment;
       });
+
     } catch (e) {
       // Handle errors here
       print('Error: $e');
@@ -80,8 +133,12 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
           assignmentId: assignmentId, query: lid);
       setState(() {
         moduleUndoAssignmentAttempt[assignmentId] = assignment;
+
         // Add more print statements for other properties if needed
       });
+      if (moduleUndoAssignmentAttempt[assignmentId]?.first.answerAudioUrl != '') {
+        _initializeVideoPlayer(chosenAssignment.questionAudioUrl.toString());
+      }
     } catch (e) {
       // Handle errors here
       print('Error: $e');
@@ -246,13 +303,27 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                       constraints: BoxConstraints(
                           maxWidth: 280
                       ),
-                      child: Text(
-                        moduleUndoAssignmentAttempt[widget.assignmentID]
-                            ?.first
-                            ?.answerText ??
-                            '',
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 6,
+                      child: Column(
+                        children: [
+                          Text(
+                            moduleUndoAssignmentAttempt[widget.assignmentID]
+                                ?.first
+                                ?.answerText ??
+                                '',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 6,
+                          ),
+                          if (moduleUndoAssignmentAttempt[widget.assignmentID]
+                              ?.first
+                              ?.answerAudioUrl != null &&
+                              moduleUndoAssignmentAttempt[widget.assignmentID]
+                                  !.first.answerAudioUrl!.isNotEmpty)
+                            isLoading
+                                ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                                : ChewieAudio(controller: _chewieController),
+                        ],
                       ),
                     ),
                   )
@@ -260,87 +331,17 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                     children: <Widget>[
                       Expanded(
                         child: GestureDetector(
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Container(
-                                  padding: EdgeInsets.all(20),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        CustomTextFormField(
-                                          controller: additionalInfoController,
-                                          hintText: "Your Answer",
-                                          hintStyle: CustomTextStyles.titleSmallGray80001,
-                                          textInputAction: TextInputAction.done,
-                                          maxLines: 14,
-                                          prefix: Container(
-                                            margin: EdgeInsets.fromLTRB(20.h, 22.v, 7.h, 23.v),
-                                            child: CustomImageView(
-                                              imagePath: ImageConstant.imgLock,
-                                              height: 14.v,
-                                              width: 18.h,
-                                            ),
-                                          ),
-                                          prefixConstraints: BoxConstraints(maxHeight: 60.v),
-                                          contentPadding: EdgeInsets.only(
-                                            top: 21.v,
-                                            right: 30.h,
-                                            bottom: 21.v,
-                                          ),
-                                          borderDecoration: TextFormFieldStyleHelper.outlineBlack,
-                                          validator: validateAssignment,
-                                        ),
-                                        SizedBox(height: 20),
-                                        CustomElevatedButton(
-                                          onPressed: () async {
-                                            if(_formKey.currentState!.validate()) {
-                                              await Network.updateAssignmentAttempt(
-                                                attemptId: (moduleUndoAssignmentAttempt[widget.assignmentID]?.first.id).toString(),
-                                                answerText: additionalInfoController.text.toString(), assignmentId: widget.assignmentID,
-                                              );
-                                              AwesomeDialog(
-                                                context: context,
-                                                animType: AnimType.scale,
-                                                dialogType: DialogType.success,
-                                                body: Center(
-                                                  child: Text(
-                                                    'Submit successfully',
-                                                    style: TextStyle(fontStyle: FontStyle.italic),
-                                                  ),
-                                                ),
-                                                btnOkOnPress: () {
-                                                  setState(() {
-                                                    // Navigator.pop(context);
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ViewAllAssignmentAttempt(
-                                                              assignmentId: widget.assignmentID,
-                                                              navigateTime: 2,
-                                                            ),
-                                                      ),
-                                                    );
-                                                  });
-                                                  // if(isSelected == true){
-                                                  //   nextQuestion();
-                                                  // }
-                                                },
-                                              )
-                                                ..show();
-                                            }
-                                          },
-                                          text: "Edit Assignment",
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditDoingAssignmnetScreen(
+                                        assignmentID: widget.assignmentID,
+                                        cooldownTime: Duration(
+                                            minutes: chosenAssignment?.deadline ?? 0), isOnlineClass: false),
+
+                              )
                             );
                           },
                           child: Container(
@@ -369,13 +370,17 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                                     constraints: BoxConstraints(
                                       maxWidth: 280
                                     ),
-                                    child: Text(
-                                      moduleUndoAssignmentAttempt[widget.assignmentID]
-                                          ?.first
-                                          ?.answerText ??
-                                          '',
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 6,
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          moduleUndoAssignmentAttempt[widget.assignmentID]
+                                              ?.first
+                                              ?.answerText ??
+                                              '',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 6,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -383,10 +388,23 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                             ),
                           ),
                         ),
+
                       ),
                     ],
                   ),
                 ),
+                SizedBox(height: 24.v),
+                if (moduleUndoAssignmentAttempt[widget.assignmentID]
+                    ?.first
+                    ?.answerAudioUrl != null &&
+                    moduleUndoAssignmentAttempt[widget.assignmentID]
+                    !.first.answerAudioUrl!.isNotEmpty)
+                  isLoading
+                      ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                      : ChewieAudio(controller: _chewieController),
+
                 SizedBox(height: 24.v),
                 if (moduleUngradeAssignmentAttempt[widget.assignmentID]
                         ?.isNotEmpty ??
@@ -629,6 +647,7 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                   itemCount: _paginatedAssignmentAttempt.length,
                   itemBuilder: (context, index) {
                     final attempt = _paginatedAssignmentAttempt[index];
+                    _initializeVideoPlayerForPeer(attempt.answerAudioUrl.toString());
                     if (!point.containsKey(attempt.id)) {
                       point[attempt.id.toString()] =
                           ''; // Set default value to 2
@@ -703,6 +722,13 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                                       style: theme.textTheme.labelLarge,
                                     ),
                                   ),
+                                  if (attempt.answerAudioUrl != null &&
+                                      attempt.answerAudioUrl!.isNotEmpty)
+                                    _isLoading
+                                        ? Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                        : ChewieAudio(controller: chewieController),
                                   SizedBox(height: 11.v),
                                   Row(
                                     children: [

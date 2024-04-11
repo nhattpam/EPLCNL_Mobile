@@ -241,6 +241,8 @@ class HomePageState extends State<HomePage> {
             label: 'Profile',
           ),
         ],
+        selectedFontSize: 12,
+        selectedLabelStyle: CustomTextStyles.labelLargeGray700,
         selectedItemColor: Color(0xbbff9300),
         unselectedItemColor: Color(0xffff9300),
       ),

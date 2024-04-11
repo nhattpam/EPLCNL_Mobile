@@ -7,8 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/presentation/create_new_password_open_screen/create_new_password_open_screen.dart';
 
-import '../../network/network.dart';
-
 class OTPForgotOpenScreen extends StatefulWidget {
   final EmailOTP myauth;
   final String email;

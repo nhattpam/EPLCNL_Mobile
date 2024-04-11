@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/assignmentattemps.dart';
-import 'package:meowlish/data/models/feedbacks.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
@@ -465,7 +464,10 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                                       attempt.answerAudioUrl!.isNotEmpty)
                                     isLoading
                                         ? Center(
-                                      child: CircularProgressIndicator(),
+                                      child: Skeleton(
+                                        width: 400,
+                                        height: 40,
+                                      ),
                                     )
                                         : ChewieAudio(controller: _chewieControllers[index]),
                                   SizedBox(height: 11.v),

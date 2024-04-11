@@ -8,16 +8,22 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:meowlish/core/app_export.dart';
+import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/doing_assignment_screen/audio_item.dart';
+import 'package:meowlish/presentation/home_page/home_page.dart';
+import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
+import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
+import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
+import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/presentation/view_all_assignment_attemp/view_all_assignment_attemp.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:video_player/video_player.dart';
 import 'package:record/record.dart';
+import 'package:video_player/video_player.dart';
 
 class DoingAssignmentScreen extends StatefulWidget {
   final String assignmentID;
@@ -45,6 +51,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
   bool isLoading = true;
   late VideoPlayerController _videoPlayerController;
   late ChewieAudioController _chewieController;
+  int _currentIndex = 0;
 
   /////Record
   final _record = Record();
@@ -291,8 +298,11 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                     chosenAssignment.questionAudioUrl!.isNotEmpty)
                   isLoading
                       ? Center(
-                          child: CircularProgressIndicator(),
-                        )
+                    child: Skeleton(
+                      width: 400,
+                      height: 40,
+                    ),
+                  )
                       : ChewieAudio(controller: _chewieController),
                 Center(
                   child: Row(
@@ -603,6 +613,63 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
               ],
             ),
           ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 0) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            }
+            if (index == 1) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+              );
+            }
+            if (index == 2) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+              );
+            }
+            if (index == 3) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => TransactionsPage()),
+              );
+            }
+            if (index == 4) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ProfilesPage()),
+              );
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              label: 'My Courses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wallet),
+              label: 'Transaction',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          selectedItemColor: Color(0xbbff9300),
+          unselectedItemColor: Color(0xffff9300),
         ),
       ),
     );

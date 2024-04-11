@@ -1,10 +1,6 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:internet_file/internet_file.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
@@ -23,7 +19,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../data/models/topics.dart';
 import '../../../network/network.dart';
-import '../mentor_curiculum/mentor_curiculum.dart';
 import '../single_course_meet_details_curriculcum_page/single_course_meet_details_curriculcum_page.dart';
 
 // ignore_for_file: must_be_immutable

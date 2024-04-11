@@ -1,4 +1,3 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,7 +22,6 @@ import 'package:meowlish/presentation/my_course_completed_page/my_course_complet
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/review_assignment_screen/review_assignment_screen.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
-import 'package:meowlish/presentation/view_all_assignment_attemp/view_all_assignment_attemp.dart';
 import 'package:meowlish/session/session.dart';
 
 class CurriculumScreen extends StatefulWidget {

@@ -20,7 +20,6 @@ import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/presentation/view_all_assignment_attemp/view_all_assignment_attemp.dart';
 import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
-import 'package:meowlish/widgets/custom_text_form_field.dart';
 import 'package:video_player/video_player.dart';
 
 class ReviewAssignment extends StatefulWidget {
@@ -154,7 +153,7 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
       });
       if (moduleUndoAssignmentAttempt[assignmentId]?.first.answerAudioUrl !=
           '') {
-        _initializeVideoPlayer(chosenAssignment.questionAudioUrl.toString());
+        _initializeVideoPlayer((moduleUndoAssignmentAttempt[assignmentId]?.first.answerAudioUrl).toString());
       }
     } catch (e) {
       // Handle errors here
@@ -295,9 +294,12 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                   ),
                 if (chosenAssignment.questionAudioUrl != null &&
                     chosenAssignment.questionAudioUrl!.isNotEmpty)
-                  isLoading
+                  isLoadingQuestion
                       ? Center(
-                    child: CircularProgressIndicator(),
+                    child: Skeleton(
+                      width: 400,
+                      height: 40,
+                    ),
                   )
                       : ChewieAudio(controller: _chewieQuestionController),
                 Center(
@@ -363,8 +365,11 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                                         .isNotEmpty)
                                   isLoading
                                       ? Center(
-                                          child: CircularProgressIndicator(),
-                                        )
+                                    child: Skeleton(
+                                      width: 400,
+                                      height: 40,
+                                    ),
+                                  )
                                       : ChewieAudio(
                                           controller: _chewieController),
                               ],
@@ -445,7 +450,10 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                         .isNotEmpty)
                   isLoading
                       ? Center(
-                          child: CircularProgressIndicator(),
+                          child: Skeleton(
+                            width: 400,
+                            height: 40,
+                          ),
                         )
                       : ChewieAudio(controller: _chewieController),
                 SizedBox(height: 24.v),
@@ -772,7 +780,10 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                                       attempt.answerAudioUrl!.isNotEmpty)
                                     _isLoading
                                         ? Center(
-                                      child: CircularProgressIndicator(),
+                                      child: Skeleton(
+                                        width: 400,
+                                        height: 40,
+                                      ),
                                     )
                                         : ChewieAudio(controller: _chewieControllers[index]),
                                   SizedBox(height: 11.v),

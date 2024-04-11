@@ -2,19 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:internet_file/internet_file.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
-import 'package:meowlish/data/models/quizattempts.dart';
-import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/presentation/single_course_meet_details_curriculcum_page/single_course_meet_details_curriculcum_page.dart';
 import 'package:meowlish/session/session.dart';
-import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -291,88 +286,9 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
                                                       ),
                                                       child: Text('Meet URL'),
                                                     ),
-                                                    VerticalDivider(),
-                                                    Padding(
-                                                      padding:
-                                                      const EdgeInsets.only(left: 8.0),
-                                                      child: ElevatedButton(
-                                                        onPressed: () {
-                                                          // for (int lessonIndex = 0; lessonIndex < lessonMaterials.length; lessonIndex++) {
-                                                          //   downloadFile(lessonMaterials[lessonIndex].materialUrl.toString(), lessonIndex);
-                                                          // }
-                                                          _showMultiSelect(
-                                                              data?[index]
-                                                                  .classLesson
-                                                                  ?.id ??
-                                                                  '');
-                                                        },
-                                                        style: ElevatedButton.styleFrom(
-                                                          minimumSize: Size(100, 50),
-                                                          primary: Color(0xffefc83c),
-                                                          // Background color
-                                                          onPrimary: Colors.white,
-                                                          // Text color
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius:
-                                                            BorderRadius.circular(10.0),
-                                                          ),
-                                                        ),
-                                                        child: Text('Materials'),
-                                                      ),
-                                                    )
                                                   ],
                                                 ),
                                                 SizedBox(height: 5.v),
-                                                Row(
-                                                  children: [
-                                                    ElevatedButton(
-                                                      onPressed: () {
-                                                        _showTopic(classModule?.classLesson?.id ?? '', false);
-                                                      },
-                                                      style: ElevatedButton.styleFrom(
-                                                        minimumSize: Size(100, 50),
-                                                        primary: Color(0xFFF887A8),
-                                                        // Background color
-                                                        onPrimary: Colors.white,
-                                                        // Text color
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius:
-                                                          BorderRadius.circular(10.0),
-                                                        ),
-                                                      ),
-                                                      child: Text('Topic'),
-                                                    ),
-                                                    VerticalDivider(),
-                                                    Padding(
-                                                      padding:
-                                                      const EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: ElevatedButton(
-                                                        onPressed: () {
-                                                          _showTopic(classModule
-                                                              ?.classLesson?.id ??
-                                                              '', true);
-                                                        },
-                                                        style: ElevatedButton
-                                                            .styleFrom(
-                                                          minimumSize: Size(
-                                                              100, 50),
-                                                          primary: Colors
-                                                              .redAccent,
-                                                          // Background color
-                                                          onPrimary: Colors.white,
-                                                          // Text color
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius:
-                                                            BorderRadius.circular(
-                                                                10.0),
-                                                          ),
-                                                        ),
-                                                        child: Text('Assignment'),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
                                               ],
                                             ),
                                           ],

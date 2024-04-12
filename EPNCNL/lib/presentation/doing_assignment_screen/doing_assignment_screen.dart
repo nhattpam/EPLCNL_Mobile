@@ -121,6 +121,13 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
     }
   }
 
+  void handleDataChanged(String data) {
+    // Do something with the received data.
+    setState(() {
+      _audioPath = data;
+    });
+  }
+
   String? validateAssignment(String? assignment) {
     if (assignment == null || assignment.isEmpty) {
       return 'Assignment cannot be empty';
@@ -556,7 +563,7 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                                       ListView.builder(
                                           itemCount: data.length,
                                           itemBuilder: (context, index) {
-                                            return AudioItem(item: data[index]);
+                                            return AudioItem(item: data[index], onDataChanged: handleDataChanged);
                                           })
                                     ],
                                   );

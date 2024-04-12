@@ -1010,7 +1010,8 @@ class _MultiTopicState extends State<MultiTopic> {
                                 loadAssignmentAttemptByAssignmentId(moduleAssignmentMap[listClassTopic[index]
                                     .id]![assignmentIndex].id
                                     .toString());
-                                loadAssignmentAttemptsByLearnerId();
+                                await loadQuiz();
+                                await loadAssignmentAttemptsByLearnerId();
                               },
                               child: Container(
                                 constraints:

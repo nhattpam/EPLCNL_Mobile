@@ -3,9 +3,10 @@ import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class AudioItem extends StatefulWidget {
-  const AudioItem({super.key, required this.item});
+  const AudioItem({Key? key, required this.item, required this.onDataChanged});
 
   final SongModel item;
+  final Function(String data) onDataChanged;
 
   @override
   State<AudioItem> createState() => _AudioItemState();
@@ -30,6 +31,8 @@ class _AudioItemState extends State<AudioItem> {
         setState(() {
           _isPlay = !_isPlay;
         });
+        // Call the callback function to send data back to the parent widget.
+        widget.onDataChanged(widget.item.uri.toString());
       },
       child: ListTile(
         title: Text(widget.item.title),

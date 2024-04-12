@@ -255,6 +255,12 @@ class _EditDoingAssignmnetScreenState extends State<EditDoingAssignmnetScreen> {
     return "";
   }
 
+  void handleDataChanged(String data) {
+    // Do something with the received data.
+    setState(() {
+      _audioPath = data;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -543,7 +549,7 @@ class _EditDoingAssignmnetScreenState extends State<EditDoingAssignmnetScreen> {
                         ],
                       ),
                     ),
-                    ////Display Demo Record
+                    //Display Demo Record
                     SizedBox(
                       height: MediaQuery.of(context).size.height - 550,
                       child: FutureBuilder<List<SongModel>>(
@@ -567,7 +573,7 @@ class _EditDoingAssignmnetScreenState extends State<EditDoingAssignmnetScreen> {
                                 ListView.builder(
                                     itemCount: data.length,
                                     itemBuilder: (context, index) {
-                                      return AudioItem(item: data[index]);
+                                      return AudioItem(item: data[index], onDataChanged: handleDataChanged);
                                     })
                               ],
                             );

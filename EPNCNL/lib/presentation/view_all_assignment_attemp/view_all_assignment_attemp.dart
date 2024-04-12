@@ -203,6 +203,7 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                             btnOkOnPress: () {
                               setState(() {
                                 Navigator.pop(context);
+                                Navigator.pop(context);
                               });
                               // if(isSelected == true){
                               //   nextQuestion();

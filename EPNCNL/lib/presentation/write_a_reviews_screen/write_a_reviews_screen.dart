@@ -84,12 +84,11 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
           child: FutureBuilder<List<FedBack>>(
             future: _userList.getFeedback(
                 query: SessionManager().getLearnerId().toString(),
-                courseId: widget.courseID
-            ),
+                courseId: widget.courseID),
             builder: (context, snapshot) {
               List<FedBack>? data = snapshot.data;
               print(data);
-              if(data?.isNotEmpty ?? false){
+              if (data?.isNotEmpty ?? false) {
                 num vote = data?[0]?.rating ?? 0;
                 String feedbackContent = '${data?[0].feedbackContent}';
                 return Container(
@@ -122,13 +121,10 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                                     allowHalfRating: true,
                                     itemCount: 5,
                                     itemPadding:
-                                    EdgeInsets.symmetric(
-                                        horizontal: 4),
-                                    itemBuilder: (context,
-                                        index) =>
-                                        Icon(Icons.star,
-                                            color: Colors
-                                                .amberAccent),
+                                        EdgeInsets.symmetric(horizontal: 4),
+                                    itemBuilder: (context, index) => Icon(
+                                        Icons.star,
+                                        color: Colors.amberAccent),
                                     onRatingUpdate: (rate) async {
                                       setState(() {
                                         rating = rate;
@@ -149,16 +145,24 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                           textInputAction: TextInputAction.done,
                           maxLines: 8,
                           contentPadding: EdgeInsets.all(20.h),
-                          borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
+                          borderDecoration:
+                              TextFormFieldStyleHelper.outlineBlackTL16,
                           validator: validateReview,
                         ),
                       ),
-                      SizedBox(height: 97.v), // Adjust the height according to your need
+                      SizedBox(height: 97.v),
+                      // Adjust the height according to your need
                       CustomElevatedButton(
-                        onPressed: (){
-                          if (_formKey.currentState!.validate()){
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
                             if (rating >= 1 && rating <= 5) {
-                              Network.updateFeedback(feedbackId: data?[0]?.id ?? '',createdDate: data?[0]?.createdDate ?? '', feedbackContent: writeAnythingAboutProductController.text, courseId: widget.courseID, rating: rating.toString());
+                              Network.updateFeedback(
+                                  feedbackId: data?[0]?.id ?? '',
+                                  createdDate: data?[0]?.createdDate ?? '',
+                                  feedbackContent:
+                                      writeAnythingAboutProductController.text,
+                                  courseId: widget.courseID,
+                                  rating: rating.toString());
                               AwesomeDialog(
                                 context: context,
                                 animType: AnimType.scale,
@@ -166,7 +170,8 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                                 body: Center(
                                   child: Text(
                                     'Thank you for your feedback!!',
-                                    style: TextStyle(fontStyle: FontStyle.italic),
+                                    style:
+                                        TextStyle(fontStyle: FontStyle.italic),
                                   ),
                                 ),
                                 btnOkOnPress: () {
@@ -185,16 +190,15 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                                 body: Center(
                                   child: Text(
                                     'Please select a rating between 1 and 5!!!',
-                                    style: TextStyle(fontStyle: FontStyle.italic),
+                                    style:
+                                        TextStyle(fontStyle: FontStyle.italic),
                                   ),
                                 ),
                                 btnOkOnPress: () {
-                                  setState(() {
-                                  });
+                                  setState(() {});
                                 },
                                 btnOkColor: Colors.red,
                               )..show();
-
                             }
                           }
                         },
@@ -235,13 +239,10 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                                   allowHalfRating: true,
                                   itemCount: 5,
                                   itemPadding:
-                                  EdgeInsets.symmetric(
-                                      horizontal: 4),
-                                  itemBuilder: (context,
-                                      index) =>
-                                      Icon(Icons.star,
-                                          color: Colors
-                                              .amberAccent),
+                                      EdgeInsets.symmetric(horizontal: 4),
+                                  itemBuilder: (context, index) => Icon(
+                                      Icons.star,
+                                      color: Colors.amberAccent),
                                   onRatingUpdate: (rate) async {
                                     if (rate >= 1 && rate <= 5) {
                                       setState(() {
@@ -257,12 +258,12 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                                         body: Center(
                                           child: Text(
                                             'Please select a rating between 1 and 5!!!!',
-                                            style: TextStyle(fontStyle: FontStyle.italic),
+                                            style: TextStyle(
+                                                fontStyle: FontStyle.italic),
                                           ),
                                         ),
                                         btnOkOnPress: () {
-                                          setState(() {
-                                          });
+                                          setState(() {});
                                         },
                                         btnOkColor: Colors.red,
                                       )..show();
@@ -281,20 +282,26 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                       child: CustomTextFormField(
                         controller: writeAnythingAboutProductController,
                         hintText:
-                        "Would you like to write anything about this course?",
+                            "Would you like to write anything about this course?",
                         textInputAction: TextInputAction.done,
                         maxLines: 8,
                         contentPadding: EdgeInsets.all(20.h),
-                        borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
+                        borderDecoration:
+                            TextFormFieldStyleHelper.outlineBlackTL16,
                         validator: validateReview,
                       ),
                     ),
-                    SizedBox(height: 97.v), // Adjust the height according to your need
+                    SizedBox(height: 97.v),
+                    // Adjust the height according to your need
                     CustomElevatedButton(
-                      onPressed: (){
-                        if (_formKey.currentState!.validate()){
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
                           if (rating >= 1 && rating <= 5) {
-                            Network.createFeedback(feedbackContent: writeAnythingAboutProductController.text, courseId: widget.courseID, rating: rating.toString());
+                            Network.createFeedback(
+                                feedbackContent:
+                                    writeAnythingAboutProductController.text,
+                                courseId: widget.courseID,
+                                rating: rating.toString());
                             AwesomeDialog(
                               context: context,
                               animType: AnimType.scale,
@@ -325,8 +332,7 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                                 ),
                               ),
                               btnOkOnPress: () {
-                                setState(() {
-                                });
+                                setState(() {});
                               },
                               btnOkColor: Colors.red,
                             )..show();
@@ -341,7 +347,6 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
               );
             },
           ),
-
         ),
       ),
     );
@@ -386,14 +391,24 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  chosenCourse.category?.description ?? '',
-                  style: CustomTextStyles.labelLargeOrangeA700,
+                Container(
+                  constraints: const BoxConstraints(
+                    maxWidth: 160,
+                  ),
+                  child: Text(
+                    chosenCourse.category?.description ?? '',
+                    style: CustomTextStyles.labelLargeOrangeA700,
+                  ),
                 ),
                 SizedBox(height: 7.v),
-                Text(
-                  chosenCourse.name?.toString() ?? '',
-                  style: theme.textTheme.titleMedium,
+                Container(
+                  constraints: const BoxConstraints(
+                    maxWidth: 160,
+                  ),
+                  child: Text(
+                    chosenCourse.name?.toString() ?? '',
+                    style: theme.textTheme.titleMedium,
+                  ),
                 ),
               ],
             ),

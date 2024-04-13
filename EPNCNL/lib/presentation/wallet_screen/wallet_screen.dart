@@ -738,7 +738,7 @@ class _RequestDetailState extends State<RequestDetail> {
                                   SizedBox(height: 10),
                                   Align(
                                       alignment: Alignment.centerLeft,
-                                      child: Text("Class Topic: ",
+                                      child: Text("Topic: ",
                                           style: CustomTextStyles
                                               .labelLargeOrangeA700)),
                                 ],

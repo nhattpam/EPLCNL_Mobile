@@ -223,7 +223,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   }
   String? validateGender(String? fullname) {
     if (fullname == null || fullname.isEmpty) {
-      return 'Full Name cannot be empty';
+      return 'Gender cannot be empty';
     }
     return null;
   }

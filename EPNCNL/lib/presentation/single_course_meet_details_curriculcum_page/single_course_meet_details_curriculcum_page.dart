@@ -717,7 +717,7 @@ class _MultiSelectState extends State<MultiSelect> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Adjust the height as needed
-          Center(child: Text('Choose Topic to Down')),
+          Center(child: Text('Choose Topic to download')),
           SingleChildScrollView(
             child: ListBody(
               children: listClassTopic

@@ -7,6 +7,7 @@ import 'package:meowlish/data/models/accounts.dart';
 import 'package:meowlish/data/models/assignmentattemps.dart';
 import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/categories.dart';
+import 'package:meowlish/data/models/centers.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/feedbacks.dart';
@@ -463,7 +464,7 @@ class Network {
       if (response.statusCode == 200) {
         // If the request is successful, parse the JSON response
         final dynamic tutorJson = jsonDecode(response.body);
-
+        print(tutorJson);
         // Map the JSON object to a User object and return it
         return Tutor.fromJson(tutorJson);
       } else {
@@ -612,7 +613,6 @@ class Network {
       String address,
       bool isActive,
       String createdDate,
-      String createdBy,
       String note) async {
     String accountId = SessionManager().getUserId().toString();
     print(accountId);
@@ -2377,6 +2377,37 @@ static Future<String> createTransactionInWallet({
       print('Create peer-review failed' + response.statusCode.toString());
       // Print the JSON data before making the API call
       print('JSON Data: $jsonData');
+    }
+  }
+  ///////Center
+  static Future<List<Center>> getCenter() async {
+    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/centers';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 201) {
+        // If the request is successful, parse the JSON response
+        final List<dynamic> centerListJson = jsonDecode(response.body);
+        // Map each JSON object to a Pet object and return a list of pets
+        final List<Center> centerList = centerListJson
+            .map((json) => Center.fromJson(json as Map<String, dynamic>))
+            .toList();
+
+        return centerList;
+      } else {
+        // If the request fails, throw an exception or return an empty list
+        throw Exception(
+            'Failed to fetch center. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
     }
   }
 

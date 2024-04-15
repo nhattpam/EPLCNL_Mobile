@@ -459,7 +459,6 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
                 addressController.text,
                 account?.isActive ?? true,
                 account?.createdDate ?? '',
-                account?.createdBy ?? '',
                 account?.note ?? '');
           } else {
             Network.updateProfile(
@@ -473,7 +472,6 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
                 addressController.text,
                 account?.isActive ?? true,
                 account?.createdDate ?? '',
-                account?.createdBy ?? '',
                 account?.note ?? '');
           }
           AwesomeDialog(

@@ -36,6 +36,7 @@ class HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   late List<Category> listCategory = [];
   late List<Course> listCourse = [];
+  late List<Center> listCenter = [];
   late List<Tutor> listTutor = [];
   late Account? account = Account();
   Map<String, List<Enrollment>> moduleEnrollmentMap = {};
@@ -53,6 +54,7 @@ class HomePageState extends State<HomePage> {
     loadCategories();
     loadCourse();
     loadTutor();
+    // loadCenter();
     // Future.delayed(const Duration(seconds: 30), () {
     // });
     fetchAccountData();
@@ -85,6 +87,14 @@ class HomePageState extends State<HomePage> {
     });
     loadEnrollments();
   }
+  // void loadCenter() async {
+  //   List<Centers> loadedCourse = await Network.getCenter();
+  //   setState(() {
+  //     listCenter = loadedCourse;
+  //     print(listCenter);
+  //   });
+  //   loadEnrollments();
+  // }
 
   void loadTutor() async {
     List<Tutor> loadedTutor = await Network.getTutor();

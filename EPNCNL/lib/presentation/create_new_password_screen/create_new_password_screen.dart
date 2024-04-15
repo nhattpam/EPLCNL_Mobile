@@ -242,7 +242,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
               account?.address ?? '',
               account?.isActive ?? true,
               account?.createdDate ?? '',
-              account?.createdBy ?? '',
               account?.note ?? '');
           AwesomeDialog(
             context: context,

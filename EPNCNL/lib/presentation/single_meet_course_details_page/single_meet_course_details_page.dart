@@ -390,7 +390,8 @@ class SingleMeetCourseDetailsPageState
               width: 54.adaptSize),
           ),
         if(isLoadingTutor == false)
-        Padding(
+          chosenTutor?.isFreelancer ?? false
+        ? Padding(
           padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -410,6 +411,38 @@ class SingleMeetCourseDetailsPageState
             ],
           ),
         )
+        : Padding(
+          padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 250,
+                ),
+                child: Text(
+                    "${chosenTutor.center?.name ?? ""}",
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                    style: CustomTextStyles.titleMedium17),
+              ),
+              Text("${chosenTutor.center?.email ?? ""}",
+                  style: theme.textTheme.labelLarge),
+              // Container(
+              //   constraints: const BoxConstraints(
+              //     maxWidth: 250,
+              //   ),
+              //   child: Text(
+              //       "${chosenTutor.account?.fullName ?? ""}",
+              //       softWrap: true,
+              //       overflow: TextOverflow.ellipsis,
+              //       style: CustomTextStyles.titleMedium17),
+              // ),
+              // Text("${chosenTutor.account?.email ?? ""}",
+              //     style: theme.textTheme.labelLarge)
+            ],
+          ),
+        )
         else  Padding(
           padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
           child: Column(
@@ -420,7 +453,6 @@ class SingleMeetCourseDetailsPageState
             ],
           ),
         ),
-
         Spacer(),
         // Icon(
         //   Icons.chat_outlined,

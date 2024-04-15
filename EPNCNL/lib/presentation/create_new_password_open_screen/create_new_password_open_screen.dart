@@ -85,7 +85,6 @@ class _CreateNewPasswordOpenScreenState extends State<CreateNewPasswordOpenScree
             listAccount[0]?.address ?? '',
             listAccount[0]?.isActive ?? true,
             listAccount[0]?.createdDate ?? '',
-            listAccount[0]?.createdBy ?? '',
             listAccount[0]?.note ?? '');
         if (update) {
           if (context != null) {

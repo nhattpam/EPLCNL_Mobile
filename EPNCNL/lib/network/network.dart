@@ -15,6 +15,7 @@ import 'package:meowlish/data/models/forums.dart';
 import 'package:meowlish/data/models/learners.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/data/models/lessons.dart';
+import 'package:meowlish/data/models/materials.dart';
 import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/data/models/paperworks.dart';
 import 'package:meowlish/data/models/profilecertificates.dart';
@@ -814,6 +815,7 @@ class Network {
   static Future<List<Lesson>> getLessonsByModuleId(String moduleId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/modules/$moduleId/lessons'; // Replace with your API URL
+    print(apiUrl);
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -958,12 +960,40 @@ class Network {
     }
   }
 
+  static Future<List<Materials>> getMaterialByLessonId(String lessonId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/lessons/$lessonId/materials'; // Replace with your API URL
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> materialListJson = jsonDecode(response.body);
+
+        return materialListJson
+            .map((json) => Materials.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
   // assignment
-  static Future<List<Assignment>> getAssignmentByTopicId(
-      String topicId) async {
+  static Future<List<Assignment>> getAssignmentByTopicId(String topicId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/topics/$topicId/assignments'; // Replace with your API URL
-      print(apiUrl);
+    print(apiUrl);
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -1048,15 +1078,16 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
-  static Future<bool> updateAssignmentAttempt(
-      {required String attemptId,
-        required String answerText,
-        required String answerAudioUrl,
-        required String assignmentId,
-       }) async {
+
+  static Future<bool> updateAssignmentAttempt({
+    required String attemptId,
+    required String answerText,
+    required String answerAudioUrl,
+    required String assignmentId,
+  }) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/assignment-attempts/$attemptId';
-    print(apiUrl);// Replace with your API URL
+    print(apiUrl); // Replace with your API URL
     try {
       final Map<String, dynamic> updateData = {
         "answerText": answerText,
@@ -1074,12 +1105,13 @@ class Network {
         },
         body: jsonEncode(updateData),
       );
-        print(jsonEncode(updateData));
+      print(jsonEncode(updateData));
       if (response.statusCode == 200) {
         print('Assignment Attempt updated successfully.');
         return true; // Password updated successfully, return true.
       } else {
-        print('Failed to Assignment Attempt. Status code: ${response.statusCode}');
+        print(
+            'Failed to Assignment Attempt. Status code: ${response.statusCode}');
         return false; // Password update failed, return false.
       }
     } catch (e) {
@@ -1155,8 +1187,8 @@ class Network {
     }
   }
 
-  static Future<List<AssignmentAttempt>>
-      getAssignmentAttemptByAssignmentId(String assignmentId) async {
+  static Future<List<AssignmentAttempt>> getAssignmentAttemptByAssignmentId(
+      String assignmentId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/assignments/$assignmentId/assignment-attempts';
     print(apiUrl); // Replace with your API URL
@@ -1184,8 +1216,10 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
+
   static Future<List<AssignmentAttempt>>
-      getAssignmentAttemptByAssignmentIdAndLearnerId(String assignmentId) async {
+      getAssignmentAttemptByAssignmentIdAndLearnerId(
+          String assignmentId) async {
     String lid = SessionManager().getLearnerId().toString();
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/assignment-attempts/$assignmentId/assignments/$lid/learners';
@@ -1244,7 +1278,6 @@ class Network {
       throw Exception('An error occurred: $e');
     }
   }
-
 
   // quiz
   static Future<List<Quiz>> getQuizByModuleId(String moduleId) async {
@@ -1456,11 +1489,10 @@ class Network {
   }
 
 //////////Transaction
-  static Future<String> createTransaction({
-    required String courseId,
-    required double amount,
-    required String paymentMethodId
-  }) async {
+  static Future<String> createTransaction(
+      {required String courseId,
+      required double amount,
+      required String paymentMethodId}) async {
     final userData = {
       "paymentMethodId": paymentMethodId,
       "amount": amount,
@@ -1495,8 +1527,9 @@ class Network {
       return "null transactionId";
     }
   }
+
   ////Create money in wallet
-static Future<String> createTransactionInWallet({
+  static Future<String> createTransactionInWallet({
     required double amount,
   }) async {
     final userData = {
@@ -1558,6 +1591,7 @@ static Future<String> createTransactionInWallet({
       throw Exception('An error occurred: $e');
     }
   }
+
   static Future<bool> payTransactionByWallet(String? transactionId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/transactions/$transactionId/wallet-payment'; // Replace with your API URL
@@ -1588,7 +1622,7 @@ static Future<String> createTransactionInWallet({
       String? transactionId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/transactions/$transactionId';
-    print(apiUrl);// Replace with your API URL
+    print(apiUrl); // Replace with your API URL
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -1687,7 +1721,8 @@ static Future<String> createTransactionInWallet({
   //   }
   // }
 
-  static Future<Enrollment> getEnrollmentByLearnerAndCourseId(String learnerId, String courseId) async {
+  static Future<Enrollment> getEnrollmentByLearnerAndCourseId(
+      String learnerId, String courseId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/enrollments/learners/$learnerId/courses/$courseId';
     print(apiUrl);
@@ -1752,7 +1787,8 @@ static Future<String> createTransactionInWallet({
     }
   }
 
-  static Future<List<Enrollment>> getEnrollmentByCourseId(String courseId) async {
+  static Future<List<Enrollment>> getEnrollmentByCourseId(
+      String courseId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/courses/$courseId/enrollments'; // Replace with your API URL
     print(apiUrl);
@@ -1782,7 +1818,8 @@ static Future<String> createTransactionInWallet({
   }
 
   static Future<int> getLearningScoreByEnrollmentId(String enrollmentId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/enrollments/$enrollmentId/learning-score';
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/enrollments/$enrollmentId/learning-score';
     print(apiUrl);
     try {
       final response = await http.get(
@@ -1798,7 +1835,8 @@ static Future<String> createTransactionInWallet({
         // Parse the response body as an integer
         return int.parse(response.body);
       } else {
-        throw Exception('Failed to fetch enrollment. Status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to fetch enrollment. Status code: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('An error occurred: $e');
@@ -1806,7 +1844,8 @@ static Future<String> createTransactionInWallet({
   }
 
   static Future<int> getCourseScoreByEnrollmentId(String enrollmentId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/enrollments/$enrollmentId/course-score';
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/enrollments/$enrollmentId/course-score';
     print(apiUrl);
     try {
       final response = await http.get(
@@ -1822,7 +1861,8 @@ static Future<String> createTransactionInWallet({
         // Parse the response body as an integer
         return int.parse(response.body);
       } else {
-        throw Exception('Failed to fetch course score. Status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to fetch course score. Status code: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('An error occurred: $e');
@@ -2023,11 +2063,11 @@ static Future<String> createTransactionInWallet({
   }
 
   static Future<bool> updateFeedback(
-  {required String feedbackId,
-    required String createdDate,
-    required String feedbackContent,
-    required String courseId,
-    required String rating}) async {
+      {required String feedbackId,
+      required String createdDate,
+      required String feedbackContent,
+      required String courseId,
+      required String rating}) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/feedbacks/$feedbackId'; // Replace with your API URL
     try {
@@ -2096,8 +2136,10 @@ static Future<String> createTransactionInWallet({
       throw Exception('An error occurred: $e');
     }
   }
+
   ////Wallets History
-  static Future<List<WalletHistory>> getWalletHistoryByWalletId(String walletId) async {
+  static Future<List<WalletHistory>> getWalletHistoryByWalletId(
+      String walletId) async {
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/wallets/$walletId/wallet-histories'; // Replace with your API URL
     print(apiUrl);
@@ -2112,7 +2154,9 @@ static Future<String> createTransactionInWallet({
       if (response.statusCode == 200) {
         final List<dynamic> wallethistoriesListJson = jsonDecode(response.body);
 
-        return wallethistoriesListJson.map((json) => WalletHistory.fromJson(json)).toList();
+        return wallethistoriesListJson
+            .map((json) => WalletHistory.fromJson(json))
+            .toList();
       } else {
         // If the request fails, throw an exception or return null
         throw Exception(
@@ -2123,6 +2167,7 @@ static Future<String> createTransactionInWallet({
       throw Exception('An error occurred: $e');
     }
   }
+
   ////Refund-Survey
   static Future<void> createRefundSurvey({
     required String refundRequestId,
@@ -2220,8 +2265,10 @@ static Future<String> createTransactionInWallet({
       throw Exception('An error occurred: $e');
     }
   }
+
   static Future<RefundRequest> getRefundRequestById(String refundId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/refund-requests/$refundId';
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/refund-requests/$refundId';
 
     try {
       final response = await http.get(
@@ -2255,8 +2302,10 @@ static Future<String> createTransactionInWallet({
     }
   }
 
-  static Future<List<RefundSurvey>> getRefundSurveyByRefundRequestId(String refundId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/refund-requests/$refundId/refund-surveys';
+  static Future<List<RefundSurvey>> getRefundSurveyByRefundRequestId(
+      String refundId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/refund-requests/$refundId/refund-surveys';
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -2283,7 +2332,8 @@ static Future<String> createTransactionInWallet({
   }
 
   /////Profile-Certificates
-  static Future<List<ProfileCertificate>> getProfileCertificateByLearnerId() async {
+  static Future<List<ProfileCertificate>>
+      getProfileCertificateByLearnerId() async {
     String lid = SessionManager().getLearnerId().toString();
     final apiUrl =
         'https://nhatpmse.twentytwo.asia/api/learners/$lid/profile-certificates'; // Replace with your API URL
@@ -2297,7 +2347,8 @@ static Future<String> createTransactionInWallet({
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> profileCertificateListJson = jsonDecode(response.body);
+        final List<dynamic> profileCertificateListJson =
+            jsonDecode(response.body);
 
         return profileCertificateListJson
             .map((json) => ProfileCertificate.fromJson(json))
@@ -2312,8 +2363,11 @@ static Future<String> createTransactionInWallet({
       throw Exception('An error occurred: $e');
     }
   }
-  static Future<ProfileCertificate> getProfileCertificate(String profileId) async {
-    final apiUrl = 'https://nhatpmse.twentytwo.asia/api/profile-certificates/$profileId';
+
+  static Future<ProfileCertificate> getProfileCertificate(
+      String profileId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/profile-certificates/$profileId';
     print(apiUrl);
     try {
       final response = await http.get(
@@ -2346,6 +2400,7 @@ static Future<String> createTransactionInWallet({
       throw Exception('An error occurred: $e');
     }
   }
+
 ////Peer Review
   static Future<void> createPeerReview({
     required String assignmentAttemptId,
@@ -2379,6 +2434,7 @@ static Future<String> createTransactionInWallet({
       print('JSON Data: $jsonData');
     }
   }
+
   ///////Center
   static Future<List<Center>> getCenter() async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/centers';
@@ -2410,5 +2466,4 @@ static Future<String> createTransactionInWallet({
       throw Exception('An error occurred: $e');
     }
   }
-
 }

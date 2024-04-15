@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:dio/dio.dart';
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
@@ -72,11 +73,11 @@ class SingleCourseMeetDetailsCurriculcumPageState
         });
   }
 
-  void _showTopic(String lessonId, bool isAssignment) async {
+  void _showTopic(String lessonId, bool isAssignment, String startDate) async {
     final List<String>? result = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return MultiTopic(lessonId: lessonId, isAssignment: isAssignment);
+          return MultiTopic(lessonId: lessonId, isAssignment: isAssignment, startDate: startDate,);
         });
   }
 
@@ -204,6 +205,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
                             itemCount: data?.length ?? 0,
                             itemBuilder: (context, index) {
                               final classModule = data?[index];
+
                               // loadClassTopicsByClassLessonId();
                               return Row(
                                 children: [
@@ -330,7 +332,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                                     onPressed: () {
                                                       _showTopic(classModule
                                                           ?.classLesson?.id ??
-                                                          '', false);
+                                                          '', false, classModule?.startDate ?? '');
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(
@@ -358,7 +360,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                                       onPressed: () {
                                                         _showTopic(classModule
                                                             ?.classLesson?.id ??
-                                                            '', true);
+                                                            '', true, classModule?.startDate ?? '');
                                                       },
                                                       style: ElevatedButton
                                                           .styleFrom(
@@ -784,10 +786,11 @@ class _MultiSelectState extends State<MultiSelect> {
 
 class MultiTopic extends StatefulWidget {
   final String lessonId;
+  final String startDate;
   final bool isAssignment;
 
   const MultiTopic(
-      {super.key, required this.lessonId, required this.isAssignment});
+      {super.key, required this.lessonId, required this.isAssignment, required this.startDate});
 
   @override
   State<MultiTopic> createState() => _MultiTopicState();
@@ -976,42 +979,66 @@ class _MultiTopicState extends State<MultiTopic> {
                           children: [
                             TextButton(
                               onPressed: () async {
-                                if(moduleUndoAssignmentAttempt[moduleAssignmentMap[listClassTopic[index]
-                                    .id]![assignmentIndex].id]?.isEmpty ?? false){
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            DoingAssignmentScreen(
-                                              assignmentID: moduleAssignmentMap[listClassTopic[index]
-                                                  .id]![assignmentIndex].id
-                                                  .toString(),
-                                              cooldownTime: Duration(
-                                                  minutes: moduleAssignmentMap[
-                                                  listClassTopic[index]
-                                                      .id]![assignmentIndex]
-                                                      .deadline as int), isOnlineClass: true,)),
-                                  );
+                                if(DateTime.now().isAfter(DateTime.parse(widget.startDate))){
+                                  if(moduleUndoAssignmentAttempt[moduleAssignmentMap[listClassTopic[index]
+                                      .id]![assignmentIndex].id]?.isEmpty ?? false){
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              DoingAssignmentScreen(
+                                                assignmentID: moduleAssignmentMap[listClassTopic[index]
+                                                    .id]![assignmentIndex].id
+                                                    .toString(),
+                                                cooldownTime: Duration(
+                                                    minutes: moduleAssignmentMap[
+                                                    listClassTopic[index]
+                                                        .id]![assignmentIndex]
+                                                        .deadline as int), isOnlineClass: true,)),
+                                    );
+                                  }
+                                  if(moduleUndoAssignmentAttempt[moduleAssignmentMap[listClassTopic[index]
+                                      .id]![assignmentIndex].id]?.isNotEmpty ?? false) {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ReviewAssignment(
+                                                assignmentID: moduleAssignmentMap[listClassTopic[index]
+                                                    .id]![assignmentIndex].id
+                                                    .toString(),
+                                                isOnlineClass: true,
+                                              )),
+                                    );
+                                  }
+                                  loadAssignmentAttemptByAssignmentId(moduleAssignmentMap[listClassTopic[index]
+                                      .id]![assignmentIndex].id
+                                      .toString());
+                                  await loadQuiz();
+                                  await loadAssignmentAttemptsByLearnerId();
+                                } else{
+                                  AwesomeDialog(
+                                    context: context,
+                                    animType: AnimType.scale,
+                                    dialogType: DialogType.error,
+                                    body: Center(
+                                      child: Text(
+                                        'Please wait to correct day',
+                                        style: TextStyle(
+                                            fontStyle:
+                                            FontStyle.italic),
+                                      ),
+                                    ),
+                                    btnOkOnPress: () {
+                                      setState(() {
+                                        Navigator.pop(context);
+                                      });
+                                      // if(isSelected == true){
+                                      //   nextQuestion();
+                                      // }
+                                    },
+                                  )..show();
                                 }
-                                if(moduleUndoAssignmentAttempt[moduleAssignmentMap[listClassTopic[index]
-                                    .id]![assignmentIndex].id]?.isNotEmpty ?? false) {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            ReviewAssignment(
-                                              assignmentID: moduleAssignmentMap[listClassTopic[index]
-                                                  .id]![assignmentIndex].id
-                                                  .toString(),
-                                              isOnlineClass: true,
-                                            )),
-                                  );
-                                }
-                                loadAssignmentAttemptByAssignmentId(moduleAssignmentMap[listClassTopic[index]
-                                    .id]![assignmentIndex].id
-                                    .toString());
-                                await loadQuiz();
-                                await loadAssignmentAttemptsByLearnerId();
                               },
                               child: Container(
                                 constraints:
@@ -1120,21 +1147,46 @@ class _MultiTopicState extends State<MultiTopic> {
                           children: [
                             TextButton(
                               onPressed: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          DoingQuizScreen(
-                                              quizId: moduleQuizMap[listClassTopic[index]
-                                                  .id]![assignmentIndex].id
-                                                  .toString(),
-                                              cooldownTime: Duration(
-                                                  minutes: moduleQuizMap[
-                                                  listClassTopic[index]
-                                                      .id]![assignmentIndex]
-                                                      .deadline as int))),
-                                );
-                                loadQuizAttemptsByLearnerId();
+                                if(DateTime.now().isAfter(DateTime.parse(widget.startDate))){
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            DoingQuizScreen(
+                                                quizId: moduleQuizMap[listClassTopic[index]
+                                                    .id]![assignmentIndex].id
+                                                    .toString(),
+                                                cooldownTime: Duration(
+                                                    minutes: moduleQuizMap[
+                                                    listClassTopic[index]
+                                                        .id]![assignmentIndex]
+                                                        .deadline as int))),
+                                  );
+                                  loadQuizAttemptsByLearnerId();
+                                }
+                                else{
+                                  AwesomeDialog(
+                                    context: context,
+                                    animType: AnimType.scale,
+                                    dialogType: DialogType.error,
+                                    body: Center(
+                                      child: Text(
+                                        'Please wait to correct day',
+                                        style: TextStyle(
+                                            fontStyle:
+                                            FontStyle.italic),
+                                      ),
+                                    ),
+                                    btnOkOnPress: () {
+                                      setState(() {
+                                        Navigator.pop(context);
+                                      });
+                                      // if(isSelected == true){
+                                      //   nextQuestion();
+                                      // }
+                                    },
+                                  )..show();
+                                }
                               },
                               child: Container(
                                 constraints:

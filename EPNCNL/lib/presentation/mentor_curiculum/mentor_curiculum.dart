@@ -66,7 +66,7 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
     final List<String>? result = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return MultiTopic(lessonId: lessonId, isAssignment: isAssignment);
+          return MultiTopic(lessonId: lessonId, isAssignment: isAssignment, startDate: '',);
         });
   }
 

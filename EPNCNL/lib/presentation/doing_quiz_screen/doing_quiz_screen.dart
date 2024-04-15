@@ -86,6 +86,9 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
         await Network.getQuestionByQuizId(widget.quizId);
     setState(() {
       listquestion = loadedQuestion;
+      if(listquestion.length == 1){
+        endOfQuiz = true;
+      }
     });
     loadAllQuestionAnswer();
   }
@@ -218,14 +221,15 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   void nextQuestion() {
     setState(() {
       isLoading = true;
-      _questionIndex++;
-      loadQuestion();
-      isSelected = false;
-      print("This is" + _questionIndex.toString());
+      if (_questionIndex < listquestion.length - 1) {
+        _questionIndex++;
+        loadQuestion();
+        isSelected = false;
+        print("This is" + _questionIndex.toString());
+      } else {
+        endOfQuiz = true;
+      }
     });
-    if (_questionIndex >= listquestion.length - 1) {
-      endOfQuiz = true;
-    }
   }
 
   void resetQuiz() {

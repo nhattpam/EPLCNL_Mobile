@@ -180,7 +180,16 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
                 ),
               ),
               SizedBox(height: 12.v),
-              Padding(
+              chosenTransaction.courseId == null
+              ? Padding(
+                padding: EdgeInsets.symmetric(horizontal: 9.h),
+                child: _buildEmailSection(
+                  context,
+                  emailLabel: "Payment",
+                  emailText: 'Wallet',
+                ),
+              )
+              : Padding(
                 padding: EdgeInsets.symmetric(horizontal: 9.h),
                 child: _buildEmailSection(
                   context,

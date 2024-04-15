@@ -30,8 +30,11 @@ class _TransactionsPageState extends State<TransactionsPage> {
   }
 
   void loadTransactions() async {
-    List<Transaction> loadedTransaction =
-        await Network.getTransactionByLearnerId();
+    List<Transaction> loadedTransaction = await Network.getTransactionByLearnerId();
+
+    // Sort the list by date in descending order
+    loadedTransaction.sort((a, b) => (b.transactionDate.toString()).compareTo(a.transactionDate.toString()));
+
     setState(() {
       listTransactions = loadedTransaction;
       isLoading = false;

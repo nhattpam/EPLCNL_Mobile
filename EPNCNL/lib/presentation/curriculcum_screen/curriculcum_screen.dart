@@ -83,6 +83,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
     try {
       List<Module> loadedModule =
       await Network.getModulesByCourseId(widget.courseID);
+      loadedModule.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
       setState(() {
         listModuleByCourseId = loadedModule;
         isLoadingModule = false;

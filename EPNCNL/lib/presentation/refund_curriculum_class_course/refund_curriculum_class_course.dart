@@ -150,16 +150,14 @@ class _RefundCurriculumClassCourseState extends State<RefundCurriculumClassCours
                 _buildVideoCourseListView(),
                 CustomElevatedButton(
                   onPressed: () async {
-
+                    String dateTimeString = DateTime.now().toString();
+                    DateTime dateTime = DateTime.parse(dateTimeString);
+                    String dateString = "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}";
                     try {
                       for (var reason in _controllers){
                         final module = listClassModuleByCourseId[_index];
-                        // Parse the startDate string into a DateTime object
-                        DateTime startDate = DateTime.parse(module.startDate.toString());
-                        // Format the DateTime object into the desired format
-                        String formattedDate = DateFormat('dd-MM-yyyy').format(startDate);
                         String? refundId = await _createRefundRequest();
-                        Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: "Reason: " + reason.text + " " + "Date: "+ formattedDate);
+                        Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: "Date" + " " +(dateString.toString() + " " + "has reason" + " " + reason.text));
                         setState(() {
                           _index++;
                         });

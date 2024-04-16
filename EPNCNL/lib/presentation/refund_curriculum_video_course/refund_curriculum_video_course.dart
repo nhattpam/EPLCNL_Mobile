@@ -83,6 +83,7 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
     try {
       List<Module> loadedModule =
       await Network.getModulesByCourseId(widget.courseID);
+      loadedModule.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
       setState(() {
         listModuleByCourseId = loadedModule;
         isLoadingModule = false;
@@ -115,6 +116,7 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
   Future<void> loadClassModuleByCourseId() async {
     List<ClassModule> loadedModule =
     await Network.getClassModulesByCourseId(widget.courseID);
+
     setState(() {
       listClassModuleByCourseId = loadedModule;
     });
@@ -254,10 +256,13 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
                 _buildVideoCourseListView(),
                 CustomElevatedButton(
                   onPressed: () async {
+                    String dateTimeString = DateTime.now().toString();
+                    DateTime dateTime = DateTime.parse(dateTimeString);
+                    String dateString = "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}";
                     String? refundId = await _createRefundRequest();
                     try {
                         for (var reason in _controllers){
-                          Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: "Section:" + listModuleByCourseId[_index].name.toString() + " " +  "Reason:" + reason.text );
+                          Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: "Date" + " " +(dateString.toString() + " " + "has reason" + " " + reason.text));
                           setState(() {
                             _index++;
                           });

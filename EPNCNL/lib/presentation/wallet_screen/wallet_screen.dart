@@ -625,6 +625,7 @@ class _RequestDetailState extends State<RequestDetail> {
     try {
       List<Module> loadedModule =
       await Network.getModulesByCourseId(courseID);
+      loadedModule.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
       setState(() {
         listModuleByCourseId = loadedModule;
       });
@@ -814,58 +815,59 @@ class _RequestDetailState extends State<RequestDetail> {
                   child:
                   ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
                     itemCount: listModuleByCourseId.length,
                     itemBuilder: (context, index) {
                       final module = listModuleByCourseId[index];
                       final number = index + 1;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 1.h),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Module $number - ",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Container(
-                                  constraints:
-                                  const BoxConstraints(
-                                    maxWidth: 160,
-                                  ),
-                                  child: Text(
-                                    module.name.toString(),
+                      return SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 1.h),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Module $number - ",
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 18,
-                                      overflow: TextOverflow.ellipsis,
                                       fontFamily: 'Inter',
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          _buildLessonsMenu(module),
-                          _buildAssignmentsMenu(module),
-                          _buildQuizzesMenu(module),
-                          Text(
-                              listRefundSurvey[index].reason.toString(),
-                              style:
-                              CustomTextStyles.titleSmallGray80001,
+                                  Container(
+                                    constraints:
+                                    const BoxConstraints(
+                                      maxWidth: 160,
+                                    ),
+                                    child: Text(
+                                      module.name.toString(),
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
+                                        overflow: TextOverflow.ellipsis,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                          SizedBox(height: 12.v),
-                          Divider(),
-                          SizedBox(height: 12.v),
-                        ],
+                            ),
+                            _buildLessonsMenu(module),
+                            _buildAssignmentsMenu(module),
+                            _buildQuizzesMenu(module),
+                            Text(
+                                listRefundSurvey[index].reason.toString(),
+                                style:
+                                CustomTextStyles.titleSmallGray80001,
+                                ),
+                            SizedBox(height: 12.v),
+                            Divider(),
+                            SizedBox(height: 12.v),
+                          ],
+                        ),
                       );
                     },
                   ),

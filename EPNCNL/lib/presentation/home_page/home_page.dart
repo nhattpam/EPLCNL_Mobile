@@ -81,6 +81,8 @@ class HomePageState extends State<HomePage> {
 
   void loadCourse() async {
     List<Course> loadedCourse = await Network.getCourse();
+    loadedCourse.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
+
     setState(() {
       listCourse = loadedCourse;
       isLoadingCourse = false;
@@ -240,7 +242,7 @@ class HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),
-            label: 'Inbox',
+            label: 'Forum',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.wallet),

@@ -163,10 +163,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with TickerProvid
                     height: 52.v,
                     width: 360.h,
                     child: TabBar(
-                      indicatorColor: Color(0xFFFFF0DC),
+                      indicatorColor: Color(0xffff9300),
                       indicatorWeight: 6.0,
-                      unselectedLabelColor: Color(0xFF9CC5BD),
-                      labelColor: Colors.black,
+                      unselectedLabelColor: Colors.black,
+                      labelColor: Color(0xffff9300),
                       labelStyle: TextStyle(
                           fontSize: 20,
                           fontFamily: 'Inter',

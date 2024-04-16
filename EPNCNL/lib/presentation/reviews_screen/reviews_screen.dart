@@ -276,6 +276,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                 ),
                               );
                             }
+                            loadCourseByCourseID();
                             loadFeedback();
                           },
                           text:
@@ -476,19 +477,6 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                 SizedBox(height: 11.v),
                                 Row(
                                   children: [
-                                    // Icon(
-                                    //   Icons.favorite,
-                                    //   color: Colors.red,
-                                    //   size: 12.v,
-                                    // ),
-                                    // Padding(
-                                    //   padding: EdgeInsets.only(left: 9.h),
-                                    //   child: Text(
-                                    //     "760",
-                                    //     style: CustomTextStyles
-                                    //         .labelLargeBluegray900,
-                                    //   ),
-                                    // ),
                                     Padding(
                                       padding: EdgeInsets.only(left: 17.h),
                                       child: Text(

@@ -575,42 +575,58 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
                 SizedBox(height: 30.v),
                 CustomElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState!.validate() || _audioPath!.isNotEmpty){
-                      await _uploadAudio(File(_audioPath.toString()));
-                      await Network.createAssignmentAttempt(
-                        assignmentId: widget.assignmentID,
-                        answerText: additionalInfoController.text.toString(), answerAudioUrl: _image,
-                      );
+                    if (_timer != null && _timer!.isActive) {
+                      if (_formKey.currentState!.validate() || _audioPath!.isNotEmpty){
+                        await _uploadAudio(File(_audioPath.toString()));
+                        await Network.createAssignmentAttempt(
+                          assignmentId: widget.assignmentID,
+                          answerText: additionalInfoController.text.toString(), answerAudioUrl: _image,
+                        );
+                        AwesomeDialog(
+                          context: context,
+                          animType: AnimType.scale,
+                          dialogType: DialogType.success,
+                          body: Center(
+                            child: Text(
+                              'Submit successfully',
+                              style: TextStyle(fontStyle: FontStyle.italic),
+                            ),
+                          ),
+                          btnOkOnPress: () {
+                            setState(() {
+                              widget.isOnlineClass
+                                  ? Navigator.pop(context)
+                                  : Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ViewAllAssignmentAttempt(
+                                        assignmentId: widget.assignmentID,
+                                        navigateTime: 2,
+                                      ),
+                                ),
+                              );
+                              _timer?.cancel();
+                              _timer = null;
+                            });
+                            // if(isSelected == true){
+                            //   nextQuestion();
+                            // }
+                          },
+                        )..show();
+                      }
+                    } else{
                       AwesomeDialog(
                         context: context,
                         animType: AnimType.scale,
-                        dialogType: DialogType.success,
+                        dialogType: DialogType.error,
                         body: Center(
                           child: Text(
-                            'Submit successfully',
+                            'Wait a bit',
                             style: TextStyle(fontStyle: FontStyle.italic),
                           ),
                         ),
-                        btnOkOnPress: () {
-                          setState(() {
-                            widget.isOnlineClass
-                                ? Navigator.pop(context)
-                                : Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ViewAllAssignmentAttempt(
-                                      assignmentId: widget.assignmentID,
-                                      navigateTime: 2,
-                                    ),
-                              ),
-                            );
-                            _timer?.cancel();
-                            _timer = null;
-                          });
-                          // if(isSelected == true){
-                          //   nextQuestion();
-                          // }
+                        btnCancelOnPress: () {
                         },
                       )..show();
                     }

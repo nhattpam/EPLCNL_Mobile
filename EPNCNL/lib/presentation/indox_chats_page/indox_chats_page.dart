@@ -41,6 +41,7 @@ class IndoxChatsPageState extends State<IndoxChatsPage>
 
   void loadForums() async {
     List<Forum> loadedForum = await Network.getForumByLearner();
+
     setState(() {
       listForum = loadedForum;
       isLoadingForum = false;
@@ -92,6 +93,8 @@ class IndoxChatsPageState extends State<IndoxChatsPage>
                     padding: EdgeInsets.symmetric(horizontal: 34.h),
                     child: Column(
                       children: [
+                        _buildNovbar(context),
+                        SizedBox(height: 20.v),
                         Container(
                           padding: EdgeInsets.symmetric(vertical: 25.v),
                           decoration: AppDecoration.outlineBlack.copyWith(
@@ -160,7 +163,7 @@ class IndoxChatsPageState extends State<IndoxChatsPage>
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),
-            label: 'Inbox',
+            label: 'Forum',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.wallet),
@@ -413,6 +416,28 @@ class IndoxChatsPageState extends State<IndoxChatsPage>
               );
             },
           );
+  }
+  Widget _buildNovbar(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 1.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 11.h),
+                child: Text(
+                  "Forum",
+                  style: theme.textTheme.titleLarge,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   onTapOne(BuildContext context, String forumId) {

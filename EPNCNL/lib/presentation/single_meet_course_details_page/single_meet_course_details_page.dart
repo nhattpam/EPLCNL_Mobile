@@ -13,7 +13,6 @@ import 'package:meowlish/data/models/lessons.dart';
 import 'package:meowlish/data/models/modules.dart';
 import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/network/network.dart';
-import 'package:meowlish/presentation/center_course_screen/center_course_screen.dart';
 import 'package:meowlish/presentation/curriculcum_screen/curriculcum_screen.dart';
 import 'package:meowlish/presentation/payment_methods_screen/payment_methods_screen.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
@@ -56,7 +55,6 @@ class SingleMeetCourseDetailsPageState
   late bool isLoadingQuiz;
   int sumAssignment = 0;
   int sumQuiz = 0;
-
   @override
   void initState() {
     isLoadingTutor = true;
@@ -119,7 +117,7 @@ class SingleMeetCourseDetailsPageState
   Future<void> loadModuleByCourseId() async {
     try {
       List<Module> loadedModule =
-          await Network.getModulesByCourseId(widget.courseID);
+      await Network.getModulesByCourseId(widget.courseID);
       setState(() {
         listModuleByCourseId = loadedModule;
         isLoadingModule = false;
@@ -141,12 +139,14 @@ class SingleMeetCourseDetailsPageState
         await loadAssignmentByModuleId(module.id.toString());
         sumAssignment += moduleAssignmentMap[module.id]?.length ?? 0;
         sumQuiz += moduleQuizMap[module.id]?.length ?? 0;
+
       }
 
       // After all lessons are loaded, proceed with building the UI
       setState(() {
         isLoadingAssignment = false;
         isLoadingQuiz = false;
+
       });
     } catch (e) {
       // Handle errors here
@@ -177,7 +177,7 @@ class SingleMeetCourseDetailsPageState
 
   Future<void> loadAssignmentByModuleId(String moduleId) async {
     List<Assignment> loadedAssignment =
-        await Network.getAssignmentByModuleId(moduleId);
+    await Network.getAssignmentByModuleId(moduleId);
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
@@ -188,8 +188,8 @@ class SingleMeetCourseDetailsPageState
 
   @override
   Widget build(BuildContext context) {
-    bool isEnrolled = enrollment.transaction?.learnerId != null &&
-        enrollment.transaction?.courseId != null;
+    print(isLoadingAssignment);
+    bool isEnrolled = enrollment.transaction?.learnerId != null && enrollment.transaction?.courseId != null;
     return SafeArea(
         child: Scaffold(
             body: SizedBox(
@@ -202,22 +202,21 @@ class SingleMeetCourseDetailsPageState
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (isLoadingCourse == false)
-                              Container(
-                                  width: 307.h,
-                                  margin:
-                                      EdgeInsets.only(left: 21.h, right: 32.h),
-                                  child: Text(
-                                      "${chosenCourse.description ?? ''}",
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: CustomTextStyles
-                                          .labelLargeGray50001
-                                          .copyWith(height: 1.46))),
-                            if (isLoadingCourse == true)
-                              Skeleton(
+                            if(isLoadingCourse == false)
+                            Container(
                                 width: 307.h,
-                              ),
+                                margin:
+                                    EdgeInsets.only(left: 21.h, right: 32.h),
+                                child: Text(
+                                    "${chosenCourse.description ?? ''}",
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: CustomTextStyles.labelLargeGray50001
+                                        .copyWith(height: 1.46))),
+                            if(isLoadingCourse == true)
+                              Skeleton(
+                                  width: 307.h,
+                                  ),
                             SizedBox(height: 50.v),
                             Padding(
                                 padding: EdgeInsets.only(left: 1.h),
@@ -240,19 +239,16 @@ class SingleMeetCourseDetailsPageState
                                     Icons.video_camera_front,
                                     size: 12,
                                   ),
-                                  if (isLoadingModule == false)
+                                  if(isLoadingModule == false)
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.only(left: 17.h, top: 3.v),
+                                      child: Text(listModuleByCourseId.length.toString() +" Module",
+                                          style: theme.textTheme.titleSmall)),
+                                  if(isLoadingModule == true)
                                     Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 17.h, top: 3.v),
-                                        child: Text(
-                                            listModuleByCourseId.length
-                                                    .toString() +
-                                                " Module",
-                                            style: theme.textTheme.titleSmall)),
-                                  if (isLoadingModule == true)
-                                    Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 17.h, top: 3.v),
+                                        padding:
+                                        EdgeInsets.only(left: 17.h, top: 3.v),
                                         child: Skeleton(width: 50))
                                 ])),
                             SizedBox(height: 31.v),
@@ -263,20 +259,18 @@ class SingleMeetCourseDetailsPageState
                                     FontAwesomeIcons.pencilAlt,
                                     size: 12,
                                   ),
-                                  if (isLoadingAssignment == false)
+                                  if(isLoadingAssignment == false)
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.only(left: 15.h, top: 5.v),
+                                      child: Text(sumAssignment.toString() + " Assignment",
+                                          style: theme.textTheme.titleSmall)),
+                                  if(isLoadingAssignment == true)
                                     Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 15.h, top: 5.v),
-                                        child: Text(
-                                            sumAssignment.toString() +
-                                                " Assignment",
-                                            style: theme.textTheme.titleSmall)),
-                                  if (isLoadingAssignment == true)
-                                    Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 15.h, top: 5.v),
-                                        child: Skeleton(width: 50))
-                                ])),
+                                        padding:
+                                        EdgeInsets.only(left: 15.h, top: 5.v),
+                                        child: Skeleton(width: 50)
+                                    )])),
                             SizedBox(height: 32.v),
                             Padding(
                                 padding: EdgeInsets.only(left: 2.h),
@@ -285,17 +279,16 @@ class SingleMeetCourseDetailsPageState
                                     FontAwesomeIcons.book,
                                     size: 12,
                                   ),
-                                  if (isLoadingQuiz == false)
+                                  if(isLoadingQuiz == false)
                                     Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 12.h, top: 3.v),
-                                        child: Text(
-                                            sumQuiz.toString() + " Quizzes",
-                                            style: theme.textTheme.titleSmall)),
-                                  if (isLoadingQuiz == true)
+                                      padding:
+                                          EdgeInsets.only(left: 12.h, top: 3.v),
+                                      child: Text(sumQuiz.toString() + " Quizzes",
+                                          style: theme.textTheme.titleSmall)),
+                                  if(isLoadingQuiz == true)
                                     Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 12.h, top: 3.v),
+                                        padding:
+                                        EdgeInsets.only(left: 12.h, top: 3.v),
                                         child: Skeleton(width: 50)),
                                 ])),
                             SizedBox(height: 30.v),
@@ -314,14 +307,13 @@ class SingleMeetCourseDetailsPageState
                                 ])),
                             SizedBox(height: 56.v),
                             if (!isEnrolled ||
-                                chosenCourse.id !=
-                                        enrollment.transaction?.courseId &&
+                                chosenCourse.id != enrollment.transaction?.courseId &&
                                     SessionManager().getLearnerId() !=
                                         enrollment.transaction?.learnerId)
                               CustomElevatedButton(
                                 text:
                                     "Enroll Course - \$${chosenCourse.stockPrice}",
-                                onPressed: () async {
+                                onPressed: () async{
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -336,8 +328,7 @@ class SingleMeetCourseDetailsPageState
                               ),
                             if (isEnrolled &&
                                 chosenCourse.isOnlineClass == true &&
-                                chosenCourse.id ==
-                                    enrollment.transaction?.courseId &&
+                                chosenCourse.id == enrollment.transaction?.courseId &&
                                 SessionManager().getLearnerId() ==
                                     enrollment.transaction?.learnerId)
                               CustomElevatedButton(
@@ -356,8 +347,7 @@ class SingleMeetCourseDetailsPageState
                               ),
                             if (isEnrolled &&
                                 chosenCourse.isOnlineClass == false &&
-                                chosenCourse.id ==
-                                    enrollment.transaction?.courseId &&
+                                chosenCourse.id == enrollment.transaction?.courseId &&
                                 SessionManager().getLearnerId() ==
                                     enrollment.transaction?.learnerId)
                               CustomElevatedButton(
@@ -382,9 +372,7 @@ class SingleMeetCourseDetailsPageState
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        if (imageUrl != null &&
-            imageUrl.isNotEmpty &&
-            isLoadingTutor == false) // Check if imageUrl is not null or empty
+        if (imageUrl != null && imageUrl.isNotEmpty && isLoadingTutor == false) // Check if imageUrl is not null or empty
           CustomImageView(
             imagePath: imageUrl,
             fit: BoxFit.cover,
@@ -392,112 +380,47 @@ class SingleMeetCourseDetailsPageState
             width: 54.adaptSize,
             radius: BorderRadius.circular(27.h),
           )
-        else
-          Container(
-            decoration:
-                BoxDecoration(borderRadius: BorderRadius.circular(27.h)),
+        else Container(
+            decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(27.h)
+            ),
             height: 54.adaptSize,
             width: 54.adaptSize,
-            child: Skeleton(height: 54.adaptSize, width: 54.adaptSize),
+            child: Skeleton(height: 54.adaptSize,
+              width: 54.adaptSize),
           ),
-        if (isLoadingTutor == false)
-          chosenTutor?.isFreelancer ?? false
-              ? Padding(
-                  padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        constraints: const BoxConstraints(
-                          maxWidth: 250,
-                        ),
-                        child: Text("${chosenTutor.account?.fullName ?? ""}",
-                            softWrap: true,
-                            overflow: TextOverflow.ellipsis,
-                            style: CustomTextStyles.titleMedium17),
-                      ),
-                      Text("${chosenTutor.account?.email ?? ""}",
-                          style: theme.textTheme.labelLarge)
-                    ],
-                  ),
-                )
-              : Padding(
-                  padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        constraints: const BoxConstraints(
-                          maxWidth: 250,
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                                  "${chosenTutor.account?.fullName ?? ""}",
-                                  softWrap: true,
-                                  overflow: TextOverflow.fade,
-                                  style: CustomTextStyles.titleMedium17),
-                            Padding(
-                              padding: EdgeInsets.only(left: 5.h),
-                              child: Text(
-                                "|",
-                                style: CustomTextStyles.titleSmallBlack900,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          CenterCourseScreen(centerId: chosenTutor.centerId.toString()),
-                                    ));
-                              },
-                              child: Row(
-                                  children: [
-                                    Text(
-                                        " Center: ",
-                                        softWrap: true,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: CustomTextStyles.titleMedium17),
-                                    Text(
-                                        "${chosenTutor.center?.name ?? ""}",
-                                        softWrap: true,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: CustomTextStyles
-                                            .titleSmallffff9300ExtraBold),
-                                  ],
-                                ),
-                              ),
+        if(isLoadingTutor == false)
+        Padding(
+          padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 250,
+                ),
+                child: Text(
+                    "${chosenTutor.account?.fullName ?? ""}",
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                    style: CustomTextStyles.titleMedium17),
+              ),
+              Text("${chosenTutor.account?.email ?? ""}",
+                  style: theme.textTheme.labelLarge)
+            ],
+          ),
+        )
+        else  Padding(
+          padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Skeleton(width: 250),
+              Skeleton(width: 100)
+            ],
+          ),
+        ),
 
-                          ],
-                        ),
-                      ),
-                      Text("${chosenTutor.center?.email ?? ""}",
-                          style: theme.textTheme.labelLarge),
-                      // Container(
-                      //   constraints: const BoxConstraints(
-                      //     maxWidth: 250,
-                      //   ),
-                      //   child: Text(
-                      //       "${chosenTutor.account?.fullName ?? ""}",
-                      //       softWrap: true,
-                      //       overflow: TextOverflow.ellipsis,
-                      //       style: CustomTextStyles.titleMedium17),
-                      // ),
-                      // Text("${chosenTutor.account?.email ?? ""}",
-                      //     style: theme.textTheme.labelLarge)
-                    ],
-                  ),
-                )
-        else
-          Padding(
-            padding: EdgeInsets.only(left: 12.h, top: 7.v, bottom: 5.v),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [Skeleton(width: 250), Skeleton(width: 100)],
-            ),
-          ),
         Spacer(),
         // Icon(
         //   Icons.chat_outlined,
@@ -529,7 +452,6 @@ class _ReportPopUpState extends State<ReportPopUp> {
   String _image = "";
   final picker = ImagePicker();
   Dio dio = Dio();
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -575,14 +497,6 @@ class _ReportPopUpState extends State<ReportPopUp> {
 
       await _uploadImage(File(_imagePath));
     }
-  }
-
-  String? validateReport(String? report) {
-    if (report == null || report.isEmpty) {
-      return 'Report cannot be empty';
-    }
-
-    return null; // Return null if the password is valid.
   }
 
   @override
@@ -651,27 +565,27 @@ class _ReportPopUpState extends State<ReportPopUp> {
               ),
               SizedBox(height: 24.v),
               Container(
-                child: Form(
-                  key: _formKey,
-                  child: CustomTextFormField(
-                    controller: additionalInfoController,
-                    hintText: "Your Reason",
-                    hintStyle: CustomTextStyles.titleSmallGray80001,
-                    textInputAction: TextInputAction.done,
-                    maxLines: 14,
-                    prefix: Container(
-                      margin: EdgeInsets.fromLTRB(20.h, 22.v, 7.h, 23.v),
-                      child: CustomImageView(
-                          imagePath: ImageConstant.imgLock,
-                          height: 14.v,
-                          width: 18.h),
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
                     ),
-                    prefixConstraints: BoxConstraints(maxHeight: 60.v),
-                    contentPadding:
-                        EdgeInsets.only(top: 21.v, right: 30.h, bottom: 21.v),
-                    borderDecoration: TextFormFieldStyleHelper.outlineBlack,
-                    validator: validateReport,
+                  ],
+                ),
+                child: CustomTextFormField(
+                  controller: additionalInfoController,
+                  hintText: "Your Reason",
+                  hintStyle: CustomTextStyles.titleSmallGray80001,
+                  textInputAction: TextInputAction.done,
+                  maxLines: 14,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 15.h,
+                    vertical: 28.v,
                   ),
+                  borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
                 ),
               ),
               SizedBox(height: 24.v),
@@ -687,28 +601,26 @@ class _ReportPopUpState extends State<ReportPopUp> {
             child: Text('Cancel')),
         TextButton(
             onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                Network.createReport(
-                    courseId: widget.courseId,
-                    reason: additionalInfoController.text,
-                    imageUrl: _image);
-                AwesomeDialog(
-                  context: context,
-                  animType: AnimType.scale,
-                  dialogType: DialogType.success,
-                  body: Center(
-                    child: Text(
-                      'Report success!!!',
-                      style: TextStyle(fontStyle: FontStyle.italic),
-                    ),
+              Network.createReport(
+                  courseId: widget.courseId,
+                  reason: additionalInfoController.text,
+                  imageUrl: _image);
+              AwesomeDialog(
+                context: context,
+                animType: AnimType.scale,
+                dialogType: DialogType.success,
+                body: Center(
+                  child: Text(
+                    'Report success!!!',
+                    style: TextStyle(fontStyle: FontStyle.italic),
                   ),
-                  btnOkOnPress: () {
-                    setState(() {
-                      Navigator.pop(context);
-                    });
-                  },
-                )..show();
-              }
+                ),
+                btnOkOnPress: () {
+                  setState(() {
+                    Navigator.pop(context);
+                  });
+                },
+              )..show();
             },
             child: Text('Report'))
       ],

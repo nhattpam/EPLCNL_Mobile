@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:dio/dio.dart';
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
@@ -7,17 +8,22 @@ import 'package:internet_file/internet_file.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
+import 'package:meowlish/data/models/assignmentattemps.dart';
+import 'package:meowlish/data/models/assignments.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/lessonmaterials.dart';
 import 'package:meowlish/data/models/quizattempts.dart';
 import 'package:meowlish/data/models/quizzes.dart';
+import 'package:meowlish/presentation/doing_assignment_screen/doing_assignment_screen.dart';
 import 'package:meowlish/presentation/doing_quiz_screen/doing_quiz_screen.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
 import 'package:meowlish/presentation/my_course_completed_page/my_course_completed_page.dart';
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
+import 'package:meowlish/presentation/review_assignment_screen/review_assignment_screen.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
+import 'package:meowlish/session/session.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -67,11 +73,11 @@ class SingleCourseMeetDetailsCurriculcumPageState
         });
   }
 
-  void _showTopic(String lessonId) async {
+  void _showTopic(String lessonId, bool isAssignment, String startDate) async {
     final List<String>? result = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return MultiTopic(lessonId: lessonId);
+          return MultiTopic(lessonId: lessonId, isAssignment: isAssignment, startDate: startDate,);
         });
   }
 
@@ -199,6 +205,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
                             itemCount: data?.length ?? 0,
                             itemBuilder: (context, index) {
                               final classModule = data?[index];
+
                               // loadClassTopicsByClassLessonId();
                               return Row(
                                 children: [
@@ -315,7 +322,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                                       ),
                                                       child: Text('Materials'),
                                                     ),
-                                                  )
+                                                  ),
                                                 ],
                                               ),
                                               SizedBox(height: 5.v),
@@ -325,7 +332,7 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                                     onPressed: () {
                                                       _showTopic(classModule
                                                           ?.classLesson?.id ??
-                                                          '');
+                                                          '', false, classModule?.startDate ?? '');
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(
@@ -342,7 +349,36 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                                             10.0),
                                                       ),
                                                     ),
-                                                    child: Text('Topic'),
+                                                    child: Text('Quiz'),
+                                                  ),
+                                                  VerticalDivider(),
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets.only(
+                                                        left: 8.0),
+                                                    child: ElevatedButton(
+                                                      onPressed: () {
+                                                        _showTopic(classModule
+                                                            ?.classLesson?.id ??
+                                                            '', true, classModule?.startDate ?? '');
+                                                      },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        minimumSize: Size(
+                                                            100, 50),
+                                                        primary: Colors
+                                                            .redAccent,
+                                                        // Background color
+                                                        onPrimary: Colors.white,
+                                                        // Text color
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                          BorderRadius.circular(
+                                                              10.0),
+                                                        ),
+                                                      ),
+                                                      child: Text('Assignment'),
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -372,63 +408,64 @@ class SingleCourseMeetDetailsCurriculcumPageState
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-            if (index == 0) {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => HomePage()),
-              );
-            }
-            if (index == 1) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => MyCourseCompletedPage()),
-              );
-            }
-            if (index == 2) {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
-              );
-            }
-            if (index == 3) {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => TransactionsPage()),
-              );
-            }
-            if (index == 4) {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => ProfilesPage()),
-              );
-            }
-          },
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.book),
-              label: 'My Courses',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.chat),
-              label: 'Inbox',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.wallet),
-              label: 'Transaction',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-          selectedItemColor: Color(0xbbff9300),
-          unselectedItemColor: Color(0xffff9300),
-        ),
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+          if (index == 0) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          }
+          if (index == 1) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+            );
+          }
+          if (index == 2) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+            );
+          }
+          if (index == 3) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => TransactionsPage()),
+            );
+          }
+          if (index == 4) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => ProfilesPage()),
+            );
+          }
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'My Courses',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Inbox',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.wallet),
+            label: 'Transaction',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        selectedFontSize: 12,
+        selectedLabelStyle: CustomTextStyles.labelLargeGray700,
+        selectedItemColor: Color(0xbbff9300),
+        unselectedItemColor: Color(0xffff9300),
+      ),
 
       ),
     );
@@ -676,13 +713,13 @@ class _MultiSelectState extends State<MultiSelect> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Center(child: Text('Class Topic')),
+      title: Center(child: Text('Topic')),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Adjust the height as needed
-          Center(child: Text('Choose Topic to Down')),
+          Center(child: Text('Choose Topic to download')),
           SingleChildScrollView(
             child: ListBody(
               children: listClassTopic
@@ -749,8 +786,11 @@ class _MultiSelectState extends State<MultiSelect> {
 
 class MultiTopic extends StatefulWidget {
   final String lessonId;
+  final String startDate;
+  final bool isAssignment;
 
-  const MultiTopic({super.key, required this.lessonId});
+  const MultiTopic(
+      {super.key, required this.lessonId, required this.isAssignment, required this.startDate});
 
   @override
   State<MultiTopic> createState() => _MultiTopicState();
@@ -760,16 +800,23 @@ class _MultiTopicState extends State<MultiTopic> {
 
   List<Topic> listClassTopic = [];
   Map<String, List<Quiz>> moduleQuizMap = {};
+  Map<String, List<Assignment>> moduleAssignmentMap = {};
   late List<QuizAttempt> listQuizAttempt = [];
+  late List<AssignmentAttempt> listAssignmentAttempt = [];
+  Map<String, List<AssignmentAttempt>> moduleUngradeAssignmentAttempt = {};
+  Map<String, List<AssignmentAttempt>> moduleUndoAssignmentAttempt = {};
+  late bool isLoadingAssignment;
 
   @override
   void initState() {
     super.initState();
-    loadClassModuleByCourseId();
+    isLoadingAssignment = true;
+    loadClassTopicByCourseId();
     loadQuizAttemptsByLearnerId();
+    loadAssignmentAttemptsByLearnerId();
   }
 
-  void loadClassModuleByCourseId() async {
+  void loadClassTopicByCourseId() async {
     List<Topic> loadedClassTopic =
     await Network.getTopicsByClassLessonId(widget.lessonId);
     setState(() {
@@ -791,10 +838,29 @@ class _MultiTopicState extends State<MultiTopic> {
     }
   }
 
+  Future<void> loadAssignmentByClassTopicId(String classtopicId) async {
+    try {
+      List<Assignment> loadedAssignment =
+      await Network.getAssignmentByTopicId(classtopicId);
+      setState(() {
+        moduleAssignmentMap[classtopicId] = loadedAssignment;
+        for (var assignment in (moduleAssignmentMap[classtopicId] as List)) {
+          loadAssignmentAttemptByLearnerId(assignment.id.toString());
+          loadAssignmentAttemptByAssignmentId(assignment.id.toString());
+        }
+        isLoadingAssignment = false;
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
   Future<void> loadQuiz() async {
     try {
       for (final classTopic in listClassTopic) {
         await loadQuizByClassTopicId(classTopic.id.toString());
+        await loadAssignmentByClassTopicId(classTopic.id.toString());
       }
       // After all lessons are loaded, proceed with building the UI
       setState(() {});
@@ -812,16 +878,64 @@ class _MultiTopicState extends State<MultiTopic> {
     });
   }
 
+  Future<void> loadAssignmentAttemptsByLearnerId() async {
+    List<AssignmentAttempt> loadedAssignmentAttempt =
+    await Network.getAssignmentAttemptByLearnerId();
+    setState(() {
+      listAssignmentAttempt = loadedAssignmentAttempt;
+    });
+  }
+
+  Future<void> loadAssignmentAttemptByAssignmentId(String assignmentId) async {
+    try {
+      final assignment = await Network
+          .getAssignmentAttemptByAssignmentIdAndLearnerId(
+        assignmentId,
+      );
+
+      setState(() {
+        moduleUngradeAssignmentAttempt[assignmentId] = assignment;
+        // Add more print statements for other properties if needed
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+  Future<void> loadAssignmentAttemptByLearnerId(String assignmentId) async {
+    final lid = SessionManager().getLearnerId();
+    try {
+      final assignment = await FetchCourseList.getPeerReviewByLearnerId(
+          assignmentId: assignmentId, query: lid);
+      setState(() {
+        moduleUndoAssignmentAttempt[assignmentId] = assignment;
+        // Add more print statements for other properties if needed
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
+
+  String removeAllHtmlTags(String htmlText) {
+    RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+
+    return htmlText.replaceAll(exp, '');
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Center(child: Text('Class Topic')),
+      title: Center(child: Text('Topic')),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Adjust the height as needed
-          Center(child: Text('Choose quiz to do')),
+          widget.isAssignment
+              ? Center(child: Text('Choose Assignment to do'))
+              : Center(child: Text('Choose Quiz to do')),
           SingleChildScrollView(
             child: ListBody(
               children: listClassTopic
@@ -830,7 +944,178 @@ class _MultiTopicState extends State<MultiTopic> {
                   .map((entry) {
                 final index = entry.key;
                 final item = entry.value;
-                return Visibility(
+                return widget.isAssignment
+                    ? Visibility(
+                  visible: moduleAssignmentMap[listClassTopic[index].id] !=
+                      null &&
+                      moduleAssignmentMap[listClassTopic[index].id]!.isNotEmpty,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            constraints:
+                            const BoxConstraints(
+                              maxWidth: 200,
+                            ),
+                            child: Text(
+                              "Topic:" + " " +
+                                  listClassTopic[index].name.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary),
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Only show the assignments if the module is not minimized
+                      for (int assignmentIndex = 0; assignmentIndex <
+                          (moduleAssignmentMap[listClassTopic[index].id]
+                              ?.length ??
+                              0); assignmentIndex++)
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () async {
+                                if(DateTime.now().isAfter(DateTime.parse(widget.startDate))){
+                                  if(moduleUndoAssignmentAttempt[moduleAssignmentMap[listClassTopic[index]
+                                      .id]![assignmentIndex].id]?.isEmpty ?? false){
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              DoingAssignmentScreen(
+                                                assignmentID: moduleAssignmentMap[listClassTopic[index]
+                                                    .id]![assignmentIndex].id
+                                                    .toString(),
+                                                cooldownTime: Duration(
+                                                    minutes: moduleAssignmentMap[
+                                                    listClassTopic[index]
+                                                        .id]![assignmentIndex]
+                                                        .deadline as int), isOnlineClass: true,)),
+                                    );
+                                  }
+                                  if(moduleUndoAssignmentAttempt[moduleAssignmentMap[listClassTopic[index]
+                                      .id]![assignmentIndex].id]?.isNotEmpty ?? false) {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ReviewAssignment(
+                                                assignmentID: moduleAssignmentMap[listClassTopic[index]
+                                                    .id]![assignmentIndex].id
+                                                    .toString(),
+                                                isOnlineClass: true,
+                                              )),
+                                    );
+                                  }
+                                  loadAssignmentAttemptByAssignmentId(moduleAssignmentMap[listClassTopic[index]
+                                      .id]![assignmentIndex].id
+                                      .toString());
+                                  await loadQuiz();
+                                  await loadAssignmentAttemptsByLearnerId();
+                                } else{
+                                  AwesomeDialog(
+                                    context: context,
+                                    animType: AnimType.scale,
+                                    dialogType: DialogType.error,
+                                    body: Center(
+                                      child: Text(
+                                        'Please wait to correct day',
+                                        style: TextStyle(
+                                            fontStyle:
+                                            FontStyle.italic),
+                                      ),
+                                    ),
+                                    btnOkOnPress: () {
+                                      setState(() {
+                                        Navigator.pop(context);
+                                      });
+                                      // if(isSelected == true){
+                                      //   nextQuestion();
+                                      // }
+                                    },
+                                  )..show();
+                                }
+                              },
+                              child: Container(
+                                constraints:
+                                const BoxConstraints(
+                                  maxWidth: 200,
+                                ),
+                                child: Text(
+                                    removeAllHtmlTags(
+                                      moduleAssignmentMap[listClassTopic[index]
+                                          .id]![assignmentIndex]
+                                          .questionText
+                                          .toString(),),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black)),
+                              ),
+
+                            ),
+                            if (listAssignmentAttempt.isNotEmpty &&
+                                listAssignmentAttempt.any((attempt) =>
+                                attempt.assignmentId ==
+                                    moduleAssignmentMap[listClassTopic[index]
+                                        .id]![assignmentIndex].id))
+                              Icon(
+                                listAssignmentAttempt.isNotEmpty &&
+                                    listAssignmentAttempt.lastIndexWhere((
+                                        attempt) =>
+                                    attempt.assignmentId ==
+                                        moduleAssignmentMap[listClassTopic[index]
+                                            .id]![assignmentIndex]
+                                            .id) !=
+                                        null &&
+                                    moduleAssignmentMap[listClassTopic[index]
+                                        .id]![assignmentIndex]
+                                        .gradeToPass !=
+                                        null &&
+                                    listAssignmentAttempt
+                                        .reduce((a, b) =>
+                                    DateTime.parse(a.attemptedDate!)
+                                        .isAfter(
+                                        DateTime.parse(b.attemptedDate!))
+                                        ? a
+                                        : b)
+                                        .totalGrade! >=
+                                        moduleAssignmentMap[listClassTopic[index]
+                                            .id]![assignmentIndex].gradeToPass!
+                                    ? FontAwesomeIcons.check
+                                    : Icons.dangerous_outlined,
+                                color: listAssignmentAttempt.isNotEmpty &&
+                                    listAssignmentAttempt.lastIndexWhere((
+                                        attempt) =>
+                                    attempt.assignmentId ==
+                                        moduleAssignmentMap[listClassTopic[index]
+                                            .id]![assignmentIndex].id) !=
+                                        null &&
+                                    moduleAssignmentMap[listClassTopic[index]
+                                        .id]![assignmentIndex].gradeToPass !=
+                                        null &&
+                                    listAssignmentAttempt
+                                        .reduce((a, b) =>
+                                    DateTime.parse(a.attemptedDate!).isAfter(
+                                        DateTime.parse(b.attemptedDate!))
+                                        ? a
+                                        : b)
+                                        .totalGrade! >=
+                                        moduleAssignmentMap[listClassTopic[index]
+                                            .id]![assignmentIndex].gradeToPass!
+                                    ? Colors.green
+                                    : Colors.red,
+                                size: 20.v,
+                              ),
+                          ],
+                        ),
+                    ],
+                  ),
+                )
+                    : Visibility(
                   visible: moduleQuizMap[listClassTopic[index].id] != null &&
                       moduleQuizMap[listClassTopic[index].id]!.isNotEmpty,
                   child: Column(
@@ -862,21 +1147,46 @@ class _MultiTopicState extends State<MultiTopic> {
                           children: [
                             TextButton(
                               onPressed: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          DoingQuizScreen(
-                                              quizId: moduleQuizMap[listClassTopic[index]
-                                                  .id]![assignmentIndex].id
-                                                  .toString(),
-                                              cooldownTime: Duration(
-                                                  minutes: moduleQuizMap[
-                                                  listClassTopic[index]
-                                                      .id]![assignmentIndex]
-                                                      .deadline as int))),
-                                );
-                                loadQuizAttemptsByLearnerId();
+                                if(DateTime.now().isAfter(DateTime.parse(widget.startDate))){
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            DoingQuizScreen(
+                                                quizId: moduleQuizMap[listClassTopic[index]
+                                                    .id]![assignmentIndex].id
+                                                    .toString(),
+                                                cooldownTime: Duration(
+                                                    minutes: moduleQuizMap[
+                                                    listClassTopic[index]
+                                                        .id]![assignmentIndex]
+                                                        .deadline as int))),
+                                  );
+                                  loadQuizAttemptsByLearnerId();
+                                }
+                                else{
+                                  AwesomeDialog(
+                                    context: context,
+                                    animType: AnimType.scale,
+                                    dialogType: DialogType.error,
+                                    body: Center(
+                                      child: Text(
+                                        'Please wait to correct day',
+                                        style: TextStyle(
+                                            fontStyle:
+                                            FontStyle.italic),
+                                      ),
+                                    ),
+                                    btnOkOnPress: () {
+                                      setState(() {
+                                        Navigator.pop(context);
+                                      });
+                                      // if(isSelected == true){
+                                      //   nextQuestion();
+                                      // }
+                                    },
+                                  )..show();
+                                }
                               },
                               child: Container(
                                 constraints:

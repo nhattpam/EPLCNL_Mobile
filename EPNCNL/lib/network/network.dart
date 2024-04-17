@@ -2436,7 +2436,7 @@ class Network {
   }
 
   ///////Center
-  static Future<List<Center>> getCenter() async {
+  static Future<List<Centers>> getCenter() async {
     final apiUrl = 'https://nhatpmse.twentytwo.asia/api/centers';
 
     try {
@@ -2451,8 +2451,8 @@ class Network {
         // If the request is successful, parse the JSON response
         final List<dynamic> centerListJson = jsonDecode(response.body);
         // Map each JSON object to a Pet object and return a list of pets
-        final List<Center> centerList = centerListJson
-            .map((json) => Center.fromJson(json as Map<String, dynamic>))
+        final List<Centers> centerList = centerListJson
+            .map((json) => Centers.fromJson(json as Map<String, dynamic>))
             .toList();
 
         return centerList;
@@ -2460,6 +2460,101 @@ class Network {
         // If the request fails, throw an exception or return an empty list
         throw Exception(
             'Failed to fetch center. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+  static Future<Centers> getCenterByCenterId(String centerId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/centers/$centerId';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print(
+          'API Response: ${response.body}'); // Add this line to print the response
+
+      if (response.statusCode == 200) {
+        final dynamic centerJson = jsonDecode(response.body);
+
+        if (centerJson is List) {
+          // If it's a list, extract the first element (assuming it's the desired object)
+          return Centers.fromJson(centerJson.first);
+        } else if (centerJson is Map<String, dynamic>) {
+          // If it's a map, decode directly
+          return Centers.fromJson(centerJson);
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else {
+        throw Exception(
+            'Failed to fetch enrollment. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+  static Future<List<Course>> getCourseByCenterId(String centerId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/centers/$centerId/courses'; // Replace with your API URL
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> courseListJson =
+        jsonDecode(response.body);
+
+        return courseListJson
+            .map((json) => Course.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that may occur during the request
+      throw Exception('An error occurred: $e');
+    }
+  }
+  static Future<List<Tutor>> getTutorByCenterId(String centerId) async {
+    final apiUrl =
+        'https://nhatpmse.twentytwo.asia/api/centers/$centerId/tutors'; // Replace with your API URL
+    print(apiUrl);
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> tutorListJson =
+        jsonDecode(response.body);
+
+        return tutorListJson
+            .map((json) => Tutor.fromJson(json))
+            .toList();
+      } else {
+        // If the request fails, throw an exception or return null
+        throw Exception(
+            'Failed to fetch lesson. Status code: ${response.statusCode}');
       }
     } catch (e) {
       // Handle any exceptions that may occur during the request

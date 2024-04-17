@@ -8,7 +8,7 @@ class Tutor {
   bool? isFreelancer;
   String? centerId;
   Account? account;
-  Center? center;
+  Centers? center;
 
   Tutor(
       {this.id,
@@ -26,7 +26,7 @@ class Tutor {
     account =
     json['account'] != null ? new Account.fromJson(json['account']) : null;
     center =
-    json['center'] != null ? new Center.fromJson(json['center']) : null;
+    json['center'] != null ? new Centers.fromJson(json['center']) : null;
     }
 
   Map<String, dynamic> toJson() {

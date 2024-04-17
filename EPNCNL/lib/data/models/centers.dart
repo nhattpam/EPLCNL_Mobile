@@ -1,6 +1,6 @@
 import 'accounts.dart';
 
-class Center {
+class Centers {
   String? id;
   String? accountId;
   String? name;
@@ -14,7 +14,7 @@ class Center {
   String? updatedDate;
   Account? account;
 
-  Center(
+  Centers(
       {this.id,
         this.accountId,
         this.name,
@@ -29,7 +29,7 @@ class Center {
         this.account,
         });
 
-  Center.fromJson(Map<String, dynamic> json) {
+  Centers.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     accountId = json['accountId'];
     name = json['name'];

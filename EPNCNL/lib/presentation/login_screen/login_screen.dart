@@ -1,4 +1,3 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/learners.dart';
@@ -35,69 +34,35 @@ class LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
-  String? validateEmail(String? email) {
-    if (email == null || email.isEmpty) {
-      return 'Email cannot be empty';
-    }
-    RegExp regex = RegExp(
-      r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
-    );
-    final isEmailValid = regex.hasMatch(email ?? '');
+  void loginPressed() async {
+    final email = emailController.text;
+    final password = passwordController.text;
 
-    if (!isEmailValid) {
-      return 'Please enter a valid email';
-    }
-    return null;
-  }
-  String? validatePassword(String? password) {
-    if (password == null || password.isEmpty) {
-      return 'Password cannot be empty';
-    }
+    setState(() {
+      isLoading = true;
+    });
 
-    return null; // Return null if the password is valid.
-  }
-
-  Future signIn() async {
-    if (_formKey.currentState!.validate()) {
-      final email = emailController.text;
-      final password = passwordController.text;
-
-      setState(() {
-        isLoading = true;
-      });
-
-      final loginSuccessful = await Network.loginUser(email, password);
-      setState(() {
-        isLoading = false;
-      });
-      if (loginSuccessful) {
-        if (SessionManager().getLearnerId()?.isNotEmpty ?? false) {
-          onTapBtnSignin(context);
-        } else if (SessionManager().getTutorId()?.isNotEmpty ?? false) {
-          onTapSignin(context);
-        }
-      }  else {
-        AwesomeDialog(
-          context: context,
-          animType: AnimType.scale,
-          dialogType: DialogType.error,
-          body: Center(
-            child: Text(
-              'Please check your email and password again!!!',
-              style: TextStyle(fontStyle: FontStyle.italic),
-            ),
-          ),
-          btnOkOnPress: () {
-            setState(() {
-              isLoading = false;
-            });
-          },
-          btnOkColor: Colors.red,
-        )..show();
+    final loginSuccessful = await Network.loginUser(email, password);
+    setState(() {
+      isLoading = false;
+    });
+    print("This is tutor" + SessionManager().getTutorId().toString());
+    print("This is learner" + SessionManager().getLearnerId().toString());
+    if (loginSuccessful) {
+      if (SessionManager().getLearnerId()?.isNotEmpty ?? false) {
+        onTapBtnSignin(context);
+      } else if (SessionManager().getTutorId()?.isNotEmpty ?? false) {
+        onTapSignin(context);
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login failed. Please check your credentials.'),
+        ),
+      );
     }
-  }
 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,8 +101,7 @@ class LoginScreenState extends State<LoginScreen> {
                       contentPadding:
                           EdgeInsets.only(top: 21.v, right: 30.h, bottom: 21.v),
                       borderDecoration: TextFormFieldStyleHelper
-                          .outlineBlack,
-                      validator: validateEmail,//TextFormFieldStyleHelper chứa thuộc tính của form có thể viền đen giao diện
+                          .outlineBlack, //TextFormFieldStyleHelper chứa thuộc tính của form có thể viền đen giao diện
                     ),
                     SizedBox(height: 20.v),
                     CustomTextFormField(
@@ -163,8 +127,7 @@ class LoginScreenState extends State<LoginScreen> {
                         obscureText: true,
                         contentPadding: EdgeInsets.symmetric(vertical: 21.v),
                         borderDecoration:
-                            TextFormFieldStyleHelper.outlineBlack,
-                    validator: validatePassword),
+                            TextFormFieldStyleHelper.outlineBlack),
                     SizedBox(height: 23.v),
                     _buildRememberMe(context),
                     SizedBox(height: 36.v),
@@ -290,7 +253,7 @@ class LoginScreenState extends State<LoginScreen> {
   /// Section Widget
   Widget _buildSignIn(BuildContext context) {
     return GestureDetector(
-      onTap: signIn,
+      onTap: loginPressed,
       child: Container(
           height: 60.v,
           width: 350.h,

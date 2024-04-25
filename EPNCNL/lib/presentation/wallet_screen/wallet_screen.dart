@@ -639,10 +639,12 @@ class _RequestDetailState extends State<RequestDetail> {
   }
   Future<void> loadLessonByModuleId(String moduleId) async {
     List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
+    List<Lesson> activeModules = loadedLesson.where((module) => module?.isActive ?? true).toList();
+
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleLessonsMap[moduleId] = loadedLesson;
+        moduleLessonsMap[moduleId] = activeModules;
         isLoadingLesson = false;
       });
     }

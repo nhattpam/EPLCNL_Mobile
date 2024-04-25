@@ -77,12 +77,25 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
   }
 
   Future<void> _loadClassModuleByCourseId() async {
-    Lesson loadedLesson = await Network.getLessonByLessonId(widget.lessonId);
-    setState(() {
-      chosenLesson = loadedLesson;
-      _isLoading = false;
-    });
+    try {
+      Lesson loadedLesson = await Network.getLessonByLessonId(widget.lessonId);
+
+      if (loadedLesson?.isActive ?? true) {
+        setState(() {
+          chosenLesson = loadedLesson;
+          _isLoading = false;
+        });
+      } else {
+        // Handle the case where the loaded lesson is not active
+        // For example, show a message to the user or perform another action
+        print('The loaded lesson is not active');
+      }
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lesson: $e');
+    }
   }
+
 
   Future<void> loadMaterialByLessonId() async {
     List<Materials> loadedAssignment =

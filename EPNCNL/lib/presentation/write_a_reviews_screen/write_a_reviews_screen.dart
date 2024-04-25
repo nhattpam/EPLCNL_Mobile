@@ -25,7 +25,6 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
   late Course chosenCourse = Course();
   double rating = 0;
   FetchCourseList _userList = FetchCourseList();
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -43,14 +42,6 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
       // Handle errors here
       print('Error: $e');
     }
-  }
-
-  String? validateReview(String? review) {
-    if (review == null || review.isEmpty) {
-      return 'Review cannot be empty';
-    }
-
-    return null; // Return null if the password is valid.
   }
 
   @override
@@ -84,11 +75,12 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
           child: FutureBuilder<List<FedBack>>(
             future: _userList.getFeedback(
                 query: SessionManager().getLearnerId().toString(),
-                courseId: widget.courseID),
+                courseId: widget.courseID
+            ),
             builder: (context, snapshot) {
               List<FedBack>? data = snapshot.data;
               print(data);
-              if (data?.isNotEmpty ?? false) {
+              if(data?.isNotEmpty ?? false){
                 num vote = data?[0]?.rating ?? 0;
                 String feedbackContent = '${data?[0].feedbackContent}';
                 return Container(
@@ -121,10 +113,13 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                                     allowHalfRating: true,
                                     itemCount: 5,
                                     itemPadding:
-                                        EdgeInsets.symmetric(horizontal: 4),
-                                    itemBuilder: (context, index) => Icon(
-                                        Icons.star,
-                                        color: Colors.amberAccent),
+                                    EdgeInsets.symmetric(
+                                        horizontal: 4),
+                                    itemBuilder: (context,
+                                        index) =>
+                                        Icon(Icons.star,
+                                            color: Colors
+                                                .amberAccent),
                                     onRatingUpdate: (rate) async {
                                       setState(() {
                                         rating = rate;
@@ -137,70 +132,34 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                         ),
                       ),
                       SizedBox(height: 10.v),
-                      Form(
-                        key: _formKey,
-                        child: CustomTextFormField(
-                          controller: writeAnythingAboutProductController,
-                          hintText: feedbackContent,
-                          textInputAction: TextInputAction.done,
-                          maxLines: 8,
-                          contentPadding: EdgeInsets.all(20.h),
-                          borderDecoration:
-                              TextFormFieldStyleHelper.outlineBlackTL16,
-                          validator: validateReview,
-                        ),
+                      CustomTextFormField(
+                        controller: writeAnythingAboutProductController,
+                        hintText: feedbackContent,
+                        textInputAction: TextInputAction.done,
+                        maxLines: 8,
+                        contentPadding: EdgeInsets.all(20.h),
+                        borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
                       ),
-                      SizedBox(height: 97.v),
-                      // Adjust the height according to your need
+                      SizedBox(height: 97.v), // Adjust the height according to your need
                       CustomElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            if (rating >= 1 && rating <= 5) {
-                              Network.updateFeedback(
-                                  feedbackId: data?[0]?.id ?? '',
-                                  createdDate: data?[0]?.createdDate ?? '',
-                                  feedbackContent:
-                                      writeAnythingAboutProductController.text,
-                                  courseId: widget.courseID,
-                                  rating: rating.toString());
-                              AwesomeDialog(
-                                context: context,
-                                animType: AnimType.scale,
-                                dialogType: DialogType.success,
-                                body: Center(
-                                  child: Text(
-                                    'Thank you for your feedback!!',
-                                    style:
-                                        TextStyle(fontStyle: FontStyle.italic),
-                                  ),
-                                ),
-                                btnOkOnPress: () {
-                                  setState(() {
-                                    Navigator.pop(context);
-                                  });
-                                },
-                              )..show();
-                            } else {
-                              // Show an error message or handle invalid rating
-                              // For example, you can display a snackbar or a dialog
-                              AwesomeDialog(
-                                context: context,
-                                animType: AnimType.scale,
-                                dialogType: DialogType.error,
-                                body: Center(
-                                  child: Text(
-                                    'Please select a rating between 1 and 5!!!',
-                                    style:
-                                        TextStyle(fontStyle: FontStyle.italic),
-                                  ),
-                                ),
-                                btnOkOnPress: () {
-                                  setState(() {});
-                                },
-                                btnOkColor: Colors.red,
-                              )..show();
-                            }
-                          }
+                        onPressed: (){
+                          Network.updateFeedback(feedbackId: data?[0]?.id ?? '',createdDate: data?[0]?.createdDate ?? '', feedbackContent: writeAnythingAboutProductController.text, courseId: widget.courseID, rating: rating.toString());
+                          AwesomeDialog(
+                            context: context,
+                            animType: AnimType.scale,
+                            dialogType: DialogType.success,
+                            body: Center(
+                              child: Text(
+                                'Thank you for your feedback!!',
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                              ),
+                            ),
+                            btnOkOnPress: () {
+                              setState(() {
+                                Navigator.pop(context);
+                              });
+                            },
+                          )..show();
                         },
                         text: "Edit Review",
                         margin: EdgeInsets.symmetric(horizontal: 5.h),
@@ -239,35 +198,17 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                                   allowHalfRating: true,
                                   itemCount: 5,
                                   itemPadding:
-                                      EdgeInsets.symmetric(horizontal: 4),
-                                  itemBuilder: (context, index) => Icon(
-                                      Icons.star,
-                                      color: Colors.amberAccent),
+                                  EdgeInsets.symmetric(
+                                      horizontal: 4),
+                                  itemBuilder: (context,
+                                      index) =>
+                                      Icon(Icons.star,
+                                          color: Colors
+                                              .amberAccent),
                                   onRatingUpdate: (rate) async {
-                                    if (rate >= 1 && rate <= 5) {
-                                      setState(() {
-                                        rating = rate;
-                                      });
-                                    } else {
-                                      // Show an error message or handle invalid rating
-                                      // For example, you can display a snackbar or a dialog
-                                      AwesomeDialog(
-                                        context: context,
-                                        animType: AnimType.scale,
-                                        dialogType: DialogType.error,
-                                        body: Center(
-                                          child: Text(
-                                            'Please select a rating between 1 and 5!!!!',
-                                            style: TextStyle(
-                                                fontStyle: FontStyle.italic),
-                                          ),
-                                        ),
-                                        btnOkOnPress: () {
-                                          setState(() {});
-                                        },
-                                        btnOkColor: Colors.red,
-                                      )..show();
-                                    }
+                                    setState(() {
+                                      rating = rate;
+                                    });
                                   },
                                   itemSize: 30),
                             ),
@@ -277,67 +218,35 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
                     ),
 
                     SizedBox(height: 10.v),
-                    Form(
-                      key: _formKey,
-                      child: CustomTextFormField(
-                        controller: writeAnythingAboutProductController,
-                        hintText:
-                            "Would you like to write anything about this course?",
-                        textInputAction: TextInputAction.done,
-                        maxLines: 8,
-                        contentPadding: EdgeInsets.all(20.h),
-                        borderDecoration:
-                            TextFormFieldStyleHelper.outlineBlackTL16,
-                        validator: validateReview,
-                      ),
+                    CustomTextFormField(
+                      controller: writeAnythingAboutProductController,
+                      hintText:
+                      "Would you like to write anything about this course?",
+                      textInputAction: TextInputAction.done,
+                      maxLines: 8,
+                      contentPadding: EdgeInsets.all(20.h),
+                      borderDecoration: TextFormFieldStyleHelper.outlineBlackTL16,
                     ),
-                    SizedBox(height: 97.v),
-                    // Adjust the height according to your need
+                    SizedBox(height: 97.v), // Adjust the height according to your need
                     CustomElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          if (rating >= 1 && rating <= 5) {
-                            Network.createFeedback(
-                                feedbackContent:
-                                    writeAnythingAboutProductController.text,
-                                courseId: widget.courseID,
-                                rating: rating.toString());
-                            AwesomeDialog(
-                              context: context,
-                              animType: AnimType.scale,
-                              dialogType: DialogType.success,
-                              body: Center(
-                                child: Text(
-                                  'Thank you for your feedback!!',
-                                  style: TextStyle(fontStyle: FontStyle.italic),
-                                ),
-                              ),
-                              btnOkOnPress: () {
-                                setState(() {
-                                  Navigator.pop(context);
-                                });
-                              },
-                            )..show();
-                          } else {
-                            // Show an error message or handle invalid rating
-                            // For example, you can display a snackbar or a dialog
-                            AwesomeDialog(
-                              context: context,
-                              animType: AnimType.scale,
-                              dialogType: DialogType.error,
-                              body: Center(
-                                child: Text(
-                                  'Please select a rating between 1 and 5!!!',
-                                  style: TextStyle(fontStyle: FontStyle.italic),
-                                ),
-                              ),
-                              btnOkOnPress: () {
-                                setState(() {});
-                              },
-                              btnOkColor: Colors.red,
-                            )..show();
-                          }
-                        }
+                      onPressed: (){
+                        Network.createFeedback(feedbackContent: writeAnythingAboutProductController.text, courseId: widget.courseID, rating: rating.toString());
+                        AwesomeDialog(
+                          context: context,
+                          animType: AnimType.scale,
+                          dialogType: DialogType.success,
+                          body: Center(
+                            child: Text(
+                              'Thank you for your feedback!!',
+                              style: TextStyle(fontStyle: FontStyle.italic),
+                            ),
+                          ),
+                          btnOkOnPress: () {
+                            setState(() {
+                              Navigator.pop(context);
+                            });
+                          },
+                        )..show();
                       },
                       text: "Submit Review",
                       margin: EdgeInsets.symmetric(horizontal: 5.h),
@@ -347,6 +256,7 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
               );
             },
           ),
+
         ),
       ),
     );
@@ -391,24 +301,14 @@ class _WriteAReviewsScreenState extends State<WriteAReviewsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  constraints: const BoxConstraints(
-                    maxWidth: 160,
-                  ),
-                  child: Text(
-                    chosenCourse.category?.description ?? '',
-                    style: CustomTextStyles.labelLargeOrangeA700,
-                  ),
+                Text(
+                  chosenCourse.category?.description ?? '',
+                  style: CustomTextStyles.labelLargeOrangeA700,
                 ),
                 SizedBox(height: 7.v),
-                Container(
-                  constraints: const BoxConstraints(
-                    maxWidth: 160,
-                  ),
-                  child: Text(
-                    chosenCourse.name?.toString() ?? '',
-                    style: theme.textTheme.titleMedium,
-                  ),
+                Text(
+                  chosenCourse.name?.toString() ?? '',
+                  style: theme.textTheme.titleMedium,
                 ),
               ],
             ),

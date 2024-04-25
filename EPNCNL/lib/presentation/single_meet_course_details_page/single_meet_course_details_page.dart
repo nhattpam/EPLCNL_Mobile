@@ -120,8 +120,10 @@ class SingleMeetCourseDetailsPageState
     try {
       List<Module> loadedModule =
           await Network.getModulesByCourseId(widget.courseID);
+      List<Module> activeModules = loadedModule.where((module) => module?.isActive ?? true).toList();
+
       setState(() {
-        listModuleByCourseId = loadedModule;
+        listModuleByCourseId = activeModules;
         isLoadingModule = false;
       });
       // After loading modules, load all lessons

@@ -83,9 +83,11 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
     try {
       List<Module> loadedModule =
       await Network.getModulesByCourseId(widget.courseID);
-      loadedModule.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
+      List<Module> activeModules = loadedModule.where((module) => module?.isActive ?? true).toList();
+
+      activeModules.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
       setState(() {
-        listModuleByCourseId = loadedModule;
+        listModuleByCourseId = activeModules;
         isLoadingModule = false;
         List<TextEditingController> _controller = List.generate(
           listModuleByCourseId.length,

@@ -625,9 +625,10 @@ class _RequestDetailState extends State<RequestDetail> {
     try {
       List<Module> loadedModule =
       await Network.getModulesByCourseId(courseID);
-      loadedModule.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
+      List<Module> activeModules = loadedModule.where((module) => module?.isActive ?? true).toList();
+      activeModules.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
       setState(() {
-        listModuleByCourseId = loadedModule;
+        listModuleByCourseId = activeModules;
       });
       // After loading modules, load all lessons
       loadAllLessons();

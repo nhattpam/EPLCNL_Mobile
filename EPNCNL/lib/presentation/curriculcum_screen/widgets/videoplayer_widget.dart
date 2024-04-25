@@ -26,11 +26,13 @@ class VideoPlayerWidget extends StatefulWidget {
   State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
 }
 
-class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with TickerProviderStateMixin{
+class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
+    with TickerProviderStateMixin {
   late VideoPlayerController _videoPlayerController;
   late ChewieController _chewieController;
   late Lesson chosenLesson = Lesson();
   bool _isLoading = true;
+  bool _isLoadingVideo = true;
   late TabController _tabController;
   late List<Materials> listMaterial = [];
 
@@ -39,7 +41,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with TickerProvid
     print("This is lesson Id" + widget.lessonId);
     super.initState();
     _tabController = new TabController(length: 2, vsync: this);
-    _initializeVideoPlayer();
+      _initializeVideoPlayer();
     _loadClassModuleByCourseId();
     loadMaterialByLessonId();
   }
@@ -70,7 +72,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with TickerProvid
           child: CircularProgressIndicator(),
         ),
       );
-      _isLoading = false;
+      _isLoadingVideo = false;
     });
   }
 
@@ -78,12 +80,13 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with TickerProvid
     Lesson loadedLesson = await Network.getLessonByLessonId(widget.lessonId);
     setState(() {
       chosenLesson = loadedLesson;
+      _isLoading = false;
     });
   }
 
   Future<void> loadMaterialByLessonId() async {
     List<Materials> loadedAssignment =
-    await Network.getMaterialByLessonId(widget.lessonId);
+        await Network.getMaterialByLessonId(widget.lessonId);
     if (mounted) {
       setState(() {
         listMaterial = loadedAssignment;
@@ -107,11 +110,11 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with TickerProvid
         try {
           await Dio().download(url, savePath,
               onReceiveProgress: (received, total) {
-                if (total != -1) {
-                  print((received / total * 100).toStringAsFixed(0) + "%");
-                  //you can build progressbar feature too
-                }
-              });
+            if (total != -1) {
+              print((received / total * 100).toStringAsFixed(0) + "%");
+              //you can build progressbar feature too
+            }
+          });
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Container(
               height: 40.0, // Adjust the height as needed
@@ -155,10 +158,13 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with TickerProvid
           : SingleChildScrollView(
               child: Column(
                 children: [
-                  AspectRatio(
-                    aspectRatio: _videoPlayerController.value.aspectRatio,
-                    child: Chewie(controller: _chewieController),
-                  ),
+                  if (widget.videoUrl != '' && widget.videoUrl != null)
+                    _isLoadingVideo
+                    ? Center(child: Container(child: CircularProgressIndicator(),),)
+                    : AspectRatio(
+                      aspectRatio: _videoPlayerController.value.aspectRatio,
+                      child: Chewie(controller: _chewieController),
+                    ),
                   Container(
                     height: 52.v,
                     width: 360.h,
@@ -191,7 +197,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with TickerProvid
                       controller: _tabController,
                       children: [
                         LessonText(
-                            chosenLesson: chosenLesson,),
+                          chosenLesson: chosenLesson,
+                        ),
                         Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -200,38 +207,36 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with TickerProvid
                             Center(child: Text('Choose Material to download')),
                             SingleChildScrollView(
                               child: ListBody(
-                                children: listMaterial
-                                    .asMap()
-                                    .entries
-                                    .map((entry) {
+                                children:
+                                    listMaterial.asMap().entries.map((entry) {
                                   final index = entry.key;
                                   final item = entry.value;
                                   return TextButton(
                                     onPressed: () {
-                                        downloadFile(
-                                            listMaterial[index]
-                                                .materialUrl
-                                                .toString(),
-                                            listMaterial[index]
-                                                .name
-                                                .toString());
+                                      downloadFile(
+                                          listMaterial[index]
+                                              .materialUrl
+                                              .toString(),
+                                          listMaterial[index].name.toString());
                                     },
                                     child: Row(
                                       children: [
                                         Text(item.name.toString()),
                                         IconButton(
                                           onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        MaterialView(
-                                                            url: listMaterial[index]
-                                                                .materialUrl
-                                                                .toString())),
-                                              );
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      MaterialView(
+                                                          url: listMaterial[
+                                                                  index]
+                                                              .materialUrl
+                                                              .toString())),
+                                            );
                                           },
-                                          icon: Icon(Icons.remove_red_eye_outlined),
+                                          icon: Icon(
+                                              Icons.remove_red_eye_outlined),
                                         ),
                                       ],
                                     ),

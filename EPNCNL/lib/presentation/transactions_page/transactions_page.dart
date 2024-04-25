@@ -327,7 +327,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                               ),
                               child: Text(
                                 transactions.courseId == null
-                                    ? 'Add money via wallet'
+                                    ? 'Deposit via wallet'
                                     : transactions.course?.category?.description ??
                                     '',
                                 style: theme.textTheme.labelLarge,

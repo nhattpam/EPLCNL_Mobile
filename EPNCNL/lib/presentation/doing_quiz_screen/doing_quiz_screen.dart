@@ -460,8 +460,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                         // Remove Spacer and use SizedBox with height
                         _buildQuestionsMenu(listquestion[_questionIndex]),
                         SizedBox(height: 55.v),
-                        endOfQuiz
-                            ? CustomElevatedButton(
+                         CustomElevatedButton(
                                 onPressed: () {
                                   if (isSelected == true) {
                                     if (endOfQuiz == true) {
@@ -536,7 +535,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                                     : "Next Question",
                                 margin: EdgeInsets.symmetric(horizontal: 5.h),
                               )
-                            : Container()
+
                       ],
                     ),
                   ),

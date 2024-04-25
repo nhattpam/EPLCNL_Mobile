@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:meowlish/data/models/accounts.dart';
 import 'package:meowlish/data/models/assignmentattemps.dart';
 import 'package:meowlish/data/models/classmodules.dart';
 import 'package:meowlish/data/models/feedbacks.dart';
@@ -48,18 +49,17 @@ class FetchCourseList {
   }
   static Future<bool> checkEmailExistence({String? query}) async {
     var data = <Map<String, dynamic>>[];
-    List<Leaner> results = [];
-    final urlList = 'https://nhatpmse.twentytwo.asia/api/learners';
+    List<Account> results = [];
+    final urlList = 'https://nhatpmse.twentytwo.asia/api/accounts';
     final url = Uri.parse(urlList);
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         data = json.decode(response.body).cast<Map<String, dynamic>>();
-        results = data.map((e) => Leaner.fromJson(e)).toList();
+        results = data.map((e) => Account.fromJson(e)).toList();
         if (query != null) {
           results = results.where((element) =>
-          element.account?.email != null &&
-              (element.account?.email)!.toLowerCase().contains(query.toLowerCase())).toList();
+          element.email != null && element.email!.toLowerCase() == query.toLowerCase()).toList();
           if(results.isNotEmpty){
             return true;
           }else{

@@ -32,8 +32,6 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
 
   TextEditingController fullNameController = TextEditingController();
 
-  TextEditingController addressController = TextEditingController();
-
   TextEditingController nameController = TextEditingController();
 
   TextEditingController dateOfBirthController = TextEditingController();
@@ -52,7 +50,6 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
   final picker = ImagePicker();
   Dio dio = Dio();
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -122,19 +119,7 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
     }
   }
 
-  String? validateFullName(String? fullname) {
-    if (fullname == null || fullname.isEmpty) {
-      return 'Full Name cannot be empty';
-    }
-    return null;
-  }
-  String? validateAddress(String? address) {
-    if (address == null || address.isEmpty) {
-      return 'Address cannot be empty';
-    }
-    return null;
-  }
-
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -260,7 +245,6 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
   Widget _buildFullName(BuildContext context) {
     return
       CustomTextFormField(
-        validator: validateFullName,
       controller: fullNameController,
       hintText: account?.fullName ?? '',
       hintStyle: CustomTextStyles.titleSmallGray80001,
@@ -287,22 +271,38 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
       ),
     );
   }
-
   Widget _buildAddress(BuildContext context) {
-    return
-      CustomTextFormField(
-        validator: validateAddress,
-        controller: addressController,
-        hintText: account?.address ?? '',
-        hintStyle: CustomTextStyles.titleSmallGray80001,
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: 20.h,
-          vertical: 21.v,
-        ),
-        borderDecoration: TextFormFieldStyleHelper.outlineBlack,
-      );
+    return Container(
+      width: 360.h,
+      padding: EdgeInsets.symmetric(
+        horizontal: 22.h,
+        vertical: 20.v,
+      ),
+      decoration: AppDecoration.outlineBlack9001.copyWith(
+        borderRadius: BorderRadiusStyle.roundedBorder10,
+      ),
+      child: Text(
+        account?.address ?? '',
+        style: CustomTextStyles.titleSmallGray80001,
+      ),
+    );
   }
-
+  // ////Update Password
+  // Widget _buildPassword(BuildContext context) {
+  //   String passwordHint = account?.password != null ? '*' * (account?.password?.length as int) : '';
+  //   return CustomTextFormField(
+  //     obscureText: true,
+  //     textInputType: TextInputType.visiblePassword,
+  //     controller: nameController,
+  //     hintText: passwordHint,
+  //     hintStyle: CustomTextStyles.titleSmallGray80001,
+  //     contentPadding: EdgeInsets.symmetric(
+  //       horizontal: 22.h,
+  //       vertical: 21.v,
+  //     ),
+  //     borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+  //   );
+  // }
   Widget _buildPassword(BuildContext context) {
     String passwordHint =
     account?.password != null ? '*' * (account?.password?.length as int) : '';
@@ -446,52 +446,52 @@ class EditProfilesScreenState extends State<EditProfilesScreen> {
   Widget _buildUpdate(BuildContext context) {
     return CustomElevatedButton(
       onPressed: (){
-        if (_formKey.currentState!.validate()) {
-          if (_image.isEmpty) {
-            Network.updateProfile(
-                account?.email ?? '',
-                account?.password ?? '',
-                fullNameController.text,
-                account?.phoneNumber ?? '',
-                account?.imageUrl ?? '',
-                account?.dateOfBirth ?? '',
-                account?.gender ?? false,
-                addressController.text,
-                account?.isActive ?? true,
-                account?.createdDate ?? '',
-                account?.note ?? '');
-          } else {
-            Network.updateProfile(
-                account?.email ?? '',
-                account?.password ?? '',
-                fullNameController.text,
-                account?.phoneNumber ?? '',
-                _image,
-                account?.dateOfBirth ?? '',
-                account?.gender ?? false,
-                addressController.text,
-                account?.isActive ?? true,
-                account?.createdDate ?? '',
-                account?.note ?? '');
-          }
-          AwesomeDialog(
-            context: context,
-            animType: AnimType.scale,
-            dialogType: DialogType.success,
-            body: Center(
-              child: Text(
-                'Edit Success!!!!!',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-            btnOkOnPress: () {
-              setState(() {
-                Navigator.pop(context, true);
-              });
-            },
-          )
-            ..show();
+        if(_image.isEmpty){
+          Network.updateProfile(
+              account?.email ?? '',
+              account?.password ?? '',
+              fullNameController.text,
+              account?.phoneNumber ?? '',
+              account?.imageUrl ?? '',
+              account?.dateOfBirth ?? '',
+              account?.gender ?? false,
+              account?.address ?? '',
+              account?.isActive ?? true,
+              account?.createdDate ?? '',
+              account?.createdBy ?? '',
+              account?.note ?? '');
+        }else{
+          Network.updateProfile(
+              account?.email ?? '',
+              account?.password ?? '',
+              fullNameController.text,
+              account?.phoneNumber ?? '',
+              _image,
+              account?.dateOfBirth ?? '',
+              account?.gender ?? false,
+              account?.address ?? '',
+              account?.isActive ?? true,
+              account?.createdDate ?? '',
+              account?.createdBy ?? '',
+              account?.note ?? '');
         }
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.scale,
+          dialogType: DialogType.success,
+          body: Center(
+            child: Text(
+              'Edit Success!!!!!',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+          btnOkOnPress: () {
+            setState(() {
+              Navigator.pop(context,true);
+            });
+          },
+        )..show();
+
       },
       text: "Update",
       margin: EdgeInsets.only(

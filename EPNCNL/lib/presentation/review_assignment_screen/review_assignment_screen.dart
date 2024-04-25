@@ -131,10 +131,16 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
     try {
       final assignment =
           await Network.getAssignmentByAssignmentId(widget.assignmentID);
-      setState(() {
-        chosenAssignment = assignment;
-      });
-      _initializeVideoPlayerQuestion(chosenAssignment.questionAudioUrl.toString());
+      if (assignment?.isActive ?? true) {
+        setState(() {
+          chosenAssignment = assignment;
+        });
+        _initializeVideoPlayerQuestion(chosenAssignment.questionAudioUrl.toString());
+      } else {
+        // Handle the case where the loaded lesson is not active
+        // For example, show a message to the user or perform another action
+        print('The loaded lesson is not active');
+      }
     } catch (e) {
       // Handle errors here
       print('Error: $e');

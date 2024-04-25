@@ -11,6 +11,7 @@ class Assignment {
   String? createdDate;
   String? updatedDate;
   Module? module;
+  bool? isActive;
 
   Assignment(
       {this.id,
@@ -22,7 +23,8 @@ class Assignment {
       this.gradeToPass,
       this.createdDate,
       this.updatedDate,
-      this.module});
+      this.module,
+      this.isActive});
 
   Assignment.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -34,6 +36,7 @@ class Assignment {
     gradeToPass = json['gradeToPass'];
     createdDate = json['createdDate'];
     updatedDate = json['updatedDate'];
+    isActive = json['isActive'];
     module =
         json['module'] != null ? new Module.fromJson(json['module']) : null;
   }
@@ -49,6 +52,7 @@ class Assignment {
     data['gradeToPass'] = this.gradeToPass;
     data['createdDate'] = this.createdDate;
     data['updatedDate'] = this.updatedDate;
+    data['isActive'] = this.isActive;
     if (this.module != null) {
       data['module'] = this.module!.toJson();
     }

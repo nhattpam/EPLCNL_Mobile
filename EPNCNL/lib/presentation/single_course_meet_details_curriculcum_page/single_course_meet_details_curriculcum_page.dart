@@ -843,8 +843,10 @@ class _MultiTopicState extends State<MultiTopic> {
     try {
       List<Assignment> loadedAssignment =
       await Network.getAssignmentByTopicId(classtopicId);
+      List<Assignment> activeModules = loadedAssignment.where((module) => module?.isActive ?? true).toList();
+
       setState(() {
-        moduleAssignmentMap[classtopicId] = loadedAssignment;
+        moduleAssignmentMap[classtopicId] = activeModules;
         for (var assignment in (moduleAssignmentMap[classtopicId] as List)) {
           loadAssignmentAttemptByLearnerId(assignment.id.toString());
           loadAssignmentAttemptByAssignmentId(assignment.id.toString());

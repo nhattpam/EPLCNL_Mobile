@@ -105,16 +105,22 @@ class DoingAssignmentScreenState extends State<DoingAssignmentScreen> {
 
   Future<void> loadAssignmentByAssignmentId() async {
     try {
-      final assignment =
-          await Network.getAssignmentByAssignmentId(widget.assignmentID);
-      setState(() {
-        chosenAssignment = assignment;
-      });
-      if (chosenAssignment.questionAudioUrl != '') {
-        await _initializeVideoPlayer(
-            chosenAssignment.questionAudioUrl.toString());
+      final assignment = await Network.getAssignmentByAssignmentId(widget.assignmentID);
+      if (assignment?.isActive ?? true) {
+        setState(() {
+          chosenAssignment = assignment;
+        });
+        if (chosenAssignment.questionAudioUrl != '') {
+          await _initializeVideoPlayer(
+              chosenAssignment.questionAudioUrl.toString());
+        }
+        _startCooldownTimer();
+      } else {
+        // Handle the case where the loaded lesson is not active
+        // For example, show a message to the user or perform another action
+        print('The loaded lesson is not active');
       }
-      _startCooldownTimer();
+
     } catch (e) {
       // Handle errors here
       print('Error: $e');

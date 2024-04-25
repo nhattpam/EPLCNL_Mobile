@@ -167,12 +167,13 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
   }
 
   Future<void> loadAssignmentByModuleId(String moduleId) async {
-    List<Assignment> loadedAssignment =
-    await Network.getAssignmentByModuleId(moduleId);
+    List<Assignment> loadedAssignment = await Network.getAssignmentByModuleId(moduleId);
+    List<Assignment> activeModules = loadedAssignment.where((module) => module?.isActive ?? true).toList();
+
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleAssignmentMap[moduleId] = loadedAssignment;
+        moduleAssignmentMap[moduleId] = activeModules;
         isLoadingAssignment = false;
       });
     }

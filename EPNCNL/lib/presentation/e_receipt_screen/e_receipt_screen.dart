@@ -175,21 +175,12 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 9.h),
                 child: _buildEmailSection(
                   context,
-                  emailLabel: "Email",
+                  emailLabel: "Email ID",
                   emailText: account?.email ?? '',
                 ),
               ),
               SizedBox(height: 12.v),
-              chosenTransaction.courseId == null
-              ? Padding(
-                padding: EdgeInsets.symmetric(horizontal: 9.h),
-                child: _buildEmailSection(
-                  context,
-                  emailLabel: "Payment",
-                  emailText: 'Wallet',
-                ),
-              )
-              : Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 9.h),
                 child: _buildEmailSection(
                   context,
@@ -197,16 +188,16 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
                   emailText: chosenTransaction.course?.name ?? '',
                 ),
               ),
-              SizedBox(height: 13.v),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 9.h),
-                child: _buildEmailSection(
-                  context,
-                  emailLabel: "Payment Method",
-                  emailText:
-                      chosenTransaction.paymentMethod?.name ?? '',
-                ),
-              ),
+              // SizedBox(height: 13.v),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 9.h),
+              //   child: _buildEmailSection(
+              //     context,
+              //     emailLabel: "Category",
+              //     emailText:
+              //         chosenTransaction.course?.category?.description ?? '',
+              //   ),
+              // ),
               SizedBox(height: 11.v),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 9.h),
@@ -255,7 +246,6 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
               SizedBox(height: 15.v),
               if (chosenTransaction.transactionDate != null && DateTime.parse(chosenTransaction.transactionDate.toString()).isAfter(DateTime.now().subtract(Duration(days: 7))) || enrollment.refundStatus == true)
                 if(chosenTransaction.course?.isOnlineClass == false)
-                  if(chosenTransaction.status != 'PROCESSING')
                 CustomElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(
@@ -267,7 +257,6 @@ class _EReceiptScreenState extends State<EReceiptScreen> {
                 ),
               if (chosenTransaction.transactionDate != null && DateTime.parse(chosenTransaction.transactionDate.toString()).isAfter(DateTime.now().subtract(Duration(days: 7))) || enrollment.refundStatus == true)
                 if(chosenTransaction.course?.isOnlineClass == true)
-                  if(chosenTransaction.status != 'PROCESSING')
                   CustomElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(

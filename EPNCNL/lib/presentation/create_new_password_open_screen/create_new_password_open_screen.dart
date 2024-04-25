@@ -31,36 +31,6 @@ class _CreateNewPasswordOpenScreenState extends State<CreateNewPasswordOpenScree
     super.initState();
     fetchAccountData();
   }
-  String? validatePassword(String? password) {
-    if (password == null || password.isEmpty) {
-      return 'Password cannot be empty';
-    }
-
-    // You can add additional password validation rules here.
-    // For example, checking for a minimum length:
-    if (password.length < 8) {
-      return 'Password must be at least 8 characters long';
-    }
-
-    // You can add more validation rules as needed, such as requiring
-    // a mix of uppercase and lowercase letters, numbers, and special characters.
-
-    return null; // Return null if the password is valid.
-  }
-
-  String? validateRePassword(String? confirmPassword) {
-    if (confirmPassword == null || confirmPassword.isEmpty) {
-      return 'Confirm Password cannot be empty';
-    }
-    if (confirmPassword != newpasswordController.text) {
-      return 'Passwords do not match';
-    }
-
-    // You can add more validation rules as needed, such as requiring
-    // a mix of uppercase and lowercase letters, numbers, and special characters.
-
-    return null; // Return null if the password is valid.
-  }
 
   Future<void> fetchAccountData() async {
     List<Account> acc = await Network.getAccountByEmail(query: widget.email);
@@ -70,61 +40,6 @@ class _CreateNewPasswordOpenScreenState extends State<CreateNewPasswordOpenScree
       SessionManager().setUserId(listAccount[0].id ?? '');
     });
   }
-
-  Future changePassword() async {
-    if (_formKey.currentState!.validate()) {
-      if (listAccount.isNotEmpty) {
-        final bool update = await Network.updateProfile(
-            listAccount[0]?.email ?? '',
-            newpasswordController.text,
-            listAccount[0]?.fullName ?? '',
-            listAccount[0]?.phoneNumber ?? '',
-            listAccount[0]?.imageUrl ?? '',
-            listAccount[0]?.dateOfBirth ?? '',
-            listAccount[0]?.gender ?? false,
-            listAccount[0]?.address ?? '',
-            listAccount[0]?.isActive ?? true,
-            listAccount[0]?.createdDate ?? '',
-            listAccount[0]?.note ?? '');
-        if (update) {
-          if (context != null) {
-            AwesomeDialog(
-              context: context,
-              animType: AnimType.scale,
-              dialogType: DialogType.success,
-              body: Center(
-                child: Text(
-                  'Your password has been changed!!!',
-                  style: TextStyle(fontStyle: FontStyle.italic),
-                ),
-              ),
-              btnOkOnPress: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) =>  LoginScreen()));
-              },
-            )..show();
-          }
-        } else {
-          if (context != null) {
-            AwesomeDialog(
-                context: context,
-                animType: AnimType.scale,
-                dialogType: DialogType.error,
-                body: Center(
-                  child: Text(
-                    'Something went wrong!!!',
-                    style: TextStyle(fontStyle: FontStyle.italic),
-                  ),
-                ),
-                btnOkOnPress: () {},
-                btnOkColor: Colors.red)
-              ..show();
-          }
-        }
-      }
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +117,6 @@ class _CreateNewPasswordOpenScreenState extends State<CreateNewPasswordOpenScree
                       obscureText: true,
                       contentPadding: EdgeInsets.symmetric(vertical: 21.v),
                       borderDecoration: TextFormFieldStyleHelper.outlineBlack,
-                      validator: validatePassword,
                     ),
                     SizedBox(height: 20.v),
                     CustomTextFormField(
@@ -236,7 +150,6 @@ class _CreateNewPasswordOpenScreenState extends State<CreateNewPasswordOpenScree
                       obscureText: true,
                       contentPadding: EdgeInsets.symmetric(vertical: 21.v),
                       borderDecoration: TextFormFieldStyleHelper.outlineBlack,
-                      validator: validateRePassword,
                     ),
                     SizedBox(height: 50.v),
                     _buildContinueSection(context),
@@ -287,7 +200,38 @@ class _CreateNewPasswordOpenScreenState extends State<CreateNewPasswordOpenScree
   Widget _buildContinueSection(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        changePassword();
+        Network.updateProfile(
+            listAccount[0]?.email ?? '',
+            newpasswordController.text,
+            listAccount[0]?.fullName ?? '',
+            listAccount[0]?.phoneNumber ?? '',
+            listAccount[0]?.imageUrl ?? '',
+            listAccount[0]?.dateOfBirth ?? '',
+            listAccount[0]?.gender ?? false,
+            listAccount[0]?.address ?? '',
+            listAccount[0]?.isActive ?? true,
+            listAccount[0]?.createdDate ?? '',
+            listAccount[0]?.createdBy ?? '',
+            listAccount[0]?.note ?? '');
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.scale,
+          dialogType: DialogType.success,
+          body: Center(
+            child: Text(
+              'Change password Success!!!',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+          // title: 'Warning',
+          // desc:   'This is also Ignored',
+          btnOkOnPress: () {
+            Navigator.of(context).pop();
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) =>  LoginScreen()));
+          },
+        )..show();
+
       },
       child: Container(
         height: 60.v,

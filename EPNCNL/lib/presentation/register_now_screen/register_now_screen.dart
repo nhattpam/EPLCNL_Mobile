@@ -1,7 +1,5 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
-import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
 
@@ -32,83 +30,19 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
   void initState() {
     super.initState();
   }
-  String? validateEmail(String? email) {
-    if (email == null || email.isEmpty) {
-      return 'Email cannot be empty';
-    }
-    RegExp regex = RegExp(
-      r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
-    );
-    final isEmailValid = regex.hasMatch(email ?? '');
 
-    if (!isEmailValid) {
-      return 'Please enter a valid email';
-    }
-
-    return null;
-  }
-  String? validatePassword(String? password) {
-    if (password == null || password.isEmpty) {
-      return 'Password cannot be empty';
-    }
-
-    // You can add additional password validation rules here.
-    // For example, checking for a minimum length:
-    if (password.length < 8) {
-      return 'Password must be at least 8 characters long';
-    }
-
-    // You can add more validation rules as needed, such as requiring
-    // a mix of uppercase and lowercase letters, numbers, and special characters.
-
-    return null; // Return null if the password is valid.
-  }
-
-  String? validateRePassword(String? confirmPassword) {
-    if (confirmPassword == null || confirmPassword.isEmpty) {
-      return 'Confirm Password cannot be empty';
-    }
-    if (confirmPassword != passwordController.text) {
-      return 'Passwords do not match';
-    }
-
-    // You can add more validation rules as needed, such as requiring
-    // a mix of uppercase and lowercase letters, numbers, and special characters.
-
-    return null; // Return null if the password is valid.
-  }
   Future<void> _createAccount() async {
     final email = emailController.text;
     final password = passwordController.text;
-    final bool emailExists = await FetchCourseList.checkEmailExistence(
-        query: emailController.text);
+
     try {
-      if (_formKey.currentState!.validate()) {
-        if (emailExists) {
-          AwesomeDialog(
-              context: context,
-              animType: AnimType.scale,
-              dialogType: DialogType.error,
-              body: Center(
-                child: Text(
-                  'This email already register!!!',
-                  style: TextStyle(fontStyle: FontStyle.italic),
-                ),
-              ),
-              btnOkOnPress: () {},
-              btnOkColor: Colors.red)
-            ..show();
-        }
-        else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  FillYourProfileScreen(email: email, password: password),
-            ),
-          );
-        }
-      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              FillYourProfileScreen(email: email, password: password),
+        ),
+      );
     } catch (e) {
       // Handle any errors that occur during pet creation
       print('Error creating pet: $e');
@@ -130,13 +64,25 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                         key: _formKey,
                         child: Container(
                             width: double.maxFinite,
-                            height: 790,
+                            height: 730,
                             padding: EdgeInsets.symmetric(
                                 horizontal: 34.h, vertical: 13.v),
                             child: Column(children: [
                               _buildGettingStartedSection(context),
                               SizedBox(height: 10.v),
                               Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      // Adjust the color and opacity as needed
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: Offset(0,
+                                          3), // Adjust the offset to control the shadow's position
+                                    ),
+                                  ],
+                                ),
                                 child: CustomTextFormField(
                                     controller: emailController,
                                     hintText: "Email",
@@ -155,11 +101,22 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                                     contentPadding: EdgeInsets.only(
                                         top: 21.v, right: 30.h, bottom: 21.v),
                                     borderDecoration:
-                                        TextFormFieldStyleHelper.outlineBlack,
-                                validator: validateEmail),
+                                        TextFormFieldStyleHelper.outlineBlack),
                               ),
                               SizedBox(height: 20.v),
                               Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      // Adjust the color and opacity as needed
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: Offset(0,
+                                          3), // Adjust the offset to control the shadow's position
+                                    ),
+                                  ],
+                                ),
                                 child: CustomTextFormField(
                                     controller: passwordController,
                                     hintText: "Password",
@@ -191,12 +148,22 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                                     contentPadding:
                                         EdgeInsets.symmetric(vertical: 21.v),
                                     borderDecoration:
-                                        TextFormFieldStyleHelper.outlineBlack,
-                                  validator: validatePassword,
-                                ),
+                                        TextFormFieldStyleHelper.outlineBlack),
                               ),
                               SizedBox(height: 10.v),
                               Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      // Adjust the color and opacity as needed
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: Offset(0,
+                                          3), // Adjust the offset to control the shadow's position
+                                    ),
+                                  ],
+                                ),
                                 child: CustomTextFormField(
                                     controller: confirmpasswordController,
                                     hintText: "Confirm Password",
@@ -229,14 +196,14 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                                     contentPadding:
                                         EdgeInsets.symmetric(vertical: 21.v),
                                     borderDecoration:
-                                        TextFormFieldStyleHelper.outlineBlack,
-                                validator: validateRePassword),
+                                        TextFormFieldStyleHelper.outlineBlack),
                               ),
                               SizedBox(height: 24.v),
                               _buildTermsAgreementSection(context),
                               SizedBox(height: 25.v),
                               _buildSignUpSection(context),
-                              SizedBox(height: 25.v),
+                              Spacer(),
+                              SizedBox(height: 75.v),
                               SizedBox(
                                   height: 18.v,
                                   width: 232.h,

@@ -2,7 +2,6 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
-import 'package:meowlish/presentation/home_page/search/search.dart';
 import 'package:meowlish/presentation/otp_forgot_open_screen/otp_forgot_open_screen.dart';
 import 'package:meowlish/widgets/custom_icon_button.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
@@ -11,94 +10,63 @@ class ForgotPasswordOpenScreen extends StatefulWidget {
   const ForgotPasswordOpenScreen({super.key});
 
   @override
-  State<ForgotPasswordOpenScreen> createState() =>
-      _ForgotPasswordOpenScreenState();
+  State<ForgotPasswordOpenScreen> createState() => _ForgotPasswordOpenScreenState();
 }
 
 class _ForgotPasswordOpenScreenState extends State<ForgotPasswordOpenScreen> {
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   EmailOTP myauth = EmailOTP();
   TextEditingController emailController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
   }
-
   Future<void> onContinue() async {
-    if (_formKey.currentState!.validate()) {
-      final bool emailExists = await FetchCourseList.checkEmailExistence(
-          query: emailController.text);
-      if (emailExists) {
-        myauth.setSMTP(
-            host: "smtp.gmail.com",
-            auth: true,
-            username: "meowlish.company@gmail.com",
-            password: "ybpy zzfk taaa glbd",
-            secure: "TLS",
-            port: 587);
-        myauth.setConfig(
-            appEmail: "contact@westory.com",
-            appName: "Email OTP",
-            userEmail: emailController.text,
-            otpLength: 4,
-            otpType: OTPType.digitsOnly);
-        if (await myauth.sendOTP() == true) {
-          AwesomeDialog(
-            context: context,
-            animType: AnimType.scale,
-            dialogType: DialogType.success,
-            body: Center(
-              child: Text(
-                'Please check OTP in your email!!!',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-            btnOkOnPress: () {
-              Navigator.of(context).pop();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => OTPForgotOpenScreen(
-                    email: emailController.text,
-                    myauth: myauth,
-                  ),
-                ),
-              );
-            },
-          )..show();
-        }
-      } else {
+    {
+      myauth.setSMTP(
+          host: "smtp.gmail.com",
+          auth: true,
+          username: "westory.system@gmail.com",
+          password: "srwt hych lidh tlpz",
+          secure: "TLS",
+          port: 587);
+      myauth.setConfig(
+          appEmail: "contact@westory.com",
+          appName: "Email OTP",
+          userEmail: emailController.text,
+          otpLength: 4,
+          otpType: OTPType.digitsOnly);
+      if (await myauth.sendOTP() == true) {
         AwesomeDialog(
-            context: context,
-            animType: AnimType.scale,
-            dialogType: DialogType.error,
-            body: Center(
-              child: Text(
-                'Your account does not exist!!!',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
+          context: context,
+          animType: AnimType.scale,
+          dialogType: DialogType.success,
+          body: Center(
+            child: Text(
+              'Please check OTP in your email!!!',
+              style: TextStyle(fontStyle: FontStyle.italic),
             ),
-            btnOkOnPress: () {},
-            btnOkColor: Colors.red)
-          ..show();
+          ),
+          // title: 'Warning',
+          // desc:   'This is also Ignored',
+          btnOkOnPress: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OTPForgotOpenScreen(
+                  email: emailController.text,
+                  myauth: myauth,
+                ),
+              ),
+            );
+          },
+        )..show();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Oops, OTP send failed"),
+        ));
       }
     }
-  }
-
-  String? validateEmail(String? email) {
-    if (email == null || email.isEmpty) {
-      return 'Email cannot be empty';
-    }
-    RegExp regex = RegExp(
-      r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
-    );
-    final isEmailValid = regex.hasMatch(email ?? '');
-
-    if (!isEmailValid) {
-      return 'Please enter a valid email';
-    }
-    return null;
   }
 
   @override
@@ -189,31 +157,30 @@ class _ForgotPasswordOpenScreenState extends State<ForgotPasswordOpenScreen> {
 
   /// Section Widget
   Widget _buildOneRow(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: CustomTextFormField(
-        controller: emailController,
-        hintText: "Email",
-        hintStyle: CustomTextStyles.titleSmallGray80001,
-        textInputType: TextInputType.emailAddress,
-        prefix: Container(
-          margin: EdgeInsets.fromLTRB(20.h, 22.v, 7.h, 23.v),
-          child: CustomImageView(
-              imagePath: ImageConstant.imgLock, height: 14.v, width: 18.h),
-        ),
-        prefixConstraints: BoxConstraints(maxHeight: 60.v),
-        contentPadding: EdgeInsets.only(top: 21.v, right: 30.h, bottom: 21.v),
-        borderDecoration: TextFormFieldStyleHelper.outlineBlack,
-        validator:
-            validateEmail, //TextFormFieldStyleHelper chứa thuộc tính của form có thể viền đen giao diện
+    return CustomTextFormField(
+      controller: emailController,
+      hintText: "Email",
+      hintStyle: CustomTextStyles.titleSmallGray80001,
+      textInputType: TextInputType.emailAddress,
+      prefix: Container(
+        margin: EdgeInsets.fromLTRB(20.h, 22.v, 7.h, 23.v),
+        child: CustomImageView(
+            imagePath: ImageConstant.imgLock,
+            height: 14.v,
+            width: 18.h),
       ),
+      prefixConstraints: BoxConstraints(maxHeight: 60.v),
+      contentPadding:
+      EdgeInsets.only(top: 21.v, right: 30.h, bottom: 21.v),
+      borderDecoration: TextFormFieldStyleHelper
+          .outlineBlack, //TextFormFieldStyleHelper chứa thuộc tính của form có thể viền đen giao diện
     );
   }
 
   /// Section Widget
   Widget _buildContinueStack(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: (){
         onContinue();
       },
       child: Container(

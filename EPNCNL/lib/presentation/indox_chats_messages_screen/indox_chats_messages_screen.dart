@@ -52,7 +52,7 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                 width: 300,
                 height: 100, // Add margin
                 child: Text(
-                  'Forum',
+                  'Inbox',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
@@ -141,7 +141,7 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                                 //               '')),
                                 Container(
                                   constraints: const BoxConstraints(
-                                    maxWidth: 200,
+                                    maxWidth: 330,
                                   ),
                                   decoration: BoxDecoration(
                                     color: message.learner?.account?.id != lid
@@ -154,9 +154,9 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                                     horizontal: 10,
                                     vertical: 6,
                                   ),
-                                  margin: EdgeInsets.only(bottom: 10, right: 10, left: 10),
+                                  margin: EdgeInsets.only(bottom: 10),
                                   child: Padding(
-                                    padding: EdgeInsets.all(5),
+                                    padding: EdgeInsets.all(12),
                                       child: Text(
                                         message.message.toString(),
                                         softWrap: true,
@@ -173,7 +173,7 @@ class _IndoxChatsMessagesScreenState extends State<IndoxChatsMessagesScreen> {
                         Container(
                           height: 50.adaptSize,
                           width: 50.adaptSize,
-                          // margin: EdgeInsets.only(bottom: 21.v),
+                          margin: EdgeInsets.only(bottom: 21.v),
                           child: CustomImageView(
                               imagePath: message.tutor?.account?.imageUrl ??
                                   message.learner?.account?.imageUrl ??

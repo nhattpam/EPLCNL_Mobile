@@ -36,7 +36,6 @@ class HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   late List<Category> listCategory = [];
   late List<Course> listCourse = [];
-  late List<Center> listCenter = [];
   late List<Tutor> listTutor = [];
   late Account? account = Account();
   Map<String, List<Enrollment>> moduleEnrollmentMap = {};
@@ -54,7 +53,6 @@ class HomePageState extends State<HomePage> {
     loadCategories();
     loadCourse();
     loadTutor();
-    // loadCenter();
     // Future.delayed(const Duration(seconds: 30), () {
     // });
     fetchAccountData();
@@ -81,22 +79,12 @@ class HomePageState extends State<HomePage> {
 
   void loadCourse() async {
     List<Course> loadedCourse = await Network.getCourse();
-    loadedCourse.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
-
     setState(() {
       listCourse = loadedCourse;
       isLoadingCourse = false;
     });
     loadEnrollments();
   }
-  // void loadCenter() async {
-  //   List<Centers> loadedCourse = await Network.getCenter();
-  //   setState(() {
-  //     listCenter = loadedCourse;
-  //     print(listCenter);
-  //   });
-  //   loadEnrollments();
-  // }
 
   void loadTutor() async {
     List<Tutor> loadedTutor = await Network.getTutor();
@@ -242,7 +230,7 @@ class HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),
-            label: 'Forum',
+            label: 'Inbox',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.wallet),
@@ -253,8 +241,6 @@ class HomePageState extends State<HomePage> {
             label: 'Profile',
           ),
         ],
-        selectedFontSize: 12,
-        selectedLabelStyle: CustomTextStyles.labelLargeGray700,
         selectedItemColor: Color(0xbbff9300),
         unselectedItemColor: Color(0xffff9300),
       ),

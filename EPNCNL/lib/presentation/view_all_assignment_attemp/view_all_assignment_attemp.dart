@@ -1,10 +1,10 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
 import 'package:meowlish/data/models/assignmentattemps.dart';
+import 'package:meowlish/data/models/feedbacks.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
 import 'package:meowlish/presentation/indox_chats_page/indox_chats_page.dart';
@@ -13,7 +13,6 @@ import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/session/session.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
-import 'package:video_player/video_player.dart';
 
 class ViewAllAssignmentAttempt extends StatefulWidget {
   final String assignmentId;
@@ -30,12 +29,11 @@ class ViewAllAssignmentAttempt extends StatefulWidget {
 class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
   late List<AssignmentAttempt> listAssignmentAttempt = [];
   int _currentPage = 1;
-  int _itemsPerPage = 3; // Define the number of items per page
+  int _itemsPerPage = 4; // Define the number of items per page
   String lid = '';
+  bool _ascendingOrder = true;
   List<AssignmentAttempt> _paginatedAssignmentAttempt = [];
-  bool isLoading = true;
-  late List<VideoPlayerController> _videoPlayerControllers = [];
-  late List<ChewieAudioController> _chewieControllers = [];
+
   // late bool isLoadingFeedback;
   // late bool isLoadingCourse;
   int _currentIndex = 0;
@@ -56,17 +54,6 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
     loadAssignmentAttemptByAssignmentId();
     super.initState();
   }
-  @override
-  void dispose() {
-    for (var controller in _videoPlayerControllers) {
-      controller.dispose();
-    }
-    for (var controller in _chewieControllers) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
 
   Future<void> loadAssignmentAttemptByAssignmentId() async {
     try {
@@ -74,6 +61,7 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
           await Network.getAssignmentAttemptByAssignmentIdAndLearnerId(
         widget.assignmentId,
       );
+
       setState(() {
         listAssignmentAttempt = assignment;
         listAssignmentAttempt.removeWhere(
@@ -102,18 +90,25 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
           startIndex, endIndex.clamp(0, listAssignmentAttempt.length));
       // isLoadingFeedback = false;
     }
-    for (var url in _paginatedAssignmentAttempt) {
-      final videoController = VideoPlayerController.networkUrl(Uri.parse(url.answerAudioUrl.toString()));
-      final chewieController = ChewieAudioController(
-        videoPlayerController: videoController,
-        autoInitialize: true,
-        autoPlay: false,
-        looping: true,
-        allowMuting: true,
-      );
-      _videoPlayerControllers.add(videoController);
-      _chewieControllers.add(chewieController);
-      isLoading = false;
+  }
+
+  void _loadPageBySort(int page) {
+    // Sort feedback list by the newest date
+
+    int startIndex = (page - 1) * _itemsPerPage;
+    int endIndex = startIndex + _itemsPerPage;
+    if (startIndex < listAssignmentAttempt.length) {
+      // Ensure endIndex does not exceed the length of the list
+      _paginatedAssignmentAttempt = listAssignmentAttempt.sublist(
+          startIndex, endIndex.clamp(0, listAssignmentAttempt.length));
+    }
+  }
+
+  int _compareFeedback(FedBack a, FedBack b) {
+    if (_ascendingOrder) {
+      return b.rating.toString().compareTo(a.rating.toString());
+    } else {
+      return a.rating.toString().compareTo(b.rating.toString());
     }
   }
 
@@ -157,8 +152,7 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
             ),
           ),
         ),
-        body:
-        SizedBox(
+        body: SizedBox(
           height: SizeUtils.height,
           width: double.maxFinite,
           child: Stack(
@@ -180,15 +174,17 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                       Divider(),
                       SizedBox(height: 30.v),
                       CustomElevatedButton(
-                        onPressed: () async {
+                        onPressed: () {
                           for (int index = 0;
-                          index < _paginatedAssignmentAttempt.length;
-                          index++) {
+                              index < _paginatedAssignmentAttempt.length;
+                              index++) {
                             final attempt = _paginatedAssignmentAttempt[index];
-                            // print("This is"+ index.toString());
-                            await Network.createPeerReview(
+                            Network.createPeerReview(
                                 assignmentAttemptId: attempt.id.toString(),
                                 grade: point[attempt.id].toString());
+                            print(
+                                "Submit point" + point[attempt.id].toString());
+                            print("Assignment point" + attempt.id.toString());
                           }
                           AwesomeDialog(
                             context: context,
@@ -202,8 +198,13 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                             ),
                             btnOkOnPress: () {
                               setState(() {
-                                Navigator.pop(context);
-                                Navigator.pop(context);
+                                if (widget.navigateTime == 2) {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                }
+                                if (widget.navigateTime == 1) {
+                                  Navigator.pop(context);
+                                }
                               });
                               // if(isSelected == true){
                               //   nextQuestion();
@@ -223,64 +224,63 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          if (index == 0) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );
-          }
-          if (index == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
-            );
-          }
-          if (index == 2) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => IndoxChatsPage()),
-            );
-          }
-          if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => TransactionsPage()),
-            );
-          }
-          if (index == 4) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => ProfilesPage()),
-            );
-          }
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'My Courses',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Inbox',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.wallet),
-            label: 'Transaction',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        selectedFontSize: 12,
-        selectedLabelStyle: CustomTextStyles.labelLargeGray700,
-        selectedItemColor: Color(0xbbff9300),
-        unselectedItemColor: Color(0xffff9300),
-      ),
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 0) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            }
+            if (index == 1) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => MyCourseCompletedPage()),
+              );
+            }
+            if (index == 2) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+              );
+            }
+            if (index == 3) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => TransactionsPage()),
+              );
+            }
+            if (index == 4) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ProfilesPage()),
+              );
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              label: 'My Courses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wallet),
+              label: 'Transaction',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          selectedItemColor: Color(0xbbff9300),
+          unselectedItemColor: Color(0xffff9300),
+        ),
       ),
     );
   }
@@ -462,16 +462,6 @@ class _ViewAllAssignmentAttemptState extends State<ViewAllAssignmentAttempt> {
                                       style: theme.textTheme.labelLarge,
                                     ),
                                   ),
-                                  if (attempt.answerAudioUrl != null &&
-                                      attempt.answerAudioUrl!.isNotEmpty)
-                                    isLoading
-                                        ? Center(
-                                      child: Skeleton(
-                                        width: 400,
-                                        height: 40,
-                                      ),
-                                    )
-                                        : ChewieAudio(controller: _chewieControllers[index]),
                                   SizedBox(height: 11.v),
                                   Row(
                                     children: [

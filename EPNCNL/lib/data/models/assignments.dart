@@ -3,8 +3,10 @@ import 'package:meowlish/data/models/modules.dart';
 class Assignment {
   String? id;
   String? questionText;
+  String? questionAudioUrl;
   int? deadline;
   String? moduleId;
+  String? topicId;
   int? gradeToPass;
   String? createdDate;
   String? updatedDate;
@@ -13,9 +15,11 @@ class Assignment {
   Assignment(
       {this.id,
       this.questionText,
+      this.questionAudioUrl,
       this.deadline,
       this.moduleId,
-        this.gradeToPass,
+      this.topicId,
+      this.gradeToPass,
       this.createdDate,
       this.updatedDate,
       this.module});
@@ -23,8 +27,10 @@ class Assignment {
   Assignment.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     questionText = json['questionText'];
+    questionAudioUrl = json['questionAudioUrl'];
     deadline = json['deadline'];
     moduleId = json['moduleId'];
+    topicId = json['topicId'];
     gradeToPass = json['gradeToPass'];
     createdDate = json['createdDate'];
     updatedDate = json['updatedDate'];
@@ -36,8 +42,10 @@ class Assignment {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['questionText'] = this.questionText;
+    data['questionAudioUrl'] = this.questionAudioUrl;
     data['deadline'] = this.deadline;
     data['moduleId'] = this.moduleId;
+    data['topicId'] = this.topicId;
     data['gradeToPass'] = this.gradeToPass;
     data['createdDate'] = this.createdDate;
     data['updatedDate'] = this.updatedDate;

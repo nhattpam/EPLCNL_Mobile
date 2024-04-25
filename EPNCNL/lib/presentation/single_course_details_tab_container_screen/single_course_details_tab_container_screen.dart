@@ -600,10 +600,12 @@ class SingleCourseDetailsCurriculumPageState
 
   Future<void> loadQuizByModuleId(String moduleId) async {
     List<Quiz> loadedQuiz = await Network.getQuizByModuleId(moduleId);
+    List<Quiz> activeModules = loadedQuiz.where((module) => module?.isActive ?? true).toList();
+
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleQuizMap[moduleId] = loadedQuiz;
+        moduleQuizMap[moduleId] = activeModules;
         isLoadingQuiz = false;
       });
     }

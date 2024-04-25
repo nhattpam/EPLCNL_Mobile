@@ -827,10 +827,11 @@ class _MultiTopicState extends State<MultiTopic> {
 
   Future<void> loadQuizByClassTopicId(String classtopicId) async {
     try {
-      List<Quiz> loadedQuiz =
-      await Network.getQuizByTopicId(classtopicId);
+      List<Quiz> loadedQuiz = await Network.getQuizByTopicId(classtopicId);
+      List<Quiz> activeModules = loadedQuiz.where((module) => module?.isActive ?? true).toList();
+
       setState(() {
-        moduleQuizMap[classtopicId] = loadedQuiz;
+        moduleQuizMap[classtopicId] = activeModules;
       });
     } catch (e) {
       // Handle errors here

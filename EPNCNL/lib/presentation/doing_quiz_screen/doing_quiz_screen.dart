@@ -91,9 +91,10 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   void loadQuestion() async {
     List<Question> loadedQuestion =
         await Network.getQuestionByQuizId(widget.quizId);
+    List<Question> activeModules = loadedQuestion.where((module) => module?.isActive ?? true).toList();
 
     setState(() {
-      listquestion = loadedQuestion;
+      listquestion = activeModules;
       if (listquestion.length == 1) {
         endOfQuiz = true;
       }

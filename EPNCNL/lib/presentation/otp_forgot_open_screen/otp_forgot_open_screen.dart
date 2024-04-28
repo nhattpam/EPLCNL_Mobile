@@ -7,8 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/presentation/create_new_password_open_screen/create_new_password_open_screen.dart';
 
-import '../../network/network.dart';
-
 class OTPForgotOpenScreen extends StatefulWidget {
   final EmailOTP myauth;
   final String email;
@@ -39,8 +37,8 @@ class _OTPForgotOpenScreenState extends State<OTPForgotOpenScreen> {
     resend.setSMTP(
         host: "smtp.gmail.com",
         auth: true,
-        username: "westory.system@gmail.com",
-        password: "srwt hych lidh tlpz",
+        username: "meowlish.company@gmail.com",
+        password: "ybpy zzfk taaa glbd",
         secure: "TLS",
         port: 587);
     resend.setConfig(
@@ -87,7 +85,6 @@ class _OTPForgotOpenScreenState extends State<OTPForgotOpenScreen> {
               otp3Controller.text +
               otp4Controller.text) ==
           true) {
-        Network.activeAccount(widget.email);
         AwesomeDialog(
           context: context,
           animType: AnimType.scale,

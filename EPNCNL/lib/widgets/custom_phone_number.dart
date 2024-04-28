@@ -12,10 +12,11 @@ class CustomPhoneNumber extends StatelessWidget {
     required this.onTap,
     required this.controller,
     required this.text,
+    required this.validator,
   }) : super(
           key: key,
         );
-
+  final String? Function(String, Country) validator;
   Country country;
 
   Function(Country) onTap;
@@ -85,6 +86,7 @@ class CustomPhoneNumber extends StatelessWidget {
                 controller: controller,
                 hintText: text,
                 hintStyle: CustomTextStyles.titleSmallBlack900,
+                validator: (value) => validator!(value!, country),
               ),
             ),
           ),

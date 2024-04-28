@@ -7,6 +7,7 @@ class Quiz {
   int? deadline;
   String? createdDate;
   String? updatedDate;
+  bool? isActive;
 
   Quiz(
       {this.id,
@@ -16,7 +17,8 @@ class Quiz {
       this.gradeToPass,
       this.deadline,
       this.createdDate,
-      this.updatedDate});
+      this.updatedDate,
+      this.isActive});
 
   Quiz.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -27,6 +29,7 @@ class Quiz {
     deadline = json['deadline'];
     createdDate = json['createdDate'];
     updatedDate = json['updatedDate'];
+    isActive = json['isActive'];
   }
 
   Map<String, dynamic> toJson() {
@@ -39,6 +42,7 @@ class Quiz {
     data['deadline'] = this.deadline;
     data['createdDate'] = this.createdDate;
     data['updatedDate'] = this.updatedDate;
+    data['isActive'] = this.isActive;
     return data;
   }
 }

@@ -36,7 +36,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   Timer? _timer;
   Timer? __timer;
   int _remainingSeconds = 0;
-  int _remainingSecondsPopUp = 10;
+  int _remainingSecondsPopUp = 3;
   bool isLoading = true;
   bool isSelected = false;
   bool isCorrect = false;
@@ -72,16 +72,9 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   Future<void> loadQuizByQuizId() async {
     try {
       final quiz = await Network.getQuizByQuizId(widget.quizId);
-      if (quiz?.isActive ?? true) {
-        setState(() {
-          chosenQuiz = quiz;
-        });
-      } else {
-        // Handle the case where the loaded lesson is not active
-        // For example, show a message to the user or perform another action
-        print('The loaded lesson is not active');
-      }
-
+      setState(() {
+        chosenQuiz = quiz;
+      });
     } catch (e) {
       // Handle errors here
       print('Error: $e');
@@ -91,13 +84,8 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   void loadQuestion() async {
     List<Question> loadedQuestion =
         await Network.getQuestionByQuizId(widget.quizId);
-    List<Question> activeModules = loadedQuestion.where((module) => module?.isActive ?? true).toList();
-
     setState(() {
-      listquestion = activeModules;
-      if (listquestion.length == 1) {
-        endOfQuiz = true;
-      }
+      listquestion = loadedQuestion;
     });
     loadAllQuestionAnswer();
   }
@@ -112,6 +100,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
       });
     }
   }
+
 
   Future<void> loadAllQuestionAnswer() async {
     try {
@@ -229,15 +218,14 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   void nextQuestion() {
     setState(() {
       isLoading = true;
-      if (_questionIndex < listquestion.length - 1) {
-        _questionIndex++;
-        loadQuestion();
-        isSelected = false;
-        print("This is" + _questionIndex.toString());
-      } else {
-        endOfQuiz = true;
-      }
+      _questionIndex++;
+      loadQuestion();
+      isSelected = false;
+      print("This is" + _questionIndex.toString());
     });
+    if (_questionIndex >= listquestion.length - 1) {
+      endOfQuiz = true;
+    }
   }
 
   void resetQuiz() {
@@ -469,82 +457,79 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                         // Remove Spacer and use SizedBox with height
                         _buildQuestionsMenu(listquestion[_questionIndex]),
                         SizedBox(height: 55.v),
-                         CustomElevatedButton(
-                                onPressed: () {
-                                  if (isSelected == true) {
-                                    if (endOfQuiz == true) {
-                                      Network.createQuizAttempt(
-                                          quizId: widget.quizId,
-                                          totalGrade: totalScore);
-                                      if (totalScore >=
-                                          (chosenQuiz.gradeToPass as int)) {
-                                        AwesomeDialog(
-                                          context: context,
-                                          animType: AnimType.scale,
-                                          dialogType: DialogType.success,
-                                          body: Center(
-                                            child: Text(
-                                              'You passed the quiz: $totalScore/$gradeToPass',
-                                              style: TextStyle(
-                                                  fontStyle: FontStyle.italic),
-                                            ),
-                                          ),
-                                          btnOkOnPress: () {
-                                            setState(() {
-                                              Navigator.pop(context);
-                                              _timer?.cancel();
-                                              _timer = null;
-                                            });
-                                            // if(isSelected == true){
-                                            //   nextQuestion();
-                                            // }
-                                          },
-                                        )..show();
-                                      } else {
-                                        AwesomeDialog(
-                                          context: context,
-                                          animType: AnimType.scale,
-                                          dialogType: DialogType.error,
-                                          body: Center(
-                                            child: Text(
-                                              'You score: $totalScore/$gradeToPass',
-                                              style: TextStyle(
-                                                  fontStyle: FontStyle.italic),
-                                            ),
-                                          ),
-                                          btnCancelColor: Colors.orange,
-                                          btnCancelText: 'Re-attempt',
-                                          btnCancelOnPress: () {
-                                            _timer?.cancel();
-                                            _timer = null;
-                                            resetQuiz();
-                                          },
-                                          btnOkText: 'Return',
-                                          btnOkOnPress: () {
-                                            setState(() {
-                                              Navigator.pop(context);
-                                              _timer?.cancel();
-                                              _timer = null;
-                                            });
-                                            // if(isSelected == true){
-                                            //   nextQuestion();
-                                            // }
-                                          },
-                                        )..show();
-                                      }
-                                    } else {
-                                      nextQuestion();
-                                    }
-                                  }
-                                  _videoPlayerController.dispose();
-                                  _chewieController.dispose();
-                                },
-                                text: endOfQuiz
-                                    ? "Finish Attempt"
-                                    : "Next Question",
-                                margin: EdgeInsets.symmetric(horizontal: 5.h),
-                              )
-
+                        CustomElevatedButton(
+                          onPressed: () {
+                            if (isSelected == true) {
+                              if (endOfQuiz == true) {
+                                Network.createQuizAttempt(
+                                    quizId: widget.quizId,
+                                    totalGrade: totalScore);
+                                if (totalScore >=
+                                    (chosenQuiz.gradeToPass as int)) {
+                                  AwesomeDialog(
+                                    context: context,
+                                    animType: AnimType.scale,
+                                    dialogType: DialogType.success,
+                                    body: Center(
+                                      child: Text(
+                                        'You passed the quiz: $totalScore/$gradeToPass',
+                                        style: TextStyle(
+                                            fontStyle: FontStyle.italic),
+                                      ),
+                                    ),
+                                    btnOkOnPress: () {
+                                      setState(() {
+                                        Navigator.pop(context);
+                                        _timer?.cancel();
+                                        _timer = null;
+                                      });
+                                      // if(isSelected == true){
+                                      //   nextQuestion();
+                                      // }
+                                    },
+                                  )..show();
+                                } else {
+                                  AwesomeDialog(
+                                    context: context,
+                                    animType: AnimType.scale,
+                                    dialogType: DialogType.error,
+                                    body: Center(
+                                      child: Text(
+                                        'You score: $totalScore/$gradeToPass',
+                                        style: TextStyle(
+                                            fontStyle: FontStyle.italic),
+                                      ),
+                                    ),
+                                    btnCancelColor: Colors.orange,
+                                    btnCancelText: 'Re-attempt',
+                                    btnCancelOnPress: () {
+                                      _timer?.cancel();
+                                      _timer = null;
+                                      resetQuiz();
+                                    },
+                                    btnOkText: 'Return',
+                                    btnOkOnPress: () {
+                                      setState(() {
+                                        Navigator.pop(context);
+                                        _timer?.cancel();
+                                        _timer = null;
+                                      });
+                                      // if(isSelected == true){
+                                      //   nextQuestion();
+                                      // }
+                                    },
+                                  )..show();
+                                }
+                              } else {
+                                nextQuestion();
+                              }
+                            }
+                            _videoPlayerController.dispose();
+                            _chewieController.dispose();
+                          },
+                          text: endOfQuiz ? "Finish Attempt" : "Next Question",
+                          margin: EdgeInsets.symmetric(horizontal: 5.h),
+                        ),
                       ],
                     ),
                   ),
@@ -575,75 +560,60 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
             onTap: isSelected
                 ? null
                 : () {
-                    if (_timer != null && _timer!.isActive) {
-                      isCorrect = answer.isAnswer ?? false;
-                      setState(() {
-                        isSelected = true;
-                        if (isCorrect) {
-                          _startCooldownPopup();
-                          print('Point of this question' +
-                              listquestion[_questionIndex]
-                                  .defaultGrade
-                                  .toString());
-                          totalScore +=
-                              listquestion[_questionIndex].defaultGrade as int;
-                          int defaultGrade =
-                              listquestion[_questionIndex].defaultGrade as int;
-                          // isPointed = true;
-                          AwesomeDialog(
-                            context: context,
-                            animType: AnimType.scale,
-                            dialogType: DialogType.success,
-                            body: Center(
-                              child: Text(
-                                '+ $defaultGrade point',
-                                style: TextStyle(fontStyle: FontStyle.italic),
-                              ),
+                    isCorrect = answer.isAnswer ?? false;
+                    setState(() {
+                      isSelected = true;
+                      if (isCorrect) {
+                        _startCooldownPopup();
+                        print('Point of this question' +
+                            listquestion[_questionIndex]
+                                .defaultGrade
+                                .toString());
+                        totalScore +=
+                            listquestion[_questionIndex].defaultGrade as int;
+                        int defaultGrade =
+                            listquestion[_questionIndex].defaultGrade as int;
+                        // isPointed = true;
+                        AwesomeDialog(
+                          context: context,
+                          animType: AnimType.scale,
+                          dialogType: DialogType.success,
+                          body: Center(
+                            child: Text(
+                              '+ $defaultGrade point',
+                              style: TextStyle(fontStyle: FontStyle.italic),
                             ),
-                            btnOkOnPress: () {
-                              setState(() {
-                                __timer?.cancel();
-                                __timer = null;
-                              });
-                              // if(isSelected == true){
-                              //   nextQuestion();
-                              // }
-                            },
-                          )..show();
-                        } else {
-                          _startCooldownPopup();
-                          AwesomeDialog(
-                            context: context,
-                            animType: AnimType.scale,
-                            dialogType: DialogType.error,
-                            body: Center(
-                              child: Text(
-                                '+ 0 point',
-                                style: TextStyle(fontStyle: FontStyle.italic),
-                              ),
-                            ),
-                            btnOkColor: Colors.red,
-                            btnOkOnPress: () {
+                          ),
+                          btnOkOnPress: () {
+                            setState(() {
                               __timer?.cancel();
                               __timer = null;
-                            },
-                          )..show();
-                        }
-                      });
-                    } else {
-                      AwesomeDialog(
-                        context: context,
-                        animType: AnimType.scale,
-                        dialogType: DialogType.error,
-                        body: Center(
-                          child: Text(
-                            'Wait a bit',
-                            style: TextStyle(fontStyle: FontStyle.italic),
+                            });
+                            // if(isSelected == true){
+                            //   nextQuestion();
+                            // }
+                          },
+                        )..show();
+                      } else {
+                        _startCooldownPopup();
+                        AwesomeDialog(
+                          context: context,
+                          animType: AnimType.scale,
+                          dialogType: DialogType.error,
+                          body: Center(
+                            child: Text(
+                              '+ 0 point',
+                              style: TextStyle(fontStyle: FontStyle.italic),
+                            ),
                           ),
-                        ),
-                        btnCancelOnPress: () {},
-                      )..show();
-                    }
+                          btnOkColor: Colors.red,
+                          btnOkOnPress: () {
+                            __timer?.cancel();
+                            __timer = null;
+                          },
+                        )..show();
+                      }
+                    });
                   },
             child: Container(
               decoration: BoxDecoration(

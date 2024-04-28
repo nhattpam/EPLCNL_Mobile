@@ -30,11 +30,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
   }
 
   void loadTransactions() async {
-    List<Transaction> loadedTransaction = await Network.getTransactionByLearnerId();
-
-    // Sort the list by date in descending order
-    loadedTransaction.sort((a, b) => (b.transactionDate.toString()).compareTo(a.transactionDate.toString()));
-
+    List<Transaction> loadedTransaction =
+        await Network.getTransactionByLearnerId();
     setState(() {
       listTransactions = loadedTransaction;
       isLoading = false;
@@ -133,8 +130,6 @@ class _TransactionsPageState extends State<TransactionsPage> {
               label: 'Profile',
             ),
           ],
-          selectedFontSize: 12,
-          selectedLabelStyle: CustomTextStyles.labelLargeGray700,
           selectedItemColor: Color(0xbbff9300),
           unselectedItemColor: Color(0xffff9300),
         ),
@@ -191,7 +186,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
             itemCount: 5,
             itemBuilder: (context, index) {
               return GestureDetector(
-                onTap: () {},
+                onTap: () {
+                },
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 1.h),
                   child: Row(
@@ -201,10 +197,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                         height: 92.adaptSize,
                         width: 92.adaptSize,
                         margin: EdgeInsets.only(bottom: 25.v),
-                        child: Skeleton(
-                          height: 92.adaptSize,
-                          width: 92.adaptSize,
-                        ), // Placeholder widget when courseImageUrl is empty or null
+                        child: Skeleton(height: 92.adaptSize,
+                          width: 92.adaptSize,), // Placeholder widget when courseImageUrl is empty or null
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -220,16 +214,16 @@ class _TransactionsPageState extends State<TransactionsPage> {
                             Skeleton(width: 220),
                             SizedBox(height: 12.v),
                             Container(
-                                width: 70.h,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 17.h,
-                                  vertical: 2.v,
-                                ),
-                                decoration: AppDecoration.fillPrimary.copyWith(
-                                  borderRadius:
-                                      BorderRadiusStyle.roundedBorder4,
-                                ),
-                                child: Skeleton(width: 70)),
+                              width: 70.h,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 17.h,
+                                vertical: 2.v,
+                              ),
+                              decoration: AppDecoration.fillPrimary.copyWith(
+                                borderRadius: BorderRadiusStyle.roundedBorder4,
+                              ),
+                              child: Skeleton(width: 70)
+                            ),
                           ],
                         ),
                       ),
@@ -279,25 +273,20 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                          height: 92.adaptSize,
-                          width: 92.adaptSize,
-                          margin: EdgeInsets.only(bottom: 25.v),
-                          child: courseImageUrl != null &&
-                                  courseImageUrl.isNotEmpty
-                              ? Image.network(
-                                  courseImageUrl,
-                                  fit: BoxFit.cover,
-                                )
-                              : transactions.courseId == null
-                                  ? Image.network(
-                                      'https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418196384.png',
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Center(
-                                      child: Container(
-                                          child:
-                                              CircularProgressIndicator())) // Placeholder widget when courseImageUrl is empty or null
-                          ),
+                        height: 92.adaptSize,
+                        width: 92.adaptSize,
+                        margin: EdgeInsets.only(bottom: 25.v),
+                        child: courseImageUrl != null &&
+                                courseImageUrl.isNotEmpty
+                            ? Image.network(
+                                courseImageUrl,
+                                fit: BoxFit.cover,
+                              )
+                            : Center(
+                                child: Container(
+                                    child:
+                                        CircularProgressIndicator())), // Placeholder widget when courseImageUrl is empty or null
+                      ),
                       Padding(
                         padding: EdgeInsets.only(
                           left: 14.h,
@@ -312,9 +301,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                 maxWidth: 230,
                               ),
                               child: Text(
-                                transactions.courseId == null
-                                ? 'VNPAY'
-                                : transactions.course?.name ?? '',
+                                transactions.course?.name ?? '',
                                 style: CustomTextStyles.titleMedium18,
                                 softWrap: true,
                                 overflow: TextOverflow.ellipsis,
@@ -326,9 +313,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                 maxWidth: 230,
                               ),
                               child: Text(
-                                transactions.courseId == null
-                                    ? 'Deposit via wallet'
-                                    : transactions.course?.category?.description ??
+                                transactions.course?.category?.description ??
                                     '',
                                 style: theme.textTheme.labelLarge,
                                 softWrap: true,

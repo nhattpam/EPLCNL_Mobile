@@ -83,11 +83,8 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
     try {
       List<Module> loadedModule =
       await Network.getModulesByCourseId(widget.courseID);
-      List<Module> activeModules = loadedModule.where((module) => module?.isActive ?? true).toList();
-
-      activeModules.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
       setState(() {
-        listModuleByCourseId = activeModules;
+        listModuleByCourseId = loadedModule;
         isLoadingModule = false;
         List<TextEditingController> _controller = List.generate(
           listModuleByCourseId.length,
@@ -118,7 +115,6 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
   Future<void> loadClassModuleByCourseId() async {
     List<ClassModule> loadedModule =
     await Network.getClassModulesByCourseId(widget.courseID);
-
     setState(() {
       listClassModuleByCourseId = loadedModule;
     });
@@ -142,12 +138,10 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
 
   Future<void> loadLessonByModuleId(String moduleId) async {
     List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
-    List<Lesson> activeModules = loadedLesson.where((module) => module?.isActive ?? true).toList();
-
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleLessonsMap[moduleId] = activeModules;
+        moduleLessonsMap[moduleId] = loadedLesson;
         isLoadingLesson = false;
       });
     }
@@ -155,25 +149,22 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
 
   Future<void> loadQuizByModuleId(String moduleId) async {
     List<Quiz> loadedQuiz = await Network.getQuizByModuleId(moduleId);
-    List<Quiz> activeModules = loadedQuiz.where((module) => module?.isActive ?? true).toList();
-
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleQuizMap[moduleId] = activeModules;
+        moduleQuizMap[moduleId] = loadedQuiz;
         isLoadingQuiz = false;
       });
     }
   }
 
   Future<void> loadAssignmentByModuleId(String moduleId) async {
-    List<Assignment> loadedAssignment = await Network.getAssignmentByModuleId(moduleId);
-    List<Assignment> activeModules = loadedAssignment.where((module) => module?.isActive ?? true).toList();
-
+    List<Assignment> loadedAssignment =
+    await Network.getAssignmentByModuleId(moduleId);
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleAssignmentMap[moduleId] = activeModules;
+        moduleAssignmentMap[moduleId] = loadedAssignment;
         isLoadingAssignment = false;
       });
     }
@@ -263,13 +254,10 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
                 _buildVideoCourseListView(),
                 CustomElevatedButton(
                   onPressed: () async {
-                    String dateTimeString = DateTime.now().toString();
-                    DateTime dateTime = DateTime.parse(dateTimeString);
-                    String dateString = "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}";
                     String? refundId = await _createRefundRequest();
                     try {
                         for (var reason in _controllers){
-                          Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: "Date" + " " +(dateString.toString() + " " + "has reason" + " " + reason.text));
+                          Network.createRefundSurvey(refundRequestId: refundId.toString(), reason: "Section:" + listModuleByCourseId[_index].name.toString() + " " +  "Reason:" + reason.text );
                           setState(() {
                             _index++;
                           });
@@ -307,64 +295,63 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          if (index == 0) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );
-          }
-          if (index == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
-            );
-          }
-          if (index == 2) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => IndoxChatsPage()),
-            );
-          }
-          if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => TransactionsPage()),
-            );
-          }
-          if (index == 4) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => ProfilesPage()),
-            );
-          }
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'My Courses',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Inbox',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.wallet),
-            label: 'Transaction',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        selectedFontSize: 12,
-        selectedLabelStyle: CustomTextStyles.labelLargeGray700,
-        selectedItemColor: Color(0xbbff9300),
-        unselectedItemColor: Color(0xffff9300),
-      ),
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 0) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            }
+            if (index == 1) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => MyCourseCompletedPage()),
+              );
+            }
+            if (index == 2) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+              );
+            }
+            if (index == 3) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => TransactionsPage()),
+              );
+            }
+            if (index == 4) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ProfilesPage()),
+              );
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              label: 'My Courses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wallet),
+              label: 'Transaction',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          selectedItemColor: Color(0xbbff9300),
+          unselectedItemColor: Color(0xffff9300),
+        ),
       ),
     );
   }

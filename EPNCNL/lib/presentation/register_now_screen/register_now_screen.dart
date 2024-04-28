@@ -514,7 +514,11 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
                   padding: EdgeInsets.only(right: 9.h),
                   child: GestureDetector(
                       onTap: () {
-                        _createAccount();
+                        if(rememberMe == false){
+
+                        }else{
+                          _createAccount();
+                        }
                       },
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,

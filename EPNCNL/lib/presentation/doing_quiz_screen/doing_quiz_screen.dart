@@ -36,7 +36,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   Timer? _timer;
   Timer? __timer;
   int _remainingSeconds = 0;
-  int _remainingSecondsPopUp = 10;
+  int _remainingSecondsPopUp = 1000;
   bool isLoading = true;
   bool isSelected = false;
   bool isCorrect = false;

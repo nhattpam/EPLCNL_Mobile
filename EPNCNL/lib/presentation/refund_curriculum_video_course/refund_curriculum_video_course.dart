@@ -671,7 +671,9 @@ class _RefundCurriculumState extends State<RefundCurriculum> {
                             .toString(),
                         style: {
                           "body": Style(
-                              fontWeight: FontWeight.bold, color: Colors.black
+                              fontWeight: FontWeight.bold, color: Colors.black,
+                            maxLines: 2,
+                            textOverflow: TextOverflow.ellipsis
                           ),
                         },
                       ),

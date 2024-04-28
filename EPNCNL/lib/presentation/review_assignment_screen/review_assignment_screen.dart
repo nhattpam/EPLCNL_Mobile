@@ -154,12 +154,13 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
           assignmentId: assignmentId, query: lid);
       setState(() {
         moduleUndoAssignmentAttempt[assignmentId] = assignment;
-
         // Add more print statements for other properties if needed
       });
       if (moduleUndoAssignmentAttempt[assignmentId]?.first.answerAudioUrl !=
           '') {
         _initializeVideoPlayer((moduleUndoAssignmentAttempt[assignmentId]?.first.answerAudioUrl).toString());
+        print((moduleUndoAssignmentAttempt[assignmentId]?.first.answerAudioUrl));
+
       }
     } catch (e) {
       // Handle errors here
@@ -350,14 +351,16 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                             constraints: BoxConstraints(maxWidth: 280),
                             child: Column(
                               children: [
-                                Text(
-                                  moduleUndoAssignmentAttempt[
-                                              widget.assignmentID]
-                                          ?.first
-                                          ?.answerText ??
+                                Html(
+                                  data:moduleUndoAssignmentAttempt[
+                                  widget.assignmentID]
+                                      ?.first
+                                      ?.answerText ??
                                       '',
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 6,
+                                  // style: {
+                                  //   "body": Style(
+                                  //       fontWeight: FontWeight.bold, color: Colors.black),
+                                  // },
                                 ),
                                 if (moduleUndoAssignmentAttempt[
                                                 widget.assignmentID]
@@ -387,19 +390,19 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                             Expanded(
                               child: GestureDetector(
                                 onTap: () async {
-                                  await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            EditDoingAssignmnetScreen(
-                                                assignmentID:
-                                                    widget.assignmentID,
-                                                cooldownTime: Duration(
-                                                    minutes: chosenAssignment
-                                                            ?.deadline ??
-                                                        0),
-                                                isOnlineClass: false),
-                                      ));
+                                  // await Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //       builder: (context) =>
+                                  //           EditDoingAssignmnetScreen(
+                                  //               assignmentID:
+                                  //                   widget.assignmentID,
+                                  //               cooldownTime: Duration(
+                                  //                   minutes: chosenAssignment
+                                  //                           ?.deadline ??
+                                  //                       0),
+                                  //               isOnlineClass: false),
+                                  //     ));
                                 },
                                 child: Container(
                                   constraints: BoxConstraints(maxWidth: 200),
@@ -412,27 +415,48 @@ class _ReviewAssignmentState extends State<ReviewAssignment> {
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(
-                                        Icons.edit,
-                                        size: 20,
-                                        color: Colors.grey,
-                                      ),
-                                      SizedBox(width: 4.v),
+                                      // Icon(
+                                      //   Icons.edit,
+                                      //   size: 20,
+                                      //   color: Colors.grey,
+                                      // ),
+                                      // SizedBox(width: 4.v),
                                       SingleChildScrollView(
                                         child: Container(
                                           constraints:
                                               BoxConstraints(maxWidth: 280),
                                           child: Column(
                                             children: [
-                                              Text(
-                                                moduleUndoAssignmentAttempt[
-                                                            widget.assignmentID]
-                                                        ?.first
-                                                        ?.answerText ??
+                                              Html(
+                                                data:moduleUndoAssignmentAttempt[
+                                                widget.assignmentID]
+                                                    ?.first
+                                                    ?.answerText ??
                                                     '',
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 6,
+                                                // style: {
+                                                //   "body": Style(
+                                                //       fontWeight: FontWeight.bold, color: Colors.black),
+                                                // },
                                               ),
+                                              if (moduleUndoAssignmentAttempt[
+                                              widget.assignmentID]
+                                                  ?.first
+                                                  ?.answerAudioUrl !=
+                                                  null &&
+                                                  moduleUndoAssignmentAttempt[
+                                                  widget.assignmentID]!
+                                                      .first
+                                                      .answerAudioUrl!
+                                                      .isNotEmpty)
+                                                isLoading
+                                                    ? Center(
+                                                  child: Skeleton(
+                                                    width: 400,
+                                                    height: 40,
+                                                  ),
+                                                )
+                                                    : ChewieAudio(
+                                                    controller: _chewieController),
                                             ],
                                           ),
                                         ),

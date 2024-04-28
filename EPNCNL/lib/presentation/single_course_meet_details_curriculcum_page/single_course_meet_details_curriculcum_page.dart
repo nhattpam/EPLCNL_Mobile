@@ -1061,7 +1061,11 @@ class _MultiTopicState extends State<MultiTopic> {
                                           .toString(),),
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.black)),
+                                        color: Colors.black,
+                                        overflow: TextOverflow.ellipsis
+                                        )
+
+                                ),
                               ),
 
                             ),

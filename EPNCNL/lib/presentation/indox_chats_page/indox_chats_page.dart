@@ -41,6 +41,7 @@ class IndoxChatsPageState extends State<IndoxChatsPage>
 
   void loadForums() async {
     List<Forum> loadedForum = await Network.getForumByLearner();
+
     setState(() {
       listForum = loadedForum;
       isLoadingForum = false;
@@ -92,6 +93,8 @@ class IndoxChatsPageState extends State<IndoxChatsPage>
                     padding: EdgeInsets.symmetric(horizontal: 34.h),
                     child: Column(
                       children: [
+                        _buildNovbar(context),
+                        SizedBox(height: 20.v),
                         Container(
                           padding: EdgeInsets.symmetric(vertical: 25.v),
                           decoration: AppDecoration.outlineBlack.copyWith(
@@ -118,63 +121,64 @@ class IndoxChatsPageState extends State<IndoxChatsPage>
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-            if (index == 0) {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => HomePage()),
-              );
-            }
-            if (index == 1) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => MyCourseCompletedPage()),
-              );
-            }
-            if (index == 2) {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
-              );
-            }
-            if (index == 3) {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => TransactionsPage()),
-              );
-            }
-            if (index == 4) {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => ProfilesPage()),
-              );
-            }
-          },
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.book),
-              label: 'My Courses',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.chat),
-              label: 'Inbox',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.wallet),
-              label: 'Transaction',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-          selectedItemColor: Color(0xbbff9300),
-          unselectedItemColor: Color(0xffff9300),
-        ),
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+          if (index == 0) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          }
+          if (index == 1) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+            );
+          }
+          if (index == 2) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+            );
+          }
+          if (index == 3) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => TransactionsPage()),
+            );
+          }
+          if (index == 4) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => ProfilesPage()),
+            );
+          }
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'My Courses',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Forum',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.wallet),
+            label: 'Transaction',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        selectedFontSize: 12,
+        selectedLabelStyle: CustomTextStyles.labelLargeGray700,
+        selectedItemColor: Color(0xbbff9300),
+        unselectedItemColor: Color(0xffff9300),
+      ),
       ),
     );
   }
@@ -412,6 +416,28 @@ class IndoxChatsPageState extends State<IndoxChatsPage>
               );
             },
           );
+  }
+  Widget _buildNovbar(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 1.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 11.h),
+                child: Text(
+                  "Forum",
+                  style: theme.textTheme.titleLarge,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   onTapOne(BuildContext context, String forumId) {

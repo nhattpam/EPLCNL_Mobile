@@ -1,3 +1,8 @@
+
+
+import 'package:meowlish/data/models/roles.dart';
+import 'package:meowlish/data/models/wallets.dart';
+
 class Account {
   String? id;
   String? email;
@@ -9,36 +14,30 @@ class Account {
   bool? gender;
   String? address;
   bool? isActive;
-  bool? isDeleted;
   String? roleId;
   String? createdDate;
-  String? createdBy;
   String? updatedDate;
-  String? updatedBy;
-  String? note;
   Role? role;
-  List<Centers>? centers;
+  String? note;
+  Wallet? wallet;
 
   Account(
       {this.id,
-      this.email,
-      this.password,
-      this.fullName,
-      this.phoneNumber,
-      this.imageUrl,
-      this.dateOfBirth,
-      this.gender,
-      this.address,
-      this.isActive,
-      this.isDeleted,
-      this.roleId,
-      this.createdDate,
-      this.createdBy,
-      this.updatedDate,
-      this.updatedBy,
-      this.note,
-      this.role,
-      this.centers});
+        this.email,
+        this.password,
+        this.fullName,
+        this.phoneNumber,
+        this.imageUrl,
+        this.dateOfBirth,
+        this.gender,
+        this.address,
+        this.isActive,
+        this.roleId,
+        this.createdDate,
+        this.updatedDate,
+        this.role,
+        this.note,
+        this.wallet});
 
   Account.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -51,20 +50,13 @@ class Account {
     gender = json['gender'];
     address = json['address'];
     isActive = json['isActive'];
-    isDeleted = json['isDeleted'];
     roleId = json['roleId'];
     createdDate = json['createdDate'];
-    createdBy = json['createdBy'];
     updatedDate = json['updatedDate'];
-    updatedBy = json['updatedBy'];
-    note = json['note'];
     role = json['role'] != null ? new Role.fromJson(json['role']) : null;
-    if (json['centers'] != null) {
-      centers = <Centers>[];
-      json['centers'].forEach((v) {
-        centers!.add(new Centers.fromJson(v));
-      });
-    }
+    note = json['note'];
+    wallet =
+    json['wallet'] != null ? new Wallet.fromJson(json['wallet']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -79,123 +71,19 @@ class Account {
     data['gender'] = this.gender;
     data['address'] = this.address;
     data['isActive'] = this.isActive;
-    data['isDeleted'] = this.isDeleted;
     data['roleId'] = this.roleId;
     data['createdDate'] = this.createdDate;
-    data['createdBy'] = this.createdBy;
     data['updatedDate'] = this.updatedDate;
-    data['note'] = this.note;
-    data['updatedBy'] = this.updatedBy;
     if (this.role != null) {
       data['role'] = this.role!.toJson();
     }
-    if (this.centers != null) {
-      data['centers'] = this.centers!.map((v) => v.toJson()).toList();
+    data['note'] = this.note;
+    if (this.wallet != null) {
+      data['wallet'] = this.wallet!.toJson();
     }
     return data;
   }
 }
 
-class Role {
-  String? id;
-  String? name;
 
-  Role({this.id, this.name});
 
-  Role.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    return data;
-  }
-}
-
-class Centers {
-  String? id;
-  String? accountId;
-  String? name;
-  String? description;
-  String? address;
-  String? email;
-  bool? isActive;
-  String? staffId;
-  Null? createdDate;
-  Null? updatedDate;
-  Null? account;
-  Staff? staff;
-
-  Centers(
-      {this.id,
-      this.accountId,
-      this.name,
-      this.description,
-      this.address,
-      this.email,
-      this.isActive,
-      this.staffId,
-      this.createdDate,
-      this.updatedDate,
-      this.account,
-      this.staff});
-
-  Centers.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    accountId = json['accountId'];
-    name = json['name'];
-    description = json['description'];
-    address = json['address'];
-    email = json['email'];
-    isActive = json['isActive'];
-    staffId = json['staffId'];
-    createdDate = json['createdDate'];
-    updatedDate = json['updatedDate'];
-    account = json['account'];
-    staff = json['staff'] != null ? new Staff.fromJson(json['staff']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['accountId'] = this.accountId;
-    data['name'] = this.name;
-    data['description'] = this.description;
-    data['address'] = this.address;
-    data['email'] = this.email;
-    data['isActive'] = this.isActive;
-    data['staffId'] = this.staffId;
-    data['createdDate'] = this.createdDate;
-    data['updatedDate'] = this.updatedDate;
-    data['account'] = this.account;
-    if (this.staff != null) {
-      data['staff'] = this.staff!.toJson();
-    }
-    return data;
-  }
-}
-
-class Staff {
-  String? id;
-  String? accountId;
-  Null? account;
-
-  Staff({this.id, this.accountId, this.account});
-
-  Staff.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    accountId = json['accountId'];
-    account = json['account'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['accountId'] = this.accountId;
-    data['account'] = this.account;
-    return data;
-  }
-}

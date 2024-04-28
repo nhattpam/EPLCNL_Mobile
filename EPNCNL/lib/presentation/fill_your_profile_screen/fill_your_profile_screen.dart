@@ -79,7 +79,6 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
       });
     }
   }
-
   Dio dio = Dio();
 
   Future<void> _registerUser() async {
@@ -152,53 +151,106 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   }
 
   Future<void> onContinue() async {
-    {
-      myauth.setSMTP(
-          host: "smtp.gmail.com",
-          auth: true,
-          username: "westory.system@gmail.com",
-          password: "srwt hych lidh tlpz",
-          secure: "TLS",
-          port: 587);
-      myauth.setConfig(
-          appEmail: "contact@westory.com",
-          appName: "Email OTP",
-          userEmail: widget.email,
-          otpLength: 4,
-          otpType: OTPType.digitsOnly);
-      if (await myauth.sendOTP() == true) {
-        AwesomeDialog(
-          context: context,
-          animType: AnimType.scale,
-          dialogType: DialogType.success,
-          body: Center(
-            child: Text(
-              'Please check OTP in your email!!!',
-              style: TextStyle(fontStyle: FontStyle.italic),
-            ),
-          ),
-          // title: 'Warning',
-          // desc:   'This is also Ignored',
-          btnOkOnPress: () {
-            _registerUser();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OTPScreen(
-                  email: widget.email,
-                  myauth: myauth,
-                ),
+    if (_formKey.currentState!.validate()){
+      {
+        myauth.setSMTP(
+            host: "smtp.gmail.com",
+            auth: true,
+            username: "meowlish.company@gmail.com",
+            password: "ybpy zzfk taaa glbd",
+            secure: "TLS",
+            port: 587);
+        myauth.setConfig(
+            appEmail: "contact@westory.com",
+            appName: "Email OTP",
+            userEmail: widget.email,
+            otpLength: 4,
+            otpType: OTPType.digitsOnly);
+        if (await myauth.sendOTP() == true) {
+          AwesomeDialog(
+            context: context,
+            animType: AnimType.scale,
+            dialogType: DialogType.success,
+            body: Center(
+              child: Text(
+                'Please check OTP in your email!!!',
+                style: TextStyle(fontStyle: FontStyle.italic),
               ),
-            );
-          },
-        )..show();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Oops, OTP send failed"),
-        ));
+            ),
+            // title: 'Warning',
+            // desc:   'This is also Ignored',
+            btnOkOnPress: () {
+              _registerUser();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OTPScreen(
+                    email: widget.email,
+                    myauth: myauth,
+                  ),
+                ),
+              );
+            },
+          )..show();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Oops, OTP send failed"),
+          ));
+        }
       }
     }
   }
+  String? validatorDOB(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'DOB is required';
+    }
+    if (selectedDate == null) {
+      // Handle case where selectedDate is null
+      return 'Please select a valid date';
+    }
+    if (selectedDate!.isAfter(DateTime.now())) {
+      // Here, the `!` operator is used to assert that `selectedDate` is not null
+      return 'DOB cannot be in the future';
+    }
+
+    return null;
+  }
+  String? validateFullName(String? fullname) {
+    if (fullname == null || fullname.isEmpty) {
+      return 'Full Name cannot be empty';
+    }
+    return null;
+  }
+  String? validateGender(String? fullname) {
+    if (fullname == null || fullname.isEmpty) {
+      return 'Gender cannot be empty';
+    }
+    return null;
+  }
+  String? validateNickName(String? nickname) {
+    if (nickname == null || nickname.isEmpty) {
+      return 'Nick Name cannot be empty';
+    }
+    return null;
+  }
+  String? validateAddress(String? address) {
+    if (address == null || address.isEmpty) {
+      return 'Address cannot be empty';
+    }
+    return null;
+  }
+  String? validateMobile(String value, Country selectedCountry) {
+    String countryCode = selectedCountry.phoneCode ?? '';
+    String pattern = r'(^(\+' + countryCode + '|0)' + r'[0-9]{8,9}$)';
+    RegExp regExp = new RegExp(pattern);
+    if (value.isEmpty) {
+      return 'Please enter a mobile number';
+    } else if (!regExp.hasMatch(value)) {
+      return 'Please enter a valid ' + selectedCountry.name + ' mobile number';
+    }
+    return null;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -287,7 +339,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
                                   child: Icon(
                                     Icons.add_a_photo,
                                     size: 40,
-                                    color: Colors.black,
+                                    color: Colors.red,
                                   ),
                                 ),
                             ],
@@ -307,19 +359,8 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
                     _buildPhoneNumber(context),
                     SizedBox(height: 20.v),
                     Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            // Adjust the color and opacity as needed
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: Offset(0,
-                                3), // Adjust the offset to control the shadow's position
-                          ),
-                        ],
-                      ),
                       child: CustomDropDown(
+                        validator: validateGender,
                         hintText: "Gender",
                         items: dropdownItemList,
                         onChanged: (String? newValue) {
@@ -345,18 +386,6 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   /// Section Widget
   Widget _buildFullName(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            // Adjust the color and opacity as needed
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(
-                0, 3), // Adjust the offset to control the shadow's position
-          ),
-        ],
-      ),
       child: CustomTextFormField(
         controller: fullNameController,
         hintText: "Full Name",
@@ -366,6 +395,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
           vertical: 21.v,
         ),
         borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+        validator: validateFullName,
       ),
     );
   }
@@ -373,18 +403,6 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   /// Section Widget
   Widget _buildName(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            // Adjust the color and opacity as needed
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(
-                0, 3), // Adjust the offset to control the shadow's position
-          ),
-        ],
-      ),
       child: CustomTextFormField(
         controller: nameController,
         hintText: "Nick Name",
@@ -394,24 +412,13 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
           vertical: 21.v,
         ),
         borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+        validator: validateNickName,
       ),
     );
   }
 
   Widget _buildAddress(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            // Adjust the color and opacity as needed
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(
-                0, 3), // Adjust the offset to control the shadow's position
-          ),
-        ],
-      ),
       child: CustomTextFormField(
         controller: addressController,
         hintText: "Address",
@@ -421,6 +428,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
           vertical: 21.v,
         ),
         borderDecoration: TextFormFieldStyleHelper.outlineBlack,
+        validator: validateAddress,
       ),
     );
   }
@@ -428,18 +436,6 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   /// Section Widget
   Widget _buildDateOfBirth(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            // Adjust the color and opacity as needed
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(
-                0, 3), // Adjust the offset to control the shadow's position
-          ),
-        ],
-      ),
       width: MediaQuery.of(context).size.width * 0.9,
       child: Row(
         children: <Widget>[
@@ -469,12 +465,7 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
                     ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
                     : "",
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'DOB is required';
-                }
-                return null;
-              },
+              validator: validatorDOB,
               onTap: () {
                 _selectDate(context);
               },
@@ -488,19 +479,8 @@ class FillYourProfileScreenState extends State<FillYourProfileScreen> {
   /// Section Widget
   Widget _buildPhoneNumber(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            // Adjust the color and opacity as needed
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(
-                0, 3), // Adjust the offset to control the shadow's position
-          ),
-        ],
-      ),
       child: CustomPhoneNumber(
+        validator: validateMobile,
         country: selectedCountry,
         controller: phoneNumberController,
         onTap: (Country value) {

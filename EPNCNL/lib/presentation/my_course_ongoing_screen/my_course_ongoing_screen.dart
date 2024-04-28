@@ -48,7 +48,6 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
     loadedEnrollment.sort((a, b) => (b.enrolledDate.toString()).compareTo(a.enrolledDate.toString()));
     setState(() {
       listEnrollment = loadedEnrollment;
-      isLoadingEnrollment = false;
     });
     loadAllScore();
   }
@@ -78,8 +77,11 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
       for (final module in listEnrollment) {
         await fetchCourseScoreByEnrollmentId(module.id.toString());
         await fetchLearningScoreByEnrollmentId(module.id.toString());
+
       }
-      setState(() {});
+      setState(() {
+        isLoadingEnrollment = false;
+      });
     } catch (e) {
       // Handle errors here
       print('Error loading lessons: $e');

@@ -439,11 +439,17 @@ class SingleMeetCourseDetailsPageState
                         ),
                         child: Row(
                           children: [
-                            Text(
-                                  "${chosenTutor.account?.fullName ?? ""}",
-                                  softWrap: true,
-                                  overflow: TextOverflow.fade,
-                                  style: CustomTextStyles.titleMedium17),
+                            Container(
+                              constraints:
+                              const BoxConstraints(
+                                maxWidth: 67,
+                              ),
+                              child: Text(
+                                    "${chosenTutor.account?.fullName ?? ""}",
+                                    softWrap: true,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: CustomTextStyles.titleMedium17),
+                            ),
                             Padding(
                               padding: EdgeInsets.only(left: 5.h),
                               child: Text(
@@ -467,12 +473,18 @@ class SingleMeetCourseDetailsPageState
                                         softWrap: true,
                                         overflow: TextOverflow.ellipsis,
                                         style: CustomTextStyles.titleMedium17),
-                                    Text(
-                                        "${chosenTutor.center?.name ?? ""}",
-                                        softWrap: true,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: CustomTextStyles
-                                            .titleSmallffff9300ExtraBold),
+                                    Container(
+                                      constraints:
+                                      const BoxConstraints(
+                                        maxWidth: 115,
+                                      ),
+                                      child: Text(
+                                          "${chosenTutor.center?.name ?? ""}",
+                                          softWrap: true,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: CustomTextStyles
+                                              .titleSmallffff9300ExtraBold),
+                                    ),
                                   ],
                                 ),
                               ),

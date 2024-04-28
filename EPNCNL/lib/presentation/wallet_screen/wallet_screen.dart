@@ -604,10 +604,12 @@ class _RequestDetailState extends State<RequestDetail> {
   Future<void> loadTopicsByClassLessonId(String classlessonId) async {
     List<Topic> loadedClassTopicMaterial =
         await Network.getTopicsByClassLessonId(classlessonId);
+    List<Topic> activeTopic = loadedClassTopicMaterial.where((module) => module?.isActive ?? true).toList();
+
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleClassTopicMap[classlessonId] = loadedClassTopicMaterial;
+        moduleClassTopicMap[classlessonId] = activeTopic;
       });
     }
   }

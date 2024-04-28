@@ -6,7 +6,7 @@ class Topic {
   String? createdDate;
   String? updatedDate;
   String? classLessonId;
-
+  bool? isActive;
   Topic(
       {this.id,
       this.name,
@@ -14,7 +14,8 @@ class Topic {
       this.materialUrl,
       this.createdDate,
       this.updatedDate,
-      this.classLessonId});
+      this.classLessonId,
+      this.isActive});
 
   Topic.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -24,6 +25,8 @@ class Topic {
     createdDate = json['createdDate'];
     updatedDate = json['updatedDate'];
     classLessonId = json['classLessonId'];
+    isActive = json['isActive'];
+
   }
 
   Map<String, dynamic> toJson() {
@@ -35,6 +38,8 @@ class Topic {
     data['createdDate'] = this.createdDate;
     data['updatedDate'] = this.updatedDate;
     data['classLessonId'] = this.classLessonId;
+    data['isActive'] = this.isActive;
+
     return data;
   }
 }

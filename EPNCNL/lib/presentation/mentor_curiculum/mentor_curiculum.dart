@@ -476,8 +476,10 @@ class _MultiSelectState extends State<MultiSelect> {
   void loadClassModuleByCourseId() async {
     List<Topic> loadedClassTopic =
     await Network.getTopicsByClassLessonId(widget.lessonId);
+    List<Topic> activeTopic = loadedClassTopic.where((module) => module?.isActive ?? true).toList();
+
     setState(() {
-      listClassTopic = loadedClassTopic;
+      listClassTopic = activeTopic;
     });
     loadLessonMaterial();
   }

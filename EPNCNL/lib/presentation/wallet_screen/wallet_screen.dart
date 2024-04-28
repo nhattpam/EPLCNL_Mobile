@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
@@ -12,14 +15,18 @@ import 'package:meowlish/data/models/quizzes.dart';
 import 'package:meowlish/data/models/refundrequests.dart';
 import 'package:meowlish/data/models/refundsurveys.dart';
 import 'package:meowlish/data/models/topics.dart';
+import 'package:meowlish/data/models/transactions.dart';
 import 'package:meowlish/data/models/wallets.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/search/search.dart';
+import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/single_course_details_tab_container_screen/single_course_details_tab_container_screen.dart';
 import 'package:meowlish/theme/custom_text_style.dart';
 import 'package:meowlish/theme/theme_helper.dart';
+import 'package:meowlish/widgets/custom_elevated_button.dart';
 import 'package:meowlish/widgets/custom_image_view.dart';
 import 'package:meowlish/widgets/custom_text_form_field.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/models/accounts.dart';
 
@@ -78,6 +85,13 @@ class _WalletScreenState extends State<WalletScreen> {
               refundId: refundId, isOnlineClass: isOnlineClass);
         });
   }
+  void _showMultiSelect() async {
+    final List<String>? result = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ReportPopUp();
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +102,19 @@ class _WalletScreenState extends State<WalletScreen> {
         backgroundColor: Color(0xffff9300),
         elevation: 0.0,
         toolbarHeight: 65,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back, // You can change this to any custom icon you prefer
+            color: Colors.black,
+            size: 30,
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfilesPage()),
+            );
+          },
+        ),
         flexibleSpace: FlexibleSpaceBar(
           title: Container(
             margin: EdgeInsets.fromLTRB(0, 45, 0, 0),
@@ -157,7 +184,7 @@ class _WalletScreenState extends State<WalletScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Request Refund",
+                      "Refunds",
                       style: TextStyle(
                           color: Color(0xffff9300),
                           fontSize: 26,
@@ -191,7 +218,8 @@ class _WalletScreenState extends State<WalletScreen> {
                                   false);
                         },
                       ),
-                    )
+                    ),
+                    _buildEnrollCourseButton(context)
                   ],
                 ),
               ),
@@ -202,6 +230,19 @@ class _WalletScreenState extends State<WalletScreen> {
     );
   }
 
+  Widget _buildEnrollCourseButton(BuildContext context) {
+    return CustomElevatedButton(
+      onPressed: () async {
+          _showMultiSelect();
+      },
+      margin: EdgeInsets.only(
+        left: 39.h,
+        right: 39.h,
+        bottom: 53.v,
+      ),
+      text: "Deposit",
+    );
+  }
   Widget listTile(String imageurl, Color color, String type, String tittle,
       num value, String date, String id, bool isOnlineClass) {
     DateTime dateTime = DateTime.parse(date);
@@ -276,6 +317,216 @@ class _WalletScreenState extends State<WalletScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class ReportPopUp extends StatefulWidget {
+  final courseId;
+
+  const ReportPopUp({super.key, this.courseId});
+
+  @override
+  State<ReportPopUp> createState() => _ReportPopUpState();
+}
+
+class _ReportPopUpState extends State<ReportPopUp> {
+  TextEditingController additionalInfoController = TextEditingController();
+  late String paymentUrl;
+  bool isLoading = false;
+  late Timer _timer;
+  late Wallet? wallet = Wallet();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  @override
+  void initState() {
+    super.initState();
+  }
+  String? validateDeposit(String? deposit) {
+    if (deposit == null || deposit.isEmpty) {
+      return 'Deposit cannot be empty';
+    }
+
+    return null; // Return null if the password is valid.
+  }
+
+  Future<void> fetchWalletData() async {
+    Wallet wlet = await Network.getWalletByAccountId();
+
+    setState(() {
+      // Set the list of pet containers in your state
+      wallet = wlet;
+    });
+  }
+  Future<void> _checkTransactionStatus(String transactionId) async {
+    try {
+      Transaction transaction =
+      await Network.getTransactionByTransactionId(transactionId);
+
+      // Status is "DONE", proceed with payment
+      if (transaction.status == "DONE") {
+        print("DONE ");
+        // Do something with paymentUrl if needed
+        // Change the button text to "Enroll Course" and show the button
+        // Cancel the timer as the status is now "DONE"
+        _timer.cancel();
+        print("this is" + transactionId.toString());
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.scale,
+          dialogType: DialogType.success,
+          body: Center(
+            child: Text(
+              'Payment Success!!!',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+          btnOkOnPress: () {
+            setState(() {
+              Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => WalletScreen()),
+              );
+            });
+            // if(isSelected == true){
+            //   nextQuestion();
+            // }
+          },
+        )..show();
+      } else {
+        print("NOT DONE YET");
+        // If status is not "DONE", show loading indicator or perform other actions
+        setState(() {
+          isLoading = true;
+        });
+        if(transaction.paymentMethod?.name == 'VnPay'){
+          paymentUrl = await Network.payTransaction(transactionId);
+          print("VnPay: " + paymentUrl);
+          launch(paymentUrl);
+        }
+      }
+    } catch (e) {
+      // Handle the error, e.g., show an error message
+      print('Error during payment transaction: $e');
+    } finally {
+      // Set loading state to false after the transaction processing is complete
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Center(child: Text('Deposit')),
+      content: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                child: Form(
+                  key: _formKey,
+                  child: CustomTextFormField(
+                    controller: additionalInfoController,
+                    hintText: "How much",
+                    textInputType: TextInputType.number,
+                    hintStyle: CustomTextStyles.titleSmallGray80001,
+                    textInputAction: TextInputAction.done,
+                    prefix: Container(
+                      margin: EdgeInsets.fromLTRB(20.h, 22.v, 7.h, 23.v),
+                      child: CustomImageView(
+                          imagePath: ImageConstant.imgLock,
+                          height: 14.v,
+                          width: 18.h),
+                    ),
+                    prefixConstraints: BoxConstraints(maxHeight: 60.v),
+                    contentPadding:
+                    EdgeInsets.only(top: 21.v, right: 30.h, bottom: 21.v),
+                    borderDecoration: TextFormFieldStyleHelper
+                        .outlineBlack,
+                    validator: validateDeposit,
+                    maxLines: 1,
+                  ),
+                ),
+              ),
+              SizedBox(height: 24.v),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Cancel')),
+        TextButton(
+            onPressed: () async {
+              double value;
+              String input = additionalInfoController.text;
+              if (_formKey.currentState!.validate()) {
+                value = double.parse(input) * 24000;
+                String? transactionId = await Network.createTransactionInWallet(
+                    amount: value);
+                if (transactionId != null) {
+                  // Set loading state when the transaction is being processed
+                  setState(() {
+                    isLoading = true;
+                  });
+                  try {
+                    Transaction transaction =
+                        await Network.getTransactionByTransactionId(transactionId);
+
+                    // Start the periodic timer to check transaction status every 5 seconds
+                    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+                      if (!isLoading) {
+                        _checkTransactionStatus(transactionId);
+                      }
+                    });
+
+                    // Status is "DONE", proceed with payment
+                    if (transaction.status == "DONE") {
+                      print("DONE ");
+                      // Do something with paymentUrl if needed
+                      // Change the button text to "Enroll Course" and show the button
+                    } else {
+                      print("NOT DONE YET");
+                      // If status is not "DONE", show loading indicator or perform other actions
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                      );
+                      if(transaction.paymentMethod?.name == 'VnPay'){
+                        paymentUrl = await Network.payTransaction(transactionId);
+                        print("VnPay: " + paymentUrl);
+                        launch(paymentUrl);
+                      }
+                      // Call payTransaction only if the status is not "DONE"
+
+                    }
+                  } catch (e) {
+                    // Handle the error, e.g., show an error message
+                    print('Error during payment transaction: $e');
+                  } finally {
+                    // Set loading state to false after the transaction processing is complete
+                    setState(() {
+                      isLoading = false;
+                    });
+                  }
+                }
+            }
+            },
+            child: Text('Add'))
+      ],
     );
   }
 }
@@ -374,8 +625,10 @@ class _RequestDetailState extends State<RequestDetail> {
     try {
       List<Module> loadedModule =
       await Network.getModulesByCourseId(courseID);
+      List<Module> activeModules = loadedModule.where((module) => module?.isActive ?? true).toList();
+      activeModules.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
       setState(() {
-        listModuleByCourseId = loadedModule;
+        listModuleByCourseId = activeModules;
       });
       // After loading modules, load all lessons
       loadAllLessons();
@@ -386,10 +639,12 @@ class _RequestDetailState extends State<RequestDetail> {
   }
   Future<void> loadLessonByModuleId(String moduleId) async {
     List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
+    List<Lesson> activeModules = loadedLesson.where((module) => module?.isActive ?? true).toList();
+
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleLessonsMap[moduleId] = loadedLesson;
+        moduleLessonsMap[moduleId] = activeModules;
         isLoadingLesson = false;
       });
     }
@@ -397,10 +652,11 @@ class _RequestDetailState extends State<RequestDetail> {
 
   Future<void> loadQuizByModuleId(String moduleId) async {
     List<Quiz> loadedQuiz = await Network.getQuizByModuleId(moduleId);
+    List<Quiz> activeModules = loadedQuiz.where((module) => module?.isActive ?? true).toList();
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleQuizMap[moduleId] = loadedQuiz;
+        moduleQuizMap[moduleId] = activeModules;
         isLoadingQuiz = false;
       });
     }
@@ -409,10 +665,12 @@ class _RequestDetailState extends State<RequestDetail> {
   Future<void> loadAssignmentByModuleId(String moduleId) async {
     List<Assignment> loadedAssignment =
     await Network.getAssignmentByModuleId(moduleId);
+    List<Assignment> activeModules = loadedAssignment.where((module) => module?.isActive ?? true).toList();
+
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleAssignmentMap[moduleId] = loadedAssignment;
+        moduleAssignmentMap[moduleId] = activeModules;
         isLoadingAssignment = false;
       });
     }
@@ -487,7 +745,7 @@ class _RequestDetailState extends State<RequestDetail> {
                                   SizedBox(height: 10),
                                   Align(
                                       alignment: Alignment.centerLeft,
-                                      child: Text("Class Topic: ",
+                                      child: Text("Topic: ",
                                           style: CustomTextStyles
                                               .labelLargeOrangeA700)),
                                 ],
@@ -563,58 +821,59 @@ class _RequestDetailState extends State<RequestDetail> {
                   child:
                   ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
                     itemCount: listModuleByCourseId.length,
                     itemBuilder: (context, index) {
                       final module = listModuleByCourseId[index];
                       final number = index + 1;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 1.h),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Module $number - ",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Container(
-                                  constraints:
-                                  const BoxConstraints(
-                                    maxWidth: 160,
-                                  ),
-                                  child: Text(
-                                    module.name.toString(),
+                      return SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 1.h),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Module $number - ",
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 18,
-                                      overflow: TextOverflow.ellipsis,
                                       fontFamily: 'Inter',
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          _buildLessonsMenu(module),
-                          _buildAssignmentsMenu(module),
-                          _buildQuizzesMenu(module),
-                          Text(
-                              listRefundSurvey[index].reason.toString(),
-                              style:
-                              CustomTextStyles.titleSmallGray80001,
+                                  Container(
+                                    constraints:
+                                    const BoxConstraints(
+                                      maxWidth: 160,
+                                    ),
+                                    child: Text(
+                                      module.name.toString(),
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
+                                        overflow: TextOverflow.ellipsis,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                          SizedBox(height: 12.v),
-                          Divider(),
-                          SizedBox(height: 12.v),
-                        ],
+                            ),
+                            _buildLessonsMenu(module),
+                            _buildAssignmentsMenu(module),
+                            _buildQuizzesMenu(module),
+                            Text(
+                                listRefundSurvey[index].reason.toString(),
+                                style:
+                                CustomTextStyles.titleSmallGray80001,
+                                ),
+                            SizedBox(height: 12.v),
+                            Divider(),
+                            SizedBox(height: 12.v),
+                          ],
+                        ),
                       );
                     },
                   ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
-import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/profilecertificates.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
@@ -29,13 +28,11 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
   TextEditingController searchController = TextEditingController();
   late List<ProfileCertificate> listProfileCertificate = [];
   late bool isLoadingEnrollment;
-  late Course courses = Course();
   @override
   void initState() {
     isLoadingEnrollment = true;
     super.initState();
     loadEnrollments();
-
   }
 
   void loadEnrollments() async {
@@ -44,29 +41,6 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
       listProfileCertificate = loadedProfile;
       isLoadingEnrollment = false;
     });
-    loadCourse();
-  }
-  Future<void> loadCourse() async {
-    try {
-      // Load lessons for each module
-      for (final module in listProfileCertificate) {
-        await loadCourseByCourseId(module.certificate?.courseId ?? '');
-      }
-      // After all lessons are loaded, proceed with building the UI
-      setState(() {});
-    } catch (e) {
-      // Handle errors here
-      print('Error loading lessons: $e');
-    }
-  }
-  Future<void> loadCourseByCourseId(String courseId) async {
-    Course loadedAssignment =
-    await Network.getCourseByCourseID(courseId);
-    if (mounted) {
-      setState(() {
-        courses = loadedAssignment;
-      });
-    }
   }
 
   @override
@@ -129,64 +103,62 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
                           ]),
                     )))  ,
           bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          if (index == 0) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );
-          }
-          if (index == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
-            );
-          }
-          if (index == 2) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => IndoxChatsPage()),
-            );
-          }
-          if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => TransactionsPage()),
-            );
-          }
-          if (index == 4) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => ProfilesPage()),
-            );
-          }
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'My Courses',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Inbox',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.wallet),
-            label: 'Transaction',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        selectedFontSize: 12,
-        selectedLabelStyle: CustomTextStyles.labelLargeGray700,
-        selectedItemColor: Color(0xbbff9300),
-        unselectedItemColor: Color(0xffff9300),
-      ),
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 0) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            }
+            if (index == 1) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+              );
+            }
+            if (index == 2) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+              );
+            }
+            if (index == 3) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => TransactionsPage()),
+              );
+            }
+            if (index == 4) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ProfilesPage()),
+              );
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              label: 'My Courses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wallet),
+              label: 'Transaction',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          selectedItemColor: Color(0xbbff9300),
+          unselectedItemColor: Color(0xffff9300),
+        ),
     ));
   }
 
@@ -216,7 +188,6 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
 
   /// Section Widget
   Widget _buildUserProfile(BuildContext context) {
-    String? imageUrl = courses?.imageUrl;
     return isLoadingEnrollment
      ? ListView.separated(
         physics: ScrollPhysics(),
@@ -329,16 +300,10 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
                               left: Radius.circular(16.h),
                             ),
                           ),
-                          child: imageUrl != null && imageUrl.isNotEmpty
-                              ? Image.network(
-                            courses.imageUrl ?? "",
+                          child: Image.network(
+                            profile.certificate?.course?.imageUrl ?? "",
                             fit: BoxFit.cover,
-                          ) :
-                          Container(
-                            child: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
+                          ),
                         ),
                         Padding(
                           padding: EdgeInsets.only(
@@ -350,12 +315,12 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                courses.category?.description ?? "" ,
+                                profile.certificate?.course?.category?.description ?? "" ,
                                 style: CustomTextStyles.labelLargeOrangeA700,
                               ),
                               SizedBox(height: 5.v),
                               Text(
-                                courses.name ?? "",
+                                profile.certificate?.course?.name ?? "",
                                 style: theme.textTheme.titleMedium,
                               ),
                               SizedBox(height: 5.v),
@@ -374,7 +339,7 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
                                           size: 14.v,
                                         ),
                                         Text(
-                                          courses?.rating
+                                          profile.certificate?.course?.rating
                                               ?.toStringAsFixed(1) ??
                                               '' ??
                                               '',

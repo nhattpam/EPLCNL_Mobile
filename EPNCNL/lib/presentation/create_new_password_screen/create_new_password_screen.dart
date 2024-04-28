@@ -38,36 +38,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
       account = acc;
     });
   }
-  String? validatePassword(String? password) {
-    if (password == null || password.isEmpty) {
-      return 'Password cannot be empty';
-    }
-
-    // You can add additional password validation rules here.
-    // For example, checking for a minimum length:
-    if (password.length < 8) {
-      return 'Password must be at least 8 characters long';
-    }
-
-    // You can add more validation rules as needed, such as requiring
-    // a mix of uppercase and lowercase letters, numbers, and special characters.
-
-    return null; // Return null if the password is valid.
-  }
-
-  String? validateRePassword(String? confirmPassword) {
-    if (confirmPassword == null || confirmPassword.isEmpty) {
-      return 'Confirm Password cannot be empty';
-    }
-    if (confirmPassword != newpasswordController.text) {
-      return 'Passwords do not match';
-    }
-
-    // You can add more validation rules as needed, such as requiring
-    // a mix of uppercase and lowercase letters, numbers, and special characters.
-
-    return null; // Return null if the password is valid.
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +115,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       obscureText: true,
                       contentPadding: EdgeInsets.symmetric(vertical: 21.v),
                       borderDecoration: TextFormFieldStyleHelper.outlineBlack,
-                      validator: validatePassword,
                     ),
                     SizedBox(height: 20.v),
                     CustomTextFormField(
@@ -179,7 +148,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       obscureText: true,
                       contentPadding: EdgeInsets.symmetric(vertical: 21.v),
                       borderDecoration: TextFormFieldStyleHelper.outlineBlack,
-                      validator: validateRePassword,
                     ),
                     SizedBox(height: 50.v),
                     _buildContinueSection(context),
@@ -230,39 +198,38 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   Widget _buildContinueSection(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        if (_formKey.currentState!.validate()) {
-          Network.updateProfile(
-              account?.email ?? '',
-              newpasswordController.text,
-              account?.fullName ?? '',
-              account?.phoneNumber ?? '',
-              account?.imageUrl ?? '',
-              account?.dateOfBirth ?? '',
-              account?.gender ?? false,
-              account?.address ?? '',
-              account?.isActive ?? true,
-              account?.createdDate ?? '',
-              account?.note ?? '');
-          AwesomeDialog(
-            context: context,
-            animType: AnimType.scale,
-            dialogType: DialogType.success,
-            body: Center(
-              child: Text(
-                'Change password Success!!!',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
+        Network.updateProfile(
+            account?.email ?? '',
+            newpasswordController.text,
+            account?.fullName ?? '',
+            account?.phoneNumber ?? '',
+            account?.imageUrl ?? '',
+            account?.dateOfBirth ?? '',
+            account?.gender ?? false,
+            account?.address ?? '',
+            account?.isActive ?? true,
+            account?.createdDate ?? '',
+            account?.createdBy ?? '',
+            account?.note ?? '');
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.scale,
+          dialogType: DialogType.success,
+          body: Center(
+            child: Text(
+              'Change password Success!!!',
+              style: TextStyle(fontStyle: FontStyle.italic),
             ),
-            // title: 'Warning',
-            // desc:   'This is also Ignored',
-            btnOkOnPress: () {
-              Navigator.of(context).pop();
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()));
-            },
-          )
-            ..show();
-        }
+          ),
+          // title: 'Warning',
+          // desc:   'This is also Ignored',
+          btnOkOnPress: () {
+            Navigator.of(context).pop();
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) =>  LoginScreen()));
+          },
+        )..show();
+
       },
       child: Container(
         height: 60.v,

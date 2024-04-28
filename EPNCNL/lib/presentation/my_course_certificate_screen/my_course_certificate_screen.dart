@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:internet_file/internet_file.dart';
 import 'package:intl/intl.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/data/models/profilecertificates.dart';
@@ -10,7 +9,6 @@ import 'package:meowlish/presentation/my_course_completed_page/my_course_complet
 import 'package:meowlish/presentation/profiles_page/profiles_page.dart';
 import 'package:meowlish/presentation/transactions_page/transactions_page.dart';
 import 'package:meowlish/widgets/custom_elevated_button.dart';
-import 'package:pdfx/pdfx.dart';
 
 import '../../data/models/accounts.dart';
 
@@ -23,21 +21,28 @@ class MyCourseCertificateScreen extends StatefulWidget {
 }
 
 class _MyCourseCertificateScreenState extends State<MyCourseCertificateScreen> {
-  late PdfControllerPinch pdfControllerPinch;
+
+
+  TextEditingController searchController = TextEditingController();
+  late Account? account = Account();
   late ProfileCertificate? profile = ProfileCertificate();
+
   int _currentIndex = 1;
-  int totalPageCount = 0,currentPage = 1;
-  bool isLoadingPdf = true;
+  String formattedDate = '';
   @override
   void initState() {
     super.initState();
+    fetchAccountData();
     fetchProfileId();
   }
 
-  void openPdf() {
-    final document = PdfDocument.openData(InternetFile.get(profile?.certificate?.description ?? ''));
-    pdfControllerPinch = PdfControllerPinch(document: document);
-    isLoadingPdf = false;
+  Future<void> fetchAccountData() async {
+    Account acc = await Network.getAccount();
+
+    setState(() {
+      // Set the list of pet containers in your state
+      account = acc;
+    });
   }
 
   Future<void> fetchProfileId() async {
@@ -46,7 +51,12 @@ class _MyCourseCertificateScreenState extends State<MyCourseCertificateScreen> {
     setState(() {
       // Set the list of pet containers in your state
       profile = acc;
-      openPdf();
+      String dateStr = profile?.certificate?.createdDate ?? DateTime.now().toString();
+      // Parse the date
+      DateTime date = DateTime.parse(dateStr);
+      // Format the date
+      String convert = DateFormat.yMMMMd().format(date);
+      formattedDate = convert;
     });
   }
 
@@ -79,107 +89,237 @@ class _MyCourseCertificateScreenState extends State<MyCourseCertificateScreen> {
           ),
         ),
         backgroundColor: Colors.white,
-        body: isLoadingPdf ? Center(child: Container(child: CircularProgressIndicator(),),) : Column(
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('Total Pages: ${totalPageCount}'),
-                IconButton(
-                    onPressed: () {
-                      pdfControllerPinch.previousPage(
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.linear);
-                    },
-                    icon: Icon(Icons.arrow_back)),
-                Text('Current Page: ${currentPage}'),
-                IconButton(
-                    onPressed: () {
-                      pdfControllerPinch.nextPage(
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.linear);
-                    },
-                    icon: Icon(Icons.arrow_forward))
-              ],
-            ),
-            Expanded(
-                child: PdfViewPinch(
-                  scrollDirection: Axis.vertical,
-                  controller: pdfControllerPinch,
-                  onDocumentLoaded: (doc) {
-                    setState(() {
-                      totalPageCount = doc.pagesCount;
-                    });
-                  },
-                  onPageChanged: (page) {
-                    setState(() {
-                      currentPage = page;
-                    });
-                  },
-                ))
-          ],
+        body: Container(
+          width: double.maxFinite,
+          padding: EdgeInsets.symmetric(
+            horizontal: 34.h,
+            vertical: 54.v,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 360.h,
+                decoration: AppDecoration.outlineBlack.copyWith(
+                  borderRadius: BorderRadiusStyle.circleBorder15,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: SizedBox(
+                        height: 259.v,
+                        width: 332.h,
+                        child: Stack(
+                          alignment: Alignment.topLeft,
+                          children: [
+                            CustomImageView(
+                              imagePath: ImageConstant.imgPath4,
+                              height: 226.v,
+                              width: 172.h,
+                              alignment: Alignment.topRight,
+                            ),
+                            CustomImageView(
+                              imagePath: ImageConstant.imgIconBlack900,
+                              height: 59.v,
+                              width: 54.h,
+                              alignment: Alignment.topLeft,
+                              margin: EdgeInsets.only(
+                                left: 125.h,
+                                top: 35.v,
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  left: 34.h,
+                                  top: 110.v,
+                                ),
+                                child: Text(
+                                  "Certificate of Completions",
+                                  style: CustomTextStyles.titleLarge20,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  left: 97.h,
+                                  bottom: 89.v,
+                                ),
+                                child: Text(
+                                  "This Certifies that",
+                                  style: theme.textTheme.labelLarge,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 30.0),
+                                child: SizedBox(
+                                  width: 305.h,
+                                  child: Text(
+                                    account?.fullName ?? '',
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                    style: CustomTextStyles
+                                        .titleLargeMulishIndigo700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 28.v),
+                            Align(
+                              alignment: Alignment.bottomLeft,
+                              child: SizedBox(
+                                width: 305.h,
+                                child: Text(
+                                  "Has Successfully Completed ",
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  style: theme.textTheme.labelLarge!.copyWith(
+                                    height: 1.38,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 28.v),
+                    Text(
+                      profile?.certificate?.course?.name ?? '',
+                      style: CustomTextStyles.titleMediumMulish,
+                    ),
+                    SizedBox(height: 4.v),
+                    Text(
+                      "Issued on " + formattedDate,
+                      style: theme.textTheme.labelLarge,
+                    ),
+                    // SizedBox(height: 15.v),
+                    // Text(
+                    //   "ID: " + (profile?.certificate?.course?.id ??""),
+                    //   style: CustomTextStyles.labelLargeGray800,
+                    // ),
+                    SizedBox(height: 25.v),
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        height: 172.v,
+                        width: 277.h,
+                        child: Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            CustomImageView(
+                              imagePath: ImageConstant.imgPath5,
+                              height: 169.v,
+                              width: 114.h,
+                              alignment: Alignment.centerLeft,
+                            ),
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 83.h),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      "Calvin E. McGinnis",
+                                      style: CustomTextStyles
+                                          .headlineSmallMishella,
+                                    ),
+                                    SizedBox(height: 19.v),
+                                    Text(
+                                      "Virginia M. Patterson",
+                                      style: CustomTextStyles
+                                          .headlineSmallHelenaJohnsmithGray80001,
+                                    ),
+                                    Text(
+                                      "Virginia M. Patterson",
+                                      style: theme.textTheme.titleMedium,
+                                    ),
+                                    SizedBox(height: 1.v),
+                                    Text(
+                                      "Issued on " + formattedDate,
+                                      style: theme.textTheme.labelLarge,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          if (index == 0) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );
-          }
-          if (index == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
-            );
-          }
-          if (index == 2) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => IndoxChatsPage()),
-            );
-          }
-          if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => TransactionsPage()),
-            );
-          }
-          if (index == 4) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => ProfilesPage()),
-            );
-          }
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'My Courses',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Inbox',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.wallet),
-            label: 'Transaction',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        selectedFontSize: 12,
-        selectedLabelStyle: CustomTextStyles.labelLargeGray700,
-        selectedItemColor: Color(0xbbff9300),
-        unselectedItemColor: Color(0xffff9300),
-      ),
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 0) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            }
+            if (index == 1) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
+              );
+            }
+            if (index == 2) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+              );
+            }
+            if (index == 3) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => TransactionsPage()),
+              );
+            }
+            if (index == 4) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ProfilesPage()),
+              );
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              label: 'My Courses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wallet),
+              label: 'Transaction',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          selectedItemColor: Color(0xbbff9300),
+          unselectedItemColor: Color(0xffff9300),
+        ),
 
       ),
     );

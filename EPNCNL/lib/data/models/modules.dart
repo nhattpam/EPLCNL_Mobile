@@ -4,11 +4,9 @@ class Module {
   String? name;
   String? createdDate;
   String? updatedDate;
-  bool? isActive;
 
   Module(
-      {this.id, this.courseId, this.name, this.createdDate, this.updatedDate,this.isActive,
-      });
+      {this.id, this.courseId, this.name, this.createdDate, this.updatedDate});
 
   Module.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -16,7 +14,6 @@ class Module {
     name = json['name'];
     createdDate = json['createdDate'];
     updatedDate = json['updatedDate'];
-    isActive = json['isActive'];
   }
 
   Map<String, dynamic> toJson() {
@@ -26,7 +23,6 @@ class Module {
     data['name'] = this.name;
     data['createdDate'] = this.createdDate;
     data['updatedDate'] = this.updatedDate;
-    data['isActive'] = this.isActive;
     return data;
   }
 }

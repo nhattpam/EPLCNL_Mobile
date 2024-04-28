@@ -6,18 +6,15 @@ class Lesson {
   String? moduleId;
   String? createdDate;
   String? updatedDate;
-  bool? isActive;
 
-  Lesson({
-    this.id,
-    this.name,
-    this.videoUrl,
-    this.reading,
-    this.moduleId,
-    this.createdDate,
-    this.updatedDate,
-    this.isActive,
-  });
+  Lesson(
+      {this.id,
+      this.name,
+      this.videoUrl,
+      this.reading,
+      this.moduleId,
+      this.createdDate,
+      this.updatedDate});
 
   Lesson.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -27,7 +24,6 @@ class Lesson {
     moduleId = json['moduleId'];
     createdDate = json['createdDate'];
     updatedDate = json['updatedDate'];
-    isActive = json['isActive'];
   }
 
   Map<String, dynamic> toJson() {
@@ -39,7 +35,6 @@ class Lesson {
     data['moduleId'] = this.moduleId;
     data['createdDate'] = this.createdDate;
     data['updatedDate'] = this.updatedDate;
-    data['isActive'] = this.isActive;
     return data;
   }
 }

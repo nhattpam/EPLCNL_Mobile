@@ -2,11 +2,10 @@ name: meowlish
 description: A new Flutter project.
 version: 1.0.0+1
 environment:
-  sdk: '>=3.0.2 <4.0.0'
-dependencies: 
-  flutter: 
+  sdk: ">=3.0.2 <4.0.0"
+dependencies:
+  flutter:
     sdk: flutter
-  table_calendar: ^3.1.1
   syncfusion_flutter_calendar: ^20.4.44
   font_awesome_flutter: ^9.1.0
   cached_network_image: ^3.3.0
@@ -38,27 +37,25 @@ dependencies:
   pdfx: 2.6.0
   internet_file: ^1.2.0
   barcode_widget: ^2.0.4
-  record: ^4.4.4
-  just_audio: ^0.9.37
-  path_provider: any
-  on_audio_query: ^2.9.0
-dev_dependencies: 
-  flutter_test: 
+  percent_indicator: ^3.0.1
+  curved_labeled_navigation_bar: ^2.0.2
+dev_dependencies:
+  flutter_test:
     sdk: flutter
-flutter: 
+flutter:
   uses-material-design: true
-  assets: 
+  assets:
     - assets/
     - assets/images/
-  fonts: 
+  fonts:
     - family: Jost
-      fonts: 
+      fonts:
         - asset: assets/fonts/JostSemiBold.ttf
           weight: 600
         - asset: assets/fonts/JostBold.ttf
           weight: 700
     - family: Mulish
-      fonts: 
+      fonts:
         - asset: assets/fonts/MulishBold.ttf
           weight: 700
         - asset: assets/fonts/MulishExtraBold.ttf
@@ -68,20 +65,36 @@ flutter:
         - asset: assets/fonts/MulishSemiBold.ttf
           weight: 600
     - family: Jua
-      fonts: 
+      fonts:
         - asset: assets/fonts/JuaRegular.ttf
           weight: 400
     - family: Poppins
-      fonts: 
+      fonts:
         - asset: assets/fonts/PoppinsMedium.ttf
           weight: 500
         - asset: assets/fonts/PoppinsSemiBold.ttf
           weight: 600
     - family: Mishella
-      fonts: 
+      fonts:
         - asset: assets/fonts/Mishella.ttf
           weight: 400
     - family: Helena Johnsmith
-      fonts: 
+      fonts:
         - asset: assets/fonts/HelenaJohnsmithRegular.ttf
           weight: 400
+    - family: Spartan
+      fonts:
+        - asset: assets/fonts/Spartan-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Spartan-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Spartan-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Spartan-Bold.ttf
+          weight: 700
+    - family: Lato
+      fonts:
+        - asset: assets/fonts/Lato-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Lato-Bold.ttf
+          weight: 700

@@ -45,7 +45,6 @@ class _MyCourseOngoingScreenState extends State<MyCourseOngoingScreen> {
 
   void loadEnrollments() async {
     List<Enrollment> loadedEnrollment = await Network.getEnrollmentByLearner();
-    loadedEnrollment.sort((a, b) => (b.enrolledDate.toString()).compareTo(a.enrolledDate.toString()));
     setState(() {
       listEnrollment = loadedEnrollment;
       isLoadingEnrollment = false;

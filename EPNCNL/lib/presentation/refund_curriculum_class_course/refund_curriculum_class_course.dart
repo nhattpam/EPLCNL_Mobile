@@ -70,8 +70,10 @@ class _RefundCurriculumClassCourseState extends State<RefundCurriculumClassCours
   Future<void> loadClassModuleByCourseId() async {
     List<ClassModule> loadedModule =
     await Network.getClassModulesByCourseId(widget.courseID);
+    List<ClassModule> activeModules = loadedModule.where((module) => module?.isActive ?? true).toList();
+
     setState(() {
-      listClassModuleByCourseId = loadedModule;
+      listClassModuleByCourseId = activeModules;
       isLoadingClassModule = false;
       List<TextEditingController> _controller = List.generate(
         listClassModuleByCourseId.length,

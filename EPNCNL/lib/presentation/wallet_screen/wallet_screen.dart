@@ -615,8 +615,10 @@ class _RequestDetailState extends State<RequestDetail> {
   Future<void> loadClassModuleByCourseId(String courseID) async {
     List<ClassModule> loadedModule =
         await Network.getClassModulesByCourseId(courseID);
+    List<ClassModule> activeModules = loadedModule.where((module) => module?.isActive ?? true).toList();
+
     setState(() {
-      listClassModuleByCourseId = loadedModule;
+      listClassModuleByCourseId = activeModules;
     });
     loadClassTopic();
   }

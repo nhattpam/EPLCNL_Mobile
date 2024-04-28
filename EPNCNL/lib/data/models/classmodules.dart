@@ -10,9 +10,11 @@ class ClassModule {
   Course? course;
   ClassLesson? classLesson;
   Tutor? tutor;
+  bool? isActive;
 
   ClassModule(
-      {this.id, this.startDate, this.courseId, this.course, this.classLesson});
+      {this.id, this.startDate, this.courseId, this.course, this.classLesson, this.isActive,
+      });
 
   ClassModule.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -24,6 +26,8 @@ class ClassModule {
         ? new ClassLesson.fromJson(json['classLesson'])
         : null;
     tutor = json['tutor'] != null ? new Tutor.fromJson(json['tutor']) : null;
+    isActive = json['isActive'];
+
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +35,8 @@ class ClassModule {
     data['id'] = this.id;
     data['startDate'] = this.startDate;
     data['courseId'] = this.courseId;
+    data['isActive'] = this.isActive;
+
     if (this.course != null) {
       data['course'] = this.course!.toJson();
     }
@@ -40,6 +46,7 @@ class ClassModule {
     if (this.tutor != null) {
       data['tutor'] = this.tutor!.toJson();
     }
+
     return data;
   }
 }

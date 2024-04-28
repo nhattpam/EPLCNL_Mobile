@@ -672,8 +672,10 @@ class SingleCourseDetailsCurriculumPageState
   Future<void> loadClassModuleByCourseId() async {
     List<ClassModule> loadedModule =
         await Network.getClassModulesByCourseId(widget.courseID);
+    List<ClassModule> activeModules = loadedModule.where((module) => module?.isActive ?? true).toList();
+
     setState(() {
-      listClassModuleByCourseId = loadedModule;
+      listClassModuleByCourseId = activeModules;
       isLoadingClassModule = false;
     });
     loadClassTopic();

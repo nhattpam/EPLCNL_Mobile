@@ -108,10 +108,11 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
   Future<void> loadModuleByCourseId(String courseId) async {
     try {
       final enroll = await Network.getClassModulesByCourseId(courseId);
+      List<ClassModule> activeModules = enroll.where((module) => module?.isActive ?? true).toList();
       setState(() {
-        listClassModule = enroll;
+        listClassModule = activeModules;
       });
-      enroll.forEach((module) {
+      activeModules.forEach((module) {
         DateTime moduleDate = DateTime.parse(module.startDate.toString());
         DateTime convertedDate =
             DateTime.utc(moduleDate.year, moduleDate.month, moduleDate.day);
@@ -322,7 +323,9 @@ class _AllCourseCurriculumState extends State<AllCourseCurriculum> {
                                     }
                                     if (snapshot.connectionState ==
                                         ConnectionState.done) {
-                                      List<ClassModule>? data = snapshot.data;
+                                      List<ClassModule>? activeModules = snapshot.data;
+                                      //troll??
+                                      List<ClassModule> data = activeModules!.where((module) => module?.isActive ?? true).toList();
                                       return ListView.builder(
                                         physics: NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,

@@ -197,7 +197,9 @@ class SingleCourseMeetDetailsCurriculcumPageState
                           );
                         }
                         if (snapshot.connectionState == ConnectionState.done) {
-                          List<ClassModule>? data = snapshot.data;
+                          List<ClassModule>? activeModules = snapshot.data;
+                          //troll???
+                          List<ClassModule> data = activeModules!.where((module) => module?.isActive ?? true).toList();
                           return ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,

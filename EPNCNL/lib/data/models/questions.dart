@@ -7,6 +7,7 @@ class Question {
   String? createdDate;
   String? updatedDate;
   String? quizId;
+  bool? isActive;
 
   Question(
       {this.id,
@@ -16,7 +17,8 @@ class Question {
       this.defaultGrade,
       this.createdDate,
       this.updatedDate,
-      this.quizId});
+      this.quizId,
+      this.isActive});
 
   Question.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -27,6 +29,7 @@ class Question {
     createdDate = json['createdDate'];
     updatedDate = json['updatedDate'];
     quizId = json['quizId'];
+    isActive = json['isActive'];
   }
 
   Map<String, dynamic> toJson() {
@@ -39,6 +42,7 @@ class Question {
     data['createdDate'] = this.createdDate;
     data['updatedDate'] = this.updatedDate;
     data['quizId'] = this.quizId;
+    data['isActive'] = this.isActive;
     return data;
   }
 }

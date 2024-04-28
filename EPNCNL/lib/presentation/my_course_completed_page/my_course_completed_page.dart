@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meowlish/core/app_export.dart';
 import 'package:meowlish/core/utils/skeleton.dart';
+import 'package:meowlish/data/models/courses.dart';
 import 'package:meowlish/data/models/profilecertificates.dart';
 import 'package:meowlish/network/network.dart';
 import 'package:meowlish/presentation/home_page/home_page.dart';
@@ -28,11 +29,13 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
   TextEditingController searchController = TextEditingController();
   late List<ProfileCertificate> listProfileCertificate = [];
   late bool isLoadingEnrollment;
+  late Course courses = Course();
   @override
   void initState() {
     isLoadingEnrollment = true;
     super.initState();
     loadEnrollments();
+
   }
 
   void loadEnrollments() async {
@@ -41,6 +44,29 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
       listProfileCertificate = loadedProfile;
       isLoadingEnrollment = false;
     });
+    loadCourse();
+  }
+  Future<void> loadCourse() async {
+    try {
+      // Load lessons for each module
+      for (final module in listProfileCertificate) {
+        await loadCourseByCourseId(module.certificate?.courseId ?? '');
+      }
+      // After all lessons are loaded, proceed with building the UI
+      setState(() {});
+    } catch (e) {
+      // Handle errors here
+      print('Error loading lessons: $e');
+    }
+  }
+  Future<void> loadCourseByCourseId(String courseId) async {
+    Course loadedAssignment =
+    await Network.getCourseByCourseID(courseId);
+    if (mounted) {
+      setState(() {
+        courses = loadedAssignment;
+      });
+    }
   }
 
   @override
@@ -190,6 +216,7 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
 
   /// Section Widget
   Widget _buildUserProfile(BuildContext context) {
+    String? imageUrl = courses?.imageUrl;
     return isLoadingEnrollment
      ? ListView.separated(
         physics: ScrollPhysics(),
@@ -302,10 +329,16 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
                               left: Radius.circular(16.h),
                             ),
                           ),
-                          child: Image.network(
-                            profile.certificate?.course?.imageUrl ?? "",
+                          child: imageUrl != null && imageUrl.isNotEmpty
+                              ? Image.network(
+                            courses.imageUrl ?? "",
                             fit: BoxFit.cover,
-                          ),
+                          ) :
+                          Container(
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
                         ),
                         Padding(
                           padding: EdgeInsets.only(
@@ -317,12 +350,12 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                profile.certificate?.course?.category?.description ?? "" ,
+                                courses.category?.description ?? "" ,
                                 style: CustomTextStyles.labelLargeOrangeA700,
                               ),
                               SizedBox(height: 5.v),
                               Text(
-                                profile.certificate?.course?.name ?? "",
+                                courses.name ?? "",
                                 style: theme.textTheme.titleMedium,
                               ),
                               SizedBox(height: 5.v),
@@ -341,7 +374,7 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
                                           size: 14.v,
                                         ),
                                         Text(
-                                          profile.certificate?.course?.rating
+                                          courses?.rating
                                               ?.toStringAsFixed(1) ??
                                               '' ??
                                               '',

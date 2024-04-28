@@ -625,9 +625,10 @@ class _RequestDetailState extends State<RequestDetail> {
     try {
       List<Module> loadedModule =
       await Network.getModulesByCourseId(courseID);
-      loadedModule.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
+      List<Module> activeModules = loadedModule.where((module) => module?.isActive ?? true).toList();
+      activeModules.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
       setState(() {
-        listModuleByCourseId = loadedModule;
+        listModuleByCourseId = activeModules;
       });
       // After loading modules, load all lessons
       loadAllLessons();
@@ -638,10 +639,12 @@ class _RequestDetailState extends State<RequestDetail> {
   }
   Future<void> loadLessonByModuleId(String moduleId) async {
     List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
+    List<Lesson> activeModules = loadedLesson.where((module) => module?.isActive ?? true).toList();
+
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleLessonsMap[moduleId] = loadedLesson;
+        moduleLessonsMap[moduleId] = activeModules;
         isLoadingLesson = false;
       });
     }
@@ -649,10 +652,11 @@ class _RequestDetailState extends State<RequestDetail> {
 
   Future<void> loadQuizByModuleId(String moduleId) async {
     List<Quiz> loadedQuiz = await Network.getQuizByModuleId(moduleId);
+    List<Quiz> activeModules = loadedQuiz.where((module) => module?.isActive ?? true).toList();
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleQuizMap[moduleId] = loadedQuiz;
+        moduleQuizMap[moduleId] = activeModules;
         isLoadingQuiz = false;
       });
     }
@@ -661,10 +665,12 @@ class _RequestDetailState extends State<RequestDetail> {
   Future<void> loadAssignmentByModuleId(String moduleId) async {
     List<Assignment> loadedAssignment =
     await Network.getAssignmentByModuleId(moduleId);
+    List<Assignment> activeModules = loadedAssignment.where((module) => module?.isActive ?? true).toList();
+
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
-        moduleAssignmentMap[moduleId] = loadedAssignment;
+        moduleAssignmentMap[moduleId] = activeModules;
         isLoadingAssignment = false;
       });
     }

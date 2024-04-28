@@ -72,9 +72,16 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   Future<void> loadQuizByQuizId() async {
     try {
       final quiz = await Network.getQuizByQuizId(widget.quizId);
-      setState(() {
-        chosenQuiz = quiz;
-      });
+      if (quiz?.isActive ?? true) {
+        setState(() {
+          chosenQuiz = quiz;
+        });
+      } else {
+        // Handle the case where the loaded lesson is not active
+        // For example, show a message to the user or perform another action
+        print('The loaded lesson is not active');
+      }
+
     } catch (e) {
       // Handle errors here
       print('Error: $e');
@@ -84,8 +91,10 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   void loadQuestion() async {
     List<Question> loadedQuestion =
         await Network.getQuestionByQuizId(widget.quizId);
+    List<Question> activeModules = loadedQuestion.where((module) => module?.isActive ?? true).toList();
+
     setState(() {
-      listquestion = loadedQuestion;
+      listquestion = activeModules;
       if (listquestion.length == 1) {
         endOfQuiz = true;
       }
@@ -460,8 +469,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                         // Remove Spacer and use SizedBox with height
                         _buildQuestionsMenu(listquestion[_questionIndex]),
                         SizedBox(height: 55.v),
-                        endOfQuiz
-                            ? CustomElevatedButton(
+                         CustomElevatedButton(
                                 onPressed: () {
                                   if (isSelected == true) {
                                     if (endOfQuiz == true) {
@@ -536,7 +544,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                                     : "Next Question",
                                 margin: EdgeInsets.symmetric(horizontal: 5.h),
                               )
-                            : Container()
+
                       ],
                     ),
                   ),

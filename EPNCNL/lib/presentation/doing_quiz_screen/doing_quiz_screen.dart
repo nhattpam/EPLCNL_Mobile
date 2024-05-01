@@ -58,14 +58,14 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
     setState(() {
       if (_videoPlayerController.value.isInitialized) {
         _chewieController = ChewieAudioController(
-          autoInitialize: true,
+          // autoInitialize: true,
           videoPlayerController: _videoPlayerController,
           autoPlay: false,
           looping: true,
           allowMuting: true,
         );
+        isLoading = false;
       }
-      isLoading = false;
     });
   }
 
@@ -99,6 +99,9 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
         endOfQuiz = true;
       }
     });
+    if (listquestion[_questionIndex].questionAudioUrl != '') {
+      _initializeVideoPlayer(listquestion[_questionIndex].questionAudioUrl.toString());
+    }
     loadAllQuestionAnswer();
   }
 
@@ -118,9 +121,6 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
       // Load lessons for each module
       for (final answer in listquestion) {
         await loadQuestionAnswerByQuestionId(answer.id.toString());
-        if (answer.questionAudioUrl != '') {
-          await _initializeVideoPlayer(answer.questionAudioUrl.toString());
-        }
       }
       // After all lessons are loaded, proceed with building the UI
       _startCooldownTimer();
@@ -228,11 +228,19 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
 
   void nextQuestion() {
     setState(() {
-      isLoading = true;
+      // _videoPlayerController.dispose();
+      // _chewieController.dispose();
+      _chewieController.pause();
+      // isLoading = true;
       if (_questionIndex < listquestion.length - 1) {
         _questionIndex++;
-        loadQuestion();
+        // loadQuestion();
         isSelected = false;
+        _chewieController.videoPlayerController.seekTo(Duration(seconds: 0));
+        if (listquestion[_questionIndex].questionAudioUrl != '') {
+          _initializeVideoPlayer(listquestion[_questionIndex].questionAudioUrl.toString());
+          isLoading = false;
+        }
         print("This is" + _questionIndex.toString());
       } else {
         endOfQuiz = true;
@@ -241,8 +249,8 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   }
 
   void resetQuiz() {
+    loadQuizByQuizId();
     loadQuestion();
-    _startCooldownTimer();
     setState(() {
       isLoading = true;
       totalScore = 0;
@@ -263,6 +271,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
   @override
   Widget build(BuildContext context) {
     String gradeToPass = chosenQuiz.gradeToPass.toString();
+
     return listquestion.isEmpty
         ? Container(child: Center(child: CircularProgressIndicator()))
         : WillPopScope(
@@ -536,8 +545,7 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
                                       nextQuestion();
                                     }
                                   }
-                                  _videoPlayerController.dispose();
-                                  _chewieController.dispose();
+
                                 },
                                 text: endOfQuiz
                                     ? "Finish Attempt"

@@ -791,12 +791,18 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                       );
                       loadQuizAttemptsByLearnerId();
                     },
-                    child: Text(
-                      moduleQuizMap[module.id.toString()]![quizIndex].name
-                          .toString(),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    child: Container(
+                      constraints:
+                      const BoxConstraints(
+                        maxWidth: 200,
+                      ),
+                      child: Text(
+                        moduleQuizMap[module.id.toString()]![quizIndex].name
+                            .toString(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),

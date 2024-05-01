@@ -1403,7 +1403,8 @@ class Network {
   //Question
   static Future<List<Question>> getQuestionByQuizId(String quizId) async {
     final apiUrl =
-        'https://nhatpmse.twentytwo.asia/api/quizzes/$quizId/questions'; // Replace with your API URL
+        'https://nhatpmse.twentytwo.asia/api/quizzes/$quizId/questions';
+    print(apiUrl);// Replace with your API URL
     try {
       final response = await http.get(
         Uri.parse(apiUrl),

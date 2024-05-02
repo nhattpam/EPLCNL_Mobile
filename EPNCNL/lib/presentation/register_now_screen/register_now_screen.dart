@@ -301,7 +301,7 @@ class RegisterNowScreenState extends State<RegisterNowScreen> {
               alignment: Alignment.bottomLeft,
               child: Padding(
                   padding: EdgeInsets.only(left: 1.h, bottom: 38.v),
-                  child: Text("Create an Account to Continue your allCourses",
+                  child: Text("Create an Account to Continue your all Courses",
                       style: theme.textTheme.titleSmall)))
         ]));
   }

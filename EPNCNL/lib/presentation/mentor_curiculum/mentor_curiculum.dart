@@ -25,7 +25,8 @@ class MentorCuriculum extends StatefulWidget {
   State<MentorCuriculum> createState() => _MentorCuriculumState();
 }
 
-class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAliveClientMixin<MentorCuriculum> {
+class _MentorCuriculumState extends State<MentorCuriculum>
+    with AutomaticKeepAliveClientMixin<MentorCuriculum> {
   DateTime selectedDatesFromCalendar1 = DateTime.now();
   FetchCourseList _classmoduleList = FetchCourseList();
   late List<Topic> listClassTopic = [];
@@ -66,13 +67,18 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
     final List<String>? result = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return MultiTopic(lessonId: lessonId, isAssignment: isAssignment, startDate: '',);
+          return MultiTopic(
+            lessonId: lessonId,
+            isAssignment: isAssignment,
+            startDate: '',
+          );
         });
   }
 
   void loadCourseByTutorId() async {
     try {
-      final tutors = await Network.getCourseByTutorId(SessionManager().getTutorId().toString());
+      final tutors = await Network.getCourseByTutorId(
+          SessionManager().getTutorId().toString());
       setState(() {
         chosenTutor = tutors;
       });
@@ -85,18 +91,20 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
     }
     // loadAllCourse();
   }
+
   Future<void> loadModuleByCourseId(String courseId) async {
     try {
       final enroll = await Network.getClassModulesByCourseId(courseId);
-      List<ClassModule> activeModules = enroll.where((module) => module?.isActive ?? true).toList();
+      List<ClassModule> activeModules =
+          enroll.where((module) => module?.isActive ?? true).toList();
 
       setState(() {
         listClassModule = activeModules;
       });
       activeModules.forEach((module) {
         DateTime moduleDate = DateTime.parse(module.startDate.toString());
-        DateTime convertedDate = DateTime.utc(
-            moduleDate.year, moduleDate.month, moduleDate.day);
+        DateTime convertedDate =
+            DateTime.utc(moduleDate.year, moduleDate.month, moduleDate.day);
 
         // Check if the list associated with moduleDate key is null
         if (events[convertedDate.toUtc()] == null) {
@@ -110,11 +118,9 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
     }
   }
 
-
   List<ClassModule> _getEventsForDay(DateTime day) {
     return events[day] ?? [];
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -177,8 +183,8 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
               focusedDay: today,
               calendarFormat: _calendarFormat,
               eventLoader: _getEventsForDay,
-              headerStyle: HeaderStyle(
-                  formatButtonVisible: false, titleCentered: true),
+              headerStyle:
+                  HeaderStyle(formatButtonVisible: false, titleCentered: true),
               selectedDayPredicate: (day) => isSameDay(day, today),
               availableGestures: AvailableGestures.all,
               onDaySelected: _onSelectedDay,
@@ -202,7 +208,11 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
                           color: appTheme.gray50,
                         ),
                         FutureBuilder<List<ClassModule>>(
-                          future: _classmoduleList.getClassModuleByTutor(query: query, courseIds: chosenTutor.map((course) => course.id.toString()).toList()),
+                          future: _classmoduleList.getClassModuleByTutor(
+                              query: query,
+                              courseIds: chosenTutor
+                                  .map((course) => course.id.toString())
+                                  .toList()),
                           builder: (context, snapshot) {
                             if (!snapshot.hasData) {
                               return Center(
@@ -210,13 +220,15 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
                               );
                             }
                             List<ClassModule>? activeModules = snapshot.data;
-                            List<ClassModule> data = activeModules!.where((module) => module?.isActive ?? true).toList();
+                            List<ClassModule> data = activeModules!
+                                .where((module) => module?.isActive ?? true)
+                                .toList();
 
                             return ListView.builder(
                               physics: NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               // itemCount: listClassModule.length,
-                              itemCount: data?.length?? 0,
+                              itemCount: data?.length ?? 0,
                               itemBuilder: (context, index) {
                                 final classModule = data?[index];
                                 // loadClassTopicsByClassLessonId();
@@ -227,9 +239,11 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
                                       child: Column(
                                         children: [
                                           Text(
-                                            classModule?.classLesson?.classHours ?? "",
-                                            style:
-                                            TextStyle(fontWeight: FontWeight.bold),
+                                            classModule
+                                                    ?.classLesson?.classHours ??
+                                                "",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                           lineGen(
                                             lines: [20.0, 30.0, 40.0, 10.0],
@@ -240,52 +254,65 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
                                     SizedBox(width: 12),
                                     Expanded(
                                       child: Container(
-                                        padding: EdgeInsets.only(left: 16, top: 8),
+                                        padding:
+                                            EdgeInsets.only(left: 16, top: 8),
                                         height: 150,
                                         decoration: BoxDecoration(
                                           color: Color(0xfff6f6f5),
-                                          borderRadius:
-                                          BorderRadius.all(Radius.circular(20.0)),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0)),
                                         ),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Expanded(
-                                                child: Text(classModule?.course?.name ?? "",
+                                                child: Text(
+                                                    classModule?.course?.name ??
+                                                        "",
                                                     style: TextStyle(
                                                       fontSize: 15,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                                     overflow: TextOverflow.fade,
-                                                    softWrap: true)
-                                            ),
+                                                    softWrap: true)),
                                             Text(
                                               listClassTopic.isNotEmpty
                                                   ? listClassTopic[index]
-                                                  .name
-                                                  .toString()
+                                                      .name
+                                                      .toString()
                                                   : "", // Assuming 'name' is the property you want to display
                                             ),
                                             Column(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 Row(
                                                   children: [
                                                     ElevatedButton(
                                                       onPressed: () {
                                                         launch(classModule
-                                                            ?.classLesson?.classUrl ??
+                                                                ?.classLesson
+                                                                ?.classUrl ??
                                                             "");
                                                       },
-                                                      style: ElevatedButton.styleFrom(
-                                                        minimumSize: Size(100, 50),
-                                                        primary: Color(0xffbfe25c),
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        minimumSize:
+                                                            Size(100, 50),
+                                                        primary:
+                                                            Color(0xffbfe25c),
                                                         // Background color
                                                         onPrimary: Colors.white,
                                                         // Text color
-                                                        shape: RoundedRectangleBorder(
+                                                        shape:
+                                                            RoundedRectangleBorder(
                                                           borderRadius:
-                                                          BorderRadius.circular(10.0),
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.0),
                                                         ),
                                                       ),
                                                       child: Text('Meet URL'),
@@ -337,7 +364,6 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
           monthPickerType: MonthPickerType.switcher,
           showHeader: true,
         ),
-
         dayProps: EasyDayProps(
           width: 46.h,
           height: 64.v,
@@ -345,7 +371,8 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
         onDateChange: (selectedDate) {
           print(selectedDate);
           setState(() {
-            String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+            String formattedDate =
+                DateFormat('yyyy-MM-dd').format(selectedDate);
             query = formattedDate;
           });
         },
@@ -353,77 +380,77 @@ class _MentorCuriculumState extends State<MentorCuriculum> with AutomaticKeepAli
             (context, dayNumber, dayName, monthName, fullDate, isSelected) {
           return isSelected
               ? Container(
-            width: 70.h,
-            padding: EdgeInsets.symmetric(
-              horizontal: 12.h,
-              vertical: 8.v,
-            ),
-            decoration: BoxDecoration(
-              color: appTheme.deepOrange400,
-              borderRadius: BorderRadius.circular(
-                10.h,
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 3.h),
-                  child: Text(
-                    dayName.toString(),
-                    style: CustomTextStyles
-                        .labelLargePoppinsOnPrimaryContainer
-                        .copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
+                  width: 70.h,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.h,
+                    vertical: 8.v,
+                  ),
+                  decoration: BoxDecoration(
+                    color: appTheme.deepOrange400,
+                    borderRadius: BorderRadius.circular(
+                      10.h,
                     ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 5.v),
-                  child: Text(
-                    dayNumber.toString(),
-                    style: CustomTextStyles
-                        .titleMediumPoppinsOnPrimaryContainer
-                        .copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 3.h),
+                        child: Text(
+                          dayName.toString(),
+                          style: CustomTextStyles
+                              .labelLargePoppinsOnPrimaryContainer
+                              .copyWith(
+                            color: theme.colorScheme.onPrimaryContainer,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 5.v),
+                        child: Text(
+                          dayNumber.toString(),
+                          style: CustomTextStyles
+                              .titleMediumPoppinsOnPrimaryContainer
+                              .copyWith(
+                            color: theme.colorScheme.onPrimaryContainer,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          )
+                )
               : SizedBox(
-            width: 46.h,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 4.h),
-                  child: Text(
-                    dayName.toString(),
-                    style: CustomTextStyles.labelLargePoppinsBluegray20001
-                        .copyWith(
-                      color: appTheme.blueGray20001,
-                    ),
+                  width: 46.h,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 4.h),
+                        child: Text(
+                          dayName.toString(),
+                          style: CustomTextStyles.labelLargePoppinsBluegray20001
+                              .copyWith(
+                            color: appTheme.blueGray20001,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 1.v),
+                        child: Text(
+                          dayNumber.toString(),
+                          style: CustomTextStyles.titleMediumPoppinsGray90002
+                              .copyWith(
+                            color: appTheme.gray90002,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 1.v),
-                  child: Text(
-                    dayNumber.toString(),
-                    style: CustomTextStyles.titleMediumPoppinsGray90002
-                        .copyWith(
-                      color: appTheme.gray90002,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
+                );
         },
       ),
     );
@@ -444,12 +471,12 @@ class lineGen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(
           4,
-              (index) => Container(
-            height: 2,
-            width: lines[index],
-            color: Color(0xffd02d8),
-            margin: EdgeInsets.symmetric(vertical: 14),
-          )),
+          (index) => Container(
+                height: 2,
+                width: lines[index],
+                color: Color(0xffd02d8),
+                margin: EdgeInsets.symmetric(vertical: 14),
+              )),
     );
   }
 }
@@ -475,8 +502,9 @@ class _MultiSelectState extends State<MultiSelect> {
 
   void loadClassModuleByCourseId() async {
     List<Topic> loadedClassTopic =
-    await Network.getTopicsByClassLessonId(widget.lessonId);
-    List<Topic> activeTopic = loadedClassTopic.where((module) => module?.isActive ?? true).toList();
+        await Network.getTopicsByClassLessonId(widget.lessonId);
+    List<Topic> activeTopic =
+        loadedClassTopic.where((module) => module?.isActive ?? true).toList();
 
     setState(() {
       listClassTopic = activeTopic;
@@ -487,7 +515,7 @@ class _MultiSelectState extends State<MultiSelect> {
   Future<void> loadLessonMaterialByClassTopicId(String classtopicId) async {
     try {
       List<LessonMaterial> loadedLessonMaterial =
-      await Network.getListLessonMaterialByTopicId(classtopicId);
+          await Network.getListLessonMaterialByTopicId(classtopicId);
       setState(() {
         moduleLessonsMaterialMap[classtopicId] = loadedLessonMaterial;
       });
@@ -526,11 +554,11 @@ class _MultiSelectState extends State<MultiSelect> {
         try {
           await Dio().download(url, savePath,
               onReceiveProgress: (received, total) {
-                if (total != -1) {
-                  print((received / total * 100).toStringAsFixed(0) + "%");
-                  //you can build progressbar feature too
-                }
-              });
+            if (total != -1) {
+              print((received / total * 100).toStringAsFixed(0) + "%");
+              //you can build progressbar feature too
+            }
+          });
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Container(
               height: 40.0, // Adjust the height as needed
@@ -578,40 +606,47 @@ class _MultiSelectState extends State<MultiSelect> {
                 return TextButton(
                   onPressed: () {
                     for (int lessonIndex = 0;
-                    lessonIndex <
-                        (moduleLessonsMaterialMap[listClassTopic[index].id]
-                            ?.length ??
-                            0);
-                    lessonIndex++)
+                        lessonIndex <
+                            (moduleLessonsMaterialMap[listClassTopic[index].id]
+                                    ?.length ??
+                                0);
+                        lessonIndex++)
                       downloadFile(
                           moduleLessonsMaterialMap[listClassTopic[index].id]![
-                          lessonIndex]
+                                  lessonIndex]
                               .materialUrl
                               .toString(),
                           moduleLessonsMaterialMap[listClassTopic[index].id]![
-                          lessonIndex]
+                                  lessonIndex]
                               .name
                               .toString());
                   },
                   child: Row(
                     children: [
-                      Text(item.name.toString()),
+                      Container(
+                          constraints: const BoxConstraints(
+                            maxWidth: 200,
+                          ),
+                          child: Text(
+                            item.name.toString(),
+                            overflow: TextOverflow.ellipsis,
+                          )),
                       IconButton(
                         onPressed: () {
                           for (int lessonIndex = 0;
-                          lessonIndex <
-                              (moduleLessonsMaterialMap[
-                              listClassTopic[index].id]
-                                  ?.length ??
-                                  0);
-                          lessonIndex++)
+                              lessonIndex <
+                                  (moduleLessonsMaterialMap[
+                                              listClassTopic[index].id]
+                                          ?.length ??
+                                      0);
+                              lessonIndex++)
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => MaterialView(
                                       url: moduleLessonsMaterialMap[
-                                      listClassTopic[index]
-                                          .id]![lessonIndex]
+                                              listClassTopic[index]
+                                                  .id]![lessonIndex]
                                           .materialUrl
                                           .toString())),
                             );

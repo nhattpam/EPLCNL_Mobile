@@ -751,7 +751,15 @@ class _MultiSelectState extends State<MultiSelect> {
                   },
                   child: Row(
                     children: [
-                      Text(item.name.toString()),
+                      Container(
+                          constraints:
+                          const BoxConstraints(
+                            maxWidth: 200,
+                          ),
+                          child: Text(
+                              item.name.toString(),
+                              overflow: TextOverflow.ellipsis,
+                          )),
                       IconButton(
                         onPressed: () {
                           for (int lessonIndex = 0;

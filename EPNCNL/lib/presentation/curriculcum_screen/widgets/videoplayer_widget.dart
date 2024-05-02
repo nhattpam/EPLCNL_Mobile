@@ -41,7 +41,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
     print("This is lesson Id" + widget.lessonId);
     super.initState();
     _tabController = new TabController(length: 2, vsync: this);
-      _initializeVideoPlayer();
+    _initializeVideoPlayer();
     _loadClassModuleByCourseId();
     loadMaterialByLessonId();
   }
@@ -95,7 +95,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
       print('Error loading lesson: $e');
     }
   }
-
 
   Future<void> loadMaterialByLessonId() async {
     List<Materials> loadedAssignment =
@@ -173,11 +172,16 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
                 children: [
                   if (widget.videoUrl != '' && widget.videoUrl != null)
                     _isLoadingVideo
-                    ? Center(child: Container(child: CircularProgressIndicator(),),)
-                    : AspectRatio(
-                      aspectRatio: _videoPlayerController.value.aspectRatio,
-                      child: Chewie(controller: _chewieController),
-                    ),
+                        ? Center(
+                            child: Container(
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : AspectRatio(
+                            aspectRatio:
+                                _videoPlayerController.value.aspectRatio,
+                            child: Chewie(controller: _chewieController),
+                          ),
                   Container(
                     height: 52.v,
                     width: 360.h,
@@ -234,7 +238,13 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
                                     },
                                     child: Row(
                                       children: [
-                                        Text(item.name.toString()),
+                                        Container(
+                                            constraints: const BoxConstraints(
+                                              maxWidth: 200,
+                                            ),
+                                            child: Text(item.name.toString(),
+                                              overflow: TextOverflow.ellipsis,
+                                            )),
                                         IconButton(
                                           onPressed: () {
                                             Navigator.push(

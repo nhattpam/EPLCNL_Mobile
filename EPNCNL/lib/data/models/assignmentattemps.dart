@@ -9,7 +9,7 @@ class AssignmentAttempt {
   String? answerAudioUrl;
   String? attemptedDate;
   Leaner? learner;
-  int? totalGrade;
+  num? totalGrade;
 
   AssignmentAttempt(
       {this.id,

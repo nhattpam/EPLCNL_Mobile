@@ -230,7 +230,9 @@ class DoingQuizScreenState extends State<DoingQuizScreen> {
     setState(() {
       // _videoPlayerController.dispose();
       // _chewieController.dispose();
-      _chewieController.pause();
+      if (listquestion[_questionIndex].questionAudioUrl != '') {
+        _chewieController.pause();
+      }
       // isLoading = true;
       if (_questionIndex < listquestion.length - 1) {
         _questionIndex++;

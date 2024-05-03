@@ -477,14 +477,6 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                 SizedBox(height: 11.v),
                                 Row(
                                   children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 17.h),
-                                      child: Text(
-                                        "|",
-                                        style:
-                                            CustomTextStyles.titleSmallBlack900,
-                                      ),
-                                    ),
                                     Icon(
                                       Icons.calendar_month_outlined,
                                       color: Colors.black,

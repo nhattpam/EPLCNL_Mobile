@@ -96,7 +96,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               width: 300,
               height: 100, // Add margin
               child: Text(
-                'Forgot Password',
+                'Change Password',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 25,

@@ -77,7 +77,9 @@ class SingleCourseMeetDetailsCurriculcumPageState
     final List<String>? result = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return MultiTopic(lessonId: lessonId, isAssignment: isAssignment, startDate: startDate,);
+          return MultiTopic(lessonId: lessonId,
+            isAssignment: isAssignment,
+            startDate: startDate,);
         });
   }
 
@@ -199,7 +201,8 @@ class SingleCourseMeetDetailsCurriculcumPageState
                         if (snapshot.connectionState == ConnectionState.done) {
                           List<ClassModule>? activeModules = snapshot.data;
                           //troll???
-                          List<ClassModule> data = activeModules!.where((module) => module?.isActive ?? true).toList();
+                          List<ClassModule> data = activeModules!.where((
+                              module) => module?.isActive ?? true).toList();
                           return ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
@@ -334,7 +337,8 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                                     onPressed: () {
                                                       _showTopic(classModule
                                                           ?.classLesson?.id ??
-                                                          '', false, classModule?.startDate ?? '');
+                                                          '', false, classModule
+                                                          ?.startDate ?? '');
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(
@@ -362,7 +366,10 @@ class SingleCourseMeetDetailsCurriculcumPageState
                                                       onPressed: () {
                                                         _showTopic(classModule
                                                             ?.classLesson?.id ??
-                                                            '', true, classModule?.startDate ?? '');
+                                                            '', true,
+                                                            classModule
+                                                                ?.startDate ??
+                                                                '');
                                                       },
                                                       style: ElevatedButton
                                                           .styleFrom(
@@ -410,64 +417,65 @@ class SingleCourseMeetDetailsCurriculcumPageState
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          if (index == 0) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );
-          }
-          if (index == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => MyCourseCompletedPage()),
-            );
-          }
-          if (index == 2) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => IndoxChatsPage()),
-            );
-          }
-          if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => TransactionsPage()),
-            );
-          }
-          if (index == 4) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => ProfilesPage()),
-            );
-          }
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'My Courses',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Inbox',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.wallet),
-            label: 'Transaction',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        selectedFontSize: 12,
-        selectedLabelStyle: CustomTextStyles.labelLargeGray700,
-        selectedItemColor: Color(0xbbff9300),
-        unselectedItemColor: Color(0xffff9300),
-      ),
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 0) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            }
+            if (index == 1) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => MyCourseCompletedPage()),
+              );
+            }
+            if (index == 2) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => IndoxChatsPage()),
+              );
+            }
+            if (index == 3) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => TransactionsPage()),
+              );
+            }
+            if (index == 4) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ProfilesPage()),
+              );
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              label: 'My Courses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wallet),
+              label: 'Transaction',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          selectedFontSize: 12,
+          selectedLabelStyle: CustomTextStyles.labelLargeGray700,
+          selectedItemColor: Color(0xbbff9300),
+          unselectedItemColor: Color(0xffff9300),
+        ),
 
       ),
     );
@@ -630,7 +638,8 @@ class _MultiSelectState extends State<MultiSelect> {
   void loadClassModuleByCourseId() async {
     List<Topic> loadedClassTopic =
     await Network.getTopicsByClassLessonId(widget.lessonId);
-    List<Topic> activeTopic = loadedClassTopic.where((module) => module?.isActive ?? true).toList();
+    List<Topic> activeTopic = loadedClassTopic.where((module) =>
+    module?.isActive ?? true).toList();
     setState(() {
       listClassTopic = activeTopic;
     });
@@ -757,8 +766,8 @@ class _MultiSelectState extends State<MultiSelect> {
                             maxWidth: 200,
                           ),
                           child: Text(
-                              item.name.toString(),
-                              overflow: TextOverflow.ellipsis,
+                            item.name.toString(),
+                            overflow: TextOverflow.ellipsis,
                           )),
                       IconButton(
                         onPressed: () {
@@ -830,7 +839,8 @@ class _MultiTopicState extends State<MultiTopic> {
   void loadClassTopicByCourseId() async {
     List<Topic> loadedClassTopic =
     await Network.getTopicsByClassLessonId(widget.lessonId);
-    List<Topic> activeTopic = loadedClassTopic.where((module) => module?.isActive ?? true).toList();
+    List<Topic> activeTopic = loadedClassTopic.where((module) =>
+    module?.isActive ?? true).toList();
 
     setState(() {
       listClassTopic = activeTopic;
@@ -841,7 +851,8 @@ class _MultiTopicState extends State<MultiTopic> {
   Future<void> loadQuizByClassTopicId(String classtopicId) async {
     try {
       List<Quiz> loadedQuiz = await Network.getQuizByTopicId(classtopicId);
-      List<Quiz> activeModules = loadedQuiz.where((module) => module?.isActive ?? true).toList();
+      List<Quiz> activeModules = loadedQuiz.where((module) =>
+      module?.isActive ?? true).toList();
 
       setState(() {
         moduleQuizMap[classtopicId] = activeModules;
@@ -856,7 +867,8 @@ class _MultiTopicState extends State<MultiTopic> {
     try {
       List<Assignment> loadedAssignment =
       await Network.getAssignmentByTopicId(classtopicId);
-      List<Assignment> activeModules = loadedAssignment.where((module) => module?.isActive ?? true).toList();
+      List<Assignment> activeModules = loadedAssignment.where((module) =>
+      module?.isActive ?? true).toList();
 
       setState(() {
         moduleAssignmentMap[classtopicId] = activeModules;
@@ -995,9 +1007,13 @@ class _MultiTopicState extends State<MultiTopic> {
                           children: [
                             TextButton(
                               onPressed: () async {
-                                if(DateTime.now().isAfter(DateTime.parse(widget.startDate))){
-                                  if(moduleUndoAssignmentAttempt[moduleAssignmentMap[listClassTopic[index]
-                                      .id]![assignmentIndex].id]?.isEmpty ?? false){
+                                String query = DateFormat('yyyy-MM-dd').format(
+                                    DateTime.parse(widget.startDate));
+                                if (DateTime.now().isAfter(
+                                    DateTime.parse(query))) {
+                                  if (moduleUndoAssignmentAttempt[moduleAssignmentMap[listClassTopic[index]
+                                      .id]![assignmentIndex].id]?.isEmpty ??
+                                      false) {
                                     await Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -1010,11 +1026,13 @@ class _MultiTopicState extends State<MultiTopic> {
                                                     minutes: moduleAssignmentMap[
                                                     listClassTopic[index]
                                                         .id]![assignmentIndex]
-                                                        .deadline as int), isOnlineClass: true,)),
+                                                        .deadline as int),
+                                                isOnlineClass: true,)),
                                     );
                                   }
-                                  if(moduleUndoAssignmentAttempt[moduleAssignmentMap[listClassTopic[index]
-                                      .id]![assignmentIndex].id]?.isNotEmpty ?? false) {
+                                  if (moduleUndoAssignmentAttempt[moduleAssignmentMap[listClassTopic[index]
+                                      .id]![assignmentIndex].id]?.isNotEmpty ??
+                                      false) {
                                     await Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -1027,12 +1045,13 @@ class _MultiTopicState extends State<MultiTopic> {
                                               )),
                                     );
                                   }
-                                  loadAssignmentAttemptByAssignmentId(moduleAssignmentMap[listClassTopic[index]
-                                      .id]![assignmentIndex].id
-                                      .toString());
+                                  loadAssignmentAttemptByAssignmentId(
+                                      moduleAssignmentMap[listClassTopic[index]
+                                          .id]![assignmentIndex].id
+                                          .toString());
                                   await loadQuiz();
                                   await loadAssignmentAttemptsByLearnerId();
-                                } else{
+                                } else {
                                   AwesomeDialog(
                                     context: context,
                                     animType: AnimType.scale,
@@ -1053,7 +1072,8 @@ class _MultiTopicState extends State<MultiTopic> {
                                       //   nextQuestion();
                                       // }
                                     },
-                                  )..show();
+                                  )
+                                    ..show();
                                 }
                               },
                               child: Container(
@@ -1071,7 +1091,7 @@ class _MultiTopicState extends State<MultiTopic> {
                                         fontWeight: FontWeight.bold,
                                         color: Colors.black,
                                         overflow: TextOverflow.ellipsis
-                                        )
+                                    )
 
                                 ),
                               ),
@@ -1167,7 +1187,10 @@ class _MultiTopicState extends State<MultiTopic> {
                           children: [
                             TextButton(
                               onPressed: () async {
-                                if(DateTime.now().isAfter(DateTime.parse(widget.startDate))){
+                                String query = DateFormat('yyyy-MM-dd').format(
+                                    DateTime.parse(widget.startDate));
+                                if (DateTime.now().isAfter(
+                                    DateTime.parse(query))) {
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -1184,7 +1207,7 @@ class _MultiTopicState extends State<MultiTopic> {
                                   );
                                   loadQuizAttemptsByLearnerId();
                                 }
-                                else{
+                                else {
                                   AwesomeDialog(
                                     context: context,
                                     animType: AnimType.scale,
@@ -1205,7 +1228,8 @@ class _MultiTopicState extends State<MultiTopic> {
                                       //   nextQuestion();
                                       // }
                                     },
-                                  )..show();
+                                  )
+                                    ..show();
                                 }
                               },
                               child: Container(
@@ -1231,46 +1255,28 @@ class _MultiTopicState extends State<MultiTopic> {
                                         .id]![assignmentIndex].id))
                               Icon(
                                 listQuizAttempt.isNotEmpty &&
-                                    listQuizAttempt.lastIndexWhere((attempt) =>
+                                    listQuizAttempt.any((attempt) =>
                                     attempt.quizId ==
                                         moduleQuizMap[listClassTopic[index]
-                                            .id]![assignmentIndex]
-                                            .id) !=
-                                        null &&
-                                    moduleQuizMap[listClassTopic[index]
-                                        .id]![assignmentIndex]
-                                        .gradeToPass !=
-                                        null &&
-                                    listQuizAttempt
-                                        .reduce((a, b) =>
-                                    DateTime.parse(a.attemptedDate!)
-                                        .isAfter(
-                                        DateTime.parse(b.attemptedDate!))
-                                        ? a
-                                        : b)
-                                        .totalGrade! >=
-                                        moduleQuizMap[listClassTopic[index]
-                                            .id]![assignmentIndex].gradeToPass!
+                                            .id]![assignmentIndex].id &&
+                                        attempt.totalGrade! >=
+                                            moduleQuizMap[listClassTopic[index]
+                                                .id]![assignmentIndex]
+                                                .gradeToPass!
+                                    )
+
                                     ? FontAwesomeIcons.check
                                     : Icons.dangerous_outlined,
                                 color: listQuizAttempt.isNotEmpty &&
-                                    listQuizAttempt.lastIndexWhere((attempt) =>
+                                    listQuizAttempt.any((attempt) =>
                                     attempt.quizId ==
                                         moduleQuizMap[listClassTopic[index]
-                                            .id]![assignmentIndex].id) !=
-                                        null &&
-                                    moduleQuizMap[listClassTopic[index]
-                                        .id]![assignmentIndex].gradeToPass !=
-                                        null &&
-                                    listQuizAttempt
-                                        .reduce((a, b) =>
-                                    DateTime.parse(a.attemptedDate!).isAfter(
-                                        DateTime.parse(b.attemptedDate!))
-                                        ? a
-                                        : b)
-                                        .totalGrade! >=
-                                        moduleQuizMap[listClassTopic[index]
-                                            .id]![assignmentIndex].gradeToPass!
+                                            .id]![assignmentIndex].id &&
+                                        attempt.totalGrade! >=
+                                            moduleQuizMap[listClassTopic[index]
+                                                .id]![assignmentIndex]
+                                                .gradeToPass!
+                                    )
                                     ? Colors.green
                                     : Colors.red,
                                 size: 20.v,

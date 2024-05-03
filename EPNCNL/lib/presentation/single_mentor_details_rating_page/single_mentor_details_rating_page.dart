@@ -171,29 +171,29 @@ class SingleMentorDetailsRatingPageState
                                   ),
                                 ),
                                 SizedBox(height: 11.v),
-                                Row(
-                                  children: [
-                                    CustomImageView(
-                                      imagePath: ImageConstant.imgFavorite,
-                                      height: 16.v,
-                                      width: 17.h,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 9.h),
-                                      child: Text(
-                                        "760",
-                                        style: CustomTextStyles.labelLargeBluegray900,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 22.h),
-                                      child: Text(
-                                        "2 Weeks Agos",
-                                        style: CustomTextStyles.labelLargeBluegray900,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                // Row(
+                                //   children: [
+                                //     CustomImageView(
+                                //       imagePath: ImageConstant.imgFavorite,
+                                //       height: 16.v,
+                                //       width: 17.h,
+                                //     ),
+                                //     Padding(
+                                //       padding: EdgeInsets.only(left: 9.h),
+                                //       child: Text(
+                                //         "760",
+                                //         style: CustomTextStyles.labelLargeBluegray900,
+                                //       ),
+                                //     ),
+                                //     Padding(
+                                //       padding: EdgeInsets.only(left: 22.h),
+                                //       child: Text(
+                                //         "2 Weeks Agos",
+                                //         style: CustomTextStyles.labelLargeBluegray900,
+                                //       ),
+                                //     ),
+                                //   ],
+                                // ),
                               ],
                             ),
                           ),

@@ -145,7 +145,7 @@ class SingleMentorDetailsRatingTabContainerScreenState
             style: theme.textTheme.titleLarge,
           ),
           Text(
-            "Graphic Designer At Google",
+            chosenTutor.account?.email ?? '',
             style: theme.textTheme.labelLarge,
           ),
           SizedBox(height: 8.v),
@@ -166,31 +166,31 @@ class SingleMentorDetailsRatingTabContainerScreenState
                     ),
                   ],
                 ),
-                Column(
-                  children: [
-                    Text(
-                      "15800",
-                      style: CustomTextStyles.titleMedium17,
-                    ),
-                    Text(
-                      "Students",
-                      style: theme.textTheme.labelLarge,
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      "8750",
-                      style: CustomTextStyles.titleMedium17,
-                    ),
-                    SizedBox(height: 1.v),
-                    Text(
-                      "Ratings",
-                      style: theme.textTheme.labelLarge,
-                    ),
-                  ],
-                ),
+                // Column(
+                //   children: [
+                //     Text(
+                //       "15800",
+                //       style: CustomTextStyles.titleMedium17,
+                //     ),
+                //     Text(
+                //       "Students",
+                //       style: theme.textTheme.labelLarge,
+                //     ),
+                //   ],
+                // ),
+                // Column(
+                //   children: [
+                //     Text(
+                //       "8750",
+                //       style: CustomTextStyles.titleMedium17,
+                //     ),
+                //     SizedBox(height: 1.v),
+                //     Text(
+                //       "Ratings",
+                //       style: theme.textTheme.labelLarge,
+                //     ),
+                //   ],
+                // ),
               ],
             ),
           ),

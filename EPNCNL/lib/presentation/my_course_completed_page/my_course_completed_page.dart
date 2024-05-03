@@ -349,14 +349,28 @@ class _MyCourseCompletedPageState extends State<MyCourseCompletedPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                courses.category?.description ?? "" ,
-                                style: CustomTextStyles.labelLargeOrangeA700,
+                              Container(
+                                constraints:
+                                const BoxConstraints(
+                                  maxWidth: 190,
+                                ),
+                                child: Text(
+                                  courses.category?.description ?? "" ,
+                                  style: CustomTextStyles.labelLargeOrangeA700,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               SizedBox(height: 5.v),
-                              Text(
-                                courses.name ?? "",
-                                style: theme.textTheme.titleMedium,
+                              Container(
+                                constraints:
+                                const BoxConstraints(
+                                  maxWidth: 190,
+                                ),
+                                child: Text(
+                                  courses.name ?? "",
+                                  style: theme.textTheme.titleMedium,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               SizedBox(height: 5.v),
                               Row(

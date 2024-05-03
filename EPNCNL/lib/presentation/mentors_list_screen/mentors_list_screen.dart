@@ -260,6 +260,7 @@ class _MentorsListScreenState extends State<MentorsListScreen> {
                 itemBuilder: (context, index) {
                   String image = '${data?[index].tutor?.account?.imageUrl}';
                   String name = '${data?[index].tutor?.account?.fullName}';
+                  String email = '${data?[index].tutor?.account?.email}';
                   bool isActive = data?[index].isActive ?? false;
                   return isActive
                       ? Row(
@@ -301,7 +302,7 @@ class _MentorsListScreenState extends State<MentorsListScreen> {
                             ),
                             SizedBox(height: 2.v),
                             Text(
-                              "3D Design",
+                              email,
                               style: theme.textTheme.labelLarge,
                             ),
                           ],

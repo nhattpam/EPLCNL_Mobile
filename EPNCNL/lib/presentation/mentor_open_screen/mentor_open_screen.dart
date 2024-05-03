@@ -225,32 +225,6 @@ class _MentorOpenScreenState extends State<MentorOpenScreen> with AutomaticKeepA
                                 SizedBox(height: 33.v),
                                 Padding(
                                   padding: EdgeInsets.only(left: 1.h),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.notifications_none_outlined,
-                                        size: 17.v,
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 14.h),
-                                        child: Text(
-                                          "Notifications",
-                                          style: CustomTextStyles
-                                              .titleSmallBluegray90015,
-                                        ),
-                                      ),
-                                      Spacer(),
-                                      Icon(
-                                        Icons.arrow_forward,
-                                        size: 17.v,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(height: 33.v),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 1.h),
                                   child: GestureDetector(
                                     onTap: () {
                                       onTapTermsCondition(context);

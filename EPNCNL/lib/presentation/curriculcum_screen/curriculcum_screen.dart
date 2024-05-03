@@ -122,6 +122,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   Future<void> loadQuizAttemptsByLearnerId() async {
     List<QuizAttempt> loadedQuizAttempt =
     await Network.getQuizAttemptByLearnerId();
+
     setState(() {
       listQuizAttempt = loadedQuizAttempt;
     });
@@ -138,6 +139,7 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   Future<void> loadLessonByModuleId(String moduleId) async {
     List<Lesson> loadedLesson = await Network.getLessonsByModuleId(moduleId);
     List<Lesson> activeModules = loadedLesson.where((module) => module?.isActive ?? true).toList();
+    activeModules.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
 
     if (mounted) {
       setState(() {
@@ -150,7 +152,9 @@ class CurriculumScreenState extends State<CurriculumScreen> {
 
   Future<void> loadQuizByModuleId(String moduleId) async {
     List<Quiz> loadedQuiz = await Network.getQuizByModuleId(moduleId);
+
     List<Quiz> activeModules = loadedQuiz.where((module) => module?.isActive ?? true).toList();
+    activeModules.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
 
     if (mounted) {
       setState(() {
@@ -164,6 +168,8 @@ class CurriculumScreenState extends State<CurriculumScreen> {
   Future<void> loadAssignmentByModuleId(String moduleId) async {
     List<Assignment> loadedAssignment = await Network.getAssignmentByModuleId(moduleId);
     List<Assignment> activeModules = loadedAssignment.where((module) => module?.isActive ?? true).toList();
+    activeModules.sort((a, b) => (b.createdDate.toString()).compareTo(a.createdDate.toString()));
+
     if (mounted) {
       setState(() {
         // Store the lessons for this module in the map
@@ -644,47 +650,20 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                       attempt.assignmentId ==
                           moduleAssignmentMap[module.id
                               .toString()]![assignmentIndex].id))
-
                     Icon(
                       listAssignmentAttempt.isNotEmpty &&
-                          listAssignmentAttempt.lastIndexWhere((attempt) =>
-                          attempt.assignmentId ==
-                              moduleAssignmentMap[module.id
-                                  .toString()]![assignmentIndex].id) !=
-                              null &&
-                          moduleAssignmentMap[module.id
-                              .toString()]![assignmentIndex].gradeToPass !=
-                              null &&
-                          listAssignmentAttempt
-                              .reduce((a, b) =>
-                          DateTime.parse(a.attemptedDate!)
-                              .isAfter(DateTime.parse(b.attemptedDate!))
-                              ? a
-                              : b)
-                              .totalGrade! >=
-                              moduleAssignmentMap[module.id
-                                  .toString()]![assignmentIndex].gradeToPass!
-
+                          listAssignmentAttempt.any((attempt) =>
+                          attempt.assignmentId == moduleAssignmentMap[module.id.toString()]![assignmentIndex].id &&
+                              attempt.totalGrade! >= moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass!
+                          )
                           ? FontAwesomeIcons.check
                           : Icons.dangerous_outlined,
-                      color: listAssignmentAttempt.isNotEmpty &&
-                          listAssignmentAttempt.lastIndexWhere((attempt) =>
-                          attempt.assignmentId ==
-                              moduleAssignmentMap[module.id
-                                  .toString()]![assignmentIndex].id) !=
-                              null &&
-                          moduleAssignmentMap[module.id
-                              .toString()]![assignmentIndex].gradeToPass !=
-                              null &&
-                          listAssignmentAttempt
-                              .reduce((a, b) =>
-                          DateTime.parse(a.attemptedDate!)
-                              .isAfter(DateTime.parse(b.attemptedDate!))
-                              ? a
-                              : b)
-                              .totalGrade! >=
-                              moduleAssignmentMap[module.id
-                                  .toString()]![assignmentIndex].gradeToPass!
+                      color:
+                            listAssignmentAttempt.isNotEmpty &&
+                            listAssignmentAttempt.any((attempt) =>
+                            attempt.assignmentId == moduleAssignmentMap[module.id.toString()]![assignmentIndex].id &&
+                            attempt.totalGrade! >= moduleAssignmentMap[module.id.toString()]![assignmentIndex].gradeToPass!
+                            )
                           ? Colors.green
                           : Colors.red,
                       size: 20.v,
@@ -811,45 +790,38 @@ class CurriculumScreenState extends State<CurriculumScreen> {
                       attempt.quizId ==
                           moduleQuizMap[module.id.toString()]![quizIndex].id))
                     Icon(
+                      // listQuizAttempt.isNotEmpty &&
+                      //     listQuizAttempt.lastIndexWhere((attempt) =>
+                      //     attempt.quizId ==
+                      //         moduleQuizMap[module.id.toString()]![quizIndex]
+                      //             .id) !=
+                      //         null &&
+                      //     moduleQuizMap[module.id.toString()]![quizIndex]
+                      //         .gradeToPass !=
+                      //         null &&
+                      //     listQuizAttempt
+                      //         .reduce((a, b) =>
+                      //     DateTime.parse(a.attemptedDate!)
+                      //         .isAfter(DateTime.parse(b.attemptedDate!))
+                      //         ? a
+                      //         : b)
+                      //         .totalGrade! >=
+                      //         moduleQuizMap[module.id.toString()]![quizIndex]
+                      //             .gradeToPass!
                       listQuizAttempt.isNotEmpty &&
-                          listQuizAttempt.lastIndexWhere((attempt) =>
-                          attempt.quizId ==
-                              moduleQuizMap[module.id.toString()]![quizIndex]
-                                  .id) !=
-                              null &&
-                          moduleQuizMap[module.id.toString()]![quizIndex]
-                              .gradeToPass !=
-                              null &&
-                          listQuizAttempt
-                              .reduce((a, b) =>
-                          DateTime.parse(a.attemptedDate!)
-                              .isAfter(DateTime.parse(b.attemptedDate!))
-                              ? a
-                              : b)
-                              .totalGrade! >=
-                              moduleQuizMap[module.id.toString()]![quizIndex]
-                                  .gradeToPass!
+                          listQuizAttempt.any((attempt) =>
+                          attempt.quizId == moduleQuizMap[module.id.toString()]![quizIndex].id &&
+                              attempt.totalGrade! >= moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass!
+                          )
+
                           ? FontAwesomeIcons.check
                           : Icons.dangerous_outlined,
-                      color: listQuizAttempt.isNotEmpty &&
-                          listQuizAttempt.lastIndexWhere((attempt) =>
-                          attempt.quizId ==
-                              moduleQuizMap[module.id.toString()]![quizIndex]
-                                  .id) !=
-                              null &&
-                          moduleQuizMap[module.id.toString()]![quizIndex]
-                              .gradeToPass !=
-                              null &&
-                          listQuizAttempt
-                              .reduce((a, b) =>
-                          DateTime.parse(a.attemptedDate!)
-                              .isAfter(DateTime.parse(b.attemptedDate!))
-                              ? a
-                              : b)
-                              .totalGrade! >=
-                              moduleQuizMap[module.id.toString()]![quizIndex]
-                                  .gradeToPass!
-
+                      color:
+                      listQuizAttempt.isNotEmpty &&
+                          listQuizAttempt.any((attempt) =>
+                          attempt.quizId == moduleQuizMap[module.id.toString()]![quizIndex].id &&
+                              attempt.totalGrade! >= moduleQuizMap[module.id.toString()]![quizIndex].gradeToPass!
+                          )
                           ? Colors.green
                           : Colors.red,
                       size: 20.v,
